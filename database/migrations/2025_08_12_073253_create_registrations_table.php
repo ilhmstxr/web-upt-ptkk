@@ -1,0 +1,24 @@
+Schema::create('registrations', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->string('nik')->unique();
+    $table->string('birth_place');
+    $table->date('birth_date');
+    $table->string('gender');
+    $table->string('religion');
+    $table->string('address');
+    $table->string('phone');
+    $table->string('email');
+    $table->string('school_name');
+    $table->string('school_address');
+    $table->string('competence');
+    $table->string('class');
+    $table->string('dinas_branch');
+    $table->string('ktp_path');
+    $table->string('ijazah_path');
+    $table->string('surat_tugas_path');
+    $table->string('surat_sehat_path');
+    $table->string('pas_foto_path');
+    $table->string('surat_tugas_nomor')->nullable();
+    $table->timestamps();
+});
