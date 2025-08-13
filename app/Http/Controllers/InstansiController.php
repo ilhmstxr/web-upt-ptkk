@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Instansi;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class InstansiController extends Controller
 {

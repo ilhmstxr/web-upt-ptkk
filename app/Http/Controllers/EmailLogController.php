@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\EmailLog;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class EmailLogController extends Controller
+
 {
     /**
      * Display a listing of the resource.
