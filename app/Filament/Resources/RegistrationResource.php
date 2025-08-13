@@ -18,7 +18,7 @@ use App\Exports\UptExport;
 
 class RegistrationResource extends Resource
 {
-    protected static ?string $model = Registrbation::class;
+    protected static ?string $model = Registration::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
@@ -103,6 +103,7 @@ class RegistrationResource extends Resource
                 Action::make('download_tu')
                     ->label('Download TU')
                     ->icon('heroicon-o-arrow-down-tray')
+                    // ->action(fn() => Excel::download(new TuExport, 'TU.xlsx')),
                     ->action(fn() => Excel::download(new TuExport, 'TU.xlsx')),
 
                 Action::make('download_upt')
