@@ -11,8 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('email_logs', function (Blueprint $table) {
+        Schema::create('instansis', function (Blueprint $table) {
             $table->id();
+            // --- Data Instansi ---
+            $table->string('asal_instansi');
+            $table->text('alamat_instansi');
+            $table->string('bidang_keahlian');
+            $table->string('kelas');
+            $table->string('cabang_dinas_wilayah');
             $table->timestamps();
         });
     }
@@ -22,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('email_logs');
+        Schema::dropIfExists('instansis');
     }
 };

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pesertas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pelatihan_id')->constrained()->cascadeOnDelete(); // foreign key ke tabel pelatihan
-            
+            $table->foreignId('instansi_id')->constrained()->cascadeOnDelete(); 
             // --- Data Diri ---
             $table->string('nama');
             $table->string('nik')->unique();
@@ -25,22 +25,6 @@ return new class extends Migration
             $table->text('alamat');
             $table->string('no_hp');
             $table->string('email')->unique();
-
-            // --- Data Instansi ---
-            $table->string('asal_instansi');
-            $table->text('alamat_instansi');
-            $table->string('bidang_keahlian');
-            $table->string('kelas');
-            $table->string('cabang_dinas_wilayah');
-            
-            // --- Berkas & Dokumen ---
-            $table->string('no_surat_tugas');
-            $table->string('fc_ktp'); // Path untuk file KTP
-            $table->string('fc_ijazah'); // Path untuk file Ijazah
-            $table->string('fc_surat_tugas'); // Path untuk file Surat Tugas
-            $table->string('fc_surat_sehat'); // Path untuk file Surat Sehat
-            $table->string('pas_foto'); // Path untuk pas foto
-
             $table->timestamps();
         });
     }
