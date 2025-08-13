@@ -1,22 +1,38 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
+use App\Http\Controllers\PendaftaranController;
 
+// ============================
+// Halaman Utama (Landing Page)
+// ============================
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    return view('landing');
+})->name('landing');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// ============================
+// Pendaftaran
+// ============================
+// Form pendaftaran
+Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
 
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
+// Proses submit pendaftaran
+Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
 
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
-    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
-});
+// ============================
+// Halaman Detail Pelatihan
+// ============================
+Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
+    $kompetensiList = [
+        'tata-boga',
+        'tata-busana',
+        'tata-kecantikan',
+        'teknik-pendingin-dan-tata-udara',
+    ];
 
-require __DIR__.'/auth.php';
+    if (!in_array($kompetensi, $kompetensiList)) {
+        abort(404);
+    }
+
+    return view('detail-pelatihan', compact('kompetensi'));
+})->name('detail-pelatihan');
