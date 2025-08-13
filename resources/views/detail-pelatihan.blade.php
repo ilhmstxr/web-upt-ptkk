@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Pelatihan - {{ $kompetensi }}</title>
+    <title>Detail Pelatihan - {{ $kompetensi ?? 'Tidak Ditemukan' }}</title>
+    <!-- Tailwind CSS CDN untuk styling yang responsif dan modern -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Mengimpor font Inter dari Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* bg-gray-100 */
+            background-color: #f3f4f6; /* Warna latar belakang abu-abu muda */
         }
         .fade-in {
             animation: fadeIn 1s ease-out;
@@ -18,26 +20,40 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        /* Style untuk tombol pendaftaran utama */
+        .btn-primary {
+            background-color: #5c76c1;
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+        .btn-primary:hover {
+            background-color: #4a62a9;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-    <!-- Header -->
+    <!-- Header dengan navigasi sederhana -->
     <header class="bg-white shadow-sm p-4 sticky top-0 z-50">
         <div class="container mx-auto flex items-center justify-between">
+            <!-- Logo dan nama UPT PTKK -->
             <a href="/" class="flex items-center space-x-4">
-                <img src="https://placehold.co/40x40/5c76c1/ffffff?text=Logo" alt="Logo" class="rounded-full">
+                <img src="https://placehold.co/40x40/5c76c1/ffffff?text=Logo" alt="Logo UPT PTKK" class="rounded-full">
                 <h1 class="text-xl font-bold text-gray-800">UPT PTKK</h1>
             </a>
+            <!-- Tombol untuk mendaftar -->
             <nav>
-                <a href="/pendaftaran" class="px-4 py-2 bg-[#5c76c1] text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105">Daftar Sekarang</a>
+                <a href="/pendaftaran" class="px-4 py-2 text-white font-semibold rounded-lg shadow-md btn-primary">Daftar Sekarang</a>
             </nav>
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Konten Utama Halaman -->
     <main class="container mx-auto p-4 md:p-8">
         @php
+            // Array data mock untuk berbagai jenis pelatihan
             $pelatihan = [
                 'tata-boga' => [
                     'nama' => 'Tata Boga',
@@ -96,21 +112,24 @@
                     ],
                 ],
             ];
+            // Mengambil data berdasarkan variabel $kompetensi yang diterima dari URL
+            // Jika $kompetensi tidak ditemukan, $data akan menjadi null
             $data = $pelatihan[$kompetensi] ?? null;
         @endphp
 
+        <!-- Logika kondisional: jika data pelatihan ditemukan, tampilkan isinya -->
         @if($data)
             <div class="bg-white rounded-xl shadow-lg overflow-hidden fade-in">
-                <!-- Banner Image -->
+                <!-- Gambar Banner -->
                 <img src="{{ $data['gambar'] }}" alt="Banner {{ $data['nama'] }}" class="w-full h-64 object-cover">
                 
                 <div class="p-8">
-                    <!-- Title and Description -->
+                    <!-- Judul dan Deskripsi Pelatihan -->
                     <h1 class="text-4xl font-bold text-gray-800">{{ $data['nama'] }}</h1>
                     <p class="mt-4 text-gray-600 leading-relaxed">{{ $data['deskripsi'] }}</p>
                     
                     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <!-- Details -->
+                        <!-- Detail Pelatihan -->
                         <div>
                             <h3 class="text-xl font-bold text-gray-800">Detail Pelatihan</h3>
                             <ul class="mt-4 text-gray-700 space-y-2">
@@ -129,7 +148,7 @@
                             </ul>
                         </div>
                         
-                        <!-- Requirements -->
+                        <!-- Persyaratan Pendaftaran -->
                         <div>
                             <h3 class="text-xl font-bold text-gray-800">Persyaratan Pendaftaran</h3>
                             <ul class="mt-4 text-gray-700 space-y-2 list-disc list-inside">
@@ -141,19 +160,20 @@
                         </div>
                     </div>
                     
-                    <!-- Registration Button -->
+                    <!-- Tombol Pendaftaran Utama -->
                     <div class="mt-12 text-center">
-                        <a href="/pendaftaran" class="px-12 py-4 bg-[#5c76c1] text-white font-semibold text-lg rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105">
+                        <a href="/pendaftaran" class="px-12 py-4 text-white font-semibold text-lg rounded-lg shadow-md btn-primary">
                             Daftar Pelatihan
                         </a>
                     </div>
                 </div>
             </div>
         @else
+            <!-- Tampilan jika data pelatihan tidak ditemukan -->
             <div class="bg-white rounded-xl shadow-lg p-12 text-center fade-in">
                 <h1 class="text-4xl font-bold text-gray-800">Pelatihan Tidak Ditemukan</h1>
                 <p class="mt-4 text-gray-600">Maaf, pelatihan yang Anda cari tidak tersedia.</p>
-                <a href="/" class="mt-6 inline-block px-6 py-3 bg-[#5c76c1] text-white font-semibold rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105">
+                <a href="/" class="mt-6 inline-block px-6 py-3 text-white font-semibold rounded-lg btn-primary">
                     Kembali ke Beranda
                 </a>
             </div>

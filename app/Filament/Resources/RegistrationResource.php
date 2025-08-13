@@ -18,9 +18,9 @@ use App\Exports\UptExport;
 
 class RegistrationResource extends Resource
 {
-    protected static ?string $model = Registrbation::class;
-
+    protected static ?string $model = Registration::class;
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationGroup = 'Manajemen Pendaftaran';
 
     public static function form(Form $form): Form
     {
@@ -51,7 +51,7 @@ class RegistrationResource extends Resource
                                 Forms\Components\TextInput::make('phone')->label('Nomor Handphone')->required()->tel()->maxLength(15),
                                 Forms\Components\TextInput::make('email')->label('Email')->email()->required()->maxLength(255),
                             ])->columns(2),
-
+                        
                         Section::make('Biodata Sekolah')
                             ->description('Data lembaga asal dari pendaftar.')
                             ->schema([
@@ -72,21 +72,22 @@ class RegistrationResource extends Resource
                                     'Wilayah V' => 'Wilayah V',
                                 ])->required(),
                             ])->columns(2),
+                        
+                        // Menambahkan Section untuk Lampiran Dokumen
+                        Section::make('Lampiran Dokumen')
+                            ->description('Dokumen-dokumen pendukung yang diunggah oleh pendaftar.')
+                            ->schema([
+                                Forms\Components\FileUpload::make('ktp_path')->label('Unggah Fotocopy KTP')->disk('public')->required(),
+                                Forms\Components\FileUpload::make('ijazah_path')->label('Unggah Fotocopy Ijazah Terakhir')->disk('public')->required(),
+                                Forms\Components\FileUpload::make('surat_tugas_path')->label('Unggah Fotocopy Surat Tugas')->disk('public')->required(),
+                                Forms\Components\FileUpload::make('surat_sehat_path')->label('Unggah Surat Sehat')->disk('public')->required(),
+                                Forms\Components\TextInput::make('surat_tugas_nomor')->label('Nomor Surat Tugas')->required()->maxLength(255),
+                                Forms\Components\FileUpload::make('pas_foto_path')->label('Unggah Pas Foto')->disk('public')->required()->helperText('Pas Foto Background Merah ukuran 3x4'),
+                            ])->columns(2),
                     ]),
-
-                // Section::make('Lampiran Dokumen')
-                //     ->description('Dokumen-dokumen pendukung yang diunggah oleh pendaftar.')
-                //     ->schema([
-                //         Forms\Components\FileUpload::make('ktp_path')->label('Fotocopy KTP')->disk('public')->required(),
-                //         Forms\Components\FileUpload::make('ijazah_path')->label('Fotocopy Ijazah Terakhir')->disk('public')->required(),
-                //         Forms\Components\FileUpload::make('surat_tugas_path')->label('Fotocopy Surat Tugas')->disk('public')->required(),
-                //         Forms\Components\TextInput::make('surat_tugas_nomor')->label('Nomor Surat Tugas')->required()->maxLength(255),
-                //         Forms\Components\FileUpload::make('surat_sehat_path')->label('Surat Keterangan Sehat')->disk('public')->required(),
-                //         Forms\Components\FileUpload::make('pas_foto_path')->label('Pas Foto Formal Background Merah')->disk('public')->required(),
-                //     ])->columns(2),
             ]);
     }
-
+    
     public static function table(Table $table): Table
     {
         return $table
@@ -98,6 +99,7 @@ class RegistrationResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->headerActions([
                 Action::make('download_tu')
@@ -128,6 +130,7 @@ class RegistrationResource extends Resource
             'index' => Pages\ListRegistrations::route('/'),
             'create' => Pages\CreateRegistration::route('/create'),
             'edit' => Pages\EditRegistration::route('/{record}/edit'),
+            'view' => Pages\ViewRegistration::route('/{record}'),
         ];
     }
 }
