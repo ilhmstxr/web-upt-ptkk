@@ -4,17 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Lampiran extends Model
 {
-    /** @use HasFactory<\Database\Factories\LampiranFactory> */
     use HasFactory;
+    
+    protected $table = 'lampirans';
+
     protected $fillable = [
+        'peserta_id',
         'no_surat_tugas',
-        'fc_ktp', // Path untuk file KTP
-        'fc_ijazah', // Path untuk file Ijazah
-        'fc_surat_tugas', // Path untuk file Surat Tugas
-        'fc_surat_sehat', // Path untuk file Surat Sehat
-        'pas_foto', // Path untuk pas foto
+        'fc_ktp', 
+        'fc_ijazah', 
+        'fc_surat_tugas', 
+        'fc_surat_sehat', 
+        'pas_foto',
     ];
+
+    /**
+     * Mendefinisikan relasi bahwa satu Lampiran milik satu Peserta.
+     */
+    public function peserta(): BelongsTo // Nama fungsi diubah menjadi tunggal
+    {
+        // Nama model diperbaiki menjadi 'Peserta' (kapital)
+        return $this->belongsTo(Peserta::class); 
+    }
 }

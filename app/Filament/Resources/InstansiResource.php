@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PelatihanResource\Pages;
-use App\Filament\Resources\PelatihanResource\RelationManagers;
-use App\Models\Pelatihan;
+use App\Filament\Resources\InstansiResource\Pages;
+use App\Filament\Resources\InstansiResource\RelationManagers;
+use App\Models\Instansi;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,26 +13,32 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class PelatihanResource extends Resource
+class InstansiResource extends Resource
 {
-    protected static ?string $model = Pelatihan::class;
+    protected static ?string $model = Instansi::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+    protected static ?string $navigationGroup = 'Data Master';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_pelatihan')
+                Forms\Components\TextInput::make('asal_instansi')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\RichEditor::make('deskripsi')
+                Forms\Components\Textarea::make('alamat_instansi')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\DatePicker::make('tanggal_mulai')
-                    ->required(),
-                Forms\Components\DatePicker::make('tanggal_selesai')
-                    ->required(),
+                Forms\Components\TextInput::make('bidang_keahlian')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('kelas')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('cabang_dinas_wilayah')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -40,18 +46,10 @@ class PelatihanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama_pelatihan')
+                Tables\Columns\TextColumn::make('asal_instansi')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('deskripsi')
-                    ->html() 
-                    ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('tanggal_mulai')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_selesai')
-                    ->date()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('cabang_dinas_wilayah')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -77,16 +75,16 @@ class PelatihanResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\PesertasRelationManager::class,
+            //
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPelatihans::route('/'),
-            'create' => Pages\CreatePelatihan::route('/create'),
-            'edit' => Pages\EditPelatihan::route('/{record}/edit'),
+            'index' => Pages\ListInstansis::route('/'),
+            'create' => Pages\CreateInstansi::route('/create'),
+            'edit' => Pages\EditInstansi::route('/{record}/edit'),
         ];
     }
 }

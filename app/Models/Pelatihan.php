@@ -10,14 +10,22 @@ class Pelatihan extends Model
 {
     use HasFactory;
 
+    protected $table = 'pelatihans';
+
     protected $fillable = [
         'nama_pelatihan',
+        'deskripsi',
         'tanggal_mulai',
         'tanggal_selesai',
     ];
 
+    protected $casts = [
+    'tanggal_mulai' => 'date',
+    'tanggal_selesai' => 'date',
+    ];
+
     public function pesertas(): HasMany
     {
-        return $this->hasMany(Peserta::class);
+        return $this->hasMany(Peserta::class, 'pelatihan_id');
     }
 }

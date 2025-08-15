@@ -14,23 +14,18 @@ return new class extends Migration
         Schema::create('lampirans', function (Blueprint $table) {
             $table->id();
             // --- Berkas & Dokumen ---
-            $table->unsignedBigInteger('peserta_id'); // foreign key ke tabel pesertas
-            $table->foreign('peserta_id')->references('id')->on('pesertas')->cascadeOnDelete();
-            $table->string('no_ktp');
-            $table->string('no_surat_tugas');
-            $table->string('fc_ktp'); // Path untuk file KTP
-            $table->string('fc_ijazah'); // Path untuk file Ijazah
-            $table->string('fc_surat_tugas'); // Path untuk file Surat Tugas
-            $table->string('fc_surat_sehat'); // Path untuk file Surat Sehat
-            $table->string('pas_foto'); // Path untuk pas foto
+            $table->foreignId('peserta_id')->constrained()->cascadeOnDelete();
+            $table->string('no_surat_tugas')->nullable() ;
+            $table->string('fc_ktp');
+            $table->string('fc_ijazah'); 
+            $table->string('fc_surat_tugas')->nullable(); 
+            $table->string('fc_surat_sehat'); 
+            $table->string('pas_foto'); 
 
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('lampirans');

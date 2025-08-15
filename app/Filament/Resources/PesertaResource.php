@@ -4,26 +4,27 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PesertaResource\Pages;
 use App\Filament\Resources\PesertaResource\RelationManagers;
+use App\Models\Instansi;
 use App\Models\Peserta;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PesertaResource extends Resource
 {
     protected static ?string $model = Peserta::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationGroup = 'Pendaftaran';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informasi Pelatihan')
+                Forms\Components\Section::make('Informasi Pendaftaran')
+                    ->columns(2)    
                     ->schema([
                         Forms\Components\Select::make('pelatihan_id')
                             ->relationship('pelatihan', 'nama_pelatihan')
@@ -47,6 +48,7 @@ class PesertaResource extends Resource
                     ]),
 
                 Forms\Components\Section::make('Data Instansi')
+                    ->relationship('instansi') // Mengambil data dari relasi 'instansi'
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('asal_instansi')->required(),
@@ -55,17 +57,17 @@ class PesertaResource extends Resource
                         Forms\Components\TextInput::make('cabang_dinas_wilayah')->required(),
                         Forms\Components\Textarea::make('alamat_instansi')->required()->columnSpanFull(),
                     ]),
-
-                Forms\Components\Section::make('Dokumen dan Berkas')
+                
+                Forms\Components\Section::make('Lampiran Berkas')
+                    ->relationship('lampiran') // Mengambil data dari relasi 'lampiran'
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('no_surat_tugas')->required(),
-                        // Untuk menampilkan file, kita gunakan FileUpload atau link saja
-                        Forms\Components\FileUpload::make('pas_foto')->disk('public')->directory('berkas-peserta/foto'),
-                        Forms\Components\FileUpload::make('fc_ktp')->disk('public')->directory('berkas-peserta/ktp'),
-                        Forms\Components\FileUpload::make('fc_ijazah')->disk('public')->directory('berkas-peserta/ijazah'),
-                        Forms\Components\FileUpload::make('fc_surat_tugas')->disk('public')->directory('berkas-peserta/surat-tugas'),
-                        Forms\Components\FileUpload::make('fc_surat_sehat')->disk('public')->directory('berkas-peserta/surat-sehat'),
+                        Forms\Components\TextInput::make('no_surat_tugas')->nullable(),
+                        Forms\Components\FileUpload::make('pas_foto')->disk('public')->directory('berkas_pendaftaran/foto')->required(),
+                        Forms\Components\FileUpload::make('fc_ktp')->disk('public')->directory('berkas_pendaftaran/ktp')->required(),
+                        Forms\Components\FileUpload::make('fc_ijazah')->disk('public')->directory('berkas_pendaftaran/ijazah')->required(),
+                        Forms\Components\FileUpload::make('fc_surat_tugas')->disk('public')->directory('berkas_pendaftaran/surat-tugas')->nullable(),
+                        Forms\Components\FileUpload::make('fc_surat_sehat')->disk('public')->directory('berkas_pendaftaran/surat-sehat')->required(),
                     ]),
             ]);
     }
@@ -74,56 +76,10 @@ class PesertaResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('pelatihan.id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('nama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nik')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tempat_lahir')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_lahir')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('jenis_kelamin'),
-                Tables\Columns\TextColumn::make('agama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('no_hp')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('asal_instansi')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('bidang_keahlian')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('kelas')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('cabang_dinas_wilayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('no_surat_tugas')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('fc_ktp')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('fc_ijazah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('fc_surat_tugas')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('fc_surat_sehat')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pas_foto')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
+                Tables\Columns\TextColumn::make('nama')->searchable(),
+                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
+                Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
+                Tables\Columns\TextColumn::make('email'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -133,13 +89,6 @@ class PesertaResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

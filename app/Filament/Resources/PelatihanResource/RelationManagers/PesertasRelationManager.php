@@ -21,6 +21,67 @@ class PesertasRelationManager extends RelationManager
                 Forms\Components\TextInput::make('nama')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('nik')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('tempat_lahir')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('tanggal_lahir')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('jenis_kelamin')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('agama')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('alamat')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('no_hp')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('instansi.asal_instansi')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('instansi.alamat_instansi')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('instansi.bidang_keahlian')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('instansi.kelas')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('instansi.cabang_dinas_wilayah')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('lampiran.no_surat_tugas')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\FileUpload::make('lampiran.fc_ktp')
+                    ->required()
+                    ->directory('berkas_pendaftaran/ktp')
+                    ->image(),
+                Forms\Components\FileUpload::make('lampiran.fc_ijazah')
+                    ->required()
+                    ->directory('berkas_pendaftaran/ijazah')
+                    ->image(),
+                Forms\Components\FileUpload::make('lampiran.fc_surat_tugas')
+                    ->required()
+                    ->directory('berkas_pendaftaran/surat-tugas')
+                    ->image(),
+                Forms\Components\FileUpload::make('lampiran.fc_surat_sehat')
+                    ->required()
+                    ->directory('berkas_pendaftaran/foto')
+                    ->image(),
+                Forms\Components\FileUpload::make('lampiran.pas_foto')
+                    ->required()
+                    ->image(),
             ]);
     }
 
@@ -29,10 +90,16 @@ class PesertasRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('nama')
             ->columns([
-                Tables\Columns\TextColumn::make('nama')->searchable(),
-                Tables\Columns\TextColumn::make('nik')->searchable(),
+                // Menampilkan nama peserta dan asal instansinya
+                Tables\Columns\TextColumn::make('nama')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('instansi.asal_instansi')
+                    ->label('Asal Instansi') // Memberi label yang lebih jelas
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('instansi.cabang_dinas_wilayah')
+                    ->label('Cabang Dinas Wilayah') // Memberi label yang lebih jelas
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('asal_instansi'),
             ])
             ->filters([
                 //
