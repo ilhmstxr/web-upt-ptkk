@@ -20,22 +20,27 @@ class PendaftaranController extends Controller
     {
         // Ambil semua data dari session
         $formData = $request->session()->get('pendaftaran_data', []);
-        
+
         // Tentukan langkah saat ini, defaultnya adalah 1
         $currentStep = $request->query('step', 1);
 
         // Ambil data pelatihan untuk dropdown
         $pelatihans = Pelatihan::all();
 
-        return view('peserta.pendaftaran.bio-peserta', compact('pelatihans', 'currentStep', 'formData'));
+        if ($currentStep == 1 ) {
+            return view('peserta.pendaftaran.bio-peserta', compact('pelatihans', 'currentStep', 'formData'));
+        }elseif ($currentStep == 2) {
+            return view('peserta.pendaftaran.bio-sekolah', compact('pelatihans', 'currentStep', 'formData'));
+        }elseif($currentStep == 3) {
+            return view('peserta.pendaftaran.lampiran', compact('pelatihans', 'currentStep', 'formData'));
+        }
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-       
+    public function index() {
+
     }
 
 
@@ -47,7 +52,7 @@ class PendaftaranController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $currentStep = $request->input('current_step');
         $formData = $request->session()->get('pendaftaran_data', []);
 
@@ -65,12 +70,12 @@ class PendaftaranController extends Controller
                 'no_hp' => 'required|string|max:15',
                 'email' => 'required|email|max:255|unique:pesertas,email',
             ]);
-            
+
             // Gabungkan data baru dengan data yang sudah ada di session
             $request->session()->put('pendaftaran_data', array_merge($formData, $validatedData));
             return redirect()->route('pendaftaran.create', ['step' => 2]);
         }
-        
+
         // --- VALIDASI DAN SIMPAN DATA LANGKAH 2 ---
         else if ($currentStep == 2) {
             $validatedData = $request->validate([
@@ -99,43 +104,43 @@ class PendaftaranController extends Controller
             $allData = array_merge($formData, $validatedData);
 
             // Gunakan transaction untuk memastikan semua data berhasil disimpan atau tidak sama sekali
-            // DB::transaction(function () use ($allData, $request) {
-            //     // 1. Simpan Instansi
-            //     $instansi = Instansi::create([
-            //         'asal_instansi' => $allData['asal_instansi'],
-            //         'alamat_instansi' => $allData['alamat_instansi'],
-            //         'bidang_keahlian' => $allData['bidang_keahlian'],
-            //         'kelas' => $allData['kelas'],
-            //         'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
-            //     ]);
+            DB::transaction(function () use ($allData, $request) {
+                // 1. Simpan Instansi
+                $instansi = Instansi::create([
+                    'asal_instansi' => $allData['asal_instansi'],
+                    'alamat_instansi' => $allData['alamat_instansi'],
+                    'bidang_keahlian' => $allData['bidang_keahlian'],
+                    'kelas' => $allData['kelas'],
+                    'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
+                ]);
 
-            //     // 2. Simpan Peserta
-            //     $peserta = Peserta::create([
-            //         'pelatihan_id' => $allData['pelatihan_id'],
-            //         'instansi_id' => $instansi->id,
-            //         'nama' => $allData['nama'],
-            //         'nik' => $allData['nik'],
-            //         'tempat_lahir' => $allData['tempat_lahir'],
-            //         'tanggal_lahir' => $allData['tanggal_lahir'],
-            //         'jenis_kelamin' => $allData['jenis_kelamin'],
-            //         'agama' => $allData['agama'],
-            //         'alamat' => $allData['alamat'],
-            //         'no_hp' => $allData['no_hp'],
-            //         'email' => $allData['email'],
-            //     ]);
+                // 2. Simpan Peserta
+                $peserta = Peserta::create([
+                    'pelatihan_id' => $allData['pelatihan_id'],
+                    'instansi_id' => $instansi->id,
+                    'nama' => $allData['nama'],
+                    'nik' => $allData['nik'],
+                    'tempat_lahir' => $allData['tempat_lahir'],
+                    'tanggal_lahir' => $allData['tanggal_lahir'],
+                    'jenis_kelamin' => $allData['jenis_kelamin'],
+                    'agama' => $allData['agama'],
+                    'alamat' => $allData['alamat'],
+                    'no_hp' => $allData['no_hp'],
+                    'email' => $allData['email'],
+                ]);
 
-            //     // 3. Simpan Lampiran
-            //     $saveFile = fn($file) => $file->store('public/berkas_pendaftaran');
-            //     Lampiran::create([
-            //         'peserta_id' => $peserta->id,
-            //         'no_surat_tugas' => $allData['no_surat_tugas'],
-            //         'fc_ktp' => $saveFile($request->file('fc_ktp')),
-            //         'fc_ijazah' => $saveFile($request->file('fc_ijazah')),
-            //         'fc_surat_tugas' => $saveFile($request->file('fc_surat_tugas')),
-            //         'fc_surat_sehat' => $saveFile($request->file('fc_surat_sehat')),
-            //         'pas_foto' => $saveFile($request->file('pas_foto')),
-            //     ]);
-            // });
+                // 3. Simpan Lampiran
+                $saveFile = fn($file) => $file->store('public/berkas_pendaftaran');
+                Lampiran::create([
+                    'peserta_id' => $peserta->id,
+                    'no_surat_tugas' => $allData['no_surat_tugas'],
+                    'fc_ktp' => $saveFile($request->file('fc_ktp')),
+                    'fc_ijazah' => $saveFile($request->file('fc_ijazah')),
+                    'fc_surat_tugas' => $saveFile($request->file('fc_surat_tugas')),
+                    'fc_surat_sehat' => $saveFile($request->file('fc_surat_sehat')),
+                    'pas_foto' => $saveFile($request->file('pas_foto')),
+                ]);
+            });
 
             // Hapus data dari session dan redirect dengan pesan sukses
             $request->session()->forget('pendaftaran_data');

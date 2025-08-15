@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Mail\CertificateNotification;
 use App\Models\EmailLog;
 use App\Models\EmailTemplate;
+use App\Models\Pelatihan;
 use App\Models\Training;
 use App\Models\User; // atau model Peserta Anda
 use Illuminate\Bus\Queueable;
@@ -26,7 +27,7 @@ class SendEmailJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(User $participant, EmailTemplate $template, Training $training) // pelatihan
+    public function __construct(User $participant, EmailTemplate $template, Pelatihan $training) // pelatihan
     {
         $this->participant = $participant;
         $this->template = $template;
