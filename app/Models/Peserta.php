@@ -5,15 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Peserta extends Model
 {
     use HasFactory;
 
+    protected $table = 'pesertas';
+
     protected $fillable = [
         'pelatihan_id',
+        'instansi_id',
         'nama',
-        'nik',
+        'nik',  
         'tempat_lahir',
         'tanggal_lahir',
         'jenis_kelamin',
@@ -21,21 +25,20 @@ class Peserta extends Model
         'alamat',
         'no_hp',
         'email',
-        'asal_instansi',
-        'alamat_instansi',
-        'bidang_keahlian',
-        'kelas',
-        'cabang_dinas_wilayah',
-        'no_surat_tugas',
-        'fc_ktp',
-        'fc_ijazah',
-        'fc_surat_tugas',
-        'fc_surat_sehat',
-        'pas_foto',
         ];
         
     public function pelatihan(): BelongsTo
     {
-        return $this->belongsTo(Pelatihan::class);
+        return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
+    }
+
+    public function lampiran(): HasOne
+    {
+        return $this->hasOne(Lampiran::class);
+    }
+
+    public function instansi(): BelongsTo
+    {
+        return $this->belongsTo(Instansi::class, 'instansi_id');
     }
 }
