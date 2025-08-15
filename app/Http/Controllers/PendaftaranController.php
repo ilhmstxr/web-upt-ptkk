@@ -31,10 +31,23 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * Memproses dan menyimpan data dari setiap langkah.
+     * Display a listing of the resource.
      */
+    public function index()
+    {
+       
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    // public function store(Request $request)
+
+
     public function store(Request $request)
     {
+        
         $currentStep = $request->input('current_step');
         $formData = $request->session()->get('pendaftaran_data', []);
 
@@ -86,43 +99,43 @@ class PendaftaranController extends Controller
             $allData = array_merge($formData, $validatedData);
 
             // Gunakan transaction untuk memastikan semua data berhasil disimpan atau tidak sama sekali
-            DB::transaction(function () use ($allData, $request) {
-                // 1. Simpan Instansi
-                $instansi = Instansi::create([
-                    'asal_instansi' => $allData['asal_instansi'],
-                    'alamat_instansi' => $allData['alamat_instansi'],
-                    'bidang_keahlian' => $allData['bidang_keahlian'],
-                    'kelas' => $allData['kelas'],
-                    'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
-                ]);
+            // DB::transaction(function () use ($allData, $request) {
+            //     // 1. Simpan Instansi
+            //     $instansi = Instansi::create([
+            //         'asal_instansi' => $allData['asal_instansi'],
+            //         'alamat_instansi' => $allData['alamat_instansi'],
+            //         'bidang_keahlian' => $allData['bidang_keahlian'],
+            //         'kelas' => $allData['kelas'],
+            //         'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
+            //     ]);
 
-                // 2. Simpan Peserta
-                $peserta = Peserta::create([
-                    'pelatihan_id' => $allData['pelatihan_id'],
-                    'instansi_id' => $instansi->id,
-                    'nama' => $allData['nama'],
-                    'nik' => $allData['nik'],
-                    'tempat_lahir' => $allData['tempat_lahir'],
-                    'tanggal_lahir' => $allData['tanggal_lahir'],
-                    'jenis_kelamin' => $allData['jenis_kelamin'],
-                    'agama' => $allData['agama'],
-                    'alamat' => $allData['alamat'],
-                    'no_hp' => $allData['no_hp'],
-                    'email' => $allData['email'],
-                ]);
+            //     // 2. Simpan Peserta
+            //     $peserta = Peserta::create([
+            //         'pelatihan_id' => $allData['pelatihan_id'],
+            //         'instansi_id' => $instansi->id,
+            //         'nama' => $allData['nama'],
+            //         'nik' => $allData['nik'],
+            //         'tempat_lahir' => $allData['tempat_lahir'],
+            //         'tanggal_lahir' => $allData['tanggal_lahir'],
+            //         'jenis_kelamin' => $allData['jenis_kelamin'],
+            //         'agama' => $allData['agama'],
+            //         'alamat' => $allData['alamat'],
+            //         'no_hp' => $allData['no_hp'],
+            //         'email' => $allData['email'],
+            //     ]);
 
-                // 3. Simpan Lampiran
-                $saveFile = fn($file) => $file->store('public/berkas_pendaftaran');
-                Lampiran::create([
-                    'peserta_id' => $peserta->id,
-                    'no_surat_tugas' => $allData['no_surat_tugas'],
-                    'fc_ktp' => $saveFile($request->file('fc_ktp')),
-                    'fc_ijazah' => $saveFile($request->file('fc_ijazah')),
-                    'fc_surat_tugas' => $saveFile($request->file('fc_surat_tugas')),
-                    'fc_surat_sehat' => $saveFile($request->file('fc_surat_sehat')),
-                    'pas_foto' => $saveFile($request->file('pas_foto')),
-                ]);
-            });
+            //     // 3. Simpan Lampiran
+            //     $saveFile = fn($file) => $file->store('public/berkas_pendaftaran');
+            //     Lampiran::create([
+            //         'peserta_id' => $peserta->id,
+            //         'no_surat_tugas' => $allData['no_surat_tugas'],
+            //         'fc_ktp' => $saveFile($request->file('fc_ktp')),
+            //         'fc_ijazah' => $saveFile($request->file('fc_ijazah')),
+            //         'fc_surat_tugas' => $saveFile($request->file('fc_surat_tugas')),
+            //         'fc_surat_sehat' => $saveFile($request->file('fc_surat_sehat')),
+            //         'pas_foto' => $saveFile($request->file('pas_foto')),
+            //     ]);
+            // });
 
             // Hapus data dari session dan redirect dengan pesan sukses
             $request->session()->forget('pendaftaran_data');
@@ -130,55 +143,6 @@ class PendaftaranController extends Controller
         }
 
         return redirect()->route('pendaftaran.create');
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $tahap = session('tahap_pendaftaran', 1);
-
-        if ($tahap == 1) {
-            return view('peserta.pendaftaran.bio-peserta');
-        } elseif ($tahap == 2) {
-            return view('peserta.pendaftaran.bio-sekolah');
-        } else {
-            return 'halaman tidak ditemukan';
-        }
-        // return view('peserta.pendaftaran.bio-peserta');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(Request $request)
-
-
-    public function store(Request $request)
-    {
-
-        // iki marikno
-        $tahap = session('tahap_pendaftaran', 1);
-
-        if ($tahap == 1) {
-            $tahap = 2;
-            session(['tahap_pendaftaran' => 2]);
-
-            return redirect()->route('pendaftaran.index')->with('success', 'Data berhasil disimpan. Silakan lanjut ke tahap berikutnya.');
-        } elseif ($tahap == 2) {
-            return redirect()->route('lampiran.index')->with('success', 'Data berhasil disimpan. Silakan lanjut ke tahap berikutnya.');
-        } else {
-            return 'halaman tidak ditemukan';
-        }
     }
 
     /**

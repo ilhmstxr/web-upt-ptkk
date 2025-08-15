@@ -4,7 +4,6 @@ use App\Http\Controllers\LampiranController;
 use App\Http\Controllers\PendaftaranController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
-use App\Http\Controllers\PendaftaranController; // <-- Tambahkan ini
 
 /*
 |--------------------------------------------------------------------------
@@ -22,8 +21,8 @@ Route::get('/', function () {
     return redirect()->route('pendaftaran.create');
 });
 
-Route::get('/pendaftaran', [PendaftaranController::class, 'create'])->name('pendaftaran.create');
-Route::post('/pendaftaran', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
+// Route::get('/pendaftaran', [PendaftaranController::class, 'create'])->name('pendaftaran.create');
+// Route::post('/pendaftaran', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
 
 
 // Rute bawaan Laravel untuk dashboard dan settings
@@ -45,6 +44,14 @@ Route::resource('lampiran', LampiranController::class);
 Route::resource('pendaftaran', PendaftaranController::class);
 Route::resource('lampiran', LampiranController::class);
 
-
+route::get('1',function () {
+   return view('peserta.pendaftaran.bio-peserta'); 
+});
+route::get('2',function () {
+   return view('peserta.pendaftaran.bio-sekolah'); 
+});
+route::get('3',function () {
+   return view('peserta.pendaftaran.lampiran'); 
+});
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__.'/auth.php';
