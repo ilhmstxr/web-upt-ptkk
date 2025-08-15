@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Biodata Diri — Pendaftaran Pelatihan | UPT PTKK Jatim</title>
+    <title>Pendaftaran Pelatihan | UPT PTKK Jatim</title>
 
     <!-- META -->
-    <meta name="description" content="Form Biodata Diri untuk pendaftaran pelatihan UPT PTKK Dinas Pendidikan Jawa Timur.">
-    <meta name="csrf-token" content="your_csrf_token_here">
+    <meta name="description" content="Formulir pendaftaran pelatihan UPT PTKK Dinas Pendidikan Jawa Timur.">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Desain Persis Sesuai Asli, Ditambah Sedikit Perbaikan UX -->
     <style>
@@ -92,6 +92,7 @@
             gap:15px;
             padding:15px 0;
             border-bottom:1px solid #bae6fd;
+            cursor:pointer; /* Mengubah kursor untuk indikasi interaktif */
         }
         .step:last-child { border-bottom:none; }
         .step-number {
@@ -133,6 +134,7 @@
         input[type="email"],
         input[type="date"],
         input[type="tel"],
+        input[type="file"],
         select,
         textarea{
             padding:12px 16px;
@@ -145,6 +147,7 @@
         input[type="email"]:focus,
         input[type="date"]:focus,
         input[type="tel"]:focus,
+        input[type="file"]:focus,
         select:focus,
         textarea:focus{
             outline:none; border-color:#3b82f6;
@@ -185,6 +188,7 @@
             background:#3b82f6; color:#fff;
         }
         .btn-primary:hover{ background:#2563eb; transform:translateY(-1px); box-shadow:0 4px 12px rgba(59,130,246,.3); }
+        .btn-primary:active{ transform:translateY(0); box-shadow:none; }
         .btn[disabled]{
             opacity:.7; cursor:not-allowed;
         }
@@ -262,6 +266,13 @@
             .container{ padding:15px; }
             .header-title{ font-size:18px; }
         }
+        /* Tambahan untuk multi-step form */
+        .step-form {
+            display: none; /* Defaultnya semua form disembunyikan */
+        }
+        .step-form.active {
+            display: block; /* Form yang aktif akan ditampilkan */
+        }
     </style>
 </head>
 <body>
@@ -269,15 +280,12 @@
 <div class="container">
     <!-- HEADER -->
     <header class="header">
-        <!-- Kembali ke Landing -->
         <a href="#" class="close-btn" aria-label="Kembali ke beranda">×</a>
-
         <div class="logo">
             <img src="https://placehold.co/60x60/3b82f6/ffffff?text=LOGO" alt="Logo UPT PTKK"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             <div class="logo-fallback" style="display:none;">UPT<br>PTKK</div>
         </div>
-
         <h1 class="header-title">UPT PTKK Dinas Pendidikan Jawa Timur</h1>
     </header>
 
@@ -286,22 +294,21 @@
         <!-- SIDEBAR (Stepper) -->
         <aside class="sidebar" aria-label="Langkah Pendaftaran">
             <h2 class="sidebar-title">Pendaftaran Pelatihan</h2>
-
-            <div class="step active" aria-current="step">
+            <div class="step" data-step="1">
                 <div class="step-number">1</div>
                 <div class="step-text">Biodata Diri</div>
             </div>
-            <div class="step">
+            <div class="step" data-step="2">
                 <div class="step-number">2</div>
                 <div class="step-text">Biodata Sekolah</div>
             </div>
-            <div class="step">
+            <div class="step" data-step="3">
                 <div class="step-number">3</div>
                 <div class="step-text">Lampiran</div>
             </div>
         </aside>
 
-        <!-- FORM -->
+        <!-- FORM CONTAINER -->
         <main class="form-container">
             <!-- Flash message (client-side) -->
             <div id="flash-message" style="display:none;" class="flash"></div>
@@ -312,159 +319,242 @@
                 <div id="progressText" class="progress-text">0% lengkap</div>
             </div>
 
-            <h2 class="form-title">Biodata Diri</h2>
-            <p class="form-subtitle">Isi data sesuai identitas Anda. Pastikan NIK dan tanggal lahir benar.</p>
-
-            <form id="registrationForm" method="POST" action="/submit-biodata" novalidate autocomplete="on">
+            <!-- Perubahan: tambahkan enctype dan CSRF agar sesuai Controller -->
+            <form id="registrationForm" method="POST" action="/submit-biodata" enctype="multipart/form-data" novalidate autocomplete="on">
+                @csrf
                 <input type="hidden" name="program" value="example-program">
 
-                <!-- Nama & NIK -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="name">Nama Lengkap</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            inputmode="text"
-                            placeholder="Masukkan Nama Lengkap"
-                            required
-                            aria-required="true"
-                        />
-                        <div class="help-text">Sesuai KTP/Ijazah.</div>
-                        <div id="name-error" class="error-text" style="display:none;">Nama lengkap wajib diisi.</div>
+                <!-- STEP 1: Biodata Diri -->
+                <div id="step-1" class="step-form active">
+                    <h2 class="form-title">Biodata Diri</h2>
+                    <p class="form-subtitle">Isi data sesuai identitas Anda. Pastikan NIK dan tanggal lahir benar.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Nama Lengkap</label>
+                            <input type="text" id="name" name="name" inputmode="text" placeholder="Masukkan Nama Lengkap" required aria-required="true"/>
+                            <div class="help-text">Sesuai KTP/Ijazah.</div>
+                            <div id="name-error" class="error-text" style="display:none;">Nama lengkap wajib diisi.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="nik">NIK (16 Digit)</label>
+                            <input type="text" id="nik" name="nik" placeholder="Masukkan NIK 16 digit" maxlength="16" inputmode="numeric" pattern="[0-9]{16}" required aria-required="true"/>
+                            <div class="help-text">Hanya angka, persis 16 digit.</div>
+                            <div id="nik-error" class="error-text" style="display:none;">NIK harus berisi 16 digit angka.</div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="nik">NIK (16 Digit)</label>
-                        <input
-                            type="text"
-                            id="nik"
-                            name="nik"
-                            placeholder="Masukkan NIK 16 digit"
-                            maxlength="16"
-                            inputmode="numeric"
-                            pattern="[0-9]{16}"
-                            required
-                            aria-required="true"
-                        />
-                        <div class="help-text">Hanya angka, persis 16 digit.</div>
-                        <div id="nik-error" class="error-text" style="display:none;">NIK harus berisi 16 digit angka.</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="birth_place">Tempat Lahir</label>
+                            <input type="text" id="birth_place" name="birth_place" placeholder="Contoh: Surabaya" required aria-required="true"/>
+                            <div id="birth_place-error" class="error-text" style="display:none;">Tempat lahir wajib diisi.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="birth_date">Tanggal Lahir</label>
+                            <input type="date" id="birth_date" name="birth_date" placeholder="Masukkan Tanggal Lahir" required aria-required="true"/>
+                            <div id="birth_date-error" class="error-text" style="display:none;">Tanggal lahir tidak valid.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gender">Jenis Kelamin</label>
+                            <select id="gender" name="gender" required aria-required="true">
+                                <option value="">Masukkan Jenis Kelamin</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                            <div id="gender-error" class="error-text" style="display:none;">Jenis kelamin wajib diisi.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="religion">Agama</label>
+                            <select id="religion" name="religion" required aria-required="true">
+                                <option value="">Masukkan Agama</option>
+                                <option value="Islam">Islam</option>
+                                <option value="Kristen">Kristen</option>
+                                <option value="Katolik">Katolik</option>
+                                <option value="Hindu">Hindu</option>
+                                <option value="Buddha">Buddha</option>
+                                <option value="Konghucu">Konghucu</option>
+                            </select>
+                            <div id="religion-error" class="error-text" style="display:none;">Agama wajib diisi.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="address">Alamat Tempat Tinggal</label>
+                            <textarea id="address" name="address" placeholder="Masukkan alamat lengkap tempat tinggal" required aria-required="true"></textarea>
+                            <div id="address-error" class="error-text" style="display:none;">Alamat wajib diisi.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="phone">Nomor Handphone</label>
+                            <input type="tel" id="phone" name="phone" placeholder="Format Angka (08)" maxlength="15" inputmode="numeric" pattern="[0-9]{10,15}" title="Nomor HP hanya boleh angka dan 10–15 digit" required aria-required="true"/>
+                            <div class="help-text">Contoh: 081234567890</div>
+                            <div id="phone-error" class="error-text" style="display:none;">Nomor HP tidak valid.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="Masukkan Email aktif" required aria-required="true" autocomplete="email"/>
+                            <div id="email-error" class="error-text" style="display:none;">Email tidak valid.</div>
+                        </div>
+                    </div>
+
+                    <p class="help-text">Dengan menekan “Selanjutnya”, Anda menyetujui pemrosesan data sesuai kebijakan privasi UPT PTKK.</p>
+
+                    <div class="actions">
+                        <button type="button" class="btn btn-secondary cancel-btn">Batal</button>
+                        <button type="button" class="btn btn-primary" id="next-step-1">Selanjutnya</button>
                     </div>
                 </div>
 
-                <!-- Tempat/Tanggal Lahir -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="birth_place">Tempat Lahir</label>
-                        <input
-                            type="text"
-                            id="birth_place"
-                            name="birth_place"
-                            placeholder="Contoh: Surabaya"
-                            required
-                            aria-required="true"
-                        />
-                        <div id="birth_place-error" class="error-text" style="display:none;">Tempat lahir wajib diisi.</div>
+                <!-- STEP 2: Biodata Sekolah -->
+                <div id="step-2" class="step-form">
+                    <h2 class="form-title">Biodata Sekolah</h2>
+                    <p class="form-subtitle">Lengkapi informasi sekolah/institusi Anda saat ini.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="npsn">NPSN (Nomor Pokok Sekolah Nasional)</label>
+                            <input type="text" id="npsn" name="npsn" placeholder="Masukkan NPSN (contoh: 20512345)" required/>
+                            <div id="npsn-error" class="error-text" style="display:none;">NPSN wajib diisi.</div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="birth_date">Tanggal Lahir</label>
-                        <input
-                            type="date"
-                            id="birth_date"
-                            name="birth_date"
-                            placeholder="Masukkan Tanggal Lahir"
-                            required
-                            aria-required="true"
-                        />
-                        <div id="birth_date-error" class="error-text" style="display:none;">Tanggal lahir tidak valid.</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="school_name">Nama Sekolah/Institusi</label>
+                            <input type="text" id="school_name" name="school_name" placeholder="Masukkan Nama Sekolah/Institusi" required/>
+                            <div id="school_name-error" class="error-text" style="display:none;">Nama sekolah wajib diisi.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="competence">Kompetensi / Bidang Keahlian</label>
+                            <select id="competence" name="competence" required>
+                                <option value="">Masukkan Kompetensi</option>
+                                <option value="teknik-informatika">Teknik Informatika</option>
+                                <option value="teknik-mesin">Teknik Mesin</option>
+                                <option value="teknik-elektro">Teknik Elektro</option>
+                                <option value="teknik-sipil">Teknik Sipil</option>
+                                <option value="akuntansi">Akuntansi</option>
+                                <option value="administrasi-perkantoran">Administrasi Perkantoran</option>
+                                <option value="pemasaran">Pemasaran</option>
+                                <option value="multimedia">Multimedia</option>
+                                <option value="tata-boga">Tata Boga</option>
+                                <option value="tata-busana">Tata Busana</option>
+                                <option value="tata-kecantikan">Tata Kecantikan</option>
+                                <option value="perhotelan">Perhotelan</option>
+                            </select>
+                            <div id="competence-error" class="error-text" style="display:none;">Kompetensi wajib diisi.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="class">Kelas</label>
+                            <select id="class" name="class" required>
+                                <option value="">Masukkan Kelas</option>
+                                <option value="X">Kelas X</option>
+                                <option value="XI">Kelas XI</option>
+                                <option value="XII">Kelas XII</option>
+                            </select>
+                            <div id="class-error" class="error-text" style="display:none;">Kelas wajib diisi.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dinas_branch">Cabang Dinas Wilayah</label>
+                            <select id="dinas_branch" name="dinas_branch" required>
+                                <option value="">Masukkan Dinas Wilayah</option>
+                                <option value="surabaya">Cabang Dinas Wilayah Surabaya</option>
+                                <option value="malang">Cabang Dinas Wilayah Malang</option>
+                                <option value="kediri">Cabang Dinas Wilayah Kediri</option>
+                                <option value="madiun">Cabang Dinas Wilayah Madiun</option>
+                                <option value="bojonegoro">Cabang Dinas Wilayah Bojonegoro</option>
+                                <option value="pamekasan">Cabang Dinas Wilayah Pamekasan</option>
+                                <option value="jember">Cabang Dinas Wilayah Jember</option>
+                            </select>
+                            <div id="dinas_branch-error" class="error-text" style="display:none;">Cabang Dinas wajib diisi.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="school_address">Alamat Sekolah</label>
+                            <textarea id="school_address" name="school_address" placeholder="Masukkan alamat lengkap sekolah" required></textarea>
+                            <div id="school_address-error" class="error-text" style="display:none;">Alamat sekolah wajib diisi.</div>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="button" class="btn btn-secondary" id="prev-step-2">Sebelumnya</button>
+                        <button type="button" class="btn btn-primary" id="next-step-2">Selanjutnya</button>
                     </div>
                 </div>
 
-                <!-- Jenis Kelamin & Agama -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="gender">Jenis Kelamin</label>
-                        <select id="gender" name="gender" required aria-required="true">
-                            <option value="">Masukkan Jenis Kelamin</option>
-                            <option value="Laki-laki">Laki-laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        </select>
-                        <div id="gender-error" class="error-text" style="display:none;">Jenis kelamin wajib diisi.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="religion">Agama</label>
-                        <select id="religion" name="religion" required aria-required="true">
-                            <option value="">Masukkan Agama</option>
-                            <option value="Islam">Islam</option>
-                            <option value="Kristen">Kristen</option>
-                            <option value="Katolik">Katolik</option>
-                            <option value="Hindu">Hindu</option>
-                            <option value="Buddha">Buddha</option>
-                            <option value="Konghucu">Konghucu</option>
-                        </select>
-                        <div id="religion-error" class="error-text" style="display:none;">Agama wajib diisi.</div>
-                    </div>
-                </div>
+                <!-- STEP 3: Lampiran -->
+                <div id="step-3" class="step-form">
+                    <h2 class="form-title">Lampiran</h2>
+                    <p class="form-subtitle">Unggah dokumen yang diperlukan dalam format PDF atau JPG.</p>
 
-                <!-- Alamat -->
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="address">Alamat Tempat Tinggal</label>
-                        <textarea
-                            id="address"
-                            name="address"
-                            placeholder="Masukkan alamat lengkap tempat tinggal"
-                            required
-                            aria-required="true"
-                        ></textarea>
-                        <div id="address-error" class="error-text" style="display:none;">Alamat wajib diisi.</div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="file_ktp">Scan KTP</label>
+                            <!-- name disesuaikan ke ktp_path, id tetap file_ktp supaya JS validasi tetap jalan -->
+                            <input type="file" id="file_ktp" name="ktp_path" accept=".pdf,.jpg,.jpeg" required/>
+                            <div class="help-text">Unggah file KTP Anda (PDF/JPG, max 2MB).</div>
+                            <div id="file_ktp-error" class="error-text" style="display:none;">Scan KTP wajib diunggah.</div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- HP & Email -->
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="phone">Nomor Handphone</label>
-                        <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            placeholder="Format Angka (08)"
-                            maxlength="15"
-                            inputmode="numeric"
-                            pattern="[0-9]{10,15}"
-                            title="Nomor HP hanya boleh angka dan 10–15 digit"
-                            required
-                            aria-required="true"
-                        />
-                        <div class="help-text">Contoh: 081234567890</div>
-                        <div id="phone-error" class="error-text" style="display:none;">Nomor HP tidak valid.</div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="file_ijazah">Scan Ijazah Terakhir</label>
+                            <!-- name disesuaikan ke ijazah_path -->
+                            <input type="file" id="file_ijazah" name="ijazah_path" accept=".pdf,.jpg,.jpeg" required/>
+                            <div class="help-text">Unggah file ijazah Anda (PDF/JPG, max 2MB).</div>
+                            <div id="file_ijazah-error" class="error-text" style="display:none;">Scan Ijazah wajib diunggah.</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="Masukkan Email aktif"
-                            required
-                            aria-required="true"
-                            autocomplete="email"
-                        />
-                        <div id="email-error" class="error-text" style="display:none;">Email tidak valid.</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="file_surat_tugas">Scan Surat Tugas</label>
+                            <input type="file" id="file_surat_tugas" name="surat_tugas_path" accept=".pdf,.jpg,.jpeg" />
+                            <div class="help-text">Jika ada: unggah Surat Tugas (PDF/JPG, max 2MB).</div>
+                            <div id="file_surat_tugas-error" class="error-text" style="display:none;">Surat Tugas wajib diunggah.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="surat_tugas_nomor">Nomor Surat Tugas</label>
+                            <input type="text" id="surat_tugas_nomor" name="surat_tugas_nomor" placeholder="Masukkan Nomor Surat Tugas (jika ada)"/>
+                            <div id="surat_tugas_nomor-error" class="error-text" style="display:none;">Nomor Surat Tugas tidak valid.</div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Catatan kecil -->
-                <p class="help-text">Dengan menekan “Selanjutnya”, Anda menyetujui pemrosesan data sesuai kebijakan privasi UPT PTKK.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="file_surat_sehat">Scan Surat Sehat</label>
+                            <input type="file" id="file_surat_sehat" name="surat_sehat_path" accept=".pdf,.jpg,.jpeg" />
+                            <div class="help-text">Jika ada: unggah Surat Sehat (PDF/JPG, max 2MB).</div>
+                            <div id="file_surat_sehat-error" class="error-text" style="display:none;">Surat Sehat wajib diunggah.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="file_photo">Pas Foto Formal</label>
+                            <!-- name disesuaikan ke pas_foto_path -->
+                            <input type="file" id="file_photo" name="pas_foto_path" accept=".jpg,.jpeg" required/>
+                            <div class="help-text">Unggah pas foto formal Anda (JPG, max 1MB).</div>
+                            <div id="file_photo-error" class="error-text" style="display:none;">Pas Foto wajib diunggah.</div>
+                        </div>
+                    </div>
 
-                <!-- Tombol Aksi -->
-                <div class="actions">
-                    <a class="btn btn-secondary" href="#">Batal</a>
-                    <button id="nextBtn" type="submit" class="btn btn-primary">Selanjutnya</button>
+                    <div class="actions">
+                        <button type="button" class="btn btn-secondary" id="prev-step-3">Sebelumnya</button>
+                        <button type="submit" class="btn btn-primary" id="submit-form">Selesai & Kirim</button>
+                    </div>
                 </div>
             </form>
 
@@ -482,7 +572,7 @@
     </div>
 </div>
 
-<!-- SCRIPT: Validasi dan fungsionalitas tambahan -->
+<!-- SCRIPT: Logika untuk multi-step form -->
 <script>
 (function () {
     // Helper untuk mengambil elemen
@@ -490,7 +580,6 @@
     const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 
     const form = $('#registrationForm');
-    const nextBtn = $('#nextBtn');
     const progressFill = $('#progressFill');
     const progressText = $('#progressText');
     const flashMessage = $('#flash-message');
@@ -523,15 +612,18 @@
     // Set max birth date = hari ini
     const birthDateInput = $('#birth_date');
     const today = new Date().toISOString().split('T')[0];
-    birthDateInput.setAttribute('max', today);
+    if (birthDateInput) birthDateInput.setAttribute('max', today);
 
-    // Kumpulan field wajib
-    const requiredFields = [
-        'name', 'nik', 'birth_place', 'birth_date', 'gender', 'religion', 'address', 'phone', 'email'
-    ];
+    // Kumpulan field wajib (update: menambahkan field sekolah dan lampiran sesuai controller)
+    const requiredFields = {
+        'step-1': ['name', 'nik', 'birth_place', 'birth_date', 'gender', 'religion', 'address', 'phone', 'email'],
+        'step-2': ['npsn', 'school_name', 'school_address', 'competence', 'class', 'dinas_branch'],
+        'step-3': ['file_ktp', 'file_ijazah', 'file_photo'] // surat tugas & surat sehat bersifat opsional di client (sesuaikan jika perlu)
+    };
 
     // Fungsi untuk menandai input sebagai invalid
     function markInvalid(el, errorMessageId) {
+        if (!el) return;
         el.classList.add('is-invalid');
         el.setAttribute('aria-invalid', 'true');
         const errorTextEl = $(`#${errorMessageId}`);
@@ -540,6 +632,7 @@
 
     // Fungsi untuk menandai input sebagai valid
     function markValid(el, errorMessageId) {
+        if (!el) return;
         el.classList.remove('is-invalid');
         el.setAttribute('aria-invalid', 'false');
         const errorTextEl = $(`#${errorMessageId}`);
@@ -548,46 +641,114 @@
 
     // Update progress bar
     function updateProgress() {
+        let totalFields = 0;
         let filledCount = 0;
-        requiredFields.forEach(id => {
-            const el = document.getElementById(id);
-            if (el && el.value.trim() !== '') {
-                filledCount++;
-            }
-        });
-        const percentage = Math.round((filledCount / requiredFields.length) * 100);
+        
+        for (const step in requiredFields) {
+            totalFields += requiredFields[step].length;
+            requiredFields[step].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.type === 'file') {
+                        if (el.files.length > 0) {
+                            filledCount++;
+                        }
+                    } else if (el.value && el.value.trim() !== '') {
+                        filledCount++;
+                    }
+                }
+            });
+        }
+
+        const percentage = totalFields > 0 ? Math.round((filledCount / totalFields) * 100) : 0;
         if (progressFill) progressFill.style.width = percentage + '%';
         if (progressText) progressText.textContent = percentage + '% lengkap';
     }
 
-    // Persist data ke localStorage
-    const LS_KEY = 'biodataFormStep1';
-    function persistToLocalStorage() {
-        const data = {};
-        requiredFields.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) data[id] = el.value;
+    // Navigasi langkah
+    let currentStep = 1;
+    function showStep(stepNumber) {
+        $$('.step-form').forEach(stepEl => {
+            stepEl.classList.remove('active');
         });
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
+        const stepEl = $(`#step-${stepNumber}`);
+        if (stepEl) stepEl.classList.add('active');
+
+        $$('.sidebar .step').forEach(stepEl => {
+            stepEl.classList.remove('active');
+        });
+        const side = $(`.sidebar .step[data-step="${stepNumber}"]`);
+        if (side) side.classList.add('active');
+
+        currentStep = stepNumber;
+        updateProgress();
     }
+    
+    // Tambahkan event listener untuk mengklik sidebar step
+    $$('.sidebar .step').forEach(stepEl => {
+        stepEl.addEventListener('click', () => {
+            const stepToGo = parseInt(stepEl.dataset.step);
+            // Hanya izinkan navigasi ke langkah sebelumnya
+            if (stepToGo < currentStep) {
+                showStep(stepToGo);
+            } else {
+                // Untuk navigasi maju, gunakan tombol "Selanjutnya" agar validasi terpicu
+                showModal('Navigasi Terbatas', 'Silakan gunakan tombol "Selanjutnya" untuk melanjutkan ke langkah berikutnya setelah mengisi data.');
+            }
+        });
+    });
 
-    // Restore data dari localStorage
-    function restoreFromLocalStorage() {
-        try {
-            const raw = localStorage.getItem(LS_KEY);
-            if (!raw) return;
-            const data = JSON.parse(raw);
-            if (typeof data !== 'object' || !data) return;
+    // Validasi langkah
+    function validateStep(stepId) {
+        let isValid = true;
+        clearErrors();
 
-            requiredFields.forEach(id => {
-                const el = document.getElementById(id);
-                if (el && data[id] !== undefined && data[id] !== null && String(data[id]).length) {
-                    el.value = data[id];
+        const fields = requiredFields[stepId] || [];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                // Khusus untuk file input
+                if (el.type === 'file') {
+                    if (el.files.length === 0) {
+                        markInvalid(el, `${id}-error`);
+                        isValid = false;
+                    }
                 }
-            });
-        } catch(e) {
-            console.error('Failed to restore from local storage:', e);
+                // Untuk input lain
+                else if (!el.value || el.value.trim() === '') {
+                    markInvalid(el, `${id}-error`);
+                    isValid = false;
+                }
+            }
+        });
+
+        // Validasi khusus untuk langkah 1
+        if (stepId === 'step-1' && isValid) {
+            const nikInput = $('#nik');
+            // Regex untuk memastikan hanya angka dan 16 digit
+            if (nikInput && !/^\d{16}$/.test(nikInput.value)) {
+                markInvalid(nikInput, 'nik-error');
+                showModal('Validasi Gagal', 'NIK harus berisi 16 digit angka.');
+                isValid = false;
+            }
+            const birthDateInput = $('#birth_date');
+            const bd = new Date(birthDateInput.value);
+            const todayDate = new Date(today);
+            if (birthDateInput && birthDateInput.value && bd > todayDate) {
+                markInvalid(birthDateInput, 'birth_date-error');
+                showModal('Validasi Gagal', 'Tanggal lahir tidak boleh di masa depan.');
+                isValid = false;
+            }
+            const emailInput = $('#email');
+            // Regex untuk validasi format email dasar
+            if (emailInput && emailInput.value && !/^\S+@\S+\.\S+$/.test(emailInput.value)) {
+                markInvalid(emailInput, 'email-error');
+                showModal('Validasi Gagal', 'Alamat email tidak valid.');
+                isValid = false;
+            }
         }
+        
+        return isValid;
     }
 
     // Bersihkan semua error
@@ -599,97 +760,88 @@
         $$('.error-text').forEach(el => el.style.display = 'none');
     }
 
-    // Validasi form saat submit
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        clearErrors();
-
-        let isValid = true;
-        
-        requiredFields.forEach(id => {
-            const el = document.getElementById(id);
-            const value = el.value.trim();
-            if (!value) {
-                markInvalid(el, `${id}-error`);
-                isValid = false;
-            }
-        });
-
-        // Validasi NIK 16 digit
-        const nikInput = $('#nik');
-        if (nikInput.value.replace(/\D/g, '').length !== 16) {
-            markInvalid(nikInput, 'nik-error');
-            showModal('Validasi Gagal', 'NIK harus berisi 16 digit angka.');
-            isValid = false;
-        }
-
-        // Validasi tanggal lahir tidak di masa depan
-        const bd = new Date(birthDateInput.value);
-        if (birthDateInput.value && bd > new Date(today)) {
-            markInvalid(birthDateInput, 'birth_date-error');
-            showModal('Validasi Gagal', 'Tanggal lahir tidak boleh di masa depan.');
-            isValid = false;
-        }
-
-        // Validasi email sederhana
-        const emailInput = $('#email');
-        if (emailInput.value && !/^\S+@\S+\.\S+$/.test(emailInput.value)) {
-            markInvalid(emailInput, 'email-error');
-            showModal('Validasi Gagal', 'Alamat email tidak valid.');
-            isValid = false;
-        }
-
-        if (isValid) {
-            // Disable button saat submit (hindari double click)
-            nextBtn.setAttribute('disabled', 'disabled');
-            nextBtn.textContent = 'Menyimpan...';
-
-            // Kirim data ke server (contoh menggunakan Fetch API)
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-
-            // Simulasi pengiriman data
-            console.log('Mengirim data:', data);
-            setTimeout(() => {
-                // Tampilkan pesan sukses setelah 1.5 detik
-                const successMessage = 'Data berhasil disimpan! Anda akan diarahkan ke langkah berikutnya.';
-                flashMessage.innerHTML = successMessage;
-                flashMessage.className = 'flash flash-success';
-                flashMessage.style.display = 'block';
-
-                // Lanjutkan ke langkah berikutnya
-                // window.location.href = '/next-step';
-
-                // Re-enable button untuk demo
-                nextBtn.removeAttribute('disabled');
-                nextBtn.textContent = 'Selanjutnya';
-                
-            }, 1500);
-
-            // Jika form submission tradisional, bisa langsung e.target.submit();
+    // Event listeners untuk navigasi
+    const next1 = $('#next-step-1');
+    if (next1) next1.addEventListener('click', () => {
+        if (validateStep('step-1')) {
+            showStep(2);
         } else {
-            const firstInvalid = $('.is-invalid');
+            showModal('Validasi Gagal', 'Harap lengkapi semua data wajib pada formulir biodata diri.');
+            const firstInvalid = $('#step-1 .is-invalid');
             if (firstInvalid) firstInvalid.focus();
         }
     });
 
-    // Event listener untuk update progress dan local storage
+    const prev2 = $('#prev-step-2');
+    if (prev2) prev2.addEventListener('click', () => {
+        showStep(1);
+    });
+
+    const next2 = $('#next-step-2');
+    if (next2) next2.addEventListener('click', () => {
+        if (validateStep('step-2')) {
+            showStep(3);
+        } else {
+            showModal('Validasi Gagal', 'Harap lengkapi semua data wajib pada formulir biodata sekolah.');
+            const firstInvalid = $('#step-2 .is-invalid');
+            if (firstInvalid) firstInvalid.focus();
+        }
+    });
+
+    const prev3 = $('#prev-step-3');
+    if (prev3) prev3.addEventListener('click', () => {
+        showStep(2);
+    });
+
+    // Event listener untuk tombol Batal
+    const cancelBtn = $('.cancel-btn');
+    if (cancelBtn) cancelBtn.addEventListener('click', () => {
+        // Logika untuk tombol batal, bisa reload halaman atau clear form
+        form.reset(); // Mengatur ulang semua field form
+        showStep(1); // Kembali ke langkah 1
+        clearErrors(); // Membersihkan pesan error
+        updateProgress(); // Mengatur ulang progress
+        showModal('Formulir Dibatalkan', 'Semua data yang Anda masukkan telah dihapus. Anda dapat memulai kembali.');
+    });
+
+    // Final submit
+    form.addEventListener('submit', function (e) {
+        e.preventDefault(); // cegah default sementara supaya kita bisa validasi client-side
+        if (validateStep('step-3')) {
+             // Disable button saat submit (hindari double click)
+            const submitBtn = $('#submit-form');
+            if (submitBtn) {
+                submitBtn.setAttribute('disabled', 'disabled');
+                submitBtn.textContent = 'Mengirim...';
+            }
+
+            // KIRIM DENGAN SUBMIT BIASA sehingga Laravel dapat melakukan redirect()
+            // form.submit() memicu pengiriman tanpa memicu kembali event 'submit' handler
+            form.submit();
+
+            // NOTE: tidak perlu re-enable tombol di sini karena akan pindah halaman.
+        } else {
+            showModal('Validasi Gagal', 'Harap lengkapi semua lampiran yang diperlukan.');
+            const firstInvalid = $('#step-3 .is-invalid');
+            if (firstInvalid) firstInvalid.focus();
+        }
+    });
+    
+    // Listeners untuk update progress dan validasi saat input berubah
     $$('input, select, textarea').forEach(el => {
         el.addEventListener('input', () => {
             markValid(el, `${el.id}-error`);
             updateProgress();
-            persistToLocalStorage();
         });
         el.addEventListener('change', () => {
+            markValid(el, `${el.id}-error`);
             updateProgress();
-            persistToLocalStorage();
         });
     });
 
     // Muat ulang data dari local storage dan update progress saat halaman dimuat
     window.onload = function() {
-        restoreFromLocalStorage();
-        updateProgress();
+        showStep(1); // Mulai dari langkah pertama
     };
 
 })();

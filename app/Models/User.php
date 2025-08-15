@@ -2,19 +2,15 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
-
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
-    use HasRoles;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -38,7 +34,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -62,17 +58,27 @@ class User extends Authenticatable
             ->implode('');
     }
 
+    /**
+     * Relasi ke Biodata Diri
+     */
     public function biodataDiri()
-{
-    return $this->hasOne(\App\Models\BiodataDiri::class);
+    {
+        return $this->hasOne(BiodataDiri::class);
+    }
+
+    /**
+     * Relasi ke Biodata Sekolah
+     */
+    public function biodataSekolah()
+    {
+        return $this->hasOne(BiodataSekolah::class);
+    }
+
+    /**
+     * Relasi ke Biodata Dokumen
+     */
+    public function biodataDokumen()
+    {
+        return $this->hasOne(BiodataDokumen::class);
+    }
 }
-
-public function biodataSekolah()
-{
-    return $this->hasOne(\App\Models\BiodataSekolah::class);
-}
-
-
-}
-
-
