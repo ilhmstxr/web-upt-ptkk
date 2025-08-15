@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lampiran Dokumen - UPT PTKK Jatim</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f8fafc;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .logo-fallback {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      .header-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1f2937;
+      }
+
+      .main-content {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 30px;
+      }
+
+      .sidebar {
+        background: #e0f2fe;
+        border-radius: 12px;
+        padding: 25px;
+        height: fit-content;
+      }
+
+      .sidebar-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 20px;
+      }
+
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid #bae6fd;
+      }
+
+      .step:last-child {
+        border-bottom: none;
+      }
+
+      .step-number {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .step.completed .step-number {
+        background: #10b981;
+        color: white;
+      }
+
+      .step.active .step-number {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .step-text {
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .step.active .step-text,
+      .step.completed .step-text {
+        color: #0f172a;
+      }
+
+      .form-container {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group.full-width {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+      }
+
+      .file-input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .file-status {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 8px;
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 48px;
+      }
+
+      .file-status.has-file {
+        background: #f0f9ff;
+        border-color: #3b82f6;
+        color: #1e40af;
+      }
+
+      .file-btn {
+        background: #3b82f6;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.2s;
+      }
+
+      .file-btn:hover {
+        background: #2563eb;
+      }
+
+      .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      input[type="text"] {
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #374151;
+        background: white;
+        transition: all 0.2s ease;
+      }
+
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      input::placeholder {
+        color: #9ca3af;
+      }
+
+      .file-note {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 4px;
+      }
+
+      .button-container {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+        margin-top: 30px;
+      }
+
+      .btn {
+        padding: 12px 32px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-secondary {
+        background: #e5e7eb;
+        color: #374151;
+      }
+
+      .btn-secondary:hover {
+        background: #d1d5db;
+      }
+
+      .btn-primary {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+
+        .container {
+          padding: 15px;
+        }
+
+        .header-title {
+          font-size: 18px;
+        }
+
+        .button-container {
+          flex-direction: column;
+        }
+
+        .file-input-container {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="logo">
+          <!-- Ganti src dengan URL logo UPT PTKK Anda -->
+          <img src="./logo-upt-ptkk.png" alt="Logo UPT PTKK" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="logo-fallback" style="display: none">UPT<br />PTKK</div>
+        </div>
+        <h1 class="header-title">UPT PTKK Dinas Pendidikan Jawa Timur</h1>
+      </header>
+
+      <div class="main-content">
+        <aside class="sidebar">
+          <h2 class="sidebar-title">Pendaftaran Pelatihan</h2>
+
+          <div class="step completed">
+            <div class="step-number">✓</div>
+            <div class="step-text">Biodata diri</div>
+          </div>
+
+          <div class="step completed">
+            <div class="step-number">✓</div>
+            <div class="step-text">Biodata Sekolah</div>
+          </div>
+
+          <div class="step active">
+            <div class="step-number">3</div>
+            <div class="step-text">Lampiran</div>
+          </div>
+        </aside>
+
+        <main class="form-container">
+          <form id="lampiranForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fotocopy-ktp">Unggah Fotocopy KTP</label>
+                <div class="file-input-container">
+                  <div class="file-status" id="ktp-status">📄 Tidak ada file yang dipilih</div>
+                  <button type="button" class="file-btn" onclick="document.getElementById('ktp-file').click()">Pilih Dokumen</button>
+                  <input type="file" id="ktp-file" class="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect('ktp')" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="fotocopy-ijazah">Unggah Fotocopy Ijazah Terakhir</label>
+                <div class="file-input-container">
+                  <div class="file-status" id="ijazah-status">📄 Tidak ada file yang dipilih</div>
+                  <button type="button" class="file-btn" onclick="document.getElementById('ijazah-file').click()">Pilih Dokumen</button>
+                  <input type="file" id="ijazah-file" class="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect('ijazah')" />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fotocopy-tugas">Unggah Fotocopy Surat Tugas</label>
+                <div class="file-input-container">
+                  <div class="file-status" id="tugas-status">📄 Tidak ada file yang dipilih</div>
+                  <button type="button" class="file-btn" onclick="document.getElementById('tugas-file').click()">Pilih Dokumen</button>
+                  <input type="file" id="tugas-file" class="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect('tugas')" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="surat-sehat">Unggah Surat Sehat</label>
+                <div class="file-input-container">
+                  <div class="file-status" id="sehat-status">📄 Tidak ada file yang dipilih</div>
+                  <button type="button" class="file-btn" onclick="document.getElementById('sehat-file').click()">Pilih Dokumen</button>
+                  <input type="file" id="sehat-file" class="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect('sehat')" />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nomor-tugas">Nomor Surat Tugas</label>
+                <input type="text" id="nomor-tugas" name="nomor-tugas" placeholder="Masukkan Nomor Surat Tugas"  />
+              </div>
+              <div class="form-group">
+                <label for="pas-foto">Unggah Pas Foto</label>
+                <div class="file-input-container">
+                  <div class="file-status" id="foto-status">📄 Tidak ada file yang dipilih</div>
+                  <button type="button" class="file-btn" onclick="document.getElementById('foto-file').click()">Pilih Dokumen</button>
+                  <input type="file" id="foto-file" class="file-input" accept=".jpg,.jpeg,.png" onchange="handleFileSelect('foto')" />
+                </div>
+                <div class="file-note">Pas Foto Background Merah ukuran 3x4</div>
+              </div>
+            </div>
+
+            <div class="button-container">
+              <button type="button" class="btn btn-secondary" onclick="goBack()">Kembali</button>
+              <button type="submit" class="btn btn-primary">Kirim</button>
+            </div>
+          </form>
+        </main>
+      </div>
+    </div>
+
+    {{-- <script>
+      const uploadedFiles = {
+        ktp: null,
+        ijazah: null,
+        tugas: null,
+        sehat: null,
+        foto: null,
+      };
+
+      function handleFileSelect(type) {
+        const fileInput = document.getElementById(`${type}-file`);
+        const statusDiv = document.getElementById(`${type}-status`);
+        const file = fileInput.files[0];
+
+        if (file) {
+          uploadedFiles[type] = file;
+          statusDiv.textContent = `✅ ${file.name}`;
+          statusDiv.classList.add("has-file");
+        }
+      }
+
+      document.getElementById("lampiranForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const nomorTugas = formData.get("nomor-tugas");
+
+        // Validate nomor tugas
+        if (!nomorTugas || nomorTugas.trim() === "") {
+          document.getElementById("nomor-tugas").style.borderColor = "#ef4444";
+          alert("Mohon masukkan Nomor Surat Tugas!");
+          return;
+        }
+
+        // Check  files
+        const Files = ["ktp", "ijazah", "tugas", "sehat", "foto"];
+        const missingFiles = Files.filter((type) => !uploadedFiles[type]);
+
+        if (missingFiles.length > 0) {
+          const fileNames = {
+            ktp: "KTP",
+            ijazah: "Ijazah Terakhir",
+            tugas: "Surat Tugas",
+            sehat: "Surat Sehat",
+            foto: "Pas Foto",
+          };
+          const missingFileNames = missingFiles.map((type) => fileNames[type]).join(", ");
+          alert(`Mohon unggah dokumen berikut: ${missingFileNames}`);
+          return;
+        }
+
+        // Reset border color
+        document.getElementById("nomor-tugas").style.borderColor = "#e5e7eb";
+
+        // Simulate successful submission
+        alert("Pendaftaran berhasil dikirim! Terima kasih telah mendaftar pelatihan di UPT PTKK Jawa Timur.Harap cek email yang terdaftar.");
+
+        // Optional: redirect to success page or reset form
+        // window.location.href = 'success.html';
+      });
+
+      function goBack() {
+        window.location.href = "biodata-sekolah.html";
+      }
+
+      // Reset border color on input
+      document.getElementById("nomor-tugas").addEventListener("input", function () {
+        this.style.borderColor = "#e5e7eb";
+      });
+
+      // File validation
+      function validateFile(file, allowedTypes, maxSize = 5 * 1024 * 1024) {
+        // 5MB default
+        if (!allowedTypes.includes(file.type)) {
+          alert("Format file tidak didukung. Gunakan format PDF, JPG, JPEG, atau PNG.");
+          return false;
+        }
+
+        if (file.size > maxSize) {
+          alert("Ukuran file terlalu besar. Maksimal 5MB.");
+          return false;
+        }
+
+        return true;
+      }
+
+      // Update file inputs to include validation
+      document.querySelectorAll(".file-input").forEach((input) => {
+        input.addEventListener("change", function () {
+          const file = this.files[0];
+          if (file) {
+            const allowedTypes = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
+            if (validateFile(file, allowedTypes)) {
+              // File is valid, handleFileSelect will be called by onchange attribute
+            } else {
+              // Clear the input if file is invalid
+              this.value = "";
+            }
+          }
+        });
+      });
+    </script> --}}
+  </body>
+</html>

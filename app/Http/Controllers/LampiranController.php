@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EmailLog;
-use Illuminate\Routing\Controller;
+use App\Models\Lampiran;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
-class EmailLogController extends Controller
+class LampiranController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return view('peserta.pendaftaran.lampiran');
     }
 
     /**
@@ -35,7 +35,7 @@ class EmailLogController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(EmailLog $emailLog)
+    public function show(Lampiran $lampiran)
     {
         //
     }
@@ -43,7 +43,7 @@ class EmailLogController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(EmailLog $emailLog)
+    public function edit(Lampiran $lampiran)
     {
         //
     }
@@ -51,7 +51,7 @@ class EmailLogController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, EmailLog $emailLog)
+    public function update(Request $request, Lampiran $lampiran)
     {
         //
     }
@@ -59,7 +59,7 @@ class EmailLogController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EmailLog $emailLog)
+    public function destroy(Lampiran $lampiran)
     {
         //
     }

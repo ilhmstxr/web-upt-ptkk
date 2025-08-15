@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\LampiranController;
+use App\Http\Controllers\PendaftaranController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\PendaftaranController; // <-- Tambahkan ini
@@ -36,6 +38,12 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
+
+Route::resource('pendaftaran', PendaftaranController::class);
+Route::resource('lampiran', LampiranController::class);
+
+Route::resource('pendaftaran', PendaftaranController::class);
+Route::resource('lampiran', LampiranController::class);
 
 
 // Rute untuk autentikasi (login, register, dll.)
