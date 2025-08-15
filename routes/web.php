@@ -4,7 +4,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RegistrationFlowController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\OtpController;
 use App\Models\Pelatihan;
+
+
+Route::get('/', function () {
+    $pelatihans = Pelatihan::all(); // Query model
+    return view('landing', compact('pelatihans')); // Kirim data ke view
+})->name('landing-page'); // Beri nama route
+Route::get('/otp/send', [OtpController::class, 'showSendForm'])->name('otp.send.form'); // Form input email/WA
+Route::post('/otp/send', [OtpController::class, 'send'])->name('otp.send');           // Kirim OTP
+Route::get('/otp/verify', [OtpController::class, 'showVerifyForm'])->name('otp.verify.form'); // Form verifikasi OTP
+Route::post('/otp/verify', [OtpController::class, 'verify'])->name('otp.verify');     // Submit OTP
+Route::get('/otp', [RegistrationController::class, 'showOtpForm'])->name('otp.form');
+Route::post('/otp/verify', [RegistrationController::class, 'verifyOtp'])->name('otp.verify');
+
 
 // ============================
 // Form Biodata & Halaman Sukses
