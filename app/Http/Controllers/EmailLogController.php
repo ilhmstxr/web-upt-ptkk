@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\EmailLog;
+use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 
 class EmailLogController extends Controller
