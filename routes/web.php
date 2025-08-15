@@ -39,10 +39,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::resource('pendaftaran', PendaftaranController::class);
-Route::resource('lampiran', LampiranController::class);
-
-Route::resource('pendaftaran', PendaftaranController::class);
-Route::resource('lampiran', LampiranController::class);
 
 route::get('1',function () {
    return view('peserta.pendaftaran.bio-peserta'); 
