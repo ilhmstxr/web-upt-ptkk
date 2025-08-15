@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary-500: #ff5733; /* Warna utama custom */
+    --primary-600: #e74c3c;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
