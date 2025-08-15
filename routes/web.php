@@ -1,5 +1,7 @@
 <?php
 
+use App\Mail\TestMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -17,6 +19,11 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+});
+
+
+Route::get('/send', function () {
+    Mail::to(['23082010166@student.upnjatim.ac.id'])->send(new TestMail());
 });
 
 require __DIR__.'/auth.php';
