@@ -29,6 +29,7 @@ Route::post('/submit-biodata', [RegistrationController::class, 'submit'])
 Route::get('/pendaftaran/success', [RegistrationController::class, 'success'])
     ->name('registration.success');
 
+
 // ============================
 // Halaman Utama (Landing Page)
 // ============================
