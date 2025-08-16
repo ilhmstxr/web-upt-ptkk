@@ -80,10 +80,10 @@
                         <div class="flex items-center gap-4 relative">
                             <div
                                 class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold {{ $currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600' }}">
-                                {{ $currentStep > 1 ? '✓' : '1' }}
+                                {{ $currentStep == 1 ? '✓' : '1' }}
                             </div>
                             <span
-                                class="font-semibold {{ $currentStep == 1 ? 'text-blue-700' : ($currentStep > 1 ? 'text-slate-800' : 'text-slate-500') }}">
+                                class="font-semibold {{ $currentStep == 1 ? 'text-blue-700' : ($currentStep == 1 ? 'text-slate-800' : 'text-slate-500') }}">
                                 Biodata diri
                             </span>
                         </div>
@@ -91,10 +91,10 @@
                         <div class="flex items-center gap-4 relative">
                             <div
                                 class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold {{ $currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600' }}">
-                                {{ $currentStep > 2 ? '✓' : '2' }}
+                                {{ $currentStep == 2 ? '✓' : '2' }}
                             </div>
                             <span
-                                class="font-semibold {{ $currentStep == 2 ? 'text-blue-700' : ($currentStep > 2 ? 'text-slate-800' : 'text-slate-500') }}">
+                                class="font-semibold {{ $currentStep == 2 ? 'text-blue-700' : ($currentStep == 2 ? 'text-slate-800' : 'text-slate-500') }}">
                                 Biodata Sekolah
                             </span>
                         </div>
@@ -102,10 +102,10 @@
                         <div class="flex items-center gap-4 relative">
                             <div
                                 class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold {{ $currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600' }}">
-                                {{ $currentStep > 3 ? '✓' : '3' }}
+                                {{ $currentStep == 3 ? '✓' : '3' }}
                             </div>
                             <span
-                                class="font-semibold {{ $currentStep == 3 ? 'text-blue-700' : ($currentStep > 3 ? 'text-slate-800' : 'text-slate-500') }}">
+                                class="font-semibold {{ $currentStep == 3 ? 'text-blue-700' : ($currentStep == 3 ? 'text-slate-800' : 'text-slate-500') }}">
                                 Lampiran
                             </span>
                         </div>

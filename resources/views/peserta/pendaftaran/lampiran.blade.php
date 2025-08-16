@@ -1,181 +1,260 @@
-@extends('peserta.layout.main')
+@extends('peserta.layout.main', ['currentStep' => 3])
 
-@section('title', 'Lampiran Pendaftaran Pelatihan')
+@section('title', 'Lampiran Dokumen Pendaftaran')
+
 @section('content')
-<main class="form-container">
-    <form id="lampiranForm">
-        <div class="form-row">
-            <div class="form-group">
-                <label for="fotocopy-ktp">Unggah Fotocopy KTP</label>
-                <div class="file-input-container">
-                    <div class="file-status" id="ktp-status">📄 Tidak ada file yang dipilih</div>
-                    <button type="button" class="file-btn" onclick="document.getElementById('ktp-file').click()">Pilih
-                        Dokumen</button>
-                    <input type="file" id="ktp-file" class="file-input" accept=".pdf,.jpg,.jpeg,.png"
-                        onchange="handleFileSelect('ktp')" />
+<div class="bg-white rounded-xl shadow-sm p-6 sm:p-8 border border-slate-200">
+    <form id="lampiranForm" action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+        @csrf
+        {{-- Input hidden untuk memberitahu controller ini adalah langkah ke-3 --}}
+        <input type="hidden" name="current_step" value="3">
+
+        <div class="space-y-6">
+            {{-- Baris 1: KTP & Ijazah --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{-- Input File KTP --}}
+                <div>
+                    <label for="fc_ktp" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Fotocopy KTP</label>
+                    <div class="relative">
+                        <div class="file-input-wrapper border border-gray-300 rounded-lg">
+                            <input type="file" id="fc_ktp" name="fc_ktp" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".pdf,.jpg,.jpeg,.png" required onchange="handleFileSelect(this)">
+                            <div class="flex items-center justify-between px-4 py-2.5">
+                                <span id="fc_ktp-status" class="text-sm text-gray-500 truncate">Tidak ada file dipilih</span>
+                                <div class="px-3 py-1 bg-slate-100 text-slate-700 text-sm font-semibold rounded-md pointer-events-none">Pilih File</div>
+                            </div>
+                        </div>
+                        <div id="fc_ktpError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('fc_ktp')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                {{-- Input File Ijazah --}}
+                <div>
+                    <label for="fc_ijazah" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Fotocopy Ijazah</label>
+                    <div class="relative">
+                        <div class="file-input-wrapper border border-gray-300 rounded-lg">
+                            <input type="file" id="fc_ijazah" name="fc_ijazah" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".pdf,.jpg,.jpeg,.png" required onchange="handleFileSelect(this)">
+                            <div class="flex items-center justify-between px-4 py-2.5">
+                                <span id="fc_ijazah-status" class="text-sm text-gray-500 truncate">Tidak ada file dipilih</span>
+                                <div class="px-3 py-1 bg-slate-100 text-slate-700 text-sm font-semibold rounded-md pointer-events-none">Pilih File</div>
+                            </div>
+                        </div>
+                        <div id="fc_ijazahError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('fc_ijazah')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
-            <div class="form-group">
-                <label for="fotocopy-ijazah">Unggah Fotocopy Ijazah Terakhir</label>
-                <div class="file-input-container">
-                    <div class="file-status" id="ijazah-status">📄 Tidak ada file yang dipilih</div>
-                    <button type="button" class="file-btn"
-                        onclick="document.getElementById('ijazah-file').click()">Pilih Dokumen</button>
-                    <input type="file" id="ijazah-file" class="file-input" accept=".pdf,.jpg,.jpeg,.png"
-                        onchange="handleFileSelect('ijazah')" />
+
+            {{-- Baris 2: Surat Tugas & Surat Sehat --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 {{-- Input File Surat Tugas --}}
+                <div>
+                    <label for="fc_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Fotocopy Surat Tugas</label>
+                    <div class="relative">
+                        <div class="file-input-wrapper border border-gray-300 rounded-lg">
+                            <input type="file" id="fc_surat_tugas" name="fc_surat_tugas" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".pdf,.jpg,.jpeg,.png" required onchange="handleFileSelect(this)">
+                            <div class="flex items-center justify-between px-4 py-2.5">
+                                <span id="fc_surat_tugas-status" class="text-sm text-gray-500 truncate">Tidak ada file dipilih</span>
+                                <div class="px-3 py-1 bg-slate-100 text-slate-700 text-sm font-semibold rounded-md pointer-events-none">Pilih File</div>
+                            </div>
+                        </div>
+                        <div id="fc_surat_tugasError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('fc_surat_tugas')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                {{-- Input File Surat Sehat --}}
+                <div>
+                    <label for="fc_surat_sehat" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Surat Sehat</label>
+                    <div class="relative">
+                        <div class="file-input-wrapper border border-gray-300 rounded-lg">
+                            <input type="file" id="fc_surat_sehat" name="fc_surat_sehat" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".pdf,.jpg,.jpeg,.png" required onchange="handleFileSelect(this)">
+                            <div class="flex items-center justify-between px-4 py-2.5">
+                                <span id="fc_surat_sehat-status" class="text-sm text-gray-500 truncate">Tidak ada file dipilih</span>
+                                <div class="px-3 py-1 bg-slate-100 text-slate-700 text-sm font-semibold rounded-md pointer-events-none">Pilih File</div>
+                            </div>
+                        </div>
+                        <div id="fc_surat_sehatError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('fc_surat_sehat')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            {{-- Baris 3: Nomor Surat & Pas Foto --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{-- Input Nomor Surat Tugas --}}
+                <div>
+                    <label for="no_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Nomor Surat Tugas</label>
+                    <div class="relative">
+                        <input type="text" id="no_surat_tugas" name="no_surat_tugas" placeholder="Masukkan Nomor Surat" value="{{ old('no_surat_tugas') }}" class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('no_surat_tugas') border-red-500 @enderror" required>
+                        <div id="no_surat_tugasError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                           <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('no_surat_tugas')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                {{-- Input Pas Foto --}}
+                <div>
+                    <label for="pas_foto" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Pas Foto (3x4)</label>
+                    <div class="relative">
+                        <div class="file-input-wrapper border border-gray-300 rounded-lg">
+                            <input type="file" id="pas_foto" name="pas_foto" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png" required onchange="handleFileSelect(this)">
+                            <div class="flex items-center justify-between px-4 py-2.5">
+                                <span id="pas_foto-status" class="text-sm text-gray-500 truncate">Tidak ada file dipilih</span>
+                                <div class="px-3 py-1 bg-slate-100 text-slate-700 text-sm font-semibold rounded-md pointer-events-none">Pilih File</div>
+                            </div>
+                        </div>
+                         <div id="pas_fotoError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">Latar belakang merah, format JPG/PNG.</p>
+                    @error('pas_foto')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="fotocopy-tugas">Unggah Fotocopy Surat Tugas</label>
-                <div class="file-input-container">
-                    <div class="file-status" id="tugas-status">📄 Tidak ada file yang dipilih</div>
-                    <button type="button" class="file-btn"
-                        onclick="document.getElementById('tugas-file').click()">Pilih Dokumen</button>
-                    <input type="file" id="tugas-file" class="file-input" accept=".pdf,.jpg,.jpeg,.png"
-                        onchange="handleFileSelect('tugas')" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="surat-sehat">Unggah Surat Sehat</label>
-                <div class="file-input-container">
-                    <div class="file-status" id="sehat-status">📄 Tidak ada file yang dipilih</div>
-                    <button type="button" class="file-btn"
-                        onclick="document.getElementById('sehat-file').click()">Pilih Dokumen</button>
-                    <input type="file" id="sehat-file" class="file-input" accept=".pdf,.jpg,.jpeg,.png"
-                        onchange="handleFileSelect('sehat')" />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="nomor-tugas">Nomor Surat Tugas</label>
-                <input type="text" id="nomor-tugas" name="nomor-tugas" placeholder="Masukkan Nomor Surat Tugas" />
-            </div>
-            <div class="form-group">
-                <label for="pas-foto">Unggah Pas Foto</label>
-                <div class="file-input-container">
-                    <div class="file-status" id="foto-status">📄 Tidak ada file yang dipilih</div>
-                    <button type="button" class="file-btn" onclick="document.getElementById('foto-file').click()">Pilih
-                        Dokumen</button>
-                    <input type="file" id="foto-file" class="file-input" accept=".jpg,.jpeg,.png"
-                        onchange="handleFileSelect('foto')" />
-                </div>
-                <div class="file-note">Pas Foto Background Merah ukuran 3x4</div>
-            </div>
-        </div>
-
-        <div class="button-container">
-            <button type="button" class="btn btn-secondary" onclick="goBack()">Kembali</button>
-            <button type="submit" class="btn btn-primary">Kirim</button>
+        {{-- Tombol Navigasi --}}
+        <div class="flex justify-between items-center pt-6">
+            <a href="{{ route('pendaftaran.create', ['step' => 2]) }}" class="text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
+                &larr; Kembali
+            </a>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2.5 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Kirim Pendaftaran
+            </button>
         </div>
     </form>
-</main>
+</div>
 @endsection
+
+@push('scripts')
+<style>
+    .error-popup {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        transform: translateY(10px);
+        z-index: 10;
+    }
+    .error-popup.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    .file-input-wrapper.border-red-500 {
+        border-color: #ef4444; /* red-500 */
+    }
+</style>
+
 <script>
-    const uploadedFiles = {
-        ktp: null,
-        ijazah: null,
-        tugas: null,
-        sehat: null,
-        foto: null,
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById('lampiranForm');
+    if (!form) return;
+
+    const showError = (element, message) => {
+        const errorPopup = document.getElementById(element.id + 'Error');
+        if (errorPopup) {
+            errorPopup.querySelector('.error-message-text').textContent = message;
+            errorPopup.classList.add('visible');
+            const wrapper = element.closest('.file-input-wrapper');
+            if (wrapper) {
+                wrapper.classList.add('border-red-500');
+            } else {
+                element.classList.add('border-red-500', 'focus:ring-red-500');
+            }
+        }
     };
 
-    function handleFileSelect(type) {
-        const fileInput = document.getElementById(`${type}-file`);
-        const statusDiv = document.getElementById(`${type}-status`);
-        const file = fileInput.files[0];
+    const hideError = (element) => {
+        const errorPopup = document.getElementById(element.id + 'Error');
+        if (errorPopup) {
+            errorPopup.classList.remove('visible');
+            const wrapper = element.closest('.file-input-wrapper');
+            if (wrapper) {
+                wrapper.classList.remove('border-red-500');
+            } else {
+                element.classList.remove('border-red-500', 'focus:ring-red-500');
+            }
+        }
+    };
+
+    window.handleFileSelect = function(inputElement) {
+        const statusSpan = document.getElementById(inputElement.id + '-status');
+        const file = inputElement.files[0];
+        hideError(inputElement);
 
         if (file) {
-            uploadedFiles[type] = file;
-            statusDiv.textContent = `✅ ${file.name}`;
-            statusDiv.classList.add("has-file");
+            const allowedTypes = inputElement.accept.split(',').map(t => t.trim());
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            // Convert mime types for validation
+            const mimeTypeMap = { '.pdf': 'application/pdf', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png' };
+            const validMimeTypes = allowedTypes.map(type => mimeTypeMap[type]).filter(Boolean);
+
+            if (validMimeTypes.length > 0 && !validMimeTypes.includes(file.type)) {
+                showError(inputElement, `Format file tidak valid. Gunakan: ${allowedTypes.join(', ')}`);
+                inputElement.value = '';
+                statusSpan.textContent = 'Tidak ada file dipilih';
+                return;
+            }
+            if (file.size > maxSize) {
+                showError(inputElement, 'Ukuran file maksimal 5MB.');
+                inputElement.value = '';
+                statusSpan.textContent = 'Tidak ada file dipilih';
+                return;
+            }
+            statusSpan.textContent = `✅ ${file.name}`;
+            statusSpan.classList.add('text-green-600', 'font-medium');
+        } else {
+            statusSpan.textContent = 'Tidak ada file dipilih';
+            statusSpan.classList.remove('text-green-600', 'font-medium');
         }
     }
 
-    document.getElementById("lampiranForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-        const nomorTugas = formData.get("nomor-tugas");
-
-        // Validate nomor tugas
-        if (!nomorTugas || nomorTugas.trim() === "") {
-            document.getElementById("nomor-tugas").style.borderColor = "#ef4444";
-            alert("Mohon masukkan Nomor Surat Tugas!");
-            return;
-        }
-
-        // Check  files
-        const Files = ["ktp", "ijazah", "tugas", "sehat", "foto"];
-        const missingFiles = Files.filter((type) => !uploadedFiles[type]);
-
-        if (missingFiles.length > 0) {
-            const fileNames = {
-                ktp: "KTP",
-                ijazah: "Ijazah Terakhir",
-                tugas: "Surat Tugas",
-                sehat: "Surat Sehat",
-                foto: "Pas Foto",
-            };
-            const missingFileNames = missingFiles.map((type) => fileNames[type]).join(", ");
-            alert(`Mohon unggah dokumen berikut: ${missingFileNames}`);
-            return;
-        }
-
-        // Reset border color
-        document.getElementById("nomor-tugas").style.borderColor = "#e5e7eb";
-
-        // Simulate successful submission
-        alert(
-            "Pendaftaran berhasil dikirim! Terima kasih telah mendaftar pelatihan di UPT PTKK Jawa Timur.Harap cek email yang terdaftar."
-            );
-
-        // Optional: redirect to success page or reset form
-        // window.location.href = 'success.html';
+    form.querySelectorAll('[required]').forEach(element => {
+        element.addEventListener('input', () => hideError(element));
+        element.addEventListener('change', () => hideError(element));
     });
 
-    function goBack() {
-        window.location.href = "biodata-sekolah.html";
-    }
+    form.addEventListener('submit', function(event) {
+        form.querySelectorAll('[required]').forEach(hideError);
+        let firstErrorElement = null;
 
-    // Reset border color on input
-    document.getElementById("nomor-tugas").addEventListener("input", function() {
-        this.style.borderColor = "#e5e7eb";
-    });
-
-    // File validation
-    function validateFile(file, allowedTypes, maxSize = 5 * 1024 * 1024) {
-        // 5MB default
-        if (!allowedTypes.includes(file.type)) {
-            alert("Format file tidak didukung. Gunakan format PDF, JPG, JPEG, atau PNG.");
-            return false;
-        }
-
-        if (file.size > maxSize) {
-            alert("Ukuran file terlalu besar. Maksimal 5MB.");
-            return false;
-        }
-
-        return true;
-    }
-
-    // Update file inputs to include validation
-    document.querySelectorAll(".file-input").forEach((input) => {
-        input.addEventListener("change", function() {
-            const file = this.files[0];
-            if (file) {
-                const allowedTypes = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
-                if (validateFile(file, allowedTypes)) {
-                    // File is valid, handleFileSelect will be called by onchange attribute
-                } else {
-                    // Clear the input if file is invalid
-                    this.value = "";
+        for (const element of form.elements) {
+            if (element.hasAttribute('required')) {
+                let isValid = element.type === 'file' ? element.files.length > 0 : element.validity.valid;
+                if (!isValid) {
+                    event.preventDefault();
+                    let message = 'Wajib diisi';
+                    switch (element.id) {
+                        case 'fc_ktp': message = 'File KTP wajib diunggah.'; break;
+                        case 'fc_ijazah': message = 'File Ijazah wajib diunggah.'; break;
+                        case 'fc_surat_tugas': message = 'File Surat Tugas wajib diunggah.'; break;
+                        case 'fc_surat_sehat': message = 'File Surat Sehat wajib diunggah.'; break;
+                        case 'pas_foto': message = 'Pas Foto wajib diunggah.'; break;
+                        case 'no_surat_tugas': message = 'Nomor surat tugas tidak boleh kosong.'; break;
+                    }
+                    showError(element, message);
+                    if (!firstErrorElement) firstErrorElement = element;
                 }
             }
-        });
+        }
+        if (firstErrorElement) firstErrorElement.focus();
     });
+});
 </script>

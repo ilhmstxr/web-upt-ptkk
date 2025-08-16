@@ -1,113 +1,288 @@
-@extends('peserta.layout.main')
+@extends('peserta.layout.main', ['currentStep' => 2])
 
-@section('title', 'Lampiran Pendaftaran Pelatihan')
+@section('title', 'Biodata Sekolah')
+
 @section('content')
-    <main class="form-container">
-        <form id="biodataSekolahForm" action="{{ route('pendaftaran.store') }}" method="GET">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="asal-lembaga">Asal Lembaga Sekolah</label>
-                    <input type="text" id="asal-lembaga" name="asal-lembaga" placeholder="Masukkan Asal Lembaga" />
+    <div class="bg-white rounded-xl shadow-sm p-6 sm:p-8 border border-slate-200">
+        <form id="biodataSekolahForm" action="{{ route('pendaftaran.store') }}" method="POST" class="space-y-6" novalidate>
+            @csrf
+
+            <input type="hidden" name="current_step" value="{{ $currentStep }}">
+            {{-- Asal Lembaga --}}
+            <div>
+                <label for="asal_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Asal Lembaga
+                    Sekolah</label>
+                <div class="relative">
+                    <input type="text" id="asal_instansi" name="asal_instansi" placeholder="Masukkan Asal Lembaga"
+                        value="{{ old('asal_instansi') }}"
+                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('asal_instansi') border-red-500 @enderror"
+                        required />
+                    <div id="asal_instansiError"
+                        class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="error-message-text"></span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="alamat-sekolah">Alamat Sekolah</label>
-                    <input type="text" id="alamat-sekolah" name="alamat-sekolah" placeholder="Masukkan Alamat Sekolah" />
+                @error('asal_instansi')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Alamat Sekolah --}}
+            <div>
+                <label for="alamat_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Sekolah</label>
+                <div class="relative">
+                    <input type="text" id="alamat_instansi" name="alamat_instansi" placeholder="Masukkan Alamat Sekolah"
+                        value="{{ old('alamat_instansi') }}"
+                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('alamat_instansi') border-red-500 @enderror"
+                        required />
+                    <div id="alamat_instansiError"
+                        class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="error-message-text"></span>
+                    </div>
+                </div>
+                @error('alamat_instansi')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Kompetensi dan Kelas --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="bidang_keahlian" class="block text-sm font-semibold mb-2 text-slate-700">Kompetensi/Bidang
+                        Keahlian</label>
+                    <div class="relative">
+                        <input type="text" id="bidang_keahlian" name="bidang_keahlian" placeholder="Masukkan Asal Lembaga"
+                            value="{{ old('bidang_keahlian') }}"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('bidang_keahlian') border-red-500 @enderror"
+                            required />
+                        {{-- <option value="teknik-informatika" @if (old('bidang_keahlian') == 'teknik-informatika') selected @endif>Teknik Informatika</option> --}}
+                        {{-- (Tambahkan opsi lain di sini) --}}
+                        </select>
+                        <div id="bidang_keahlianError"
+                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('bidang_keahlian')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label for="kelas" class="block text-sm font-semibold mb-2 text-slate-700">Kelas</label>
+                    <div class="relative">
+                        <select id="kelas" name="kelas"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('kelas') border-red-500 @enderror"
+                            required>
+                            <option value="">Pilih Kelas</option>
+                            <option value="X" @if (old('kelas') == 'X') selected @endif>Kelas X</option>
+                            <option value="XI" @if (old('kelas') == 'XI') selected @endif>Kelas XI</option>
+                            <option value="XII" @if (old('kelas') == 'XII') selected @endif>Kelas XII</option>
+                        </select>
+                        <div id="kelasError"
+                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('kelas')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="kompetensi-bidang">Kompetensi/Bidang Keahlian</label>
-                    <select id="kompetensi-bidang" name="kompetensi-bidang">
-                        <option value="">Masukkan Kompetensi</option>
-                        <option value="teknik-informatika">Teknik Informatika</option>
-                        <option value="teknik-mesin">Teknik Mesin</option>
-                        <option value="teknik-elektro">Teknik Elektro</option>
-                        <option value="teknik-sipil">Teknik Sipil</option>
-                        <option value="akuntansi">Akuntansi</option>
-                        <option value="administrasi-perkantoran">Administrasi Perkantoran</option>
-                        <option value="pemasaran">Pemasaran</option>
-                        <option value="multimedia">Multimedia</option>
-                        <option value="tata-boga">Tata Boga</option>
-                        <option value="tata-busana">Tata Busana</option>
-                        <option value="tata-kecantikan">Tata Kecantikan</option>
-                        <option value="perhotelan">Perhotelan</option>
+
+            {{-- pelatihan yang ingin diikuti --}}
+            <div class="grid grid-cols-1  gap-6">
+                <label for="pelatihan_id" class="block text-sm font-semibold mb-2 text-slate-700">Pelatihan yang ingin
+                    diikuti</label>
+                <div class="relative">
+                    <select id="pelatihan_id" name="pelatihan_id"
+                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('pelatihan_id') border-red-500 @enderror"
+                        required>
+                        <option value="">Pilih Pelatihan</option>
+                        @foreach ($bidang as $b)
+                            <option value="{{ $b->id }}" @if (old('pelatihan_id') == $b->id) selected @endif>
+                                {{ $b->bidang->nama_bidang }}</option>
+                        @endforeach
+                        {{-- <option value="teknik-informatika" @if (old('pelatihan_id') == 'teknik-informatika') selected @endif>Teknik Informatika</option> --}}
+                        {{-- (Tambahkan opsi lain di sini) --}}
                     </select>
+                    <div id="pelatihan_idError"
+                        class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="error-message-text"></span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="kelas">Kelas</label>
-                    <select id="kelas" name="kelas">
-                        <option value="">Masukkan Kelas</option>
-                        <option value="X">Kelas X</option>
-                        <option value="XI">Kelas XI</option>
-                        <option value="XII">Kelas XII</option>
-                    </select>
-                </div>
+                @error('pelatihan_id')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div class="form-row">
-                <div class="form-group full-width">
-                    <label for="cabang-dinas">Cabang Dinas Wilayah</label>
-                    <select id="cabang-dinas" name="cabang-dinas">
-                        <option value="">Masukkan Dinas Wilayah</option>
-                        <option value="surabaya">Cabang Dinas Wilayah Surabaya</option>
-                        <option value="malang">Cabang Dinas Wilayah Malang</option>
-                        <option value="kediri">Cabang Dinas Wilayah Kediri</option>
-                        <option value="madiun">Cabang Dinas Wilayah Madiun</option>
-                        <option value="bojonegoro">Cabang Dinas Wilayah Bojonegoro</option>
-                        <option value="pamekasan">Cabang Dinas Wilayah Pamekasan</option>
-                        <option value="jember">Cabang Dinas Wilayah Jember</option>
+            {{-- Cabang Dinas --}}
+            <div>
+                <label for="cabang_dinas_wilayah" class="block text-sm font-semibold mb-2 text-slate-700">Cabang Dinas
+                    Wilayah</label>
+                <div class="relative">
+                    <select id="cabang_dinas_wilayah" name="cabang_dinas_wilayah"
+                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabang_dinas_wilayah') border-red-500 @enderror"
+                        required>
+                        <option value="">Pilih Dinas Wilayah</option>
+                        <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
+                            Surabaya</option>
+                        {{-- (Tambahkan opsi lain di sini) --}}
                     </select>
+                    <div id="cabang_dinas_wilayahError"
+                        class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="error-message-text"></span>
+                    </div>
                 </div>
+                @error('cabang_dinas_wilayah')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div class="button-container">
-                <button type="button" class="btn btn-secondary" onclick="goBack()">Kembali</button>
-                <button type="submit" class="btn btn-primary">Selanjutnya</button>
+            {{-- Tombol Navigasi --}}
+            <div class="flex justify-between items-center pt-4">
+                {{-- <a href="{{ route('pendaftaran.create') }}" class="text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
+                &larr; Kembali
+            </a> --}}
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2.5 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Selanjutnya
+                </button>
             </div>
         </form>
-    </main>
+    </div>
+@endsection
 
-    <script>
-        document.getElementById("biodataSekolahForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-
-            // Validate  fields
-            let isValid = true;
-            const Fields = ["asal-lembaga", "alamat-sekolah", "kompetensi-bidang", "kelas", "cabang-dinas"];
-
-            Fields.forEach((field) => {
-                const input = document.getElementById(field);
-                if (!data[field] || data[field].trim() === "") {
-                    input.style.borderColor = "#ef4444";
-                    isValid = false;
-                } else {
-                    input.style.borderColor = "#e5e7eb";
-                }
-            });
-
-            if (isValid) {
-                alert("Biodata sekolah berhasil disimpan! Melanjutkan ke tahap Lampiran...");
-                // Redirect to lampiran.html
-                window.location.href = "lampiran.html";
-            } else {
-                alert("Mohon lengkapi semua field yang diperlukan!");
-            }
-        });
-
-        function goBack() {
-            window.location.href = "index.html";
+@push('scripts')
+    <style>
+        .error-popup {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+            z-index: 10;
         }
 
-        // Reset border color on input
-        const inputs = document.querySelectorAll("input, select");
-        inputs.forEach((input) => {
-            input.addEventListener("input", function() {
-                this.style.borderColor = "#e5e7eb";
+        .error-popup.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById('biodataSekolahForm');
+
+            // Fungsi untuk menampilkan pop-up error
+            const showError = (element, message) => {
+                const errorPopup = document.getElementById(element.id + 'Error');
+                if (errorPopup) {
+                    errorPopup.querySelector('.error-message-text').textContent = message;
+                    errorPopup.classList.add('visible');
+                    element.classList.add('border-red-500', 'focus:ring-red-500');
+                }
+            };
+
+            // Fungsi untuk menyembunyikan pop-up error
+            const hideError = (element) => {
+                const errorPopup = document.getElementById(element.id + 'Error');
+                if (errorPopup) {
+                    errorPopup.classList.remove('visible');
+                    element.classList.remove('border-red-500', 'focus:ring-red-500');
+                }
+            };
+
+            // Sembunyikan semua error saat form di-reset atau dimuat ulang
+            const hideAllErrors = () => {
+                form.querySelectorAll('input[required], select[required]').forEach(hideError);
+            };
+
+            // Tambahkan event listener untuk menyembunyikan error saat input/select diubah
+            form.querySelectorAll('input[required], select[required]').forEach(element => {
+                element.addEventListener('input', () => hideError(element));
+                element.addEventListener('change', () => hideError(element));
+            });
+
+            form.addEventListener('submit', function(event) {
+                hideAllErrors();
+                let firstErrorElement = null;
+
+                for (const element of form.elements) {
+                    if (element.hasAttribute('required') && !element.validity.valid) {
+                        event.preventDefault();
+
+                        let message = 'Kolom ini wajib diisi.'; // Pesan default
+
+                        // Pesan kustom berdasarkan ID elemen
+                        switch (element.id) {
+                            case 'asal_instansi':
+                                message = 'Asal instansi sekolah wajib diisi.';
+                                break;
+                            case 'alamat_instansi':
+                                message = 'Alamat instansi tidak boleh kosong.';
+                                break;
+                            case 'bidang_keahlian':
+                                message = 'Silakan pilih kompetensi keahlian Anda.';
+                                break;
+                            case 'pelatihan_id':
+                                message = 'Silakan pilih pelatihan yang ingin diikuti.';
+                                break;
+                            case 'kelas':
+                                message = 'Anda harus memilih kelas.';
+                                break;
+                            case 'cabang_dinas_wilayah':
+                                message = 'Mohon pilih cabang dinas wilayah.';
+                                break;
+                        }
+
+                        showError(element, message);
+
+                        if (!firstErrorElement) {
+                            firstErrorElement = element;
+                        }
+                    }
+                }
+
+                if (firstErrorElement) {
+                    firstErrorElement.focus();
+                }
             });
         });
     </script>
-@endsection

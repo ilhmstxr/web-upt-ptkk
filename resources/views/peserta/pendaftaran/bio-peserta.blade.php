@@ -9,6 +9,8 @@
         <form id="registrationForm" action="{{ route('pendaftaran.store') }}" method="POST" class="space-y-6" novalidate>
             @csrf
 
+            <input type="hidden" name="current_step" value="{{ $currentStep }}">
+
             {{-- Nama dan NIK --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -118,7 +120,6 @@
                     <div class="relative">
                         <input type="text" id="tempat_lahir" name="tempat_lahir" maxlength="15"
                             placeholder="Surabaya" value="{{ old('tempat_lahir') }}"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('tempat_lahir') border-red-500 @enderror"
                             required />
                         <div id="tempat_lahirError"
@@ -223,13 +224,13 @@
 
             {{-- alamat tinggal --}}
             <div class="grid grid-cols-1  gap-6">
-                <label for="alamatTinggal" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Tempat
+                <label for="alamat" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Tempat
                     Tinggal</label>
                 <div class="relative">
-                    <textarea id="alamatTinggal" name="alamatTinggal" placeholder="Masukkan Alamat Tinggal" value="{{ old('email') }}"
-                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('alamatTinggal') border-red-500 @enderror"
+                    <textarea id="alamat" name="alamat" placeholder="Masukkan Alamat Tinggal" value="{{ old('email') }}"
+                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('alamat') border-red-500 @enderror"
                         required></textarea>
-                    <div id="alamatTinggalError"
+                    <div id="alamatError"
                         class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
                             fill="currentColor">
@@ -240,10 +241,11 @@
                         <span class="error-message-text"></span>
                     </div>
                 </div>
-                @error('alamatTinggal')
+                @error('alamat')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
+
 
             {{-- (Tambahkan div.relative dan div.error-popup untuk semua field yang required) --}}
 

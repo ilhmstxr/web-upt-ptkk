@@ -14,38 +14,48 @@ use Illuminate\Support\Facades\Validator;
 
 class PendaftaranController extends Controller
 {
+    private static $currentStep = null;
     /**
      * Menampilkan halaman formulir pendaftaran berdasarkan langkah saat ini.
      */
     public function create(Request $request)
     {
-        // Ambil semua data dari session
+        // Tentukan langkah saat ini. Prioritaskan parameter 'step' dari URL,
+        // jika tidak ada, gunakan nilai dari session, jika tidak ada juga, default ke 1.
+        $currentStep = $request->query('step', $request->session()->get('pendaftaran_step', 1));
+
+        // Simpan langkah saat ini ke session untuk menjaga state jika halaman di-refresh.
+        $request->session()->put('pendaftaran_step', $currentStep);
+
+        // Ambil semua data formulir yang sudah tersimpan di session.
         $formData = $request->session()->get('pendaftaran_data', []);
 
-        // Tentukan langkah saat ini, defaultnya adalah 1
-        $currentStep = $request->query('step', 1);
+        // Ambil data pelatihan (hanya diperlukan di langkah 1).
+        $bidang = Pelatihan::with('bidang')->get();
 
-        // Ambil data pelatihan untuk dropdown
-        $bidangs = Bidang::with('pelatihans')->get();
+        // return $bidang;
 
-
-        //         return view('peserta.pendaftaran.bio-peserta', compact('bidangs', 'currentStep', 'formData'));
-
-        if ($currentStep == 1 ) {
-            return view('peserta.pendaftaran.bio-peserta', compact('bidangs', 'currentStep', 'formData'));
-        }elseif ($currentStep == 2) {
-            return view('peserta.pendaftaran.bio-sekolah', compact('bidangs', 'currentStep', 'formData'));
-        }elseif($currentStep == 3) {
-            return view('peserta.pendaftaran.lampiran', compact('bidangs', 'currentStep', 'formData'));
+        // return $formData;
+        // Tampilkan view yang sesuai dengan langkah saat ini.
+        if ($currentStep == 1) {
+            return view('peserta.pendaftaran.bio-peserta', compact('bidang', 'currentStep', 'formData'));
+        } elseif ($currentStep == 2) {
+            // Pastikan Anda meneruskan $currentStep ke view bio-sekolah
+            return view('peserta.pendaftaran.bio-sekolah', compact('bidang','currentStep', 'formData'));
+        } elseif ($currentStep == 3) {
+            // Pastikan Anda meneruskan $currentStep ke view lampiran
+            return view('peserta.pendaftaran.lampiran', compact('currentStep', 'formData'));
         }
+
+        // Jika step tidak valid (misal: step=4), kembalikan ke awal.
+        $request->session()->forget(['pendaftaran_data', 'pendaftaran_step']);
+        return redirect()->route('pendaftaran.create');
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index() {
-
-    }
+    public function index() {}
 
 
     /**
@@ -56,41 +66,56 @@ class PendaftaranController extends Controller
 
     public function store(Request $request)
     {
-
         $currentStep = $request->input('current_step');
         $formData = $request->session()->get('pendaftaran_data', []);
 
+
+        // return $request;
+        // return $currentStep;
+        // return $formData;
         // --- VALIDASI DAN SIMPAN DATA LANGKAH 1 ---
         if ($currentStep == 1) {
             $validatedData = $request->validate([
-                'pelatihan_id' => 'required|exists:pelatihans,id',
                 'nama' => 'required|string|max:255',
                 'nik' => 'required|string|digits:16|unique:pesertas,nik',
+                'no_hp' => 'required|string|max:15',
+                'email' => 'required|email|max:255|unique:pesertas,email',
                 'tempat_lahir' => 'required|string|max:100',
                 'tanggal_lahir' => 'required|date',
                 'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
                 'agama' => 'required|string|max:50',
                 'alamat' => 'required|string',
-                'no_hp' => 'required|string|max:15',
-                'email' => 'required|email|max:255|unique:pesertas,email',
             ]);
 
-            // Gabungkan data baru dengan data yang sudah ada di session
+            // Gabungkan data yang divalidasi dengan data session yang sudah ada.
             $request->session()->put('pendaftaran_data', array_merge($formData, $validatedData));
+            // Set langkah berikutnya adalah 2.
+            $request->session()->put('pendaftaran_step', 2);
+
+            // Redirect ke method create dengan parameter step=2
             return redirect()->route('pendaftaran.create', ['step' => 2]);
         }
 
         // --- VALIDASI DAN SIMPAN DATA LANGKAH 2 ---
         else if ($currentStep == 2) {
+            // return $request;
+            // PERHATIKAN: Nama field di sini HARUS SAMA dengan atribut 'name' pada input di form bio-sekolah.blade.php
             $validatedData = $request->validate([
                 'asal_instansi' => 'required|string|max:255',
                 'alamat_instansi' => 'required|string',
                 'bidang_keahlian' => 'required|string|max:255',
                 'kelas' => 'required|string|max:100',
                 'cabang_dinas_wilayah' => 'required|string|max:255',
+                'pelatihan_id' => 'required|string',
             ]);
 
+
+            // return "asjil";
+
             $request->session()->put('pendaftaran_data', array_merge($formData, $validatedData));
+            $request->session()->put('pendaftaran_step', 3);
+
+            // Redirect ke method create dengan parameter step=3
             return redirect()->route('pendaftaran.create', ['step' => 3]);
         }
 
@@ -105,7 +130,15 @@ class PendaftaranController extends Controller
                 'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             ]);
 
+            $bidang = Bidang::all();
+            $pelatihan = pelatihan::all();
+            // return $pelatihan;
+            // return $bidang;
+
+
             $allData = array_merge($formData, $validatedData);
+            // $request->session()->flush();
+            // return $allData;
 
             // Gunakan transaction untuk memastikan semua data berhasil disimpan atau tidak sama sekali
             DB::transaction(function () use ($allData, $request) {
@@ -117,6 +150,7 @@ class PendaftaranController extends Controller
                     'kelas' => $allData['kelas'],
                     'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
                 ]);
+
 
                 // 2. Simpan Peserta
                 $peserta = Peserta::create([
@@ -146,6 +180,7 @@ class PendaftaranController extends Controller
                 ]);
             });
 
+            // return "kesave";
             // Hapus data dari session dan redirect dengan pesan sukses
             $request->session()->forget('pendaftaran_data');
             return redirect()->route('pendaftaran.create')->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
