@@ -28,7 +28,7 @@ class PendaftaranController extends Controller
         // Ambil data pelatihan untuk dropdown
         $bidangs = Bidang::with('pelatihans')->get();
 
-        return view('pendaftaran', compact('bidangs', 'currentStep', 'formData'));
+        return view('peserta.pendaftaran.bio-peserta', compact('bidangs', 'currentStep', 'formData'));
     }
 
     /**
