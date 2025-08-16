@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pelatihan extends Model
 {
@@ -13,8 +14,7 @@ class Pelatihan extends Model
     protected $table = 'pelatihans';
 
     protected $fillable = [
-        'nama_pelatihan',
-        'deskripsi',
+        'bidang_id',
         'tanggal_mulai',
         'tanggal_selesai',
     ];
@@ -23,6 +23,11 @@ class Pelatihan extends Model
     'tanggal_mulai' => 'date',
     'tanggal_selesai' => 'date',
     ];
+
+    public function bidang(): BelongsTo
+    {
+        return $this->belongsTo(Bidang::class, 'bidang_id');
+    }
 
     public function pesertas(): HasMany
     {

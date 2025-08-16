@@ -7,6 +7,7 @@ use App\Models\Pelatihan;
 use App\Models\Instansi;
 use App\Models\Peserta;
 use App\Models\Lampiran;
+use App\Models\Bidang;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -25,14 +26,17 @@ class PendaftaranController extends Controller
         $currentStep = $request->query('step', 1);
 
         // Ambil data pelatihan untuk dropdown
-        $pelatihans = Pelatihan::all();
+        $bidangs = Bidang::with('pelatihans')->get();
+
+
+        //         return view('peserta.pendaftaran.bio-peserta', compact('bidangs', 'currentStep', 'formData'));
 
         if ($currentStep == 1 ) {
-            return view('peserta.pendaftaran.bio-peserta', compact('pelatihans', 'currentStep', 'formData'));
+            return view('peserta.pendaftaran.bio-peserta', compact('bidangs', 'currentStep', 'formData'));
         }elseif ($currentStep == 2) {
-            return view('peserta.pendaftaran.bio-sekolah', compact('pelatihans', 'currentStep', 'formData'));
+            return view('peserta.pendaftaran.bio-sekolah', compact('bidangs', 'currentStep', 'formData'));
         }elseif($currentStep == 3) {
-            return view('peserta.pendaftaran.lampiran', compact('pelatihans', 'currentStep', 'formData'));
+            return view('peserta.pendaftaran.lampiran', compact('bidangs', 'currentStep', 'formData'));
         }
     }
 

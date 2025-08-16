@@ -62,7 +62,7 @@
                 </div>
             </div>
 
-            {{-- Email --}}
+            {{-- Email & no hp --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="no_hp" class="block text-sm font-semibold mb-2 text-slate-700">Nomor Handphone</label>
@@ -114,11 +114,10 @@
             {{-- Tempat, tanggal lahir --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="tempat_lahir" class="block text-sm font-semibold mb-2 text-slate-700">Nomor
-                        Handphone</label>
+                    <label for="tempat_lahir" class="block text-sm font-semibold mb-2 text-slate-700">Tempat Lahir</label>
                     <div class="relative">
                         <input type="text" id="tempat_lahir" name="tempat_lahir" maxlength="15"
-                            placeholder="Contoh: 081234567890" value="{{ old('tempat_lahir') }}"
+                            placeholder="Surabaya" value="{{ old('tempat_lahir') }}"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('tempat_lahir') border-red-500 @enderror"
                             required />
@@ -139,7 +138,7 @@
                 </div>
                 <div>
                     <label for="tanggal_lahir"
-                        class="block text-sm font-semibold mb-2 text-slate-700">tanggal_lahir</label>
+                        class="block text-sm font-semibold mb-2 text-slate-700">Tanggal Lahir</label>
                     <div class="relative">
                         <input type="date" id="tanggal_lahir" name="tanggal_lahir"
                             placeholder="Masukkan tanggal_lahir Aktif" value="{{ old('tanggal_lahir') }}"

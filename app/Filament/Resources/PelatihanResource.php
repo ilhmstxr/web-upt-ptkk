@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PelatihanResource\Pages;
 use App\Filament\Resources\PelatihanResource\RelationManagers;
 use App\Models\Pelatihan;
+use App\Models\Bidang;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -17,18 +18,19 @@ class PelatihanResource extends Resource
 {
     protected static ?string $model = Pelatihan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    protected static ?string $navigationGroup = 'Pendaftaran';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_pelatihan')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\RichEditor::make('deskripsi')
-                    ->required()
-                    ->columnSpanFull(),
+                Forms\Components\Section::make('Data Bidang Keahlian')
+                    ->relationship('bidang') // Mengambil data dari relasi 'bidang'
+                    ->schema([
+                        Forms\Components\TextInput::make('nama_bidang')->required(),
+                        Forms\Components\TextInput::make('deskripsi')->required()->columnSpanFull(),
+                    ]),
                 Forms\Components\DatePicker::make('tanggal_mulai')
                     ->required(),
                 Forms\Components\DatePicker::make('tanggal_selesai')
@@ -40,12 +42,7 @@ class PelatihanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama_pelatihan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('deskripsi')
-                    ->html() 
-                    ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('bidang.nama_bidang')->searchable(),
                 Tables\Columns\TextColumn::make('tanggal_mulai')
                     ->date()
                     ->sortable(),
