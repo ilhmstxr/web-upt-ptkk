@@ -135,7 +135,7 @@ class PendaftaranController extends Controller
 
 
             $allData = array_merge($formData, $validatedData);
-            $request->session()->flush();
+            // $request->session()->flush();
             // return $allData;
 
             // Gunakan transaction untuk memastikan semua data berhasil disimpan atau tidak sama sekali
