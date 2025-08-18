@@ -125,10 +125,10 @@ class PendaftaranController extends Controller
         // --- VALIDASI DAN SIMPAN DATA LANGKAH 3 (FINAL) ---
         else if ($currentStep == 3) {
             $validatedData = $request->validate([
-                'no_surat_tugas' => 'required|string|max:255',
+                'no_surat_tugas' => 'nullable|string|max:255',
                 'fc_ktp' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'fc_ijazah' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-                'fc_surat_tugas' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'fc_surat_tugas' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'fc_surat_sehat' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             ]);
