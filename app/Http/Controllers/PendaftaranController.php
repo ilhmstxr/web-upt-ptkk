@@ -133,14 +133,9 @@ class PendaftaranController extends Controller
                 'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             ]);
 
-            $bidang = Bidang::all();
-            $pelatihan = pelatihan::all();
-            // return $pelatihan;
-            // return $bidang;
-
 
             $allData = array_merge($formData, $validatedData);
-            // $request->session()->flush();
+            $request->session()->flush();
             // return $allData;
 
             // Gunakan transaction untuk memastikan semua data berhasil disimpan atau tidak sama sekali
@@ -171,22 +166,45 @@ class PendaftaranController extends Controller
                 ]);
 
                 // 3. Simpan Lampiran
-                $saveFile = fn($file) => $file->store('public/berkas_pendaftaran');
-                Lampiran::create([
-                    'peserta_id' => $peserta->id,
-                    'no_surat_tugas' => $allData['no_surat_tugas'],
-                    'fc_ktp' => $saveFile($request->file('fc_ktp')),
-                    'fc_ijazah' => $saveFile($request->file('fc_ijazah')),
-                    'fc_surat_tugas' => $saveFile($request->file('fc_surat_tugas')),
-                    'fc_surat_sehat' => $saveFile($request->file('fc_surat_sehat')),
-                    'pas_foto' => $saveFile($request->file('pas_foto')),
-                ]);
+                // $saveFile = fn($file) => $file->store('public/berkas_pendaftaran');
+                // Lampiran::create([
+                //     'peserta_id' => $peserta->id,
+                //     'no_surat_tugas' => $allData['no_surat_tugas'],
+                //     'fc_ktp' => $saveFile($request->file('fc_ktp')),
+                //     'fc_ijazah' => $saveFile($request->file('fc_ijazah')),
+                //     'fc_surat_tugas' => $saveFile($request->file('fc_surat_tugas')),
+                //     'fc_surat_sehat' => $saveFile($request->file('fc_surat_sehat')),
+                //     'pas_foto' => $saveFile($request->file('pas_foto')),
+                // ]);
+                $lampiranData = [
+                  'peserta_id'=> $peserta->id,
+                  'no_surat_tugas' => $allData['no_surat_tugas']
+                ];
+
+                $fileFields = [
+                    'fc_ktp',
+                    'fc_ijazah',
+                    'fc_surat_tugas',
+                    'fc_surat_sehat',
+                    'pas_foto'
+                ];
+
+                foreach ($fileFields as $field) {
+                    if ($request->hasFile($field)) {
+                        $file = $request->file($field);
+                        $lampiranData[$field] = $file->store('public/berkas_pendaftaran');
+                    }
+                }
+
+                Lampiran::create($lampiranData);    
             });
 
-            // return "kesave";
+            return "kesave";
             // Hapus data dari session dan redirect dengan pesan sukses
             $request->session()->forget('pendaftaran_data');
             return redirect()->route('pendaftaran.create')->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
+
+
         }
 
         return redirect()->route('pendaftaran.create');
