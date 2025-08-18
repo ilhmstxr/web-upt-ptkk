@@ -12,6 +12,7 @@ use Filament\Tables\Table;
 
 class RoomResource extends Resource
 {
+    // Properti resource tetap sama
     protected static ?string $model = Room::class;
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
     protected static ?string $navigationGroup = 'Manajemen Kamar & Peserta';
@@ -24,17 +25,25 @@ class RoomResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label('Nama Kamar')
                     ->required(),
+                Forms\Components\TextInput::make('number') // Mengubah 'nomor_kamar' menjadi 'number'
+                    ->label('Nomor Kamar')
+                    ->required()
+                    ->numeric() // Menambahkan validasi numeric karena di migrasi Anda integer
+                    ->unique(ignoreRecord: true), // Menjamin nomor kamar unik
                 Forms\Components\Select::make('section')
                     ->label('Bagian')
                     ->options([
-                        'atas' => 'Atas',
+                        'atas' => 'Atas',ch
                         'bawah' => 'Bawah',
                     ])
                     ->nullable(),
+                
                 Forms\Components\TextInput::make('capacity')
                     ->label('Kapasitas (jumlah bed)')
                     ->numeric()
+                    ->minValue(1)
                     ->required(),
+                
                 Forms\Components\Select::make('assigned_for')
                     ->label('Diperuntukkan untuk')
                     ->options([
@@ -42,8 +51,15 @@ class RoomResource extends Resource
                         'laki-laki' => 'Laki-laki',
                         'perempuan' => 'Perempuan',
                     ])
-                    ->nullable()
-            ]);
+                    ->nullable(),
+
+                Forms\Components\Textarea::make('keterangan')
+                    ->label('Keterangan Tambahan')
+                    ->rows(3)
+                    ->maxLength(255)
+                    ->nullable(),
+            ])
+            ->columns(2);
     }
 
     public static function table(Table $table): Table
@@ -54,6 +70,10 @@ class RoomResource extends Resource
                     ->label('Nama Kamar')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('number') // Mengubah 'nomor_kamar' menjadi 'number'
+                    ->label('Nomor Kamar')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('section')
                     ->label('Bagian')
                     ->sortable(),
@@ -61,7 +81,9 @@ class RoomResource extends Resource
                     ->label('Kapasitas')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('assigned_for')
-                    ->label('Diperuntukkan'),
+                    ->label('Diperuntukkan')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('registrations_count')
                     ->label('Jumlah Terisi')
                     ->counts('registrations')

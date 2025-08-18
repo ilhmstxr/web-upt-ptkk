@@ -63,6 +63,7 @@ class RegistrationController extends Controller
             );
 
             // 🔑 Kirim OTP otomatis ke WhatsApp
+            // Baris ini tetap ada, tapi redirect-nya tidak ke halaman OTP
             $this->sendOtpToWhatsapp($user);
         }
 
@@ -134,11 +135,8 @@ class RegistrationController extends Controller
             'pas_foto_path' => $dokData['pas_foto_path'] ?? null,
         ]);
 
-        // 7. Redirect ke halaman OTP untuk login
-        return redirect()->route('otp.form')->with([
-            'status' => 'Kode OTP sudah dikirim ke WhatsApp Anda.',
-            'email' => $user->email
-        ]);
+        // ✅ PERBAIKAN: Arahkan langsung ke halaman sukses
+        return redirect()->route('registration.success');
     }
 
     // Tampilkan halaman OTP
@@ -180,7 +178,7 @@ class RegistrationController extends Controller
         return redirect()->route('dashboard'); // ganti dengan route home/dashboard
     }
 
-    // Halaman sukses opsional
+    // Halaman sukses
     public function success()
     {
         return view('registration.success');

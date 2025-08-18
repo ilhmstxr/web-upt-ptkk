@@ -23,7 +23,8 @@
                 <h1 class="text-xl font-bold text-gray-800">UPT PTKK</h1>
             </a>
             <nav>
-                <a href="/pendaftaran" class="px-4 py-2 text-white font-semibold rounded-lg shadow-md btn-primary">Daftar Sekarang</a>
+                <!-- Menyesuaikan tautan "Daftar Sekarang" di header untuk menyertakan slug pelatihan -->
+                <a href="/pendaftaran?pelatihan={{ $pelatihan->slug }}" class="px-4 py-2 text-white font-semibold rounded-lg shadow-md btn-primary">Daftar Sekarang</a>
             </nav>
         </div>
     </header>
@@ -56,7 +57,7 @@
                                     <span>Lokasi: UPT PTKK Dinas Pendidikan Jawa Timur</span>
                                 </li>
                                 <li class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-[#5c76c1]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292m0 2.416a4 4 0 010 5.292m-6 4H3a2 2 0 01-2-2v-2a2 2 0 012-2h3m0 0a6 6 0 0112 0m-3-2a3 3 0 00-3-3m0 0a3 3 0 00-3-3m0 6v-3m0 0a3 3 0 00-3-3m0 0a3 3 0 00-3-3m0 6v-3m0 0a3 3 0 00-3-3m0 0a3 3 0 00-3-3"/></svg>
+                                    <svg class="w-5 h-5 mr-2 text-[#5c76c1]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292m0 2.416a4 4 0 010 5.292m-6 4H3a2 2 0 01-2-2v-2a2 2 0 012-2h3m0 0a6 6 0 0112 0m-3-2a3 3 0 00-3-3m0 0a3 3 0 00-3-3m0 6v-3m0 0a3 3 0 00-3-3m0 0a3 3 0 00-3-3m0 6v-3m0 0a3 3 0 00-3-3"/></svg>
                                     <span>Target Peserta: {{ $pelatihan->target_peserta }}</span>
                                 </li>
                                 <li class="flex items-center">
@@ -69,12 +70,15 @@
                         <div>
                             <h3 class="text-xl font-bold text-gray-800">Materi Pelatihan</h3>
                             <ul class="mt-4 text-gray-700 space-y-2 list-disc list-inside">
-                                {{-- Jika materi disimpan sebagai array/JSON, gunakan foreach --}}
-                                {{-- @foreach($pelatihan->materi as $materi)
-                                    <li>{{ $materi }}</li>
-                                @endforeach --}}
-                                {{-- Jika materi disimpan sebagai teks biasa, tampilkan langsung --}}
-                                <li>{{ $pelatihan->materi }}</li>
+                                {{-- Jika materi disimpan sebagai array/JSON --}}
+                                @if (is_array($pelatihan->materi))
+                                    @foreach($pelatihan->materi as $materi)
+                                        <li>{{ $materi }}</li>
+                                    @endforeach
+                                @else
+                                    {{-- Jika materi disimpan sebagai teks biasa --}}
+                                    <li>{{ $pelatihan->materi }}</li>
+                                @endif
                             </ul>
                         </div>
                     </div>
@@ -92,7 +96,7 @@
                     @endif
                     
                     <div class="mt-12 text-center">
-                        <a href="/pendaftaran" class="px-12 py-4 text-white font-semibold text-lg rounded-lg shadow-md btn-primary">
+                        <a href="/pendaftaran?pelatihan={{ $pelatihan->slug }}" class="px-12 py-4 text-white font-semibold text-lg rounded-lg shadow-md btn-primary">
                             Daftar Pelatihan
                         </a>
                     </div>

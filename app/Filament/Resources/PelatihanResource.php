@@ -27,7 +27,8 @@ class PelatihanResource extends Resource
 
                 Forms\Components\TextInput::make('slug')
                     ->label('Slug')
-                    ->disabled(),
+                    ->disabled()
+                    ->helperText('Slug akan dibuat otomatis berdasarkan judul.'),
 
                 Forms\Components\TextInput::make('durasi')
                     ->label('Durasi')
@@ -76,10 +77,19 @@ class PelatihanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Menambahkan withCount untuk menghitung relasi 'registrations'
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\ImageColumn::make('gambar')->label('Thumbnail')->rounded(),
                 Tables\Columns\TextColumn::make('judul')->label('Judul')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('slug')->label('Slug')->limit(20),
+                
+                // Kolom baru untuk menampilkan jumlah peserta
+                Tables\Columns\TextColumn::make('registrations_count')
+                    ->label('Jumlah Peserta')
+                    ->counts('registrations') // Menghitung relasi 'registrations'
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('tanggal_mulai')->label('Mulai')->date()->sortable(),
                 Tables\Columns\TextColumn::make('tanggal_selesai')->label('Selesai')->date()->sortable(),
                 Tables\Columns\TextColumn::make('durasi')->label('Durasi'),
@@ -87,7 +97,6 @@ class PelatihanResource extends Resource
                 Tables\Columns\TextColumn::make('tujuan')->label('Tujuan')->limit(30)->wrap(),
                 Tables\Columns\TextColumn::make('target_peserta')->label('Target Peserta')->limit(30)->wrap(),
                 Tables\Columns\TextColumn::make('materi')->label('Materi')->limit(30)->wrap(),
-                Tables\Columns\TextColumn::make('deskripsi')->label('Deskripsi')->limit(30)->wrap(),
                 Tables\Columns\TextColumn::make('sertifikat')
                     ->label('Sertifikat')
                     ->formatStateUsing(fn($state) => $state ? "<a href='".asset('storage/'.$state)."' target='_blank'>Download</a>" : '-')
@@ -103,7 +112,9 @@ class PelatihanResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 

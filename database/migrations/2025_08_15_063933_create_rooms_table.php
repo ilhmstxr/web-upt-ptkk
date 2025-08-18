@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('number');
             $table->string('section')->nullable(); // 'atas' atau 'bawah'
             $table->integer('capacity'); // Jumlah bed
             $table->string('assigned_for')->nullable(); // 'instruktur' atau null
