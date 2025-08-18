@@ -67,7 +67,7 @@
             {{-- Email & no hp --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="no_hp" class="block text-sm font-semibold mb-2 text-slate-700">Nomor Handphone</label>
+                    <label for="no_hp" class="block text-sm font-semibold mb-2 text-slate-700">Nomor Handphone / Whatsapp</label>
                     <div class="relative">
                         <input type="tel" id="no_hp" name="no_hp" maxlength="15"
                             placeholder="Contoh: 081234567890" value="{{ old('no_hp') }}"

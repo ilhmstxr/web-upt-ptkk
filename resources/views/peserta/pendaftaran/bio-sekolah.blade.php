@@ -11,7 +11,7 @@
             {{-- Asal Lembaga --}}
             <div>
                 <label for="asal_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Asal Lembaga
-                    Sekolah</label>
+                    Instansi</label>
                 <div class="relative">
                     <input type="text" id="asal_instansi" name="asal_instansi" placeholder="Masukkan Asal Lembaga"
                         value="{{ old('asal_instansi') }}"
@@ -33,11 +33,11 @@
                 @enderror
             </div>
 
-            {{-- Alamat Sekolah --}}
+            {{-- Alamat Instansi --}}
             <div>
-                <label for="alamat_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Sekolah</label>
+                <label for="alamat_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Instansi</label>
                 <div class="relative">
-                    <input type="text" id="alamat_instansi" name="alamat_instansi" placeholder="Masukkan Alamat Sekolah"
+                    <input type="text" id="alamat_instansi" name="alamat_instansi" placeholder="Masukkan Alamat Instansi"
                         value="{{ old('alamat_instansi') }}"
                         class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('alamat_instansi') border-red-500 @enderror"
                         required />
@@ -63,8 +63,8 @@
                     <label for="bidang_keahlian" class="block text-sm font-semibold mb-2 text-slate-700">Kompetensi/Bidang
                         Keahlian</label>
                     <div class="relative">
-                        <input type="text" id="bidang_keahlian" name="bidang_keahlian" placeholder="Masukkan Asal Lembaga"
-                            value="{{ old('bidang_keahlian') }}"
+                        <input type="text" id="bidang_keahlian" name="bidang_keahlian"
+                            placeholder="Masukkan Asal Lembaga" value="{{ old('bidang_keahlian') }}"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('bidang_keahlian') border-red-500 @enderror"
                             required />
                         {{-- <option value="teknik-informatika" @if (old('bidang_keahlian') == 'teknik-informatika') selected @endif>Teknik Informatika</option> --}}
@@ -155,8 +155,12 @@
                         class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabang_dinas_wilayah') border-red-500 @enderror"
                         required>
                         <option value="">Pilih Dinas Wilayah</option>
-                        <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
-                            Surabaya</option>
+                        @foreach ($cabangDinas as $cb)
+                            {{-- <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
+                            Surabaya</option> --}}
+                            <option value="{{ $cb->id }}" @if (old('cabang_dinas_wilayah') == '{{ $cb->id }}') selected @endif>
+                                {{ $cb->nama }}</option>
+                        @endforeach
                         {{-- (Tambahkan opsi lain di sini) --}}
                     </select>
                     <div id="cabang_dinas_wilayahError"

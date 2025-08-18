@@ -8,6 +8,7 @@ use App\Models\Instansi;
 use App\Models\Peserta;
 use App\Models\Lampiran;
 use App\Models\Bidang;
+use App\Models\CabangDinas;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -33,18 +34,20 @@ class PendaftaranController extends Controller
         // Ambil data pelatihan (hanya diperlukan di langkah 1).
         $bidang = Pelatihan::with('bidang')->get();
 
+        $cabangDinas = CabangDinas::all();
+
         // return $bidang;
 
         // return $formData;
         // Tampilkan view yang sesuai dengan langkah saat ini.
         if ($currentStep == 1) {
-            return view('peserta.pendaftaran.bio-peserta', compact('bidang', 'currentStep', 'formData'));
+            return view('peserta.pendaftaran.bio-peserta', compact('bidang', 'currentStep', 'formData','cabangDinas'));
         } elseif ($currentStep == 2) {
             // Pastikan Anda meneruskan $currentStep ke view bio-sekolah
-            return view('peserta.pendaftaran.bio-sekolah', compact('bidang','currentStep', 'formData'));
+            return view('peserta.pendaftaran.bio-sekolah', compact('bidang','currentStep', 'formData','cabangDinas'));
         } elseif ($currentStep == 3) {
             // Pastikan Anda meneruskan $currentStep ke view lampiran
-            return view('peserta.pendaftaran.lampiran', compact('currentStep', 'formData'));
+            return view('peserta.pendaftaran.lampiran', compact('currentStep', 'formData','cabangDinas'));
         }
 
         // Jika step tidak valid (misal: step=4), kembalikan ke awal.
