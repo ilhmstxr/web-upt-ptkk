@@ -18,7 +18,7 @@
                     {{-- Container relatif untuk pop-up --}}
                     <div class="relative">
                         <input type="text" id="nama" name="nama" placeholder="Masukkan Nama Lengkap"
-                            value="{{ old('nama') }}"
+                            value="{{ old('nama', $formData['nama'] ?? '') }}"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('nama') border-red-500 @enderror"
                             required />
                         {{-- Pop-up Error Kustom untuk Nama --}}
@@ -41,7 +41,7 @@
                     <label for="nik" class="block text-sm font-semibold mb-2 text-slate-700">NIK (16 digit)</label>
                     <div class="relative">
                         <input type="text" id="nik" name="nik" maxlength="16"
-                            placeholder="Masukkan 16 digit NIK" value="{{ old('nik') }}" pattern="\d{16}"
+                            placeholder="Masukkan 16 digit NIK" value="{{ old('nik', $formData['nik'] ?? '') }}" pattern="\d{16}"
                             title="NIK harus terdiri dari 16 digit angka."
                             oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('nik') border-red-500 @enderror"
@@ -70,7 +70,7 @@
                     <label for="no_hp" class="block text-sm font-semibold mb-2 text-slate-700">Nomor Handphone / Whatsapp</label>
                     <div class="relative">
                         <input type="tel" id="no_hp" name="no_hp" maxlength="15"
-                            placeholder="Contoh: 081234567890" value="{{ old('no_hp') }}"
+                            placeholder="Contoh: 081234567890" value="{{ old('no_hp', $formData['no_hp'] ?? '') }}"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('no_hp') border-red-500 @enderror"
                             required />
@@ -93,7 +93,7 @@
                     <label for="email" class="block text-sm font-semibold mb-2 text-slate-700">Email</label>
                     <div class="relative">
                         <input type="email" id="email" name="email" placeholder="Masukkan Email Aktif"
-                            value="{{ old('email') }}"
+                            value="{{ old('email', $formData['email'] ?? '') }}"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-500 @enderror"
                             required />
                         <div id="emailError"
@@ -119,7 +119,7 @@
                     <label for="tempat_lahir" class="block text-sm font-semibold mb-2 text-slate-700">Tempat Lahir</label>
                     <div class="relative">
                         <input type="text" id="tempat_lahir" name="tempat_lahir" maxlength="15"
-                            placeholder="Surabaya" value="{{ old('tempat_lahir') }}"
+                            placeholder="Surabaya" value="{{ old('tempat_lahir',$formData['tempat_lahir'] ?? '') }}"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('tempat_lahir') border-red-500 @enderror"
                             required />
                         <div id="tempat_lahirError"
@@ -142,7 +142,7 @@
                         class="block text-sm font-semibold mb-2 text-slate-700">Tanggal Lahir</label>
                     <div class="relative">
                         <input type="date" id="tanggal_lahir" name="tanggal_lahir"
-                            placeholder="Masukkan tanggal_lahir Aktif" value="{{ old('tanggal_lahir') }}"
+                            placeholder="Masukkan tanggal_lahir Aktif" value="{{ old('tanggal_lahir', $formData['tanggal_lahir'] ?? '') }}"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('tanggal_lahir') border-red-500 @enderror"
                             required />
                         <div id="tanggal_lahirError"
@@ -171,9 +171,9 @@
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('jenis_kelamin') border-red-500 @enderror"
                             required>
                             <option value="">Pilih Jenis Kelamin</option>
-                            <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki
+                            <option value="Laki-laki" {{ old('jenis_kelamin', $formData['jenis_kelamin'] ?? '') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki
                             </option>
-                            <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan
+                            <option value="Perempuan" {{ old('jenis_kelamin', $formData['jenis_kelamin'] ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan
                             </option>
                         </select>
                         <div id="jenis_kelaminError"
@@ -198,12 +198,12 @@
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('agama') border-red-500 @enderror"
                             required>
                             <option value="">Pilih Agama</option>
-                            <option value="Islam" {{ old('agama') == 'Islam' ? 'selected' : '' }}>Islam</option>
-                            <option value="Kristen" {{ old('agama') == 'Kristen' ? 'selected' : '' }}>Kristen</option>
-                            <option value="Katolik" {{ old('agama') == 'Katolik' ? 'selected' : '' }}>Katolik</option>
-                            <option value="Hindu" {{ old('agama') == 'Hindu' ? 'selected' : '' }}>Hindu</option>
-                            <option value="Buddha" {{ old('agama') == 'Buddha' ? 'selected' : '' }}>Buddha</option>
-                            <option value="Konghucu" {{ old('agama') == 'Konghucu' ? 'selected' : '' }}>Konghucu</option>
+                            <option value="Islam" {{ old('agama', $formData['agama'] ?? '') == 'Islam' ? 'selected' : '' }}>Islam</option>
+                            <option value="Kristen" {{ old('agama', $formData['agama'] ?? '') == 'Kristen' ? 'selected' : '' }}>Kristen</option>
+                            <option value="Katolik" {{ old('agama', $formData['agama'] ?? '') == 'Katolik' ? 'selected' : '' }}>Katolik</option>
+                            <option value="Hindu" {{ old('agama', $formData['agama'] ?? '') == 'Hindu' ? 'selected' : '' }}>Hindu</option>
+                            <option value="Buddha" {{ old('agama', $formData['agama'] ?? '') == 'Buddha' ? 'selected' : '' }}>Buddha</option>
+                            <option value="Konghucu" {{ old('agama', $formData['agama'] ?? '') == 'Konghucu' ? 'selected' : '' }}>Konghucu</option>
                         </select>
                         <div id="agamaError"
                             class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
@@ -227,9 +227,9 @@
                 <label for="alamat" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Tempat
                     Tinggal</label>
                 <div class="relative">
-                    <textarea id="alamat" name="alamat" placeholder="Masukkan Alamat Tinggal" value="{{ old('email') }}"
+                    <textarea id="alamat" name="alamat" placeholder="Masukkan Alamat Tinggal" 
                         class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('alamat') border-red-500 @enderror"
-                        required></textarea>
+                        required>{{ old('alamat', $formData['alamat'] ?? '') }}</textarea>
                     <div id="alamatError"
                         class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
