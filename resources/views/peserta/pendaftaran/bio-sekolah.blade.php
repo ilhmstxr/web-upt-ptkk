@@ -70,13 +70,13 @@
                             value="{{ old('bidang_keahlian', $formData['bidang_keahlian'] ?? '') }}"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('bidang_keahlian') border-red-500 @enderror"
                             required /> --}}
-                        <select id="pelatihan_id" name="pelatihan_id"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('pelatihan_id') border-red-500 @enderror"
+                        <select id="bidang_keahlian" name="bidang_keahlian"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('bidang_keahlian') border-red-500 @enderror"
                             required>
                             <option value="">Pilih Kompetensi</option>
                             @foreach ($bidang as $b)
-                                <option value="{{ $b->id }}" @if (old('pelatihan_id', $formData['pelatihan_id'] ?? '') == $b->id) selected @endif>
-                                    {{ $b->bidang->nama_bidang }}</option>
+                                <option value="{{ $b->id }}" @if (old('bidang_keahlian', $formData['bidang_keahlian'] ?? '') == $b->id) selected @endif>
+                                    {{ $b->nama_bidang }}</option>
                             @endforeach
                         </select>
                         <div id="bidang_keahlianError"
@@ -123,34 +123,32 @@
             </div>
 
 
-            {{-- pelatihan yang ingin diikuti --}}
-            <div class="grid grid-cols-1  gap-6">
-                <label for="pelatihan_id" class="block text-sm font-semibold mb-2 text-slate-700">Pelatihan yang ingin
-                    diikuti</label>
-                <div class="relative">
-                    <select id="pelatihan_id" name="pelatihan_id"
-                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('pelatihan_id') border-red-500 @enderror"
-                        required>
-                        <option value="">Pilih Pelatihan</option>
-                        <option value="1" @if (old('pelatihan_id', $formData['pelatihan_id'] ?? '') == '1') selected @endif>Kegiatan Pengembangan dan Pelatihan Kompetensi Vokasi bagi Siswa SMA/SMK
-                            (MILEA) menuju Generasi Emas 2045 (Kelas Keterampilan) Angkatan II Tahun 2025</option>
+            <div class="grid grid-cols-1 gap-2">
+                {{-- 1. Gunakan <fieldset> dan <legend> untuk aksesibilitas yang lebih baik --}}
+                <fieldset>
+                    <legend class="block text-sm font-semibold mb-3 text-slate-700">
+                        Pelatihan yang ingin diikuti
+                    </legend>
 
-                        {{-- <option value="teknik-informatika" @if (old('pelatihan_id') == 'teknik-informatika') selected @endif>Teknik Informatika</option> --}}
-                        {{-- (Tambahkan opsi lain di sini) --}}
-                    </select>
-                    <div id="pelatihan_idError"
-                        class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="error-message-text"></span>
+                    <div class="space-y-3">
+                        {{-- Loop melalui setiap pelatihan dari database --}}
+                        @foreach ($pelatihan as $p)
+                            {{-- 2. Styling setiap opsi agar terlihat seperti kartu yang bisa diklik --}}
+                            <label
+                                class="flex items-center gap-3 border border-slate-300 rounded-lg p-3 cursor-pointer hover:bg-sky-50 hover:border-sky-400 transition-all duration-200 has-[:checked]:bg-sky-100 has-[:checked]:border-sky-500 has-[:checked]:ring-2 has-[:checked]:ring-sky-200">
+                                <input type="radio" id="pelatihan_{{ $p->id }}" name="pelatihan_id"
+                                    value="{{ $p->id }}"
+                                    class="form-radio text-blue-600 focus:ring-blue-500 border-gray-300"
+                                    {{-- 3. Gunakan directive @checked yang lebih bersih --}} @checked(old('pelatihan_id', $formData['pelatihan_id'] ?? '') == $p->id) required>
+                                <span class="font-medium text-slate-800">{{ $p->nama_pelatihan }}</span>
+                            </label>
+                        @endforeach
                     </div>
-                </div>
+                </fieldset>
+
+                {{-- 4. Pesan error standar yang rapi sudah cukup --}}
                 @error('pelatihan_id')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -203,7 +201,6 @@
     </div>
 @endsection
 
-@push('scripts')
     <style>
         .error-popup {
             opacity: 0;
@@ -298,5 +295,29 @@
                     firstErrorElement.focus();
                 }
             });
+
+            
+        // Pilih semua radio button yang memiliki nama 'pelatihan_id'
+        const radioButtons = document.querySelectorAll('input[type="radio"][name="pelatihan_id"]');
+        
+        // Variabel untuk melacak radio button yang terakhir dicentang
+        let lastChecked = null;
+
+        // Tambahkan event listener untuk setiap radio button
+        radioButtons.forEach(radio => {
+            radio.addEventListener('click', function() {
+                // Periksa apakah radio yang diklik adalah yang sama dengan yang terakhir dicentang
+                if (this === lastChecked) {
+                    // Jika ya, batalkan centangnya
+                    this.checked = false;
+                    // Reset pelacak
+                    lastChecked = null;
+                } else {
+                    // Jika ini adalah pilihan baru, update pelacak ke radio button ini
+                    lastChecked = this;
+                }
+            });
         });
+        });
+
     </script>

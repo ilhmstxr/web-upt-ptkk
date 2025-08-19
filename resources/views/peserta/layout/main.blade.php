@@ -116,7 +116,7 @@
                 <main class="lg:col-span-3">
                     @yield('content')
                 </main>
-            @else
+            @elseif($currentStep == 4)
                 <main class="w-full">
                     @yield('content')
                 </main>

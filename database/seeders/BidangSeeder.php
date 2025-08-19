@@ -59,6 +59,6 @@ class BidangSeeder extends Seeder
 
 
 
-        
+        Bidang::insert($bidang);
     }
 }

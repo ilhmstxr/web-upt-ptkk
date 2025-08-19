@@ -32,8 +32,8 @@ class PendaftaranController extends Controller
         $formData = $request->session()->get('pendaftaran_data', []);
 
         // Ambil data pelatihan (hanya diperlukan di langkah 1).
-        $bidang = Pelatihan::with('bidang')->get();
-
+        $pelatihan = Pelatihan::all();
+        $bidang = Bidang::all();
         $cabangDinas = CabangDinas::all();
 
         // return $bidang;
@@ -41,10 +41,10 @@ class PendaftaranController extends Controller
         // return $formData;
         // Tampilkan view yang sesuai dengan langkah saat ini.
         if ($currentStep == 1) {
-            return view('peserta.pendaftaran.bio-peserta', compact('bidang', 'currentStep', 'formData', 'cabangDinas'));
+            return view('peserta.pendaftaran.bio-peserta', compact( 'currentStep', 'formData', 'cabangDinas'));
         } elseif ($currentStep == 2) {
             // Pastikan Anda meneruskan $currentStep ke view bio-sekolah
-            return view('peserta.pendaftaran.bio-sekolah', compact('bidang', 'currentStep', 'formData', 'cabangDinas'));
+            return view('peserta.pendaftaran.bio-sekolah', compact('pelatihan','bidang', 'currentStep', 'formData', 'cabangDinas'));
         } elseif ($currentStep == 3) {
             // Pastikan Anda meneruskan $currentStep ke view lampiran
             return view('peserta.pendaftaran.lampiran', compact('currentStep', 'formData', 'cabangDinas'));
@@ -125,11 +125,12 @@ class PendaftaranController extends Controller
 
         // --- VALIDASI DAN SIMPAN DATA LANGKAH 3 (FINAL) ---
         else if ($currentStep == 3) {
+;
             $validatedData = $request->validate([
-                'no_surat_tugas' => 'required|string|max:255',
+                // 'no_surat_tugas' => 'string|max:255',
                 'fc_ktp' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'fc_ijazah' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-                'fc_surat_tugas' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'fc_surat_tugas' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'fc_surat_sehat' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             ]);
@@ -155,6 +156,7 @@ class PendaftaranController extends Controller
                 $peserta = Peserta::create([
                     'pelatihan_id' => $allData['pelatihan_id'],
                     'instansi_id' => $instansi->id,
+                    'bidang_id' => $allData['bidang_keahlian'], // Asumsi bidang_keahlian adalah ID bidang
                     'nama' => $allData['nama'],
                     'nik' => $allData['nik'],
                     'tempat_lahir' => $allData['tempat_lahir'],
@@ -180,7 +182,7 @@ class PendaftaranController extends Controller
 
                 $lampiranData = [
                     'peserta_id' => $peserta->id,
-                    'no_surat_tugas' => $allData['no_surat_tugas'],
+                    'no_surat_tugas' => $allData['no_surat_tugas'] ?? null,
                 ];
 
                 // 2. Buat daftar nama input file Anda
@@ -224,7 +226,7 @@ class PendaftaranController extends Controller
             // return "kesave";
             // Hapus data dari session dan redirect dengan pesan sukses
             $request->session()->forget('pendaftaran_data');
-            return redirect()->route('pendaftaran.done', ['step' => 4])->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
+            return view('peserta.pendaftaran.selesai',compact('currentStep'))->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
         }
 
         // return redirect()->route('pendaftaran.create');

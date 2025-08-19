@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        
+
         <form id="lampiranForm" action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data"
             novalidate>
             @csrf
@@ -107,7 +107,7 @@
                             <div class="file-input-wrapper border border-gray-300 rounded-lg">
                                 <input type="file" id="fc_surat_tugas" name="fc_surat_tugas"
                                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    accept=".pdf,.jpg,.jpeg,.png"  onchange="handleFileSelect(this)">
+                                    accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(this)">
                                 <div class="flex items-center justify-between px-4 py-2.5">
                                     <span id="fc_surat_tugas-status" class="text-sm text-gray-500 truncate">Tidak ada file
                                         dipilih</span>
@@ -173,8 +173,7 @@
                         <div class="relative">
                             <input type="text" id="no_surat_tugas" name="no_surat_tugas"
                                 placeholder="Masukkan Nomor Surat" value="{{ old('no_surat_tugas') }}"
-                                class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('no_surat_tugas') border-red-500 @enderror"
-                                >
+                                class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('no_surat_tugas') border-red-500 @enderror">
                             <div id="no_surat_tugasError"
                                 class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
                                 <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor">
@@ -227,9 +226,10 @@
 
             {{-- Tombol Navigasi --}}
             <div class="flex justify-between items-center pt-6">
-                <a href="{{ route('pendaftaran.create', ['step' => 2]) }}" class="text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
-                &larr; Kembali
-            </a>
+                <a href="{{ route('pendaftaran.create', ['step' => 2]) }}"
+                    class="text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
+                    &larr; Kembali
+                </a>
                 <button type="submit"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2.5 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Kirim Pendaftaran
@@ -239,140 +239,139 @@
     </div>
 @endsection
 
-@push('scripts')
-    <style>
-        .error-popup {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-            transform: translateY(10px);
-            z-index: 10;
-        }
+<style>
+    .error-popup {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        transform: translateY(10px);
+        z-index: 10;
+    }
 
-        .error-popup.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
+    .error-popup.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
 
-        .file-input-wrapper.border-red-500 {
-            border-color: #ef4444;
-            /* red-500 */
-        }
-    </style>
+    .file-input-wrapper.border-red-500 {
+        border-color: #ef4444;
+        /* red-500 */
+    }
+</style>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.getElementById('lampiranForm');
-            if (!form) return;
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById('lampiranForm');
+        if (!form) return;
 
-            const showError = (element, message) => {
-                const errorPopup = document.getElementById(element.id + 'Error');
-                if (errorPopup) {
-                    errorPopup.querySelector('.error-message-text').textContent = message;
-                    errorPopup.classList.add('visible');
-                    const wrapper = element.closest('.file-input-wrapper');
-                    if (wrapper) {
-                        wrapper.classList.add('border-red-500');
-                    } else {
-                        element.classList.add('border-red-500', 'focus:ring-red-500');
-                    }
-                }
-            };
-
-            const hideError = (element) => {
-                const errorPopup = document.getElementById(element.id + 'Error');
-                if (errorPopup) {
-                    errorPopup.classList.remove('visible');
-                    const wrapper = element.closest('.file-input-wrapper');
-                    if (wrapper) {
-                        wrapper.classList.remove('border-red-500');
-                    } else {
-                        element.classList.remove('border-red-500', 'focus:ring-red-500');
-                    }
-                }
-            };
-
-            window.handleFileSelect = function(inputElement) {
-                const statusSpan = document.getElementById(inputElement.id + '-status');
-                const file = inputElement.files[0];
-                hideError(inputElement);
-
-                if (file) {
-                    const allowedTypes = inputElement.accept.split(',').map(t => t.trim());
-                    const maxSize = 5 * 1024 * 1024; // 5MB
-
-                    // Convert mime types for validation
-                    const mimeTypeMap = {
-                        '.pdf': 'application/pdf',
-                        '.jpg': 'image/jpeg',
-                        '.jpeg': 'image/jpeg',
-                        '.png': 'image/png'
-                    };
-                    const validMimeTypes = allowedTypes.map(type => mimeTypeMap[type]).filter(Boolean);
-
-                    if (validMimeTypes.length > 0 && !validMimeTypes.includes(file.type)) {
-                        showError(inputElement, `Format file tidak valid. Gunakan: ${allowedTypes.join(', ')}`);
-                        inputElement.value = '';
-                        statusSpan.textContent = 'Tidak ada file dipilih';
-                        return;
-                    }
-                    if (file.size > maxSize) {
-                        showError(inputElement, 'Ukuran file maksimal 5MB.');
-                        inputElement.value = '';
-                        statusSpan.textContent = 'Tidak ada file dipilih';
-                        return;
-                    }
-                    statusSpan.textContent = `✅ ${file.name}`;
-                    statusSpan.classList.add('text-green-600', 'font-medium');
+        const showError = (element, message) => {
+            const errorPopup = document.getElementById(element.id + 'Error');
+            if (errorPopup) {
+                errorPopup.querySelector('.error-message-text').textContent = message;
+                errorPopup.classList.add('visible');
+                const wrapper = element.closest('.file-input-wrapper');
+                if (wrapper) {
+                    wrapper.classList.add('border-red-500');
                 } else {
-                    statusSpan.textContent = 'Tidak ada file dipilih';
-                    statusSpan.classList.remove('text-green-600', 'font-medium');
+                    element.classList.add('border-red-500', 'focus:ring-red-500');
                 }
             }
+        };
 
-            form.querySelectorAll('[required]').forEach(element => {
-                element.addEventListener('input', () => hideError(element));
-                element.addEventListener('change', () => hideError(element));
-            });
+        const hideError = (element) => {
+            const errorPopup = document.getElementById(element.id + 'Error');
+            if (errorPopup) {
+                errorPopup.classList.remove('visible');
+                const wrapper = element.closest('.file-input-wrapper');
+                if (wrapper) {
+                    wrapper.classList.remove('border-red-500');
+                } else {
+                    element.classList.remove('border-red-500', 'focus:ring-red-500');
+                }
+            }
+        };
 
-            form.addEventListener('submit', function(event) {
-                form.querySelectorAll('[required]').forEach(hideError);
-                let firstErrorElement = null;
+        window.handleFileSelect = function(inputElement) {
+            const statusSpan = document.getElementById(inputElement.id + '-status');
+            const file = inputElement.files[0];
+            hideError(inputElement);
 
-                for (const element of form.elements) {
-                    if (element.hasAttribute('required')) {
-                        let isValid = element.type === 'file' ? element.files.length > 0 : element.validity
-                            .valid;
-                        if (!isValid) {
-                            event.preventDefault();
-                            let message = 'Wajib diisi';
-                            switch (element.id) {
-                                case 'fc_ktp':
-                                    message = 'File KTP wajib diunggah.';
-                                    break;
-                                case 'fc_ijazah':
-                                    message = 'File Ijazah wajib diunggah.';
-                                    break;
-                                case 'fc_surat_tugas':
-                                    message = 'File Surat Tugas wajib diunggah.';
-                                    break;
-                                case 'fc_surat_sehat':
-                                    message = 'File Surat Sehat wajib diunggah.';
-                                    break;
-                                case 'pas_foto':
-                                    message = 'Pas Foto wajib diunggah.';
-                                    break;
-                                case 'no_surat_tugas':
-                                    message = 'Nomor surat tugas tidak boleh kosong.';
-                                    break;
-                            }
-                            showError(element, message);
-                            if (!firstErrorElement) firstErrorElement = element;
+            if (file) {
+                const allowedTypes = inputElement.accept.split(',').map(t => t.trim());
+                const maxSize = 5 * 1024 * 1024; // 5MB
+
+                // Convert mime types for validation
+                const mimeTypeMap = {
+                    '.pdf': 'application/pdf',
+                    '.jpg': 'image/jpeg',
+                    '.jpeg': 'image/jpeg',
+                    '.png': 'image/png'
+                };
+                const validMimeTypes = allowedTypes.map(type => mimeTypeMap[type]).filter(Boolean);
+
+                if (validMimeTypes.length > 0 && !validMimeTypes.includes(file.type)) {
+                    showError(inputElement, `Format file tidak valid. Gunakan: ${allowedTypes.join(', ')}`);
+                    inputElement.value = '';
+                    statusSpan.textContent = 'Tidak ada file dipilih';
+                    return;
+                }
+                if (file.size > maxSize) {
+                    showError(inputElement, 'Ukuran file maksimal 5MB.');
+                    inputElement.value = '';
+                    statusSpan.textContent = 'Tidak ada file dipilih';
+                    return;
+                }
+                statusSpan.textContent = `✅ ${file.name}`;
+                statusSpan.classList.add('text-green-600', 'font-medium');
+            } else {
+                statusSpan.textContent = 'Tidak ada file dipilih';
+                statusSpan.classList.remove('text-green-600', 'font-medium');
+            }
+        }
+
+        form.querySelectorAll('[required]').forEach(element => {
+            element.addEventListener('input', () => hideError(element));
+            element.addEventListener('change', () => hideError(element));
+        });
+
+        form.addEventListener('submit', function(event) {
+            form.querySelectorAll('[required]').forEach(hideError);
+            let firstErrorElement = null;
+
+            for (const element of form.elements) {
+                if (element.hasAttribute('required')) {
+                    let isValid = element.type === 'file' ? element.files.length > 0 : element.validity
+                        .valid;
+                    if (!isValid) {
+                        event.preventDefault();
+                        let message = 'Wajib diisi';
+                        switch (element.id) {
+                            case 'fc_ktp':
+                                message = 'File KTP wajib diunggah.';
+                                break;
+                            case 'fc_ijazah':
+                                message = 'File Ijazah wajib diunggah.';
+                                break;
+                            // case 'fc_surat_tugas':
+                            //     message = 'File Surat Tugas wajib diunggah.';
+                            //     break;
+                            case 'fc_surat_sehat':
+                                message = 'File Surat Sehat wajib diunggah.';
+                                break;
+                            case 'pas_foto':
+                                message = 'Pas Foto wajib diunggah.';
+                                break;
+                            // case 'no_surat_tugas':
+                            //     message = 'Nomor surat tugas tidak boleh kosong.';
+                            //     break;
                         }
+                        showError(element, message);
+                        if (!firstErrorElement) firstErrorElement = element;
                     }
                 }
-                if (firstErrorElement) firstErrorElement.focus();
-            });
+            }
+            if (firstErrorElement) firstErrorElement.focus();
         });
-    </script>
+    });
+</script>
