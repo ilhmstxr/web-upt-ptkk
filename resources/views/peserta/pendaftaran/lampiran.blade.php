@@ -227,9 +227,9 @@
 
             {{-- Tombol Navigasi --}}
             <div class="flex justify-between items-center pt-6">
-                {{-- <a href="{{ route('pendaftaran.create', ['step' => 2]) }}" class="text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
+                <a href="{{ route('pendaftaran.create', ['step' => 2]) }}" class="text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
                 &larr; Kembali
-            </a> --}}
+            </a>
                 <button type="submit"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2.5 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Kirim Pendaftaran

@@ -50,6 +50,8 @@ class PendaftaranController extends Controller
             return view('peserta.pendaftaran.lampiran', compact('currentStep', 'formData', 'cabangDinas'));
         }
 
+        // return $formData;
+
         // Jika step tidak valid (misal: step=4), kembalikan ke awal.
         $request->session()->forget(['pendaftaran_data', 'pendaftaran_step']);
         return redirect()->route('pendaftaran.create');
@@ -71,7 +73,6 @@ class PendaftaranController extends Controller
     {
         $currentStep = $request->input('current_step');
         $formData = $request->session()->get('pendaftaran_data', []);
-
 
         // return $request;
         // return $currentStep;

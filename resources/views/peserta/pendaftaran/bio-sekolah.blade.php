@@ -14,7 +14,7 @@
                     Instansi</label>
                 <div class="relative">
                     <input type="text" id="asal_instansi" name="asal_instansi" placeholder="Masukkan Asal Lembaga"
-                        value="{{ old('asal_instansi') }}"
+                        value="{{ old('asal_instansi', $formData['asal_instansi'] ?? '') }}"
                         class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('asal_instansi') border-red-500 @enderror"
                         required />
                     <div id="asal_instansiError"
@@ -38,7 +38,7 @@
                 <label for="alamat_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Instansi</label>
                 <div class="relative">
                     <input type="text" id="alamat_instansi" name="alamat_instansi" placeholder="Masukkan Alamat Instansi"
-                        value="{{ old('alamat_instansi') }}"
+                        value="{{ old('alamat_instansi', $formData['alamat_instansi'] ?? '') }}"
                         class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('alamat_instansi') border-red-500 @enderror"
                         required />
                     <div id="alamat_instansiError"
@@ -64,7 +64,8 @@
                         Keahlian</label>
                     <div class="relative">
                         <input type="text" id="bidang_keahlian" name="bidang_keahlian"
-                            placeholder="Masukkan Asal Lembaga" value="{{ old('bidang_keahlian') }}"
+                            placeholder="Masukkan Asal Lembaga"
+                            value="{{ old('bidang_keahlian', $formData['bidang_keahlian'] ?? '') }}"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('bidang_keahlian') border-red-500 @enderror"
                             required />
                         {{-- <option value="teknik-informatika" @if (old('bidang_keahlian') == 'teknik-informatika') selected @endif>Teknik Informatika</option> --}}
@@ -92,9 +93,9 @@
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('kelas') border-red-500 @enderror"
                             required>
                             <option value="">Pilih Kelas</option>
-                            <option value="X" @if (old('kelas') == 'X') selected @endif>Kelas X</option>
-                            <option value="XI" @if (old('kelas') == 'XI') selected @endif>Kelas XI</option>
-                            <option value="XII" @if (old('kelas') == 'XII') selected @endif>Kelas XII</option>
+                            <option value="X" @if (old('kelas', $formData['kelas'] ?? '') == 'X') selected @endif>Kelas X</option>
+                            <option value="XI" @if (old('kelas', $formData['kelas'] ?? '') == 'XI') selected @endif>Kelas XI</option>
+                            <option value="XII" @if (old('kelas', $formData['kelas'] ?? '') == 'XII') selected @endif>Kelas XII</option>
                         </select>
                         <div id="kelasError"
                             class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
@@ -124,7 +125,7 @@
                         required>
                         <option value="">Pilih Pelatihan</option>
                         @foreach ($bidang as $b)
-                            <option value="{{ $b->id }}" @if (old('pelatihan_id') == $b->id) selected @endif>
+                            <option value="{{ $b->id }}" @if (old('pelatihan_id', $formData['pelatihan_id'] ?? '') == $b->id) selected @endif>
                                 {{ $b->bidang->nama_bidang }}</option>
                         @endforeach
                         {{-- <option value="teknik-informatika" @if (old('pelatihan_id') == 'teknik-informatika') selected @endif>Teknik Informatika</option> --}}
@@ -158,8 +159,9 @@
                         @foreach ($cabangDinas as $cb)
                             {{-- <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
                             Surabaya</option> --}}
-                            <option value="{{ $cb->id }}" @if (old('cabang_dinas_wilayah') == '{{ $cb->id }}') selected @endif>
-                                {{ $cb->nama }}</option>
+                            <option value="{{ $cb->id }}" @selected(old('cabang_dinas_wilayah', $formData['cabang_dinas_wilayah'] ?? '') == $cb->id)>
+                                {{ $cb->nama }}
+                            </option>
                         @endforeach
                         {{-- (Tambahkan opsi lain di sini) --}}
                     </select>
@@ -181,9 +183,10 @@
 
             {{-- Tombol Navigasi --}}
             <div class="flex justify-between items-center pt-4">
-                {{-- <a href="{{ route('pendaftaran.create') }}" class="text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
-                &larr; Kembali
-            </a> --}}
+                <a href="{{ route('pendaftaran.create', ['step' => 1]) }}"
+                    class="text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
+                    &larr; Kembali
+                </a>
                 <button type="submit"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2.5 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Selanjutnya
