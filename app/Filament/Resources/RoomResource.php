@@ -33,7 +33,7 @@ class RoomResource extends Resource
                 Forms\Components\Select::make('section')
                     ->label('Bagian')
                     ->options([
-                        'atas' => 'Atas',ch
+                        'atas' => 'Atas',
                         'bawah' => 'Bawah',
                     ])
                     ->nullable(),
