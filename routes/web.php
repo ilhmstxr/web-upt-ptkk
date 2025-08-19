@@ -5,6 +5,12 @@ use App\Mail\TestMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Exports\PesertaExport;
+use Maatwebsite\Excel\Facades\Excel;
+
+Route::get('/export-peserta', function () {
+    return Excel::download(new PesertaExport, 'peserta.xlsx');
+});
 
 /*
 |--------------------------------------------------------------------------
