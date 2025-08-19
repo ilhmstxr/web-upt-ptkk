@@ -4,6 +4,7 @@ use App\Http\Controllers\PendaftaranController;
 use App\Mail\TestMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Halaman utama dan pendaftaran
+// Halaman utama (landing page)
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
@@ -24,7 +25,7 @@ Route::get('/', function () {
 // Rute untuk pendaftaran (menggunakan resource controller)
 Route::resource('pendaftaran', PendaftaranController::class);
 
-// Rute untuk halaman detail pelatihan
+// Halaman detail pelatihan
 Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
     $kompetensiList = [
         'tata-boga',
@@ -40,32 +41,37 @@ Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
     return view('detail-pelatihan', compact('kompetensi'));
 })->name('detail-pelatihan');
 
+// Rute bawaan Laravel untuk dashboard
+Route::view('dashboard', 'dashboard')
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+// Rute untuk pengaturan (menggunakan Volt)
+Route::middleware(['auth'])->group(function () {
+    Route::redirect('settings', 'settings/profile');
+    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
+    Volt::route('settings/password', 'settings.password')->name('settings.password');
+    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+});
+
 // Rute untuk mengirim email (gunakan salah satu, jangan duplikasi)
 Route::get('/send', function () {
     Mail::to(['23082010166@student.upnjatim.ac.id'])->send(new TestMail());
 });
 
-// Rute bawaan Laravel untuk dashboard dan settings
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-// Rute untuk autentikasi (login, register, dll.)
-require __DIR__ . '/auth.php';
-
-// Rute-rute ini tampaknya digunakan untuk pengujian dan dapat dihapus setelah selesai
+// Rute-rute ini tampaknya untuk pengujian, disarankan untuk dihapus setelah selesai
 Route::get('1', function () {
     return view('peserta.pendaftaran.bio-peserta');
 });
-
 Route::get('2', function () {
     return view('peserta.pendaftaran.bio-sekolah');
 });
-
 Route::get('3', function () {
     return view('peserta.pendaftaran.lampiran');
 });
-
 Route::get('4', function () {
     return view('peserta.pendaftaran.selesai');
 });
+
+// Rute untuk autentikasi (login, register, dll.)
+require __DIR__ . '/auth.php';
