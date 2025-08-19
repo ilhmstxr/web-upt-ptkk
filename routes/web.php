@@ -51,15 +51,21 @@ Route::get('/send', function () {
 });
 
 Route::resource('pendaftaran', PendaftaranController::class);
+Route::get('pendaftaran_done', function () {
+    return view('peserta.pendaftaran.selesai');
+})->name('pendaftaran.done');
 
-route::get('1',function () {
-   return view('peserta.pendaftaran.bio-peserta'); 
+route::get('1', function () {
+    return view('peserta.pendaftaran.bio-peserta');
 });
-route::get('2',function () {
-   return view('peserta.pendaftaran.bio-sekolah'); 
+route::get('2', function () {
+    return view('peserta.pendaftaran.bio-sekolah');
 });
-route::get('3',function () {
-   return view('peserta.pendaftaran.lampiran'); 
+route::get('3', function () {
+    return view('peserta.pendaftaran.lampiran');
+});
+route::get('4', function () {
+    return view('peserta.pendaftaran.selesai');
 });
 // Rute untuk autentikasi (login, register, dll.)
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

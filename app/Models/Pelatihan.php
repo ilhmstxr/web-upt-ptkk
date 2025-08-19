@@ -24,10 +24,10 @@ class Pelatihan extends Model
     'tanggal_selesai' => 'date',
     ];
 
-    public function bidang(): BelongsTo
-    {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
-    }
+    // public function bidang(): BelongsTo
+    // {
+    //     return $this->belongsTo(Bidang::class, 'bidang_id');
+    // }
 
     public function pesertas(): HasMany
     {
