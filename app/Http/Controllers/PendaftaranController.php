@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-<<<<<<< HEAD
 use App\Models\Pelatihan;
 use App\Models\Instansi;
 use App\Models\Peserta;
@@ -279,30 +278,5 @@ class PendaftaranController extends Controller
     public function destroy(string $id)
     {
         //
-=======
-
-class PendaftaranController extends Controller
-{
-    // Tampilkan form pendaftaran
-    public function index()
-    {
-        return view('registration-form-new');
-    }
-
-    // Proses submit form pendaftaran
-    public function submit(Request $request)
-    {
-        // Validasi input
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email',
-            // tambah validasi sesuai kebutuhan
-        ]);
-
-        // Simpan ke database jika perlu
-        // Pendaftaran::create($validated);
-
-        return redirect()->route('pendaftaran')->with('success', 'Pendaftaran berhasil!');
->>>>>>> e6dc1422201d5091cf1859ee3cd60966025e80cd
     }
 }
