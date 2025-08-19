@@ -35,9 +35,11 @@
 
             {{-- Alamat Instansi --}}
             <div>
-                <label for="alamat_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Instansi</label>
+                <label for="alamat_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Lembaga
+                    Instansi</label>
                 <div class="relative">
-                    <input type="text" id="alamat_instansi" name="alamat_instansi" placeholder="Masukkan Alamat Instansi"
+                    <input type="text" id="alamat_instansi" name="alamat_instansi"
+                        placeholder="Masukkan Lembaga Instansi"
                         value="{{ old('alamat_instansi', $formData['alamat_instansi'] ?? '') }}"
                         class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('alamat_instansi') border-red-500 @enderror"
                         required />
@@ -63,13 +65,19 @@
                     <label for="bidang_keahlian" class="block text-sm font-semibold mb-2 text-slate-700">Kompetensi/Bidang
                         Keahlian</label>
                     <div class="relative">
-                        <input type="text" id="bidang_keahlian" name="bidang_keahlian"
-                            placeholder="Masukkan Asal Lembaga"
+                        {{-- <input type="text" id="bidang_keahlian" name="bidang_keahlian"
+                            placeholder="Masukkan Kompetensi/Bidang Keahlian"
                             value="{{ old('bidang_keahlian', $formData['bidang_keahlian'] ?? '') }}"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('bidang_keahlian') border-red-500 @enderror"
-                            required />
-                        {{-- <option value="teknik-informatika" @if (old('bidang_keahlian') == 'teknik-informatika') selected @endif>Teknik Informatika</option> --}}
-                        {{-- (Tambahkan opsi lain di sini) --}}
+                            required /> --}}
+                        <select id="pelatihan_id" name="pelatihan_id"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('pelatihan_id') border-red-500 @enderror"
+                            required>
+                            <option value="">Pilih Kompetensi</option>
+                            @foreach ($bidang as $b)
+                                <option value="{{ $b->id }}" @if (old('pelatihan_id', $formData['pelatihan_id'] ?? '') == $b->id) selected @endif>
+                                    {{ $b->bidang->nama_bidang }}</option>
+                            @endforeach
                         </select>
                         <div id="bidang_keahlianError"
                             class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
@@ -124,10 +132,9 @@
                         class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('pelatihan_id') border-red-500 @enderror"
                         required>
                         <option value="">Pilih Pelatihan</option>
-                        @foreach ($bidang as $b)
-                            <option value="{{ $b->id }}" @if (old('pelatihan_id', $formData['pelatihan_id'] ?? '') == $b->id) selected @endif>
-                                {{ $b->bidang->nama_bidang }}</option>
-                        @endforeach
+                        <option value="1" @if (old('pelatihan_id', $formData['pelatihan_id'] ?? '') == '1') selected @endif>Kegiatan Pengembangan dan Pelatihan Kompetensi Vokasi bagi Siswa SMA/SMK
+                            (MILEA) menuju Generasi Emas 2045 (Kelas Keterampilan) Angkatan II Tahun 2025</option>
+
                         {{-- <option value="teknik-informatika" @if (old('pelatihan_id') == 'teknik-informatika') selected @endif>Teknik Informatika</option> --}}
                         {{-- (Tambahkan opsi lain di sini) --}}
                     </select>

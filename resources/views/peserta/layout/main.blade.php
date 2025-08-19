@@ -62,64 +62,67 @@
         </header>
 
         {{-- MAIN CONTENT GRID --}}
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        @if ($currentStep != 4)
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {{-- SIDEBAR --}}
+                <aside class="lg:col-span-1">
+                    <div class="bg-sky-50 border border-sky-200 p-6 rounded-xl h-fit">
+                        <h2 class="text-xl font-bold text-slate-900 mb-6">Pendaftaran Pelatihan</h2>
 
-            {{-- SIDEBAR --}}
-            <aside class="lg:col-span-1">
-                <div class="bg-sky-50 border border-sky-200 p-6 rounded-xl h-fit">
-                    <h2 class="text-xl font-bold text-slate-900 mb-6">Pendaftaran Pelatihan</h2>
+                        {{-- Stepper Navigation --}}
+                        @php
+                            // Anda bisa mengganti nilai ini dari controller sesuai halaman yang aktif
+                            $currentStep = $currentStep ?? 1;
+                        @endphp
+                        <div class="relative space-y-4">
+                            <div class="absolute left-4 top-4 bottom-4 w-0.5 bg-sky-200"></div>
 
-                    {{-- Stepper Navigation --}}
-                    @php
-                        // Anda bisa mengganti nilai ini dari controller sesuai halaman yang aktif
-                        $currentStep = $currentStep ?? 1;
-                    @endphp
-                    <div class="relative space-y-4">
-                        <div class="absolute left-4 top-4 bottom-4 w-0.5 bg-sky-200"></div>
-
-                        <div class="flex items-center gap-4 relative">
-                            <div
-                                class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold {{ $currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600' }}">
-                                {{ $currentStep == 1 ? '✓' : '1' }}
+                            <div class="flex items-center gap-4 relative">
+                                <div
+                                    class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold {{ $currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600' }}">
+                                    {{ $currentStep == 1 ? '✓' : '1' }}
+                                </div>
+                                <span
+                                    class="font-semibold {{ $currentStep == 1 ? 'text-blue-700' : ($currentStep == 1 ? 'text-slate-800' : 'text-slate-500') }}">
+                                    Biodata diri
+                                </span>
                             </div>
-                            <span
-                                class="font-semibold {{ $currentStep == 1 ? 'text-blue-700' : ($currentStep == 1 ? 'text-slate-800' : 'text-slate-500') }}">
-                                Biodata diri
-                            </span>
-                        </div>
 
-                        <div class="flex items-center gap-4 relative">
-                            <div
-                                class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold {{ $currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600' }}">
-                                {{ $currentStep == 2 ? '✓' : '2' }}
+                            <div class="flex items-center gap-4 relative">
+                                <div
+                                    class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold {{ $currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600' }}">
+                                    {{ $currentStep == 2 ? '✓' : '2' }}
+                                </div>
+                                <span
+                                    class="font-semibold {{ $currentStep == 2 ? 'text-blue-700' : ($currentStep == 2 ? 'text-slate-800' : 'text-slate-500') }}">
+                                    Biodata Sekolah
+                                </span>
                             </div>
-                            <span
-                                class="font-semibold {{ $currentStep == 2 ? 'text-blue-700' : ($currentStep == 2 ? 'text-slate-800' : 'text-slate-500') }}">
-                                Biodata Sekolah
-                            </span>
-                        </div>
 
-                        <div class="flex items-center gap-4 relative">
-                            <div
-                                class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold {{ $currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600' }}">
-                                {{ $currentStep == 3 ? '✓' : '3' }}
+                            <div class="flex items-center gap-4 relative">
+                                <div
+                                    class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold {{ $currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600' }}">
+                                    {{ $currentStep == 3 ? '✓' : '3' }}
+                                </div>
+                                <span
+                                    class="font-semibold {{ $currentStep == 3 ? 'text-blue-700' : ($currentStep == 3 ? 'text-slate-800' : 'text-slate-500') }}">
+                                    Lampiran
+                                </span>
                             </div>
-                            <span
-                                class="font-semibold {{ $currentStep == 3 ? 'text-blue-700' : ($currentStep == 3 ? 'text-slate-800' : 'text-slate-500') }}">
-                                Lampiran
-                            </span>
                         </div>
                     </div>
-                </div>
-            </aside>
-
-            {{-- FORM CONTENT --}}
-            <main class="lg:col-span-3">
-                @yield('content')
-            </main>
-
-        </div>
+                </aside>
+                {{-- FORM CONTENT --}}
+                <main class="lg:col-span-3">
+                    @yield('content')
+                </main>
+            @else
+                <main class="w-full">
+                    @yield('content')
+                </main>
+        @endif
     </div>
+
 </body>
 
 </html>

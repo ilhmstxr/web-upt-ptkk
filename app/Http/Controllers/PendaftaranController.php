@@ -221,13 +221,13 @@ class PendaftaranController extends Controller
                 Lampiran::create($lampiranData);
             });
 
-            return "kesave";
+            // return "kesave";
             // Hapus data dari session dan redirect dengan pesan sukses
             $request->session()->forget('pendaftaran_data');
-            return redirect()->route('pendaftaran.create')->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
+            return redirect()->route('pendaftaran.done', ['step' => 4])->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
         }
 
-        return redirect()->route('pendaftaran.create');
+        // return redirect()->route('pendaftaran.create');
     }
 
     /**

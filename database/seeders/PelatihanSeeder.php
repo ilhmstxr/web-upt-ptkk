@@ -35,50 +35,7 @@ class PelatihanSeeder extends Seeder
         // ]);
 
         // --- 2. BUAT DATA BIDANG (INDEPENDEN) ---
-        $bidang_boga = Bidang::create([
-            'nama_bidang' => 'Tata Boga',
-            'deskripsi' => 'Bidang keahlian yang berfokus pada seni kuliner dan manajemen dapur profesional.',
-        ]);
 
-        $bidang_busana = Bidang::create([
-            'nama_bidang' => 'Tata Busana',
-            'deskripsi' => 'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.',
-        ]);
-
-        $bidang_kecantikan = Bidang::create([
-            'nama_bidang' => 'Kecantikan',
-            'deskripsi' => 'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.',
-        ]);
-
-        $bidang_teknik_pendingin_dan_tata_udara = Bidang::create([
-            'nama_bidang' => 'Teknik Pendingin dan Tata Udara',
-            'deskripsi' => 'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.',
-        ]);
-
-        // --- 3. BUAT DATA PELATIHAN (TERHUBUNG KE BIDANG) ---
-        $pelatihan1 = Pelatihan::create([
-            'bidang_id' => $bidang_boga->id,
-            'tanggal_mulai' => Carbon::parse('2025-09-01'),
-            'tanggal_selesai' => Carbon::parse('2025-09-06'),
-        ]);
-
-        $pelatihan2 = Pelatihan::create([
-            'bidang_id' => $bidang_busana->id,
-            'tanggal_mulai' => Carbon::parse('2025-09-08'),
-            'tanggal_selesai' => Carbon::parse('2025-09-13'),
-        ]);
-
-        $pelatihan3 = Pelatihan::create([
-            'bidang_id' => $bidang_kecantikan->id,
-            'tanggal_mulai' => Carbon::parse('2025-09-15'),
-            'tanggal_selesai' => Carbon::parse('2025-09-20'),
-        ]);
-
-        $pelatihan4 = Pelatihan::create([
-            'bidang_id' => $bidang_teknik_pendingin_dan_tata_udara->id,
-            'tanggal_mulai' => Carbon::parse('2025-09-22'),
-            'tanggal_selesai' => Carbon::parse('2025-09-27'),
-        ]);
 
         // --- 4. BUAT DATA PESERTA & LAMPIRANNYA (TERHUBUNG KE PELATIHAN & INSTANSI) ---
         // $peserta_andi = Peserta::create([
@@ -128,5 +85,12 @@ class PelatihanSeeder extends Seeder
         //     'fc_surat_tugas' => null,
         //     'fc_surat_sehat' => 'berkas_pendaftaran/default.pdf',
         // ]);
+        // --- LANGKAH 2: BUAT DATA PELATIHAN UNTUK SETIAP BIDANG YANG BARU DIBUAT ---
+        $pelatihan = [[
+            'nama_pelatihan' => 'Kegiatan Pengembangan dan Pelatihan Kompetensi Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 (Kelas Keterampilan) Angkatan II Tahun 2025', // Ambil ID dari model yang baru saja dibuat
+            'tanggal_mulai' => Carbon::parse('2025-09-01'),
+            'tanggal_selesai' => Carbon::parse('2025-09-06'),
+        ],];
+        Pelatihan::insert($pelatihan);
     }
 }

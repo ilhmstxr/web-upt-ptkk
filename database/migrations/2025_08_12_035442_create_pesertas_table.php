@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pesertas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pelatihan_id')->constrained()->cascadeOnDelete(); // foreign key ke tabel pelatihan
+            $table->foreignId('bidang_id')->constrained()->cascadeOnDelete(); 
             $table->foreignId('instansi_id')->constrained()->cascadeOnDelete(); 
             // --- Data Diri ---
             $table->string('nama');

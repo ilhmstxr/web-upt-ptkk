@@ -107,7 +107,7 @@
                             <div class="file-input-wrapper border border-gray-300 rounded-lg">
                                 <input type="file" id="fc_surat_tugas" name="fc_surat_tugas"
                                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    accept=".pdf,.jpg,.jpeg,.png" required onchange="handleFileSelect(this)">
+                                    accept=".pdf,.jpg,.jpeg,.png"  onchange="handleFileSelect(this)">
                                 <div class="flex items-center justify-between px-4 py-2.5">
                                     <span id="fc_surat_tugas-status" class="text-sm text-gray-500 truncate">Tidak ada file
                                         dipilih</span>
@@ -174,7 +174,7 @@
                             <input type="text" id="no_surat_tugas" name="no_surat_tugas"
                                 placeholder="Masukkan Nomor Surat" value="{{ old('no_surat_tugas') }}"
                                 class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('no_surat_tugas') border-red-500 @enderror"
-                                required>
+                                >
                             <div id="no_surat_tugasError"
                                 class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
                                 <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor">
