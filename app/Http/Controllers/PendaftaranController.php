@@ -41,13 +41,13 @@ class PendaftaranController extends Controller
         // return $formData;
         // Tampilkan view yang sesuai dengan langkah saat ini.
         if ($currentStep == 1) {
-            return view('peserta.pendaftaran.bio-peserta', compact('bidang', 'currentStep', 'formData','cabangDinas'));
+            return view('peserta.pendaftaran.bio-peserta', compact('bidang', 'currentStep', 'formData', 'cabangDinas'));
         } elseif ($currentStep == 2) {
             // Pastikan Anda meneruskan $currentStep ke view bio-sekolah
-            return view('peserta.pendaftaran.bio-sekolah', compact('bidang','currentStep', 'formData','cabangDinas'));
+            return view('peserta.pendaftaran.bio-sekolah', compact('bidang', 'currentStep', 'formData', 'cabangDinas'));
         } elseif ($currentStep == 3) {
             // Pastikan Anda meneruskan $currentStep ke view lampiran
-            return view('peserta.pendaftaran.lampiran', compact('currentStep', 'formData','cabangDinas'));
+            return view('peserta.pendaftaran.lampiran', compact('currentStep', 'formData', 'cabangDinas'));
         }
 
         // Jika step tidak valid (misal: step=4), kembalikan ke awal.
@@ -171,19 +171,61 @@ class PendaftaranController extends Controller
                 ]);
 
                 // 3. Simpan Lampiran
-                $saveFile = fn($file) => $file->store('public/berkas_pendaftaran');
-                Lampiran::create([
+                // $saveFile = fn($file) => $file->store('public/berkas_pendaftaran');
+                // Lampiran::create([
+                //     'peserta_id' => $peserta->id,
+                //     'no_surat_tugas' => $allData['no_surat_tugas'],
+                //     'fc_ktp' => $saveFile($request->file('fc_ktp')),
+                //     'fc_ijazah' => $saveFile($request->file('fc_ijazah')),
+                //     'fc_surat_tugas' => $saveFile($request->file('fc_surat_tugas')),
+                //     'fc_surat_sehat' => $saveFile($request->file('fc_surat_sehat')),
+                //     'pas_foto' => $saveFile($request->file('pas_foto')),
+                // ]);
+
+                $lampiranData = [
                     'peserta_id' => $peserta->id,
                     'no_surat_tugas' => $allData['no_surat_tugas'],
-                    'fc_ktp' => $saveFile($request->file('fc_ktp')),
-                    'fc_ijazah' => $saveFile($request->file('fc_ijazah')),
-                    'fc_surat_tugas' => $saveFile($request->file('fc_surat_tugas')),
-                    'fc_surat_sehat' => $saveFile($request->file('fc_surat_sehat')),
-                    'pas_foto' => $saveFile($request->file('pas_foto')),
-                ]);
+                ];
+
+                // 2. Buat daftar nama input file Anda
+                $fileFields = [
+                    'fc_ktp',
+                    'fc_ijazah',
+                    'fc_surat_tugas',
+                    'fc_surat_sehat',
+                    'pas_foto'
+                ];
+                foreach ($fileFields as $field) {
+                    // Periksa apakah file dengan nama tersebut ada di request
+                    if ($request->hasFile($field)) {
+                        // Ambil objek filenya
+                        $file = $request->file($field);
+
+                        // Kumpulkan semua informasi yang Anda butuhkan
+                        $namaAsli = $file->getClientOriginalName();
+                        $ukuranFile = $file->getSize(); // dalam bytes
+                        $ekstensi = $file->extension();
+
+                        // Simpan file dan dapatkan path-nya
+                        // $path = $file->store('/berkas_pendaftaran'); // --> store ke disk private/public/berkas_pendaftaran
+                        $path = $file->store('berkas_pendaftaran', 'public'); // --> store ke disk public/berkas_pendaftaran 
+
+                        // Simpan semua informasi ini ke dalam array hasil
+                        // $processedFiles[$field] = [
+                        //     'path'       => $path,
+                        //     'nama_asli'  => $namaAsli,
+                        //     'ukuran'     => $ukuranFile,
+                        //     'ekstensi'   => $ekstensi,
+                        // ];
+
+                        $lampiranData[$field] = $path;
+                    }
+                }
+
+                Lampiran::create($lampiranData);
             });
 
-            // return "kesave";
+            return "kesave";
             // Hapus data dari session dan redirect dengan pesan sukses
             $request->session()->forget('pendaftaran_data');
             return redirect()->route('pendaftaran.create')->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
