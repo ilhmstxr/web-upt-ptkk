@@ -5,8 +5,9 @@ use App\Http\Controllers\PendaftaranController;
 use App\Mail\TestMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
+use App\Http\Controllers\PendaftaranController;
 
+<<<<<<< HEAD
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,15 +32,36 @@ Route::get('/', function () {
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+=======
+// ============================
+// Halaman Utama (Landing Page)
+// ============================
+Route::get('/', function () {
+    return view('landing');
+})->name('landing');
 
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
+// ============================
+// Pendaftaran
+// ============================
+// Form pendaftaran
+Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
+>>>>>>> e6dc1422201d5091cf1859ee3cd60966025e80cd
 
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
-    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
-});
+// Proses submit pendaftaran
+Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
 
+// ============================
+// Halaman Detail Pelatihan
+// ============================
+Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
+    $kompetensiList = [
+        'tata-boga',
+        'tata-busana',
+        'tata-kecantikan',
+        'teknik-pendingin-dan-tata-udara',
+    ];
+
+<<<<<<< HEAD
 
 Route::get('/send', function () {
     Mail::to(['23082010166@student.upnjatim.ac.id'])->send(new TestMail());
@@ -66,3 +88,11 @@ route::get('4', function () {
 });
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';
+=======
+    if (!in_array($kompetensi, $kompetensiList)) {
+        abort(404);
+    }
+
+    return view('detail-pelatihan', compact('kompetensi'));
+})->name('detail-pelatihan');
+>>>>>>> e6dc1422201d5091cf1859ee3cd60966025e80cd
