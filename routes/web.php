@@ -51,9 +51,6 @@ Route::get('/send', function () {
 });
 
 Route::resource('pendaftaran', PendaftaranController::class);
-Route::get('pendaftaran_done', function () {
-    return view('peserta.pendaftaran.selesai');
-})->name('pendaftaran.done');
 
 route::get('1', function () {
     return view('peserta.pendaftaran.bio-peserta');
