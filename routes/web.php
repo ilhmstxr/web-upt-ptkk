@@ -7,6 +7,18 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Exports\PesertaExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PesertaSheet;
+use App\Exports\LampiranSheet;
+
+Route::get('/test-peserta', function () {
+    // ambil 5 data pertama dari PesertaSheet
+    dd((new PesertaSheet())->collection()->take(5));
+});
+
+Route::get('/test-lampiran', function () {
+    // ambil 5 data pertama dari LampiranSheet
+    dd((new LampiranSheet())->collection()->take(5));
+});
 
 Route::get('/export-peserta', function () {
     return Excel::download(new PesertaExport, 'peserta.xlsx');

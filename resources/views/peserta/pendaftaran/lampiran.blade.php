@@ -35,7 +35,7 @@
                     {{-- Input File KTP --}}
                     <div>
                         <label for="fc_ktp" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Fotocopy
-                            KTP</label>
+                            KTP/KK</label>
                         <div class="relative">
                             <div class="file-input-wrapper border border-gray-300 rounded-lg">
                                 <input type="file" id="fc_ktp" name="fc_ktp"

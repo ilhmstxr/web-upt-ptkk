@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Carbon\Carbon;
 
 class Peserta extends Model
 {
@@ -26,8 +27,15 @@ class Peserta extends Model
         'alamat',
         'no_hp',
         'email',
-        ];
-        
+    ];
+
+    // ✅ Tambahkan ini biar tanggal otomatis jadi Carbon
+    protected $casts = [
+        'tanggal_lahir' => 'datetime',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
+    ];
+    
     public function pelatihan(): BelongsTo
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
@@ -44,20 +52,19 @@ class Peserta extends Model
     }
 
     public function lampiranFolder(): string
-{
-    return 'lampiran/' . \Str::slug($this->nama); // folder storage/app/public/lampiran/{nama}
-}
-
-public function lampirans(): array
-{
-    $files = [];
-    if ($this->lampiran) {
-        foreach ($this->lampiran->getAttributes() as $key => $value) {
-            if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
-            if ($value) $files[$key] = asset('storage/' . $value);
-        }
+    {
+        return 'lampiran/' . \Str::slug($this->nama);
     }
-    return $files;
-}
 
+    public function lampirans(): array
+    {
+        $files = [];
+        if ($this->lampiran) {
+            foreach ($this->lampiran->getAttributes() as $key => $value) {
+                if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
+                if ($value) $files[$key] = asset('storage/' . $value);
+            }
+        }
+        return $files;
+    }
 }
