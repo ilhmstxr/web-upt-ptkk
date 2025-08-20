@@ -143,7 +143,7 @@
                     
                     <!-- Registration Button -->
                     <div class="mt-12 text-center">
-                        <a href="/pendaftaran" class="px-12 py-4 bg-[#5c76c1] text-white font-semibold text-lg rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105">
+                        <a href="/pendaftaran/create" class="px-12 py-4 bg-[#5c76c1] text-white font-semibold text-lg rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105">
                             Daftar Pelatihan
                         </a>
                     </div>
