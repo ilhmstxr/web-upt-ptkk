@@ -10,6 +10,10 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// 🔑 Import plugin export
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+
 class PesertaResource extends Resource
 {
     protected static ?string $model = Peserta::class;
@@ -99,10 +103,17 @@ class PesertaResource extends Resource
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
             ])
+            ->filters([
+                //
+            ])
+            ->headerActions([
+                FilamentExportHeaderAction::make('export'), // tombol export di header
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export'), // tombol export di bulk action
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
