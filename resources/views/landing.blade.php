@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UPT PTKK Dinas Pendidikan Jawa Timur</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-upt-ptkk.png') }} " class="w-4">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
@@ -60,7 +61,7 @@
     <header class="bg-white shadow-sm p-4 sticky top-0 z-50">
         <div class="container mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <img src="https://placehold.co/40x40/5c76c1/ffffff?text=Logo" alt="Logo" class="rounded-full">
+                <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt="Logo" class="w-8">
                 <h1 class="text-xl font-bold text-gray-800">UPT PTKK Dinas Pendidikan Jawa Timur</h1>
             </div>
         </div>
@@ -83,8 +84,9 @@
                 </a>
             </div>
             <div class="lg:w-1/2 mt-8 lg:mt-0 flex justify-center">
-                <img src="https://placehold.co/600x400/5c76c1/ffffff?text=Image+Homepage" alt="Pelatihan"
-                    class="rounded-lg shadow-lg">
+                <img src="{{ asset('images/pelatihan.jpg') }}" 
+                    alt="Pelatihan"
+                    class="rounded-lg shadow-lg w-full h-auto">
             </div>
         </section>
 
@@ -99,8 +101,9 @@
             <!-- Card 1 -->
             <a href="/pelatihan/tata-boga"
                 class="block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 card-hover-effect fade-in-up">
-                <img src="https://placehold.co/400x250/9ca3af/ffffff?text=Tata+Boga" alt="Tata Boga"
-                    class="w-full h-48 object-cover">
+                <img src="{{ asset('images/tata-boga.jpg') }}" 
+                    alt="Tata Boga"
+                    class="w-full h-48 object-cover rounded-lg shadow-md">
                 <div class="p-4">
                     <h4 class="font-semibold text-lg text-gray-800">Tata Boga</h4>
                     <p class="text-sm text-gray-500 mt-1">25 - 30 Agustus 2025</p>
@@ -114,8 +117,9 @@
             <a href="/pelatihan/tata-busana"
                 class="block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 card-hover-effect fade-in-up"
                 style="animation-delay: 0.1s;">
-                <img src="https://placehold.co/400x250/9ca3af/ffffff?text=Tata+Busana" alt="Tata Busana"
-                    class="w-full h-48 object-cover">
+                <img src="{{ asset('images/tata-busana.jpg') }}" 
+                    alt="Tata Busana"
+                    class="w-full h-48 object-cover rounded-lg shadow-md">
                 <div class="p-4">
                     <h4 class="font-semibold text-lg text-gray-800">Tata Busana</h4>
                     <p class="text-sm text-gray-500 mt-1">25 - 30 Agustus 2025</p>
@@ -129,8 +133,9 @@
             <a href="/pelatihan/tata-kecantikan"
                 class="block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 card-hover-effect fade-in-up"
                 style="animation-delay: 0.2s;">
-                <img src="https://placehold.co/400x250/9ca3af/ffffff?text=Tata+Kecantikan" alt="Tata Kecantikan"
-                    class="w-full h-48 object-cover">
+                <img src="{{ asset('images/tata-kecantikan.jpg') }}" 
+                    alt="Tata Kecantikan"
+                    class="w-full h-48 object-cover rounded-lg shadow-md">
                 <div class="p-4">
                     <h4 class="font-semibold text-lg text-gray-800">Tata Kecantikan</h4>
                     <p class="text-sm text-gray-500 mt-1">25 - 30 Agustus 2025</p>
@@ -144,8 +149,9 @@
             <a href="/pelatihan/teknik-pendingin"
                 class="block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 card-hover-effect fade-in-up"
                 style="animation-delay: 0.3s;">
-                <img src="https://placehold.co/400x250/9ca3af/ffffff?text=Teknik+Pendingin"
-                    alt="Teknik Pendingin dan Tata Udara" class="w-full h-48 object-cover">
+                <img src="{{ asset('images/tata-udara.jpg') }}" 
+                    alt="Teknik Pendingin dan Tata Udara"
+                    class="w-full h-48 object-cover rounded-lg shadow-md">
                 <div class="p-4">
                     <h4 class="font-semibold text-lg text-gray-800">Teknik Pendingin dan Tata Udara</h4>
                     <p class="text-sm text-gray-500 mt-1">25 - 30 Agustus 2025</p>
