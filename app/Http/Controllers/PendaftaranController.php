@@ -19,6 +19,16 @@ class PendaftaranController extends Controller
     /**
      * Menampilkan halaman formulir pendaftaran berdasarkan langkah saat ini.
      */
+
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return redirect()->route('pendaftaran.create');
+    }
+
     public function create(Request $request)
     {
         // 1. Ambil langkah yang ingin diakses dari URL (target), default ke 1.
@@ -38,6 +48,7 @@ class PendaftaranController extends Controller
         // Ambil data yang sudah tersimpan di session untuk mengisi kembali input form.
         $formData = $request->session()->get('pendaftaran_data', []);
 
+        // return $currentStep;
         // Gunakan switch untuk menampilkan view dan memuat data yang relevan saja.
         switch ($currentStep) {
             case 1:
@@ -54,27 +65,9 @@ class PendaftaranController extends Controller
                 return view('peserta.pendaftaran.lampiran', compact('currentStep', 'allowedStep', 'formData'));
 
                 // Ini adalah halaman "Selesai" setelah form disubmit
-            case 4:
-                // Halaman ini hanya bisa diakses jika session 'success' ada,
-                // yang diatur di method store() setelah berhasil menyimpan.
-                if (!$request->session()->has('success')) {
-                    return redirect()->route('pendaftaran.create', ['step' => 1]);
-                }
-                return view('peserta.pendaftaran.selesai', compact('currentStep', 'allowedStep'));
 
-            default:
-                // Jika pengguna memasukkan step yang aneh (misal: 0 atau 5),
-                // kembalikan ke langkah terakhir yang mereka boleh akses.
-                return redirect()->route('pendaftaran.create', ['step' => $allowedStep]);
         }
     }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index() {}
-
-
     /**
      * Store a newly created resource in storage.
      */
@@ -237,24 +230,25 @@ class PendaftaranController extends Controller
             // return "kesave";
             // Hapus data dari session dan redirect dengan pesan sukses
             $request->session()->forget('pendaftaran_data');
-            return view('peserta.pendaftaran.selesai', compact('currentStep'))->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
-        }
-        else if ($currentStep == 4) {
-            // Jika sudah sampai di step 4, tidak perlu melakukan apa-apa
-            // karena ini hanya halaman selesai.
-            return view('peserta.pendaftaran.selesai', compact('currentStep'));
+            // return $currentStep;
+            // return view('peserta.pendaftaran.selesai')->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
+            return redirect()->route('pendaftaran.selesai')->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
         }
 
         // return redirect()->route('pendaftaran.create');
     }
 
+
+    public function selesai()
+    {
+        // Pindahkan logika dari rute ke sini
+        return view('peserta.pendaftaran.selesai');
+    }
+
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+    public function show(string $id) {}
 
     /**
      * Show the form for editing the specified resource.

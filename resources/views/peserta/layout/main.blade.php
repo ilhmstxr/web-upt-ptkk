@@ -62,7 +62,7 @@
         </header>
   {{-- MAIN CONTENT GRID --}}
         {{-- Kondisi ini akan menampilkan layout yang berbeda untuk step 4 --}}
-        @if ($currentStep != 4)
+        <!-- @if ($currentStep != 4) -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {{-- SIDEBAR --}}
                 <aside class="lg:col-span-1">
@@ -119,12 +119,12 @@
                     @yield('content')
                 </main>
             </div>
-        @else
+        <!-- @else
             {{-- Tampilan untuk step 4 (Halaman Selesai) --}}
             <main class="w-full">
                 @yield('content')
             </main>
-        @endif
+        @endif -->
     </div>
 
 </body>
