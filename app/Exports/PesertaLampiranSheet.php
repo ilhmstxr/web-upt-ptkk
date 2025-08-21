@@ -51,68 +51,49 @@ class PesertaLampiranSheet implements FromCollection, WithHeadings, WithDrawings
     public function drawings()
     {
         $drawings = [];
-        foreach ($this->pesertas as $index => $p) {
-            if ($p->lampiran && $p->lampiran->pas_foto && Storage::disk('public')->exists($p->lampiran->pas_foto)) {
-                $drawing = new Drawing();
-                $drawing->setName('Pas Foto');
-                $drawing->setDescription('Pas Foto ' . $p->nama);
-                $drawing->setPath(storage_path('app/public/' . $p->lampiran->pas_foto));
-                $drawing->setHeight(80);
 
-                // gambar akan ditempatkan di kolom G (Pas Foto), baris sesuai peserta
-                $drawing->setCoordinates('G' . ($index + 2));
-                $drawings[] = $drawing;
+        // Definisikan semua lampiran yang ingin diproses dalam sebuah array
+        // Format: 'nama_properti' => ['kolom_excel', 'Label untuk Deskripsi']
+        $attachmentMap = [
+            'pas_foto' => ['C', 'Pas Foto'],
+            'fc_ktp' => ['D', 'KTP'],
+            'fc_ijazah' => ['E', 'Ijazah'],
+            'fc_surat_sehat' => ['F', 'Surat Sehat'],
+            'fc_surat_tugas' => ['G', 'Surat Tugas'],
+        ];
+
+        // Loop untuk setiap peserta
+        foreach ($this->pesertas as $index => $peserta) {
+            if (!$peserta->lampiran) {
+                continue; // Lanjut ke peserta berikutnya jika tidak ada data lampiran
             }
 
-            if ($p->lampiran && $p->lampiran->fc_ktp && Storage::disk('public')->exists($p->lampiran->fc_ktp)) {
-                $drawing = new Drawing();
-                $drawing->setName('KTP');
-                $drawing->setDescription('KTP ' . $p->nama);
-                $drawing->setPath(storage_path('app/public/' . $p->lampiran->fc_ktp));
-                $drawing->setHeight(80);
+            // Loop untuk setiap jenis lampiran yang sudah kita definisikan
+            foreach ($attachmentMap as $property => $details) {
+                $filePath = $peserta->lampiran->$property;
 
-                // gambar akan ditempatkan di kolom H (KTP), baris sesuai peserta
-                $drawing->setCoordinates('H' . ($index + 2));
-                $drawings[] = $drawing;
+                
+                // Cek apakah path file ada dan filenya benar-benar ada di storage
+                if ($filePath && Storage::disk('public')->exists($filePath)) {
+
+                    $drawing = new Drawing();
+                    $drawing->setName($details[1]); // Menggunakan Label dari map
+                    $drawing->setDescription($details[1] . ' ' . $peserta->nama);
+
+                    // --- REVISI: Gunakan metode path() dari Storage ---
+                    $drawing->setPath(Storage::disk('public')->path($filePath));
+
+                    $drawing->setHeight(80);
+
+                    // Set koordinat secara dinamis berdasarkan kolom dari map dan index peserta
+                    $drawing->setCoordinates($details[0] . ($index + 2));
+
+                    $drawings[] = $drawing;
+                }
             }
-
-            if ($p->lampiran && $p->lampiran->fc_ijazah && Storage::disk('public')->exists($p->lampiran->fc_ijazah)) {
-                $drawing = new Drawing();
-                $drawing->setName('Ijazah');
-                $drawing->setDescription('Ijazah ' . $p->nama);
-                $drawing->setPath(storage_path('app/public/'.$p->lampiran->fc_ijazah));
-                $drawing->setHeight(80);
-
-                // gambar akan ditempatkan di kolom I (Ijazah), baris sesuai peserta
-                $drawing->setCoordinates('I' . ($index + 2));
-                $drawings[] = $drawing;
-            }
-
-            if ($p->lampiran && $p->lampiran->fc_surat_sehat && Storage::disk('public')->exists($p->lampiran->fc_surat_sehat)) {
-                $drawing = new Drawing();
-                $drawing->setName('Surat Sehat');
-                $drawing->setDescription('Surat Sehat ' . $p->nama);
-                $drawing->setPath(storage_path('app/public/' . $p->lampiran->fc_surat_sehat));
-                $drawing->setHeight(80);
-
-                // gambar akan ditempatkan di kolom J (Surat Sehat), baris sesuai peserta
-                $drawing->setCoordinates('J' . ($index + 2));
-                $drawings[] = $drawing;
-            }
-
-            if ($p->lampiran && $p->lampiran->fc_surat_tugas && Storage::disk('public')->exists($p->lampiran->fc_surat_tugas)) {
-                $drawing = new Drawing();
-                $drawing->setName('Surat Tugas');
-                $drawing->setDescription('Surat Tugas ' . $p->nama);
-                $drawing->setPath(storage_path('app/public/' . $p->lampiran->fc_surat_tugas));
-                $drawing->setHeight(80);
-
-                // gambar akan ditempatkan di kolom K (Surat Tugas), baris sesuai peserta
-                $drawing->setCoordinates('K' . ($index + 2));
-                $drawings[] = $drawing;
-            }
-
         }
+
+        // dd($drawings); // Debugging: Tampilkan semua drawing yang akan digunakan
 
         return $drawings;
     }
