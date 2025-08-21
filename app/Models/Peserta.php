@@ -14,6 +14,9 @@ class Peserta extends Model
 
     protected $table = 'pesertas';
 
+    protected $casts = [
+        'tanggal_lahir' => 'date',
+    ];
     protected $fillable = [
         'pelatihan_id',
         'instansi_id',

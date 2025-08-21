@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use AlperenErsoy\FilamentExport\FilamentExport;
+use App\Exports\PesertaExport;
 use Illuminate\Http\Request;
 use App\Models\Pelatihan;
 use App\Models\Instansi;
@@ -10,11 +12,14 @@ use App\Models\Peserta;
 use App\Models\Lampiran;
 use App\Models\Bidang;
 use App\Models\CabangDinas;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Filament\Resources\PesertaResource;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use ZipArchive;
 
 class PendaftaranController extends Controller
@@ -295,76 +300,20 @@ class PendaftaranController extends Controller
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 
-
     public function downloadBulk(Request $request)
     {
-        $pesertaIds = $request->query('ids');
-        $excelFileName = $request->query('excelFileName', 'data-peserta');
+        // Pastikan request punya ids dan excelFileName
+        $request->validate([
+            'ids'            => 'required|array',
+            'ids.*'          => 'integer|exists:pesertas,id',
+            'excelFileName'  => 'required|string'
+        ]);
 
-        if (empty($pesertaIds)) {
-            return back()->with('error', 'Tidak ada peserta yang dipilih.');
-        }
+        $ids = $request->input('ids');
+        $fileName = $request->input('excelFileName') . '.xlsx';
 
-        // 1. BUAT FILE EXCEL TERLEBIH DAHULU
-        // ------------------------------------
-        $export = new FilamentExport();
-        // Atur disk penyimpanan sementara untuk Excel
-        $export->disk('local');
-        // Atur nama file Excel
-        $export->fileName($excelFileName . '.xlsx');
-        // Ambil data peserta yang dipilih
-        $export->data(Peserta::whereIn('id', $pesertaIds)->get());
-        // Simpan file Excel ke storage/app/
-        $excelPath = $export->save();
-        $absoluteExcelPath = storage_path('app/' . $excelPath);
-
-
-        // 2. BUAT FILE ZIP DAN MASUKKAN SEMUA FILE
-        // -----------------------------------------
-        $pesertas = Peserta::with('lampiran')->whereIn('id', $pesertaIds)->get();
-        $zipFileName = 'paket-lampiran-dan-data-' . now()->format('Y-m-d') . '.zip';
-        $zipPath = storage_path('app/temp/' . $zipFileName);
-
-        $zip = new ZipArchive;
-        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-
-            // Tambahkan file Excel yang baru dibuat ke dalam ZIP
-            $zip->addFile($absoluteExcelPath, basename($absoluteExcelPath));
-
-            // Loop setiap peserta untuk menambahkan lampirannya
-            foreach ($pesertas as $peserta) {
-                if ($peserta->lampiran) {
-                    $filesToZip = [
-                        $peserta->lampiran->fc_ktp,
-                        $peserta->lampiran->fc_ijazah,
-                        $peserta->lampiran->fc_surat_tugas,
-                        $peserta->lampiran->fc_surat_sehat,
-                    ];
-
-                    foreach ($filesToZip as $filePath) {
-                        if ($filePath && Storage::disk('public')->exists($filePath)) {
-                            $absolutePath = storage_path('app/public/' . $filePath);
-                            // Buat folder di dalam zip dengan ID peserta
-                            $zip->addFile($absolutePath, 'peserta_' . $peserta->id . '/' . basename($filePath));
-                        }
-                    }
-                }
-            }
-            $zip->close();
-        } else {
-            // Hapus file Excel jika pembuatan ZIP gagal
-            Storage::disk('local')->delete($excelPath);
-            return back()->with('error', 'Gagal membuat file ZIP.');
-        }
-
-        // Hapus file Excel sementara setelah ditambahkan ke ZIP
-        Storage::disk('local')->delete($excelPath);
-
-        // 3. DOWNLOAD FILE ZIP DAN HAPUS SETELAHNYA
-        // -----------------------------------------
-        return response()->download($zipPath)->deleteFileAfterSend(true);
+        return Excel::download(new PesertaExport($ids), $fileName);
     }
-
 
     /**
      * Display the specified resource.

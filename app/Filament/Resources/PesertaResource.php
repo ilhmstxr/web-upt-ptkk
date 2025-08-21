@@ -16,12 +16,10 @@ use Illuminate\Database\Eloquent\Collection;
 
 // Import plugin export
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-// ❌ KELAS 'Column' DIHAPUS KARENA TIDAK DIGUNAKAN DI v3.x
 
-// Import untuk Aksi Kustom & Gambar Excel
+// Import untuk Aksi Kustom
 use Filament\Tables\Actions\Action;
-use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use Filament\Tables\Actions\BulkAction;
 
 class PesertaResource extends Resource
 {
@@ -102,7 +100,7 @@ class PesertaResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable(),
-                // Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
+                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
             ])
@@ -110,58 +108,39 @@ class PesertaResource extends Resource
                 //
             ])
             ->headerActions([
-                // --- SINTAKS BARU UNTUK v3.x ---
-                FilamentExportHeaderAction::make('export_excel')
-                    ->label('Export Excel')
-                    // ->withDrawings() // <-- TAMBAHAN: Aktifkan mode untuk menyematkan gambar
-                    ->withColumns([
-                        // Gunakan kelas Kolom dari Filament, bukan dari plugin
-                        // Tables\Columns\TextColumn::make('id')->label('Peserta ID'),
-                        // Tables\Columns\TextColumn::make('pelatihan_id')->label('Pelatihan ID'),
-                        // Tables\Columns\TextColumn::make('instansi_id')->label('Instansi ID'),
-                        // Tables\Columns\TextColumn::make('bidang_id')->label('Bidang ID'),
-                        Tables\Columns\TextColumn::make('nama')->label('Nama Lengkap'),
-                        Tables\Columns\TextColumn::make('nik')->label('NIK'),
-                        Tables\Columns\TextColumn::make('tempat_lahir')->label('Tempat Lahir'),
-                        Tables\Columns\TextColumn::make('tanggal_lahir')->label('Tanggal Lahir'),
-                        Tables\Columns\TextColumn::make('jenis_kelamin')->label('Jenis Kelamin'),
-                        Tables\Columns\TextColumn::make('agama')->label('Agama'),
-                        Tables\Columns\TextColumn::make('alamat')->label('Alamat'),
-                        Tables\Columns\TextColumn::make('no_hp')->label('No. HP'),
-                        Tables\Columns\TextColumn::make('email')->label('Email'),
-                        Tables\Columns\TextColumn::make('lampiran.no_surat_tugas')->label('No. Surat Tugas'),
-                        Tables\Columns\TextColumn::make('lampiran.fc_ktp')->label('File KTP'),
-                        Tables\Columns\TextColumn::make('lampiran.fc_ijazah')->label('File Ijazah'),
-                        Tables\Columns\TextColumn::make('lampiran.fc_surat_tugas')->label('File Surat Tugas'),
-                        Tables\Columns\TextColumn::make('lampiran.fc_surat_sehat')->label('File Surat Sehat'),
-                        
-                        // Kolom Pas Foto dengan gambar (tetap sama)
-                        // Tables\Columns\TextColumn::make('lampiran.pas_foto')->label('Pas Foto')
-                        //     ->formatStateUsing(function ($state) {
-                        //         if (!$state || !file_exists(storage_path('app/public/' . $state))) {
-                        //             return 'File tidak ditemukan';
-                        //         }
-                        //         $drawing = new Drawing();
-                        //         $drawing->setName('Pas Foto');
-                        //         $drawing->setDescription('Pas Foto Peserta');
-                        //         $drawing->setPath(storage_path('app/public/' . $state));
-                        //         $drawing->setHeight(100);
-                        //         return $drawing;
-                        //     }),
-                    ])
+                // Aksi ini hanya akan mengekspor Excel saja
+                FilamentExportHeaderAction::make('export_excel_only')
+                    ->label('Export Excel Saja')
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                // Action::make('download_pdf')
-                //     ->label('Cetak PDF')
-                //     ->icon('heroicon-o-printer')
-                //     ->url(fn (Peserta $record): string => route('peserta.download-pdf', $record))
-                //     ->openUrlInNewTab(),
+                Action::make('download_pdf')
+                    ->label('Cetak PDF')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn (Peserta $record): string => route('peserta.download-pdf', $record))
+                    ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-                FilamentExportBulkAction::make('export_excel_bulk')->label('Export Excel Terpilih'),
+                
+                // --- AKSI GABUNGAN UNTUK EXCEL + ZIP ---
+                BulkAction::make('export_paket_lengkap')
+                    ->label('Export Paket Lengkap (Excel + Lampiran)')
+                    ->icon('heroicon-o-gift')
+                    ->action(function (Collection $records) {
+                        // Ambil semua ID yang dipilih
+                        $ids = $records->pluck('id')->toArray();
+                        // Buat nama file Excel dinamis
+                        $excelFileName = 'data-peserta-terpilih-' . now()->format('Y-m-d');
+                        // Buat URL dengan query string dari array ID dan nama file Excel
+                        $url = route('peserta.download-bulk', [
+                            'ids' => $ids,
+                            'excelFileName' => $excelFileName
+                        ]);
+                        // Redirect ke URL download yang akan ditangani oleh Controller
+                        return redirect($url);
+                    }),
             ]);
     }
 
