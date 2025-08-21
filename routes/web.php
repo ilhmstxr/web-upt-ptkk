@@ -89,6 +89,10 @@ Route::get('4', function () {
 
 Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
+Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])
+    ->name('peserta.download-pdf');
+Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])
+    ->name('peserta.download-bulk');
 
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use AlperenErsoy\FilamentExport\FilamentExport;
 use Illuminate\Http\Request;
 use App\Models\Pelatihan;
 use App\Models\Instansi;
@@ -11,7 +12,10 @@ use App\Models\Bidang;
 use App\Models\CabangDinas;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use ZipArchive;
 
 class PendaftaranController extends Controller
 {
@@ -245,6 +249,123 @@ class PendaftaranController extends Controller
         return view('peserta.pendaftaran.selesai');
     }
 
+    public function downloadPDF(Peserta $peserta)
+    {
+        // // Load relasi yang mungkin dibutuhkan di dalam view PDF
+        // $peserta->load('pelatihan', 'instansi', 'lampiran');
+
+        // // Membuat PDF dari sebuah Blade view
+        // $pdf = Pdf::loadView('pdf.biodata-peserta', ['peserta' => $peserta]);
+
+        // // Mengunduh file PDF dengan nama dinamis
+        // return $pdf->download('biodata-' . Str::slug($peserta->nama) . '.pdf');
+    }
+
+    public function download(Peserta $peserta)
+    {
+        $lampiran = $peserta->lampiran;
+        if (!$lampiran) {
+            return back()->with('error', 'Peserta tidak memiliki data lampiran.');
+        }
+
+        $filesToZip = [
+            $lampiran->pas_foto,
+            $lampiran->fc_ktp,
+            $lampiran->fc_ijazah,
+            $lampiran->fc_surat_sehat,
+            $lampiran->fc_surat_tugas,
+        ];
+
+        $zipFileName = 'lampiran-' . Str::slug($peserta->nama) . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipFileName);
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($filesToZip as $filePath) {
+                if ($filePath && Storage::disk('public')->exists($filePath)) {
+                    $absolutePath = storage_path('app/public/' . $filePath);
+                    $zip->addFile($absolutePath, basename($filePath));
+                }
+            }
+            $zip->close();
+        } else {
+            return back()->with('error', 'Gagal membuat file ZIP.');
+        }
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+
+    public function downloadBulk(Request $request)
+    {
+        $pesertaIds = $request->query('ids');
+        $excelFileName = $request->query('excelFileName', 'data-peserta');
+
+        if (empty($pesertaIds)) {
+            return back()->with('error', 'Tidak ada peserta yang dipilih.');
+        }
+
+        // 1. BUAT FILE EXCEL TERLEBIH DAHULU
+        // ------------------------------------
+        $export = new FilamentExport();
+        // Atur disk penyimpanan sementara untuk Excel
+        $export->disk('local');
+        // Atur nama file Excel
+        $export->fileName($excelFileName . '.xlsx');
+        // Ambil data peserta yang dipilih
+        $export->data(Peserta::whereIn('id', $pesertaIds)->get());
+        // Simpan file Excel ke storage/app/
+        $excelPath = $export->save();
+        $absoluteExcelPath = storage_path('app/' . $excelPath);
+
+
+        // 2. BUAT FILE ZIP DAN MASUKKAN SEMUA FILE
+        // -----------------------------------------
+        $pesertas = Peserta::with('lampiran')->whereIn('id', $pesertaIds)->get();
+        $zipFileName = 'paket-lampiran-dan-data-' . now()->format('Y-m-d') . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipFileName);
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+
+            // Tambahkan file Excel yang baru dibuat ke dalam ZIP
+            $zip->addFile($absoluteExcelPath, basename($absoluteExcelPath));
+
+            // Loop setiap peserta untuk menambahkan lampirannya
+            foreach ($pesertas as $peserta) {
+                if ($peserta->lampiran) {
+                    $filesToZip = [
+                        $peserta->lampiran->fc_ktp,
+                        $peserta->lampiran->fc_ijazah,
+                        $peserta->lampiran->fc_surat_tugas,
+                        $peserta->lampiran->fc_surat_sehat,
+                    ];
+
+                    foreach ($filesToZip as $filePath) {
+                        if ($filePath && Storage::disk('public')->exists($filePath)) {
+                            $absolutePath = storage_path('app/public/' . $filePath);
+                            // Buat folder di dalam zip dengan ID peserta
+                            $zip->addFile($absolutePath, 'peserta_' . $peserta->id . '/' . basename($filePath));
+                        }
+                    }
+                }
+            }
+            $zip->close();
+        } else {
+            // Hapus file Excel jika pembuatan ZIP gagal
+            Storage::disk('local')->delete($excelPath);
+            return back()->with('error', 'Gagal membuat file ZIP.');
+        }
+
+        // Hapus file Excel sementara setelah ditambahkan ke ZIP
+        Storage::disk('local')->delete($excelPath);
+
+        // 3. DOWNLOAD FILE ZIP DAN HAPUS SETELAHNYA
+        // -----------------------------------------
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+
     /**
      * Display the specified resource.
      */
@@ -254,11 +375,11 @@ class PendaftaranController extends Controller
         return view('admin.testimg');
     }
 
-        public function testing()
-        {
-            $pesertas = peserta::with('instansi', 'lampiran')->get();
-            return view('admin.testing', compact('pesertas'));
-        }
+    public function testing()
+    {
+        $pesertas = peserta::with('instansi', 'lampiran')->get();
+        return view('admin.testing', compact('pesertas'));
+    }
 
     /**
      * Show the form for editing the specified resource.
