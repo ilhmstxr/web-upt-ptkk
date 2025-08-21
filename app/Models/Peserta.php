@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class Peserta extends Model
 {
@@ -26,8 +27,8 @@ class Peserta extends Model
         'alamat',
         'no_hp',
         'email',
-        ];
-        
+    ];
+
     public function pelatihan(): BelongsTo
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
@@ -43,21 +44,14 @@ class Peserta extends Model
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
 
+    /**
+     * Menghasilkan path folder unik untuk lampiran peserta.
+     * Berguna saat proses upload file di controller.
+     * Contoh penggunaan di Controller: $path = $file->store($peserta->lampiranFolder(), 'public');
+     */
     public function lampiranFolder(): string
-{
-    return 'lampiran/' . \Str::slug($this->nama); // folder storage/app/public/lampiran/{nama}
-}
-
-public function lampirans(): array
-{
-    $files = [];
-    if ($this->lampiran) {
-        foreach ($this->lampiran->getAttributes() as $key => $value) {
-            if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
-            if ($value) $files[$key] = asset('storage/' . $value);
-        }
+    {
+        // Contoh: 'lampiran/ilham-bintang-herlambang'
+        return 'lampiran/' . Str::slug($this->nama); 
     }
-    return $files;
-}
-
 }
