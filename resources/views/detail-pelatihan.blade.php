@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Pelatihan - {{ $kompetensi }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-upt-ptkk.png') }} " class="w-4">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -26,12 +27,9 @@
     <header class="bg-white shadow-sm p-4 sticky top-0 z-50">
         <div class="container mx-auto flex items-center justify-between">
             <a href="/" class="flex items-center space-x-4">
-                <img src="https://placehold.co/40x40/5c76c1/ffffff?text=Logo" alt="Logo" class="rounded-full">
+                <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt="Logo" class="w-8">
                 <h1 class="text-xl font-bold text-gray-800">UPT PTKK</h1>
             </a>
-            <nav>
-                <a href="/pendaftaran" class="px-4 py-2 bg-[#5c76c1] text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105">Daftar Sekarang</a>
-            </nav>
         </div>
     </header>
 
