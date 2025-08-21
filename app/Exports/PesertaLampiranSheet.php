@@ -80,7 +80,7 @@ class PesertaLampiranSheet implements FromCollection, WithHeadings, WithDrawings
                 $drawing = new Drawing();
                 $drawing->setName('Ijazah');
                 $drawing->setDescription('Ijazah ' . $p->nama);
-                $drawing->setPath(storage_path('app/public'.$p->lampiran->fc_ijazah));
+                $drawing->setPath(storage_path('app/public/'.$p->lampiran->fc_ijazah));
                 $drawing->setHeight(80);
 
                 // gambar akan ditempatkan di kolom I (Ijazah), baris sesuai peserta
