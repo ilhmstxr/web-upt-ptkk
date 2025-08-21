@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class Peserta extends Model
@@ -29,34 +30,45 @@ class Peserta extends Model
         'email',
     ];
 
-    // ✅ Tambahkan ini biar tanggal otomatis jadi Carbon
+    // ✅ otomatis casting ke Carbon
     protected $casts = [
         'tanggal_lahir' => 'datetime',
         'created_at'    => 'datetime',
         'updated_at'    => 'datetime',
     ];
     
+    // 🔗 Relasi ke Pelatihan
     public function pelatihan(): BelongsTo
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
-    public function lampiran(): HasOne
-    {
-        return $this->hasOne(Lampiran::class);
-    }
-
+    // 🔗 Relasi ke Instansi
     public function instansi(): BelongsTo
     {
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
 
-    public function lampiranFolder(): string
+    // 🔗 Relasi ke Bidang
+    public function bidang(): BelongsTo
     {
-        return 'lampiran/' . \Str::slug($this->nama);
+        return $this->belongsTo(Bidang::class, 'bidang_id');
     }
 
-    public function lampirans(): array
+    // 🔗 Relasi ke Lampiran
+    public function lampiran(): HasOne
+    {
+        return $this->hasOne(Lampiran::class, 'peserta_id');
+    }
+
+    // 📁 Folder Lampiran
+    public function lampiranFolder(): string
+    {
+        return 'lampiran/' . Str::slug($this->nama);
+    }
+
+    // 📂 Ambil semua file lampiran
+    public function getLampirans(): array
     {
         $files = [];
         if ($this->lampiran) {
