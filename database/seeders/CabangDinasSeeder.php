@@ -29,12 +29,12 @@ class CabangDinasSeeder extends Seeder
                 'laman' => 'https://probolinggocab.dindik.jatimprov.go.id/',
             ],
             [
-                'nama' => 'Cabang Dinas Pendidikan Wilayah Bondowoso',
+                'nama' => 'Cabang Dinas Pendidikan Wilayah Bondowoso - Situbondo',
                 'alamat' => 'Jl. HOS Cokroaminoto No.121, Gudangmas, Kademangan, Kecamatan Bondowoso, Kabupaten Bondowoso, Jawa Timur 68217',
                 'laman' => 'https://bondowosocab.dindik.jatimprov.go.id/',
             ],
             [
-                'nama' => 'Cabang Dinas Pendidikan Wilayah Jember',
+                'nama' => 'Cabang Dinas Pendidikan Wilayah Jember - Lumajang',
                 'alamat' => 'Jl. Kalimantan No.42, Tegalboto, Krajan Timur, Kecamatan Sumbersari, Kabupaten Jember 68121',
                 'laman' => 'https://cabdindikwilayahjember.com/',
             ],
@@ -49,7 +49,7 @@ class CabangDinasSeeder extends Seeder
                 'laman' => 'https://malangcab.dindik.jatimprov.go.id/',
             ],
             [
-                'nama' => 'Cabang Dinas Pendidikan Wilayah Malang',
+                'nama' => 'Cabang Dinas Pendidikan Wilayah Malang - Batu',
                 'alamat' => 'Jl. Anjasmoro No.40, Oro-oro Dowo, Kecamatan Klojen, Kota Malang, Jawa Timur 65119',
                 'laman' => 'https://batu-malangkotacab.dindik.jatimprov.go.id/',
             ],
@@ -59,7 +59,7 @@ class CabangDinasSeeder extends Seeder
                 'laman' => null, // Tidak ada laman pada data sumber
             ],
             [
-                'nama' => 'Cabang Dinas Pendidikan Wilayah Tulungagung',
+                'nama' => 'Cabang Dinas Pendidikan Wilayah Tulungagung - Trenggalek',
                 'alamat' => 'Jl. Diponegoro, Tromertan, Krajan, Surodakan, Kecamatan Trenggalek, Kabupaten Trenggalek, Jawa Timur 66316',
                 'laman' => null, // Tidak ada laman pada data sumber
             ],
@@ -74,12 +74,12 @@ class CabangDinasSeeder extends Seeder
                 'laman' => 'https://nganjukcab.dindik.jatimprov.go.id/',
             ],
             [
-                'nama' => 'Cabang Dinas Pendidikan Wilayah Madiun',
+                'nama' => 'Cabang Dinas Pendidikan Wilayah Madiun - Ngawi',
                 'alamat' => 'Jl. Pahlawan No.31, Kartoharjo, Kecamatan Kartoharjo, Kota Madiun, Jawa Timur 63121',
                 'laman' => 'https://www.instagram.com/cabdindik_madiun/',
             ],
             [
-                'nama' => 'Cabang Dinas Pendidikan Wilayah Ponorogo',
+                'nama' => 'Cabang Dinas Pendidikan Wilayah Ponorogo - Magetan',
                 'alamat' => 'Jl. Gajah Mada No.40, Pesantren. Surodikraman, Kecamatan Ponorogo, Kabupaten Ponorogo, Jawa Timur 63419',
                 'laman' => null, // Tidak ada laman pada data sumber
             ],
@@ -89,7 +89,7 @@ class CabangDinasSeeder extends Seeder
                 'laman' => 'https://pacitancab.dindik.jatimprov.go.id/',
             ],
             [
-                'nama' => 'Cabang Dinas Pendidikan Wilayah Bojonegoro',
+                'nama' => 'Cabang Dinas Pendidikan Wilayah Bojonegoro - Tuban',
                 'alamat' => 'Jl. Panglima Sudirman No.36, Kelurahan Baturetno, Kecamatan Tuban, Kabupaten Tuban, Jawa Timur',
                 'laman' => 'https://tubancab.dindik.jatimprov.go.id/',
             ],
