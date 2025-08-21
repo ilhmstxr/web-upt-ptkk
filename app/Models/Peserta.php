@@ -37,6 +37,11 @@ class Peserta extends Model
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
+    public function bidang(): BelongsTo
+    {
+        return $this->belongsTo(Bidang::class, 'bidang_id');
+    }
+
     public function lampiran(): HasOne
     {
         return $this->hasOne(Lampiran::class);

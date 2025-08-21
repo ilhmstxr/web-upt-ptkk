@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PesertaResource\Pages;
 use App\Models\Peserta;
+use App\Models\Instansi;
+use App\Models\Pelatihan;
+use App\Models\Bidang;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
@@ -12,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Filament\Tables\Filters\SelectFilter; // <-- Import SelectFilter
 use Illuminate\Database\Eloquent\Collection;
 
 // Import plugin export
@@ -100,12 +104,32 @@ class PesertaResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable(),
-                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
+                Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
             ])
             ->filters([
-                //
+                // Filter berdasarkan Bidang
+                SelectFilter::make('bidang')
+                    ->label('Bidang')
+                    ->relationship('bidang', 'nama_bidang')
+                    ->searchable() // Membuat dropdown bisa dicari
+                    ->preload(), // Memuat opsi saat halaman dimuat
+
+                // Filter berdasarkan Instansi
+                SelectFilter::make('instansi')
+                    ->label('Asal Instansi')
+                    ->relationship('instansi', 'asal_instansi')
+                    ->searchable()
+                    ->preload(),
+
+                // Filter berdasarkan Pelatihan
+                SelectFilter::make('pelatihan')
+                    ->label('Nama Pelatihan')
+                    ->relationship('pelatihan', 'nama_pelatihan')
+                    ->searchable()
+                    ->preload(),
             ])
             ->headerActions([
                 // Aksi ini hanya akan mengekspor Excel saja
