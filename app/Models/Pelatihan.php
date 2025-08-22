@@ -2,21 +2,35 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pelatihan extends Model
 {
+    use HasFactory;
+
+    protected $table = 'pelatihans';
+
     protected $fillable = [
-        'judul', 'slug', 'gambar',
-        'tanggal_mulai', 'tanggal_selesai', 'deskripsi'
+        'bidang_id',
+        'tanggal_mulai',
+        'tanggal_selesai',
     ];
 
-    public static function boot()
+    protected $casts = [
+    'tanggal_mulai' => 'date',
+    'tanggal_selesai' => 'date',
+    ];
+
+    // public function bidang(): BelongsTo
+    // {
+    //     return $this->belongsTo(Bidang::class, 'bidang_id');
+    // }
+
+    public function pesertas(): HasMany
     {
-        parent::boot();
-        static::creating(function ($model) {
-            $model->slug = Str::slug($model->judul);
-        });
+        return $this->hasMany(Peserta::class, 'pelatihan_id');
     }
 }
