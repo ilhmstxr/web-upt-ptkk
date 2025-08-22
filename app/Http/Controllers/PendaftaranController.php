@@ -248,8 +248,15 @@ class PendaftaranController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id) {}
-
+    public function show(string $id)
+    {
+        //
+    }
+public function testing()
+    {
+        $pesertas = peserta::with('instansi', 'lampiran')->get();
+        return view('admin.testing', compact('pesertas'));
+    }
     /**
      * Show the form for editing the specified resource.
      */

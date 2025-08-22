@@ -42,22 +42,8 @@ class Peserta extends Model
     {
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
-
-    public function lampiranFolder(): string
-{
-    return 'lampiran/' . \Str::slug($this->nama); // folder storage/app/public/lampiran/{nama}
-}
-
-public function lampirans(): array
-{
-    $files = [];
-    if ($this->lampiran) {
-        foreach ($this->lampiran->getAttributes() as $key => $value) {
-            if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
-            if ($value) $files[$key] = asset('storage/' . $value);
-        }
+public function bidang(): BelongsTo
+    {
+        return $this->belongsTo(Bidang::class, 'bidang_id');
     }
-    return $files;
-}
-
 }

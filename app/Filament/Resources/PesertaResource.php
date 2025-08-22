@@ -4,11 +4,18 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PesertaResource\Pages;
 use App\Models\Peserta;
+use App\Models\Pelatihan;
+use App\Models\Bidang;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter; // <-- Import SelectFilter
 use Filament\Tables\Table;
+
+
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 
 // 🔑 Import plugin export
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
@@ -94,14 +101,95 @@ class PesertaResource extends Resource
             ]);
     }
 
+    // Letakkan method ini di dalam class PesertaResource
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Informasi Pendaftaran')
+                    ->columns(2)
+                    ->schema([
+                        Infolists\Components\TextEntry::make('pelatihan.nama_pelatihan'),
+                        Infolists\Components\TextEntry::make('instansi.asal_instansi'),
+                    ]),
+
+                Infolists\Components\Section::make('Data Diri Peserta')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('asal_instansi')->required(),
+                        Forms\Components\TextInput::make('bidang_keahlian')->required(),
+                        Forms\Components\TextInput::make('kelas')->required(),
+                        Forms\Components\TextInput::make('cabang_dinas_wilayah')->required(),
+                        Forms\Components\Textarea::make('alamat_instansi')->required()->columnSpanFull(),
+                    ]),
+                
+                Forms\Components\Section::make('Lampiran Berkas')
+                    ->relationship('lampiran') // Mengambil data dari relasi 'lampiran'
+                    ->columns(2)
+                    ->schema([
+                        // Gunakan ViewEntry untuk memanggil blade custom kita
+                        Infolists\Components\ViewEntry::make('lampiran.pas_foto')
+                            ->label('Pas Foto')
+                            ->view('filament.infolists.components.file-preview'),
+
+                        Infolists\Components\ViewEntry::make('lampiran.fc_ktp')
+                            ->label('KTP')
+                            ->view('filament.infolists.components.file-preview'),
+
+                        Infolists\Components\ViewEntry::make('lampiran.fc_ijazah')
+                            ->label('Ijazah')
+                            ->view('filament.infolists.components.file-preview'),
+
+                        Infolists\Components\ViewEntry::make('lampiran.fc_surat_sehat')
+                            ->label('Surat Sehat')
+                            ->view('filament.infolists.components.file-preview'),
+
+                        Infolists\Components\ViewEntry::make('lampiran.fc_surat_tugas')
+                            ->label('Surat Tugas')
+                            ->view('filament.infolists.components.file-preview'),
+
+                        Infolists\Components\TextEntry::make('lampiran.no_surat_tugas')
+                            ->label('Nomor Surat Tugas'),
+                    ]),
+            ]);
+    }
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable(),
-                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
+                Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
+            ])
+  ->filters([
+                // Filter berdasarkan Bidang
+                SelectFilter::make('bidang')
+                    ->label('Bidang')
+                    ->relationship('bidang', 'nama_bidang')
+                    ->searchable() // Membuat dropdown bisa dicari
+                    ->preload(), // Memuat opsi saat halaman dimuat
+
+                // Filter berdasarkan Instansi
+                SelectFilter::make('instansi')
+                    ->label('Asal Instansi')
+                    ->relationship('instansi', 'asal_instansi')
+                    ->searchable()
+                    ->preload(),
+
+                // Filter berdasarkan Pelatihan
+                SelectFilter::make('pelatihan')
+                    ->label('Nama Pelatihan')
+                    ->relationship('pelatihan', 'nama_pelatihan')
+                    ->searchable()
+                    ->preload(),
+            ])
+            ->filters([
+                //
+            ])
+            ->headerActions([
+                FilamentExportHeaderAction::make('export'), // tombol export di header
             ])
             ->filters([
                 //
@@ -110,7 +198,8 @@ class PesertaResource extends Resource
                 FilamentExportHeaderAction::make('export'), // tombol export di header
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+Tables\Actions\ViewAction::make(), 
+           Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export'), // tombol export di bulk action

@@ -59,6 +59,7 @@
                                 <span class="error-message-text"></span>
                             </div>
                         </div>
+                        <p class="text-xs text-slate-500 mt-1">Dapat menggunakan Kartu Keluarga (KK) apabila belum memiliki KTP</p>
                         @error('fc_ktp')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
