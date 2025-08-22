@@ -64,5 +64,8 @@ route::get('3', function () {
 route::get('4', function () {
     return view('peserta.pendaftaran.selesai');
 });
+
+Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
+
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';

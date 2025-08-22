@@ -255,7 +255,11 @@ class PendaftaranController extends Controller
     {
         //
     }
-
+public function testing()
+    {
+        $pesertas = peserta::with('instansi', 'lampiran')->get();
+        return view('admin.testing', compact('pesertas'));
+    }
     /**
      * Show the form for editing the specified resource.
      */

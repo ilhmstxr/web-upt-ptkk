@@ -42,4 +42,8 @@ class Peserta extends Model
     {
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
+public function bidang(): BelongsTo
+    {
+        return $this->belongsTo(Bidang::class, 'bidang_id');
+    }
 }
