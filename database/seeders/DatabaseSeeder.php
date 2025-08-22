@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             CabangDinasSeeder::class,
             PelatihanSeeder::class,
             BidangSeeder::class,
+            PesertaSeeder::class,
         ]);
 
         User::create([

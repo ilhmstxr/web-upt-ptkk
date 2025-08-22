@@ -162,7 +162,8 @@ class PendaftaranController extends Controller
                     'alamat_instansi' => $allData['alamat_instansi'],
                     'bidang_keahlian' => $allData['bidang_keahlian'],
                     'kelas' => $allData['kelas'],
-                    'cabang_dinas_id' => $allData['cabang_dinas_wilayah'],
+                    'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
+                    // 'cabang_dinas_id' => $allData['cabang_dinas_wilayah'],
                 ]);
 
 
