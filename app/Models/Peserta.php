@@ -51,15 +51,8 @@ class Peserta extends Model
     {
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
-
-    /**
-     * Menghasilkan path folder unik untuk lampiran peserta.
-     * Berguna saat proses upload file di controller.
-     * Contoh penggunaan di Controller: $path = $file->store($peserta->lampiranFolder(), 'public');
-     */
-    public function lampiranFolder(): string
+public function bidang(): BelongsTo
     {
-        // Contoh: 'lampiran/ilham-bintang-herlambang'
-        return 'lampiran/' . Str::slug($this->nama); 
+        return $this->belongsTo(Bidang::class, 'bidang_id');
     }
 }

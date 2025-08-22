@@ -20,10 +20,11 @@ use Illuminate\Database\Eloquent\Collection;
 
 // Import plugin export
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
-// Import untuk Aksi Kustom
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\BulkAction;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
+use Filament\Tables\Filters\SelectFilter;
 
 class PesertaResource extends Resource
 {
@@ -64,37 +65,69 @@ class PesertaResource extends Resource
                         Forms\Components\TextInput::make('email')->required()->email()->unique(ignoreRecord: true),
                         Forms\Components\Textarea::make('alamat')->required()->columnSpanFull(),
                     ]),
-                Forms\Components\Section::make('Lampiran Berkas')
+
+                Forms\Components\Section::make('Data Instansi')
+                    ->relationship('instansi')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\FileUpload::make('lampiran.fc_ktp')
-                            ->disk('public')
-                            ->directory(fn (Forms\Get $get) => 'lampiran/' . Str::slug($get('nama')))
-                            ->label('KTP')
-                            ->required(),
-                        Forms\Components\FileUpload::make('lampiran.fc_ijazah')
-                            ->disk('public')
-                            ->directory(fn (Forms\Get $get) => 'lampiran/' . Str::slug($get('nama')))
-                            ->label('Ijazah')
-                            ->required(),
-                        Forms\Components\FileUpload::make('lampiran.fc_surat_sehat')
-                            ->disk('public')
-                            ->directory(fn (Forms\Get $get) => 'lampiran/' . Str::slug($get('nama')))
-                            ->label('Surat Sehat')
-                            ->required(),
-                        Forms\Components\FileUpload::make('lampiran.pas_foto')
-                            ->disk('public')
-                            ->directory(fn (Forms\Get $get) => 'lampiran/' . Str::slug($get('nama')))
-                            ->label('Pas Foto')
-                            ->required(),
-                        Forms\Components\FileUpload::make('lampiran.fc_surat_tugas')
-                            ->disk('public')
-                            ->directory(fn (Forms\Get $get) => 'lampiran/' . Str::slug($get('nama')))
-                            ->label('Surat Tugas')
-                            ->nullable(),
-                        Forms\Components\TextInput::make('lampiran.no_surat_tugas')
-                            ->label('Nomor Surat Tugas')
-                            ->nullable(),
+                        Forms\Components\TextInput::make('instansi.asal_instansi')->required(),
+                        Forms\Components\TextInput::make('bidang_keahlian')->required(),
+                        Forms\Components\TextInput::make('kelas')->required(),
+                        Forms\Components\TextInput::make('cabang_dinas_wilayah')->required(),
+                        Forms\Components\TextInput::make('alamat_instansi')->required()->columnSpanFull(),
+                    ]),
+
+                Forms\Components\Section::make('Lampiran Berkas')
+                    ->relationship('lampiran')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('no_surat_tugas')->nullable(),
+                        Forms\Components\FileUpload::make('fc_ktp')->disk('public')->directory('berkas_pendaftaran/foto')->required(),
+                        Forms\Components\FileUpload::make('pas_foto')->disk('public')->directory('berkas_pendaftaran/ktp')->required(),
+                        Forms\Components\FileUpload::make('fc_ijazah')->disk('public')->directory('berkas_pendaftaran/ijazah')->required(),
+                        Forms\Components\FileUpload::make('fc_surat_tugas')->disk('public')->directory('berkas_pendaftaran/surat-tugas')->nullable(),
+                        Forms\Components\FileUpload::make('fc_surat_sehat')->disk('public')->directory('berkas_pendaftaran/surat-sehat')->required(),
+                    ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Informasi Pendaftaran')
+                    ->columns(2)
+                    ->schema([
+                        Infolists\Components\TextEntry::make('pelatihan.nama_pelatihan'),
+                        Infolists\Components\TextEntry::make('instansi.asal_instansi'),
+                    ]),
+                Infolists\Components\Section::make('Data Diri Peserta')
+                    ->columns(2)
+                    ->schema([
+                        Infolists\Components\TextEntry::make('nama'),
+                        Infolists\Components\TextEntry::make('nik'),
+                        Infolists\Components\TextEntry::make('tempat_lahir'),
+                        Infolists\Components\TextEntry::make('tanggal_lahir')->date(),
+                        Infolists\Components\TextEntry::make('jenis_kelamin'),
+                        Infolists\Components\TextEntry::make('agama'),
+                        Infolists\Components\TextEntry::make('no_hp'),
+                        Infolists\Components\TextEntry::make('email'),
+                        Infolists\Components\TextEntry::make('alamat')->columnSpanFull(),
+                    ]),
+                Infolists\Components\Section::make('Preview Berkas')
+                    ->columns(2)
+                    ->schema([
+                        Infolists\Components\ViewEntry::make('lampiran.pas_foto')->label('Pas Foto')
+                            ->view('components.infolists.lampiran-preview'),
+                        Infolists\Components\ViewEntry::make('lampiran.fc_ktp')->label('FC KTP')
+                            ->view('components.infolists.lampiran-preview'),
+                        Infolists\Components\ViewEntry::make('lampiran.fc_ijazah')->label('FC Ijazah')
+                            ->view('components.infolists.lampiran-preview'),
+                        Infolists\Components\ViewEntry::make('lampiran.fc_surat_tugas')->label('FC Surat Tugas')
+                            ->view('components.infolists.lampiran-preview'),
+                        Infolists\Components\ViewEntry::make('lampiran.fc_surat_sehat')->label('FC Surat Sehat')
+                            ->view('components.infolists.lampiran-preview'),
+                        Infolists\Components\TextEntry::make('lampiran.no_surat_tugas')->label('No Surat Tugas'),
                     ]),
             ]);
     }
@@ -110,26 +143,9 @@ class PesertaResource extends Resource
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
             ])
             ->filters([
-                // Filter berdasarkan Bidang
-                SelectFilter::make('bidang')
-                    ->label('Bidang')
-                    ->relationship('bidang', 'nama_bidang')
-                    ->searchable() // Membuat dropdown bisa dicari
-                    ->preload(), // Memuat opsi saat halaman dimuat
-
-                // Filter berdasarkan Instansi
-                SelectFilter::make('instansi')
-                    ->label('Asal Instansi')
-                    ->relationship('instansi', 'asal_instansi')
-                    ->searchable()
-                    ->preload(),
-
-                // Filter berdasarkan Pelatihan
-                SelectFilter::make('pelatihan')
-                    ->label('Nama Pelatihan')
-                    ->relationship('pelatihan', 'nama_pelatihan')
-                    ->searchable()
-                    ->preload(),
+                SelectFilter::make('bidang')->label('Bidang')->relationship('bidang', 'nama_bidang')->searchable()->preload(),
+                SelectFilter::make('instansi')->label('Asal Instansi')->relationship('instansi', 'asal_instansi')->searchable()->preload(),
+                SelectFilter::make('pelatihan')->label('Nama Pelatihan')->relationship('pelatihan', 'nama_pelatihan')->searchable()->preload(),
             ])
             ->headerActions([
                 // Aksi ini hanya akan mengekspor Excel saja
