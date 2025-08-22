@@ -36,7 +36,6 @@
                     <div>
                         <label for="fc_ktp" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Fotocopy
                             KTP/KK</label>
-                            KTP / KK</label>
                         <div class="relative">
                             <div class="file-input-wrapper border border-gray-300 rounded-lg">
                                 <input type="file" id="fc_ktp" name="fc_ktp"
@@ -60,6 +59,7 @@
                                 <span class="error-message-text"></span>
                             </div>
                         </div>
+                        <p class="text-xs text-slate-500 mt-1">Dapat menggunakan Kartu Keluarga (KK) apabila belum memiliki KTP</p>
                         @error('fc_ktp')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -127,6 +127,7 @@
                                 <span class="error-message-text"></span>
                             </div>
                         </div>
+                        
                         @error('fc_surat_tugas')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
