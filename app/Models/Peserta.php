@@ -22,7 +22,7 @@ class Peserta extends Model
         'instansi_id',
         'bidang_id',
         'nama',
-        'nik',  
+        'nik',
         'tempat_lahir',
         'tanggal_lahir',
         'jenis_kelamin',
@@ -51,8 +51,5 @@ class Peserta extends Model
     {
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
-public function bidang(): BelongsTo
-    {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
-    }
+    
 }

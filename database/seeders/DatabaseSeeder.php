@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             PelatihanSeeder::class,
             CabangDinasSeeder::class,
-            // PelatihanSeeder::class,
+            PelatihanSeeder::class,
             BidangSeeder::class,
         ]);
 

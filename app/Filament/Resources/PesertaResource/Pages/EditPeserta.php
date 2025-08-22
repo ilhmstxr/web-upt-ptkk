@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PesertaResource\Pages;
 use App\Filament\Resources\PesertaResource;
 use App\Models\Lampiran;
 use App\Models\Instansi;
+use App\Models\CabangDinas;
 use Filament\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
 
@@ -47,8 +49,12 @@ class EditPeserta extends EditRecord
                                     'Perempuan' => 'Perempuan',
                                 ])->required(),
                                 Select::make('agama')->label('Agama')->options([
-                                    'Islam' => 'Islam', 'Kristen' => 'Kristen', 'Katolik' => 'Katolik',
-                                    'Hindu' => 'Hindu', 'Buddha' => 'Buddha', 'Konghucu' => 'Konghucu',
+                                    'Islam' => 'Islam',
+                                    'Kristen' => 'Kristen',
+                                    'Katolik' => 'Katolik',
+                                    'Hindu' => 'Hindu',
+                                    'Buddha' => 'Buddha',
+                                    'Konghucu' => 'Konghucu',
                                 ])->required(),
                                 Textarea::make('alamat')->label('Alamat Tempat Tinggal')->required(),
                                 TextInput::make('no_hp')->label('Nomor Handphone')->required(),
@@ -62,18 +68,50 @@ class EditPeserta extends EditRecord
                                     ->relationship('instansi', 'asal_instansi')
                                     ->label('Asal Lembaga / Sekolah')
                                     ->searchable()
+                                    ->required()
+                                    ->live() // Membuat form reaktif
+                                    ->afterStateUpdated(function (Set $set, ?string $state) {
+                                        if ($state) {
+                                            $instansi = Instansi::find($state);
+                                            if ($instansi) {
+                                                $set('cabang_dinas_id', $instansi->cabang_dinas_id);
+                                            }
+                                        }
+                                    }),
+                                Select::make('pelatihan_id')
+                                    ->relationship('pelatihan', 'nama_pelatihan')
+                                    ->label('Pelatihan')
+                                    ->searchable()
                                     ->required(),
-                            ]),
-                            
+                                Select::make('bidang_id')
+                                    ->relationship('bidang', 'nama_bidang')
+                                    ->label('Bidang Keahlian')
+                                    ->searchable()
+                                    ->required(),
+                                Select::make('cabang_dinas_id')
+                                    ->label('Cabang Dinas')
+                                    ->options(CabangDinas::all()->pluck('nama', 'id'))
+                                    ->searchable()
+                                    ->required()
+                                // Select::make('cabang_dinas_id')
+                                //     ->label('Cabang Dinas')
+                                //     ->options(
+                                //         CabangDinas::all()->pluck('nama', 'id')->filter()
+                                //     )
+                                //     ->searchable()
+                                //     ->required(),
+                            ])->columns(2),
+
+
                         Section::make('Lampiran Dokumen')
                             ->description('Dokumen-dokumen pendukung yang diunggah oleh pendaftar.')
                             ->schema([
-                                TextInput::make('lampiran_no_surat_tugas')->label('Nomor Surat Tugas')->required()->default(fn ($record) => $record->lampiran->no_surat_tugas ?? null),
-                                FileUpload::make('lampiran_fc_ktp')->label('Fotocopy KTP')->disk('public')->required()->default(fn ($record) => $record->lampiran->fc_ktp ?? null),
-                                FileUpload::make('lampiran_fc_ijazah')->label('Fotocopy Ijazah Terakhir')->disk('public')->required()->default(fn ($record) => $record->lampiran->fc_ijazah ?? null),
-                                FileUpload::make('lampiran_fc_surat_tugas')->label('Fotocopy Surat Tugas')->disk('public')->required()->default(fn ($record) => $record->lampiran->fc_surat_tugas ?? null),
-                                FileUpload::make('lampiran_fc_surat_sehat')->label('Surat Keterangan Sehat')->disk('public')->required()->default(fn ($record) => $record->lampiran->fc_surat_sehat ?? null),
-                                FileUpload::make('lampiran_pas_foto')->label('Pas Foto Formal Background Merah')->disk('public')->required()->default(fn ($record) => $record->lampiran->pas_foto ?? null),
+                                TextInput::make('lampiran_no_surat_tugas')->label('Nomor Surat Tugas')->required()->default(fn($record) => $record->lampiran->no_surat_tugas ?? null),
+                                FileUpload::make('lampiran_fc_ktp')->label('Fotocopy KTP')->disk('public')->required()->default(fn($record) => $record->lampiran->fc_ktp ?? null),
+                                FileUpload::make('lampiran_fc_ijazah')->label('Fotocopy Ijazah Terakhir')->disk('public')->required()->default(fn($record) => $record->lampiran->fc_ijazah ?? null),
+                                FileUpload::make('lampiran_fc_surat_tugas')->label('Fotocopy Surat Tugas')->disk('public')->required()->default(fn($record) => $record->lampiran->fc_surat_tugas ?? null),
+                                FileUpload::make('lampiran_fc_surat_sehat')->label('Surat Keterangan Sehat')->disk('public')->required()->default(fn($record) => $record->lampiran->fc_surat_sehat ?? null),
+                                FileUpload::make('lampiran_pas_foto')->label('Pas Foto Formal Background Merah')->disk('public')->required()->default(fn($record) => $record->lampiran->pas_foto ?? null),
                             ])->columns(2),
                     ]),
             ]);
@@ -97,18 +135,17 @@ class EditPeserta extends EditRecord
                 'fc_surat_sehat' => $data['lampiran_fc_surat_sehat'],
                 'pas_foto' => $data['lampiran_pas_foto'],
             ];
-            
+
             // Simpan data Lampiran
             if ($record->lampiran) {
                 $record->lampiran->update($lampiranData);
             } else {
                 $record->lampiran()->create($lampiranData);
             }
-            
-            DB::commit();
-            
-            return $record;
 
+            DB::commit();
+
+            return $record;
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;

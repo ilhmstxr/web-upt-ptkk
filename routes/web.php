@@ -6,10 +6,11 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Exports\PesertaExport;
+use App\Models\Peserta;
 use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/export-peserta', function () {
-    return Excel::download(new PesertaExport, 'peserta.xlsx');
+    return Excel::download(new PesertaExport(), 'peserta.xlsx');
 });
 
 /*
@@ -79,6 +80,15 @@ Route::get('4', function () {
     // return view('peserta.pendaftaran.test');
     return view('peserta.pendaftaran.selesai');
     // return "arsa";
+});
+
+Route::get('test-peserta', function () {
+    new \App\Models\Peserta();
+    $peserta = Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')
+        ->get();
+    return $peserta;
+    return "peserta";
+    // return view('peserta.pendaftaran.lampiran');
 });
 
 // Route::get('pendaftaran_selesai', function () {

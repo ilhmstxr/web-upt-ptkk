@@ -21,10 +21,8 @@ use Illuminate\Database\Eloquent\Collection;
 // Import plugin export
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
 
 class PesertaResource extends Resource
 {
@@ -87,47 +85,6 @@ class PesertaResource extends Resource
                         Forms\Components\FileUpload::make('fc_ijazah')->disk('public')->directory('berkas_pendaftaran/ijazah')->required(),
                         Forms\Components\FileUpload::make('fc_surat_tugas')->disk('public')->directory('berkas_pendaftaran/surat-tugas')->nullable(),
                         Forms\Components\FileUpload::make('fc_surat_sehat')->disk('public')->directory('berkas_pendaftaran/surat-sehat')->required(),
-                    ]),
-            ]);
-    }
-
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make('Informasi Pendaftaran')
-                    ->columns(2)
-                    ->schema([
-                        Infolists\Components\TextEntry::make('pelatihan.nama_pelatihan'),
-                        Infolists\Components\TextEntry::make('instansi.asal_instansi'),
-                    ]),
-                Infolists\Components\Section::make('Data Diri Peserta')
-                    ->columns(2)
-                    ->schema([
-                        Infolists\Components\TextEntry::make('nama'),
-                        Infolists\Components\TextEntry::make('nik'),
-                        Infolists\Components\TextEntry::make('tempat_lahir'),
-                        Infolists\Components\TextEntry::make('tanggal_lahir')->date(),
-                        Infolists\Components\TextEntry::make('jenis_kelamin'),
-                        Infolists\Components\TextEntry::make('agama'),
-                        Infolists\Components\TextEntry::make('no_hp'),
-                        Infolists\Components\TextEntry::make('email'),
-                        Infolists\Components\TextEntry::make('alamat')->columnSpanFull(),
-                    ]),
-                Infolists\Components\Section::make('Preview Berkas')
-                    ->columns(2)
-                    ->schema([
-                        Infolists\Components\ViewEntry::make('lampiran.pas_foto')->label('Pas Foto')
-                            ->view('components.infolists.lampiran-preview'),
-                        Infolists\Components\ViewEntry::make('lampiran.fc_ktp')->label('FC KTP')
-                            ->view('components.infolists.lampiran-preview'),
-                        Infolists\Components\ViewEntry::make('lampiran.fc_ijazah')->label('FC Ijazah')
-                            ->view('components.infolists.lampiran-preview'),
-                        Infolists\Components\ViewEntry::make('lampiran.fc_surat_tugas')->label('FC Surat Tugas')
-                            ->view('components.infolists.lampiran-preview'),
-                        Infolists\Components\ViewEntry::make('lampiran.fc_surat_sehat')->label('FC Surat Sehat')
-                            ->view('components.infolists.lampiran-preview'),
-                        Infolists\Components\TextEntry::make('lampiran.no_surat_tugas')->label('No Surat Tugas'),
                     ]),
             ]);
     }

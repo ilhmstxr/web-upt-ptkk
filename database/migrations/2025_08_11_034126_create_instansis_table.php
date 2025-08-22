@@ -18,7 +18,11 @@ return new class extends Migration
             $table->text('alamat_instansi');
             $table->string('bidang_keahlian');
             $table->string('kelas');
-            $table->string('cabang_dinas_wilayah');
+            // $table->string('cabang_dinas_wilayah');
+            $table->foreignId('cabang_dinas_id')
+                ->constrained('cabang_dinas')
+                ->onUpdate('cascade')
+                ->onDelete('cascade'); // Relasi ke tabel cabang_dinas
             $table->timestamps();
         });
     }
