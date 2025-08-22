@@ -18,10 +18,26 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
+use Filament\Forms\Components\View; // <-- Tambahkan ini di atas
+
 
 class EditPeserta extends EditRecord
 {
     protected static string $resource = PesertaResource::class;
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $lampiran = $this->record->lampiran;
+
+        if ($lampiran) {
+            $data['lampiran_no_surat_tugas'] = $lampiran->no_surat_tugas;
+            // Kita tidak perlu mengisi data file di sini lagi
+            // karena akan ditangani oleh komponen View kustom.
+        }
+
+        return $data;
+    }
+
 
     protected function getHeaderActions(): array
     {
@@ -93,26 +109,38 @@ class EditPeserta extends EditRecord
                                     ->options(CabangDinas::all()->pluck('nama', 'id'))
                                     ->searchable()
                                     ->required()
-                                // Select::make('cabang_dinas_id')
-                                //     ->label('Cabang Dinas')
-                                //     ->options(
-                                //         CabangDinas::all()->pluck('nama', 'id')->filter()
-                                //     )
-                                //     ->searchable()
-                                //     ->required(),
+                                    ->disabled(), // dinonaktifkan karena diisi otomatis
                             ])->columns(2),
-
 
                         Section::make('Lampiran Dokumen')
                             ->description('Dokumen-dokumen pendukung yang diunggah oleh pendaftar.')
                             ->schema([
-                                TextInput::make('lampiran_no_surat_tugas')->label('Nomor Surat Tugas')->required()->default(fn($record) => $record->lampiran->no_surat_tugas ?? null),
-                                FileUpload::make('lampiran_fc_ktp')->label('Fotocopy KTP')->disk('public')->required()->default(fn($record) => $record->lampiran->fc_ktp ?? null),
-                                FileUpload::make('lampiran_fc_ijazah')->label('Fotocopy Ijazah Terakhir')->disk('public')->required()->default(fn($record) => $record->lampiran->fc_ijazah ?? null),
-                                FileUpload::make('lampiran_fc_surat_tugas')->label('Fotocopy Surat Tugas')->disk('public')->required()->default(fn($record) => $record->lampiran->fc_surat_tugas ?? null),
-                                FileUpload::make('lampiran_fc_surat_sehat')->label('Surat Keterangan Sehat')->disk('public')->required()->default(fn($record) => $record->lampiran->fc_surat_sehat ?? null),
-                                FileUpload::make('lampiran_pas_foto')->label('Pas Foto Formal Background Merah')->disk('public')->required()->default(fn($record) => $record->lampiran->pas_foto ?? null),
-                            ])->columns(2),
+                                TextInput::make('lampiran_no_surat_tugas')
+                                    ->label('Nomor Surat Tugas')
+                                    ->required(),
+
+                                // KTP
+                                View::make('ktp_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_ktp]),
+                                FileUpload::make('lampiran_fc_ktp')->label('Unggah Fotocopy KTP Baru (Opsional)')->disk('public')->image(),
+
+                                // Ijazah
+                                View::make('ijazah_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_ijazah]),
+                                FileUpload::make('lampiran_fc_ijazah')->label('Unggah Fotocopy Ijazah Baru (Opsional)')->disk('public')->image(),
+
+                                // Surat Tugas
+                                View::make('surat_tugas_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_surat_tugas]),
+                                FileUpload::make('lampiran_fc_surat_tugas')->label('Unggah Fotocopy Surat Tugas Baru (Opsional)')->disk('public'),
+
+                                // Surat Sehat
+                                View::make('surat_sehat_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_surat_sehat]),
+                                FileUpload::make('lampiran_fc_surat_sehat')->label('Unggah Surat Keterangan Sehat Baru (Opsional)')->disk('public'),
+
+                                // Pas Foto
+                                View::make('pas_foto_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->pas_foto]),
+                                FileUpload::make('lampiran_pas_foto')->label('Unggah Pas Foto Baru (Opsional)')->disk('public')->image(),
+
+                            ])->columns(1), // Menggunakan 1 kolom agar rapi
+
                     ]),
             ]);
     }

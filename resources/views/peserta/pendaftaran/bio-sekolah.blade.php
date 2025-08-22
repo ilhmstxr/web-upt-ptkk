@@ -62,7 +62,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="bidang_keahlian" class="block text-sm font-semibold mb-2 text-slate-700">Kompetensi/Bidang
-                        Keahlianfl>
+                        Keahlian</label>
                     <div class="relative">
                         {{-- <input type="text" id="bidang_keahlian" name="bidang_keahlian"
                             placeholder="Masukkan Kompetensi/Bidang Keahlian"

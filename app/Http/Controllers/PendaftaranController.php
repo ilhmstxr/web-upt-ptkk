@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
 use App\Filament\Resources\PesertaResource;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipArchive;
 
 class PendaftaranController extends Controller
@@ -161,7 +162,7 @@ class PendaftaranController extends Controller
                     'alamat_instansi' => $allData['alamat_instansi'],
                     'bidang_keahlian' => $allData['bidang_keahlian'],
                     'kelas' => $allData['kelas'],
-                    'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
+                    'cabang_dinas_id' => $allData['cabang_dinas_wilayah'],
                 ]);
 
 
@@ -266,6 +267,23 @@ class PendaftaranController extends Controller
         // return $pdf->download('biodata-' . Str::slug($peserta->nama) . '.pdf');
     }
 
+    public function download_file(Request $request): StreamedResponse
+    {
+        // Validasi untuk memastikan path file ada di request
+        $request->validate([
+            'path' => 'required|string',
+        ]);
+
+        $filePath = $request->input('path');
+
+        $disk = Storage::disk('public');
+
+        // Validasi keamanan untuk memastikan file ada di dalam disk 'public'
+        abort_if(!$disk->exists($filePath), 404, 'File not found.');
+
+        return $disk->download($filePath);
+    }
+
     public function download(Peserta $peserta)
     {
         $lampiran = $peserta->lampiran;
@@ -322,7 +340,7 @@ class PendaftaranController extends Controller
     {
         //
     }
-public function testing()
+    public function testing()
     {
         $pesertas = peserta::with('instansi', 'lampiran')->get();
         return view('admin.testing', compact('pesertas'));

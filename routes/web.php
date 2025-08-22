@@ -95,6 +95,8 @@ Route::get('test-peserta', function () {
 //     return view('peserta.pendaftaran.selesai');
 // });
 
+Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
+
 
 
 Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
