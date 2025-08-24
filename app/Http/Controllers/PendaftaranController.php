@@ -12,6 +12,9 @@ use App\Models\CabangDinas;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Storage; // <-- TAMBAHKAN BARIS INI
+
 
 class PendaftaranController extends Controller
 {
@@ -259,6 +262,24 @@ public function testing()
     {
         $pesertas = peserta::with('instansi', 'lampiran')->get();
         return view('admin.testing', compact('pesertas'));
+    }
+
+
+    public function download_file(Request $request): StreamedResponse
+    {
+        // Validasi untuk memastikan path file ada di request
+        $request->validate([
+            'path' => 'required|string',
+        ]);
+
+        $filePath = $request->input('path');
+
+        $disk = Storage::disk('public');
+
+        // Validasi keamanan untuk memastikan file ada di dalam disk 'public'
+        abort_if(!$disk->exists($filePath), 404, 'File not found.');
+
+        return $disk->download($filePath);
     }
     /**
      * Show the form for editing the specified resource.

@@ -139,9 +139,10 @@ class PesertaResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable(),
-                Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
-                Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
-                Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('jenis_kelamin')->sortable(),
+                Tables\Columns\TextColumn::make('email')->searchable(),
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
             ])
   ->filters([

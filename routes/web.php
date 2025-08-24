@@ -66,6 +66,7 @@ route::get('4', function () {
 });
 
 Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
+Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
 
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';
