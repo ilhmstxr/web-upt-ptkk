@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Exports\PesertaExport;
+use App\Models\Peserta;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
@@ -21,8 +22,10 @@ Route::get('/test-lampiran', function () {
 });
 
 Route::get('/export-peserta', function () {
-    return Excel::download(new PesertaExport, 'peserta.xlsx');
+    return Excel::download(new PesertaExport(), 'peserta.xlsx');
 });
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -110,11 +113,31 @@ Route::get('4', function () {
     // return "arsa";
 });
 
-Route::get('pendaftaran_selesai', function () {
-    return view('peserta.pendaftaran.selesai');
+Route::get('5', function () {
+    return view('template_surat.instruktur');
+});
+Route::get('test-peserta', function () {
+    new \App\Models\Peserta();
+    $peserta = Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')
+        ->get();
+    return $peserta;
+    return "peserta";
+    // return view('peserta.pendaftaran.lampiran');
 });
 
+// Route::get('pendaftaran_selesai', function () {
+//     return view('peserta.pendaftaran.selesai');
+// });
+
+Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
+Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
+
 Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
+Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
+Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])
+    ->name('peserta.download-pdf');
+Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])
+    ->name('peserta.download-bulk');
 
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';

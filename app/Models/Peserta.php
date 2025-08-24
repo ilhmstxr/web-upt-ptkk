@@ -15,12 +15,15 @@ class Peserta extends Model
 
     protected $table = 'pesertas';
 
+    protected $casts = [
+        'tanggal_lahir' => 'date',
+    ];
     protected $fillable = [
         'pelatihan_id',
         'instansi_id',
         'bidang_id',
         'nama',
-        'nik',  
+        'nik',
         'tempat_lahir',
         'tanggal_lahir',
         'jenis_kelamin',
@@ -43,40 +46,37 @@ class Peserta extends Model
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
+    public function bidang(): BelongsTo
+    {
+        return $this->belongsTo(Bidang::class, 'bidang_id');
+    }
+
+    public function bidang(): BelongsTo
+    {
+        return $this->belongsTo(Bidang::class, 'bidang_id');
+    }
+
     // 🔗 Relasi ke Instansi
     public function instansi(): BelongsTo
     {
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
 
-    // 🔗 Relasi ke Bidang
-    public function bidang(): BelongsTo
-    {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
-    }
-
-    // 🔗 Relasi ke Lampiran
-    public function lampiran(): HasOne
-    {
-        return $this->hasOne(Lampiran::class, 'peserta_id');
-    }
-
-    // 📁 Folder Lampiran
     public function lampiranFolder(): string
-    {
-        return 'lampiran/' . Str::slug($this->nama);
-    }
+{
+    return 'lampiran/' . \Str::slug($this->nama); // folder storage/app/public/lampiran/{nama}
+}
 
-    // 📂 Ambil semua file lampiran
-    public function getLampirans(): array
-    {
-        $files = [];
-        if ($this->lampiran) {
-            foreach ($this->lampiran->getAttributes() as $key => $value) {
-                if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
-                if ($value) $files[$key] = asset('storage/' . $value);
-            }
+public function lampirans(): array
+{
+    $files = [];
+    if ($this->lampiran) {
+        foreach ($this->lampiran->getAttributes() as $key => $value) {
+            if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
+            if ($value) $files[$key] = asset('storage/' . $value);
         }
-        return $files;
     }
+    return $files;
+}
+
 }
