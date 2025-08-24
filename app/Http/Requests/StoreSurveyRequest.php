@@ -15,7 +15,7 @@ class StoreSurveyRequest extends FormRequest
     public function rules()
     {
         $section = Survey::where('order', $this->route('order'))->firstOrFail();
-        $questionIds = $section->questions()->pluck('id')->toArray();
+        $questionIds = $section->pertanyaan()->pluck('id')->toArray();
 
         $rules = [
             'jawaban' => ['required', 'array'],

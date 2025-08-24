@@ -70,8 +70,7 @@ class SurveyController extends Controller
         // return $peserta;
         // return $order;
         $section = Survey::where('order', $order)->firstOrFail();
-        // return $section;
-        $questions = $section->questions()->orderBy('order', 'asc')->get();
+        $questions = $section->pertanyaan()->orderBy('order', 'asc')->get();
 
         return view('peserta.monev.survey.step', compact('peserta', 'section', 'questions'));
     }
