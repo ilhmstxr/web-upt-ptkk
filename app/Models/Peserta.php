@@ -15,9 +15,6 @@ class Peserta extends Model
 
     protected $table = 'pesertas';
 
-    protected $casts = [
-        'tanggal_lahir' => 'date',
-    ];
     protected $fillable = [
         'pelatihan_id',
         'instansi_id',
@@ -39,7 +36,7 @@ class Peserta extends Model
         'created_at'    => 'datetime',
         'updated_at'    => 'datetime',
     ];
-    
+
     // 🔗 Relasi ke Pelatihan
     public function pelatihan(): BelongsTo
     {
@@ -51,9 +48,9 @@ class Peserta extends Model
         return $this->belongsTo(Bidang::class, 'bidang_id');
     }
 
-    public function bidang(): BelongsTo
+       public function lampiran(): HasOne
     {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
+        return $this->hasOne(Lampiran::class);
     }
 
     // 🔗 Relasi ke Instansi
@@ -63,20 +60,19 @@ class Peserta extends Model
     }
 
     public function lampiranFolder(): string
-{
-    return 'lampiran/' . \Str::slug($this->nama); // folder storage/app/public/lampiran/{nama}
-}
-
-public function lampirans(): array
-{
-    $files = [];
-    if ($this->lampiran) {
-        foreach ($this->lampiran->getAttributes() as $key => $value) {
-            if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
-            if ($value) $files[$key] = asset('storage/' . $value);
-        }
+    {
+        return 'lampiran/' . String::slug($this->nama); // folder storage/app/public/lampiran/{nama}
     }
-    return $files;
-}
 
+    public function lampirans(): array
+    {
+        $files = [];
+        if ($this->lampiran) {
+            foreach ($this->lampiran->getAttributes() as $key => $value) {
+                if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
+                if ($value) $files[$key] = asset('storage/' . $value);
+            }
+        }
+        return $files;
+    }
 }

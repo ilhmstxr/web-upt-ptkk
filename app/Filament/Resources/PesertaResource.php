@@ -18,11 +18,6 @@ use Illuminate\Support\Str;
 use Filament\Tables\Filters\SelectFilter; // <-- Import SelectFilter
 use Illuminate\Database\Eloquent\Collection;
 
-// Import plugin export
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
-use Filament\Tables\Actions\Action;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use Filament\Tables\Actions\Action;
@@ -102,9 +97,6 @@ class PesertaResource extends Resource
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
                 Tables\Columns\TextColumn::make('jenis_kelamin')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
-                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
-
                 // tambahan kamar & bed
                 Tables\Columns\TextColumn::make('kamar_virtual')
                     ->label('Kamar')
@@ -112,6 +104,8 @@ class PesertaResource extends Resource
                 Tables\Columns\TextColumn::make('bed_virtual')
                     ->label('Bed')
                     ->getStateUsing(fn ($record) => self::assignBed($record)),
+                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
+
             ])
             ->filters([
                 SelectFilter::make('bidang')->label('Bidang')->relationship('bidang', 'nama_bidang')->searchable()->preload(),
@@ -325,87 +319,6 @@ class PesertaResource extends Resource
     {
         return [];
     }
-
-    /** ==================== FUNGSI KAMAR ==================== */
-    protected static function assignKamar($record)
-    {
-        $kamars = session('kamars') ?? config('kamar');
-        $gender = $record->jenis_kelamin;
-
-        $blokDipakai = $gender === 'Laki-laki'
-            ? ['Melati Bawah', 'Tulip Bawah']
-            : ['Mawar', 'Melati Atas', 'Tulip Atas'];
-
-        $listKamar = collect($kamars)
-            ->only($blokDipakai)
-            ->map(function ($rooms, $blok) {
-                return collect($rooms)->map(function ($r) use ($blok) {
-                    return [
-                        'blok' => $blok,
-                        'no'   => $r['no'],
-                        'bed'  => (int) $r['bed'],
-                    ];
-                });
-            })
-            ->flatten(1)
-            ->filter(fn ($k) => $k['bed'] > 0)
-            ->values();
-
-        $pesertas = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
-        $index = $pesertas->search(fn ($p) => $p->id === $record->id);
-
-        $counter = 0;
-        foreach ($listKamar as $kamar) {
-            $capacity = (int) $kamar['bed'];
-            if ($index < $counter + $capacity) {
-                return $kamar['blok'] . ' - No.' . $kamar['no'];
-            }
-            $counter += $capacity;
-        }
-
-        return 'Penuh';
-    }
-
-    protected static function assignBed($record)
-    {
-        $kamars = session('kamars') ?? config('kamar');
-        $pesertas = Peserta::where('jenis_kelamin', $record->jenis_kelamin)
-            ->orderBy('id')
-            ->get();
-
-        // Cari kamar peserta
-        $kamar = self::assignKamar($record);
-        if ($kamar === 'Penuh') {
-            return '-';
-        }
-
-        [$blok, $noText] = explode(' - No.', $kamar);
-        $no = (int) $noText;
-
-        // Ambil kapasitas kamar
-        $capacity = collect($kamars[$blok] ?? [])
-            ->firstWhere('no', $no)['bed'] ?? 0;
-
-        // Peserta yang berada di kamar itu saja
-        $pesertaInRoom = $pesertas->filter(function ($p) use ($blok, $no) {
-            return self::assignKamar($p) === $blok . ' - No.' . $no;
-        })->values();
-
-        // Cari index peserta di kamar tersebut
-        $indexInRoom = $pesertaInRoom->search(fn ($p) => $p->id === $record->id);
-
-        if ($indexInRoom === false || $indexInRoom >= $capacity) {
-            return '-';
-        }
-
-        return 'Bed ' . ($indexInRoom + 1);
-    }
-
-    public static function getRelations(): array
-    {
-        return [];
-    }
-
     public static function getPages(): array
     {
         return [
