@@ -48,7 +48,7 @@ class Peserta extends Model
         return $this->belongsTo(Bidang::class, 'bidang_id');
     }
 
-       public function lampiran(): HasOne
+    public function lampiran(): HasOne
     {
         return $this->hasOne(Lampiran::class);
     }
@@ -74,5 +74,16 @@ class Peserta extends Model
             }
         }
         return $files;
+    }
+
+    public function pertanyaan()
+    {
+        return $this->hasMany(Pertanyaan::class);
+    }
+
+    // Relasi ke komentar survei (sebelumnya ada di Participant)
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

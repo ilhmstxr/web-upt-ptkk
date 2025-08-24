@@ -1,4 +1,4 @@
-@extends('peserta.layout.main', ['currentStep' => 3])
+@extends('peserta.pendaftaran.layout.main', ['currentStep' => 3])
 
 @section('title', 'Lampiran Dokumen Pendaftaran')
 

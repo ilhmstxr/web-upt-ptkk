@@ -10,6 +10,7 @@ use App\Models\Peserta;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
+use App\Http\Controllers\SurveyController;
 
 Route::get('/test-peserta', function () {
     // ambil 5 data pertama dari PesertaSheet
@@ -39,20 +40,20 @@ Route::get('/export-peserta', function () {
 */
 
 // Halaman utama (landing page)
-Route::get('/', function () {
-    $pelatihans = Pelatihan::orderBy('tanggal_mulai', 'desc')->take(10)->get();
-    return view('landing', compact('pelatihans'));
-})->name('landing');
+// Route::get('/', function () {
+//     $pelatihans = Pelatihan::orderBy('tanggal_mulai', 'desc')->take(10)->get();
+//     return view('landing', compact('pelatihans'));
+// })->name('landing');
 
 // ============================
 // API untuk Flow Pendaftaran (Step-by-Step)
 // ============================
-Route::prefix('api/flow')->middleware('api')->group(function () {
-    Route::post('/register', [RegistrationFlowController::class, 'register'])->name('flow.register');
-    Route::post('/biodata-sekolah', [RegistrationFlowController::class, 'saveSchool'])->name('flow.school');
-    Route::post('/biodata-diri', [RegistrationFlowController::class, 'savePersonal'])->name('flow.personal');
-    Route::post('/finish', [RegistrationFlowController::class, 'finish'])->name('flow.finish');
-});
+// Route::prefix('api/flow')->middleware('api')->group(function () {
+//     Route::post('/register', [RegistrationFlowController::class, 'register'])->name('flow.register');
+//     Route::post('/biodata-sekolah', [RegistrationFlowController::class, 'saveSchool'])->name('flow.school');
+//     Route::post('/biodata-diri', [RegistrationFlowController::class, 'savePersonal'])->name('flow.personal');
+//     Route::post('/finish', [RegistrationFlowController::class, 'finish'])->name('flow.finish');
+// });
 
 // ============================
 // Pendaftaran (Form Pendaftaran Baru)
@@ -97,6 +98,8 @@ Route::get('/send', function () {
     Mail::to(['23082010166@student.upnjatim.ac.id'])->send(new TestMail());
 });
 
+
+
 // Rute-rute ini tampaknya untuk pengujian, disarankan untuk dihapus setelah selesai
 Route::get('1', function () {
     return view('peserta.pendaftaran.bio-peserta');
@@ -116,6 +119,13 @@ Route::get('4', function () {
 Route::get('5', function () {
     return view('template_surat.instruktur');
 });
+
+Route::get('6', function () {
+    return view('peserta.monev.pendaftaran');
+});
+
+
+
 Route::get('test-peserta', function () {
     new \App\Models\Peserta();
     $peserta = Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')
@@ -129,6 +139,9 @@ Route::get('test-peserta', function () {
 //     return view('peserta.pendaftaran.selesai');
 // });
 
+
+// route fix
+// route pendaftaran
 Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 
@@ -138,6 +151,22 @@ Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'do
     ->name('peserta.download-pdf');
 Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])
     ->name('peserta.download-bulk');
+
+// route monev
+Route::resource('/survey', SurveyController::class);
+
+// Rute untuk menampilkan setiap langkah/bagian survei
+// Menggunakan route model binding untuk {participant} dan slug untuk {section_slug}
+Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
+
+// Rute untuk menyimpan jawaban dari setiap langkah survei
+Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
+
+// Rute untuk halaman "Selesai"
+Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
+
+Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
+
 
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';
