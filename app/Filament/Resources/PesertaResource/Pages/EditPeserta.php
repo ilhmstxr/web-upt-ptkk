@@ -19,6 +19,8 @@ use Filament\Forms\Set;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\View; // <-- Tambahkan ini di atas
+use Illuminate\Support\Arr; // <-- 1. TAMBAHKAN USE STATEMENT INI
+use Illuminate\Database\Eloquent\Model; // <-- Pastikan 'use' statement ini ada
 
 
 class EditPeserta extends EditRecord
@@ -30,7 +32,7 @@ class EditPeserta extends EditRecord
         $lampiran = $this->record->lampiran;
 
         if ($lampiran) {
-            $data['lampiran_no_surat_tugas'] = $lampiran->no_surat_tugas;
+            $data['no_surat_tugas'] = $lampiran->no_surat_tugas;
             // Kita tidak perlu mengisi data file di sini lagi
             // karena akan ditangani oleh komponen View kustom.
         }
@@ -104,78 +106,109 @@ class EditPeserta extends EditRecord
                                     ->label('Bidang Keahlian')
                                     ->searchable()
                                     ->required(),
-                                Select::make('cabang_dinas_id')
-                                    ->label('Cabang Dinas')
-                                    ->options(CabangDinas::all()->pluck('nama', 'id'))
-                                    ->searchable()
-                                    ->required()
-                                    ->disabled(), // dinonaktifkan karena diisi otomatis
+                                // Select::make('cabang_dinas_id')
+                                //     ->label('Cabang Dinas')
+                                //     ->options(CabangDinas::all()->pluck('nama', 'id'))
+                                //     ->searchable()
+                                //     ->disabled() // Tetap dinonaktifkan karena diisi otomatis
+                                //     ->afterStateHydrated(function ($state, callable $set, ?Model $record) {
+                                //         // Hanya jalankan jika form sedang dalam mode edit (ada $record)
+                                //         if (!$record) {
+                                //             return;
+                                //         }
+
+                                //         // 1. Ambil nama wilayah dari kolom string di model Instansi
+                                //         $namaWilayah = $record->cabang_dinas_wilayah;
+
+                                //         // 2. Cari CabangDinas yang namanya cocok
+                                //         $cabangDinas = CabangDinas::where('nama', $namaWilayah)->first();
+
+                                //         // 3. Jika ditemukan, set state (nilai) dari field ini dengan ID yang cocok
+                                //         if ($cabangDinas) {
+                                //             $set('cabang_dinas_id', $cabangDinas->id);
+                                //         }
+                                //     }),
                             ])->columns(2),
 
                         Section::make('Lampiran Dokumen')
                             ->description('Dokumen-dokumen pendukung yang diunggah oleh pendaftar.')
                             ->schema([
-                                TextInput::make('lampiran_no_surat_tugas')
-                                    ->label('Nomor Surat Tugas')
-                                    ->required(),
+                                TextInput::make('no_surat_tugas')
+                                    ->label('Nomor Surat Tugas'),
 
                                 // KTP
                                 View::make('ktp_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_ktp]),
-                                FileUpload::make('lampiran_fc_ktp')->label('Unggah Fotocopy KTP Baru (Opsional)')->disk('public')->image(),
+                                FileUpload::make('fc_ktp')->label('Unggah Fotocopy KTP Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
+
 
                                 // Ijazah
                                 View::make('ijazah_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_ijazah]),
-                                FileUpload::make('lampiran_fc_ijazah')->label('Unggah Fotocopy Ijazah Baru (Opsional)')->disk('public')->image(),
+                                FileUpload::make('fc_ijazah')->label('Unggah Fotocopy Ijazah Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
+
 
                                 // Surat Tugas
                                 View::make('surat_tugas_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_surat_tugas]),
-                                FileUpload::make('lampiran_fc_surat_tugas')->label('Unggah Fotocopy Surat Tugas Baru (Opsional)')->disk('public'),
+                                FileUpload::make('fc_surat_tugas')->label('Unggah Fotocopy Surat Tugas Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
+
 
                                 // Surat Sehat
                                 View::make('surat_sehat_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_surat_sehat]),
-                                FileUpload::make('lampiran_fc_surat_sehat')->label('Unggah Surat Keterangan Sehat Baru (Opsional)')->disk('public'),
+                                FileUpload::make('fc_surat_sehat')->label('Unggah Surat Keterangan Sehat Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
+
 
                                 // Pas Foto
                                 View::make('pas_foto_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->pas_foto]),
-                                FileUpload::make('lampiran_pas_foto')->label('Unggah Pas Foto Baru (Opsional)')->disk('public')->image(),
+                                FileUpload::make('pas_foto')->label('Unggah Pas Foto Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
+
 
                             ])->columns(1), // Menggunakan 1 kolom agar rapi
 
                     ]),
             ]);
     }
-
-    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
+    protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        // Memulai transaksi database untuk memastikan integritas data
         DB::beginTransaction();
-        try {
-            // Data untuk model Peserta
-            $pesertaData = $data;
-            unset($pesertaData['lampiran_no_surat_tugas'], $pesertaData['lampiran_fc_ktp'], $pesertaData['lampiran_fc_ijazah'], $pesertaData['lampiran_fc_surat_tugas'], $pesertaData['lampiran_fc_surat_sehat'], $pesertaData['lampiran_pas_foto']);
-            $record->update($pesertaData);
 
-            // Data untuk model Lampiran
-            $lampiranData = [
-                'no_surat_tugas' => $data['lampiran_no_surat_tugas'],
-                'fc_ktp' => $data['lampiran_fc_ktp'],
-                'fc_ijazah' => $data['lampiran_fc_ijazah'],
-                'fc_surat_tugas' => $data['lampiran_fc_surat_tugas'],
-                'fc_surat_sehat' => $data['lampiran_fc_surat_sehat'],
-                'pas_foto' => $data['lampiran_pas_foto'],
+        try {
+            // 1. Definisikan semua key yang dimiliki oleh model Lampiran
+            $lampiranKeys = [
+                'no_surat_tugas',
+                'fc_ktp',
+                'fc_ijazah',
+                'fc_surat_tugas',
+                'fc_surat_sehat',
+                'pas_foto'
             ];
 
-            // Simpan data Lampiran
-            if ($record->lampiran) {
-                $record->lampiran->update($lampiranData);
-            } else {
-                $record->lampiran()->create($lampiranData);
+            // 2. Ambil data HANYA untuk model Peserta (selain data lampiran)
+            $pesertaData = Arr::except($data, $lampiranKeys);
+            $record->update($pesertaData);
+
+            // 3. Ambil data HANYA untuk model Lampiran (jika ada di dalam form data)
+            $lampiranData = Arr::only($data, $lampiranKeys);
+
+            // 4. Update atau Buat data Lampiran hanya jika ada data yang relevan
+            if (!empty($lampiranData)) {
+                if ($record->lampiran) {
+                    // Jika lampiran sudah ada, update
+                    $record->lampiran->update($lampiranData);
+                } else {
+                    // Jika lampiran belum ada, buat baru
+                    $record->lampiran()->create($lampiranData);
+                }
             }
 
+            // Jika semua berhasil, commit transaksi
             DB::commit();
 
             return $record;
         } catch (\Exception $e) {
+            // Jika terjadi error, batalkan semua perubahan
             DB::rollBack();
+
+            // Lemparkan kembali error untuk ditampilkan
             throw $e;
         }
     }

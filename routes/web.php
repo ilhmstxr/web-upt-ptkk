@@ -13,6 +13,8 @@ Route::get('/export-peserta', function () {
     return Excel::download(new PesertaExport(), 'peserta.xlsx');
 });
 
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -82,6 +84,9 @@ Route::get('4', function () {
     // return "arsa";
 });
 
+Route::get('5', function () {
+    return view('template_surat.instruktur');
+});
 Route::get('test-peserta', function () {
     new \App\Models\Peserta();
     $peserta = Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')
@@ -96,8 +101,7 @@ Route::get('test-peserta', function () {
 // });
 
 Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
-
-
+Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 
 Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');

@@ -96,6 +96,7 @@ class PesertaResource extends Resource
                 Tables\Columns\TextColumn::make('nama')->searchable(),
                 Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
+                Tables\Columns\TextColumn::make('jenis_kelamin')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
             ])

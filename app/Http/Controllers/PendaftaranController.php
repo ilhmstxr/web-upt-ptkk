@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Filament\Resources\PesertaResource;
+use App\Models\instruktur;
+use Barryvdh\DomPDF\PDF;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -84,6 +87,28 @@ class PendaftaranController extends Controller
     // public function store(Request $request)
 
 
+    public function generateMassal()
+    {
+        // 1. Ambil semua data instruktur yang ingin dicetak.
+        // Anda bisa menambahkan filter di sini jika perlu, misal berdasarkan pelatihan tertentu.
+        // Contoh: Instruktur::where('pelatihan_id', 1)->get();
+        $instrukturs = Instruktur::with(['bidang', 'pelatihan'])->get();
+
+        // 2. Kirim data ke view dan render menjadi PDF
+        $pdf = PDF::loadView('instruktur.cetak_massal', [
+            'instrukturs' => $instrukturs
+        ]);
+
+        // Atur ukuran kertas dan orientasi jika perlu
+        $pdf->setPaper('A4', 'portrait');
+
+        // 3. Tampilkan PDF di browser (stream) atau langsung download (download)
+        $fileName = 'Biodata_Instruktur_Massal_' . Carbon::now()->format('Y-m-d') . '.pdf';
+
+        // return $pdf->download($fileName); // Untuk langsung download
+        return $pdf->stream($fileName); // Untuk menampilkan di browser
+    }
+    
     public function store(Request $request)
     {
         $currentStep = $request->input('current_step');
