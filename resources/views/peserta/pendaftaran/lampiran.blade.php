@@ -1,4 +1,4 @@
-@extends('peserta.layout.main', ['currentStep' => 3])
+@extends('peserta.pendaftaran.layout.main', ['currentStep' => 3])
 
 @section('title', 'Lampiran Dokumen Pendaftaran')
 
@@ -36,6 +36,7 @@
                     <div>
                         <label for="fc_ktp" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Fotocopy
                             KTP/KK</label>
+                            KTP / KK</label>
                         <div class="relative">
                             <div class="file-input-wrapper border border-gray-300 rounded-lg">
                                 <input type="file" id="fc_ktp" name="fc_ktp"
@@ -127,7 +128,7 @@
                                 <span class="error-message-text"></span>
                             </div>
                         </div>
-                        
+                        <p class="text-xs text-slate-500 mt-1">Surat Tugas dapat dilampirkan menyusul.</p>
                         @error('fc_surat_tugas')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -186,6 +187,7 @@
                                 <span class="error-message-text"></span>
                             </div>
                         </div>
+                        <p class="text-xs text-slate-500 mt-1">Nomor Surat Tugas dapat dilampirkan menyusul.</p>
                         @error('no_surat_tugas')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -355,18 +357,18 @@
                             case 'fc_ijazah':
                                 message = 'File Ijazah wajib diunggah.';
                                 break;
-                            // case 'fc_surat_tugas':
-                            //     message = 'File Surat Tugas wajib diunggah.';
-                            //     break;
+                                // case 'fc_surat_tugas':
+                                //     message = 'File Surat Tugas wajib diunggah.';
+                                //     break;
                             case 'fc_surat_sehat':
                                 message = 'File Surat Sehat wajib diunggah.';
                                 break;
                             case 'pas_foto':
                                 message = 'Pas Foto wajib diunggah.';
                                 break;
-                            // case 'no_surat_tugas':
-                            //     message = 'Nomor surat tugas tidak boleh kosong.';
-                            //     break;
+                                // case 'no_surat_tugas':
+                                //     message = 'Nomor surat tugas tidak boleh kosong.';
+                                //     break;
                         }
                         showError(element, message);
                         if (!firstErrorElement) firstErrorElement = element;

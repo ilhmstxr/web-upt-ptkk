@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\FilamentExport;
+use App\Exports\PesertaExport;
 use Illuminate\Http\Request;
 use App\Models\Pelatihan;
 use App\Models\Instansi;
@@ -9,12 +12,19 @@ use App\Models\Peserta;
 use App\Models\Lampiran;
 use App\Models\Bidang;
 use App\Models\CabangDinas;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use App\Filament\Resources\PesertaResource;
+use App\Models\instruktur;
+use Barryvdh\DomPDF\PDF;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Illuminate\Support\Facades\Storage; // <-- TAMBAHKAN BARIS INI
-
+use ZipArchive;
 
 class PendaftaranController extends Controller
 {
@@ -22,6 +32,16 @@ class PendaftaranController extends Controller
     /**
      * Menampilkan halaman formulir pendaftaran berdasarkan langkah saat ini.
      */
+
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return redirect()->route('pendaftaran.create');
+    }
+
     public function create(Request $request)
     {
         // 1. Ambil langkah yang ingin diakses dari URL (target), default ke 1.
@@ -41,6 +61,7 @@ class PendaftaranController extends Controller
         // Ambil data yang sudah tersimpan di session untuk mengisi kembali input form.
         $formData = $request->session()->get('pendaftaran_data', []);
 
+        // return $currentStep;
         // Gunakan switch untuk menampilkan view dan memuat data yang relevan saja.
         switch ($currentStep) {
             case 1:
@@ -57,33 +78,37 @@ class PendaftaranController extends Controller
                 return view('peserta.pendaftaran.lampiran', compact('currentStep', 'allowedStep', 'formData'));
 
                 // Ini adalah halaman "Selesai" setelah form disubmit
-            case 4:
-                // Halaman ini hanya bisa diakses jika session 'success' ada,
-                // yang diatur di method store() setelah berhasil menyimpan.
-                if (!$request->session()->has('success')) {
-                    return redirect()->route('pendaftaran.create', ['step' => 1]);
-                }
-                return view('peserta.pendaftaran.selesai', compact('currentStep', 'allowedStep'));
 
-            default:
-                // Jika pengguna memasukkan step yang aneh (misal: 0 atau 5),
-                // kembalikan ke langkah terakhir yang mereka boleh akses.
-                return redirect()->route('pendaftaran.create', ['step' => $allowedStep]);
         }
     }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index() {}
-
-
     /**
      * Store a newly created resource in storage.
      */
     // public function store(Request $request)
 
 
+    public function generateMassal()
+    {
+        // 1. Ambil semua data instruktur yang ingin dicetak.
+        // Anda bisa menambahkan filter di sini jika perlu, misal berdasarkan pelatihan tertentu.
+        // Contoh: Instruktur::where('pelatihan_id', 1)->get();
+        $instrukturs = Instruktur::with(['bidang', 'pelatihan'])->get();
+
+        // 2. Kirim data ke view dan render menjadi PDF
+        $pdf = PDF::loadView('instruktur.cetak_massal', [
+            'instrukturs' => $instrukturs
+        ]);
+
+        // Atur ukuran kertas dan orientasi jika perlu
+        $pdf->setPaper('A4', 'portrait');
+
+        // 3. Tampilkan PDF di browser (stream) atau langsung download (download)
+        $fileName = 'Biodata_Instruktur_Massal_' . Carbon::now()->format('Y-m-d') . '.pdf';
+
+        // return $pdf->download($fileName); // Untuk langsung download
+        return $pdf->stream($fileName); // Untuk menampilkan di browser
+    }
+    
     public function store(Request $request)
     {
         $currentStep = $request->input('current_step');
@@ -163,6 +188,7 @@ class PendaftaranController extends Controller
                     'bidang_keahlian' => $allData['bidang_keahlian'],
                     'kelas' => $allData['kelas'],
                     'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
+                    // 'cabang_dinas_id' => $allData['cabang_dinas_wilayah'],
                 ]);
 
 
@@ -240,30 +266,32 @@ class PendaftaranController extends Controller
             // return "kesave";
             // Hapus data dari session dan redirect dengan pesan sukses
             $request->session()->forget('pendaftaran_data');
-            return view('peserta.pendaftaran.selesai', compact('currentStep'))->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
-        }
-        else if ($currentStep == 4) {
-            // Jika sudah sampai di step 4, tidak perlu melakukan apa-apa
-            // karena ini hanya halaman selesai.
-            return view('peserta.pendaftaran.selesai', compact('currentStep'));
+            // return $currentStep;
+            // return view('peserta.pendaftaran.selesai')->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
+            return redirect()->route('pendaftaran.selesai')->with('success', 'Pendaftaran Anda telah berhasil terkirim! Terima kasih.');
         }
 
         // return redirect()->route('pendaftaran.create');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+
+    public function selesai()
     {
-        //
-    }
-public function testing()
-    {
-        $pesertas = peserta::with('instansi', 'lampiran')->get();
-        return view('admin.testing', compact('pesertas'));
+        // Pindahkan logika dari rute ke sini
+        return view('peserta.pendaftaran.selesai');
     }
 
+    public function downloadPDF(Peserta $peserta)
+    {
+        // // Load relasi yang mungkin dibutuhkan di dalam view PDF
+        // $peserta->load('pelatihan', 'instansi', 'lampiran');
+
+        // // Membuat PDF dari sebuah Blade view
+        // $pdf = Pdf::loadView('pdf.biodata-peserta', ['peserta' => $peserta]);
+
+        // // Mengunduh file PDF dengan nama dinamis
+        // return $pdf->download('biodata-' . Str::slug($peserta->nama) . '.pdf');
+    }
 
     public function download_file(Request $request): StreamedResponse
     {
@@ -281,6 +309,70 @@ public function testing()
 
         return $disk->download($filePath);
     }
+
+    public function download(Peserta $peserta)
+    {
+        $lampiran = $peserta->lampiran;
+        if (!$lampiran) {
+            return back()->with('error', 'Peserta tidak memiliki data lampiran.');
+        }
+
+        $filesToZip = [
+            $lampiran->pas_foto,
+            $lampiran->fc_ktp,
+            $lampiran->fc_ijazah,
+            $lampiran->fc_surat_sehat,
+            $lampiran->fc_surat_tugas,
+        ];
+
+        $zipFileName = 'lampiran-' . Str::slug($peserta->nama) . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipFileName);
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($filesToZip as $filePath) {
+                if ($filePath && Storage::disk('public')->exists($filePath)) {
+                    $absolutePath = storage_path('app/public/' . $filePath);
+                    $zip->addFile($absolutePath, basename($filePath));
+                }
+            }
+            $zip->close();
+        } else {
+            return back()->with('error', 'Gagal membuat file ZIP.');
+        }
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+    public function downloadBulk(Request $request)
+    {
+        // Pastikan request punya ids dan excelFileName
+        $request->validate([
+            'ids'            => 'required|array',
+            'ids.*'          => 'integer|exists:pesertas,id',
+            'excelFileName'  => 'required|string'
+        ]);
+
+        $ids = $request->input('ids');
+        $fileName = $request->input('excelFileName') . '.xlsx';
+
+        return Excel::download(new PesertaExport($ids), $fileName);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+    public function testing()
+    {
+        $pesertas = peserta::with('instansi', 'lampiran')->get();
+        return view('admin.testing', compact('pesertas'));
+    }
+
+
     /**
      * Show the form for editing the specified resource.
      */

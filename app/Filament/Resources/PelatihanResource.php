@@ -31,11 +31,11 @@ class PelatihanResource extends Resource
                         Forms\Components\TextInput::make('nama_bidang')->required(),
                         Forms\Components\TextInput::make('deskripsi')->required()->columnSpanFull(),
                     ]),
-                Forms\Components\DatePicker::make('tanggal_mulai')
-                    ->required(),
-                Forms\Components\DatePicker::make('tanggal_selesai')
-                    ->required(),
-            ]);
+                        Forms\Components\DatePicker::make('tanggal_mulai')
+                            ->required(),
+                        Forms\Components\DatePicker::make('tanggal_selesai')
+                            ->required(),
+                                ]);
     }
 
     public static function table(Table $table): Table

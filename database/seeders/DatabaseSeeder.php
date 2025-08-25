@@ -19,8 +19,10 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             PelatihanSeeder::class,
             CabangDinasSeeder::class,
-            // PelatihanSeeder::class,
+            PelatihanSeeder::class,
             BidangSeeder::class,
+            PesertaSeeder::class,
+            SurveySeeder::class
         ]);
 
         User::create([
@@ -28,5 +30,6 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => bcrypt('admin'),
         ]);
+
     }
 }

@@ -1,4 +1,4 @@
-@extends('peserta.layout.main', ['currentStep' => 2])
+@extends('peserta.pendaftaran.layout.main', ['currentStep' => 2])
 
 @section('title', 'Biodata Sekolah')
 
@@ -10,8 +10,7 @@
             <input type="hidden" name="current_step" value="{{ $currentStep }}">
             {{-- Asal Lembaga --}}
             <div>
-                <label for="asal_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Asal Lembaga
-                    Instansi</label>
+                <label for="asal_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Asal Lembaga Instansi</label>
                 <div class="relative">
                     <input type="text" id="asal_instansi" name="asal_instansi" placeholder="Masukkan Asal Lembaga"
                         value="{{ old('asal_instansi', $formData['asal_instansi'] ?? '') }}"
