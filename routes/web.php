@@ -1,49 +1,59 @@
 <?php
 
-use App\Http\Controllers\PendaftaranController;
-use App\Mail\TestMail;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
-use App\Exports\PesertaExport;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
+use Livewire\Volt\Volt;
+
+use App\Http\Controllers\PesertaController;
+use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SuratController;
+
+use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
 
-Route::get('/test-peserta', function () {
-    // ambil 5 data pertama dari PesertaSheet
-    dd((new PesertaSheet())->collection()->take(5));
-});
-
-Route::get('/test-lampiran', function () {
-    // ambil 5 data pertama dari LampiranSheet
-    dd((new LampiranSheet())->collection()->take(5));
-});
-
-Route::get('/export-peserta', function () {
-    return Excel::download(new PesertaExport, 'peserta.xlsx');
-});
+use App\Mail\TestMail;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Download Biodata Peserta
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
+Route::get('/peserta/{peserta}/download', [PesertaController::class, 'download'])
+    ->name('peserta.download');
+Route::get('/peserta/{id}/download-biodata', [PesertaController::class, 'downloadBiodata'])
+    ->name('peserta.downloadBiodata');
 
-// Halaman utama (landing page)
-Route::get('/', function () {
-    return view('landing');
-})->name('landing');
+/*
+|--------------------------------------------------------------------------
+| Export Excel & Test Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/test-peserta', fn() => dd((new PesertaSheet())->collection()->take(5)));
+Route::get('/test-lampiran', fn() => dd((new LampiranSheet())->collection()->take(5)));
+Route::get('/export-peserta', fn() => Excel::download(new PesertaExport, 'peserta.xlsx'));
 
-// Rute untuk pendaftaran (menggunakan resource controller)
+/*
+|--------------------------------------------------------------------------
+| Landing Page
+|--------------------------------------------------------------------------
+*/
+Route::get('/', fn() => view('landing'))->name('landing');
+
+/*
+|--------------------------------------------------------------------------
+| Pendaftaran Publik
+|--------------------------------------------------------------------------
+*/
 Route::resource('pendaftaran', PendaftaranController::class);
 
-// Halaman detail pelatihan
+/*
+|--------------------------------------------------------------------------
+| Detail Pelatihan
+|--------------------------------------------------------------------------
+*/
 Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
     $kompetensiList = [
         'tata-boga',
@@ -59,12 +69,30 @@ Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
     return view('detail-pelatihan', compact('kompetensi'));
 })->name('detail-pelatihan');
 
-// Rute bawaan Laravel untuk dashboard
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::prefix('dashboard')->name('dashboard.')->group(function () {
+    Route::get('/', [DashboardController::class, 'home'])->name('home');
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::get('/materi', [DashboardController::class, 'materi'])->name('materi');
+    Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
+    Route::get('/pretest', [DashboardController::class, 'pretest'])->name('pretest');
+    Route::get('/pretest/start', [DashboardController::class, 'pretestStart'])->name('pretest.start');
+    Route::get('/posttest', [DashboardController::class, 'posttest'])->name('posttest');
+    Route::get('/posttest/start', [DashboardController::class, 'posttestStart'])->name('posttest.start');
+    Route::get('/feedback', [DashboardController::class, 'feedback'])->name('feedback');
+    Route::post('/feedback/submit', [DashboardController::class, 'feedbackSubmit'])->name('feedback.submit');
+    Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
+});
 
-// Rute untuk pengaturan (menggunakan Volt)
+/*
+|--------------------------------------------------------------------------
+| Settings (Volt)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
@@ -72,32 +100,35 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-// Rute untuk mengirim email (gunakan salah satu, jangan duplikasi)
-Route::get('/send', function () {
-    Mail::to(['23082010166@student.upnjatim.ac.id'])->send(new TestMail());
-});
+/*
+|--------------------------------------------------------------------------
+| Surat Generate
+|--------------------------------------------------------------------------
+*/
+Route::get('/surat/{id}/generate', [SuratController::class, 'generate'])->name('surat.generate');
 
-// Rute-rute ini tampaknya untuk pengujian, disarankan untuk dihapus setelah selesai
-Route::get('1', function () {
-    return view('peserta.pendaftaran.bio-peserta');
-});
-Route::get('2', function () {
-    return view('peserta.pendaftaran.bio-sekolah');
-});
-Route::get('3', function () {
-    return view('peserta.pendaftaran.lampiran');
-});
-Route::get('4', function () {
-    // return view('peserta.pendaftaran.test');
-    return view('peserta.pendaftaran.selesai');
-    // return "arsa";
-});
+/*
+|--------------------------------------------------------------------------
+| Kirim Email Test
+|--------------------------------------------------------------------------
+*/
+Route::get('/send', fn() => Mail::to(['23082010166@student.upnjatim.ac.id'])->send(new TestMail()));
 
-Route::get('pendaftaran_selesai', function () {
-    return view('peserta.pendaftaran.selesai');
-});
-
+/*
+|--------------------------------------------------------------------------
+| Rute Testing Pendaftaran (sementara)
+|--------------------------------------------------------------------------
+*/
+Route::get('1', fn() => view('peserta.pendaftaran.bio-peserta'));
+Route::get('2', fn() => view('peserta.pendaftaran.bio-sekolah'));
+Route::get('3', fn() => view('peserta.pendaftaran.lampiran'));
+Route::get('4', fn() => view('peserta.pendaftaran.selesai'));
 Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
+Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
 
-// Rute untuk autentikasi (login, register, dll.)
+/*
+|--------------------------------------------------------------------------
+| Auth (Login, Register, dll)
+|--------------------------------------------------------------------------
+*/
 require __DIR__ . '/auth.php';

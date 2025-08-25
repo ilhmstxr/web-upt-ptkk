@@ -46,9 +46,9 @@ class PesertaResource extends Resource
                         Forms\Components\DatePicker::make('tanggal_lahir')->required(),
                         Forms\Components\Select::make('jenis_kelamin')
                             ->options([
-                                'Laki-laki' => 'Laki-laki',
-                                'Perempuan' => 'Perempuan',
-                            ])
+'Laki-laki' => 'Laki-laki',
+'Perempuan' => 'Perempuan',
+])
                             ->required(),
                         Forms\Components\TextInput::make('agama')->required(),
                         Forms\Components\TextInput::make('no_hp')->required()->tel(),
@@ -125,7 +125,7 @@ class PesertaResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable(),
-                Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
+Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
                 Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
@@ -142,21 +142,21 @@ class PesertaResource extends Resource
             ->filters([
                 SelectFilter::make('bidang')
                     ->label('Bidang')
-                    ->relationship('bidang', 'nama_bidang')
-                    ->searchable()
-                    ->preload(),
+->relationship('bidang', 'nama_bidang')
+->searchable()
+->preload(),
 
                 SelectFilter::make('instansi')
                     ->label('Asal Instansi')
-                    ->relationship('instansi', 'asal_instansi')
-                    ->searchable()
-                    ->preload(),
+->relationship('instansi', 'asal_instansi')
+->searchable()
+->preload(),
 
                 SelectFilter::make('pelatihan')
                     ->label('Nama Pelatihan')
-                    ->relationship('pelatihan', 'nama_pelatihan')
-                    ->searchable()
-                    ->preload(),
+->relationship('pelatihan', 'nama_pelatihan')
+->searchable()
+->preload(),
             ])
             ->headerActions([
                 Action::make('atur_kamar')
@@ -169,23 +169,23 @@ class PesertaResource extends Resource
                                 ->label('Daftar Asrama & Kamar')
                                 ->schema([
                                     Forms\Components\TextInput::make('blok')
-                                        ->disabled()
-                                        ->dehydrated(true),
+->disabled()
+->dehydrated(true),
                                     Forms\Components\TextInput::make('no')
-                                        ->disabled()
-                                        ->dehydrated(true),
+->disabled()
+->dehydrated(true),
                                     Forms\Components\TextInput::make('bed')
-                                        ->numeric()
-                                        ->label('Jumlah Bed'),
+->numeric()
+->label('Jumlah Bed'),
                                 ])
                                 ->default(
                                     collect($kamars)->flatMap(function ($rooms, $blok) {
                                         return collect($rooms)->map(function ($room) use ($blok) {
                                             return [
-                                                'blok' => $blok,
-                                                'no'   => $room['no'],
-                                                'bed'  => is_numeric($room['bed']) ? (int) $room['bed'] : null,
-                                            ];
+                                        'blok' => $blok,
+                                        'no'   => $room['no'],
+                                        'bed'  => is_numeric($room['bed']) ? (int) $room['bed'] : null,
+                                    ];
                                         });
                                     })->values()->toArray()
                                 )
@@ -193,23 +193,23 @@ class PesertaResource extends Resource
                         ];
                     })
                     ->action(function (array $data) {
-                        session([
-                            'kamars' => collect($data['kamars'])
-                                ->groupBy('blok')
-                                ->map(fn ($rooms) => $rooms->map(fn ($r) => [
-                                    'no' => $r['no'],
-                                    'bed' => (int) $r['bed'],
-                                ])->toArray())
-                                ->toArray()
-                        ]);
+session([
+                        'kamars' => collect($data['kamars'])
+->groupBy('blok')
+->map(fn ($rooms) => $rooms->map(fn ($r) => [
+                            'no' => $r['no'],
+                            'bed' => (int) $r['bed'],
+                        ])->toArray())
+->toArray()
+                    ]);
                     }),
 
                 FilamentExportHeaderAction::make('export'),
-            ])
+                            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-            ])
+                            ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export'),
                 Tables\Actions\DeleteBulkAction::make(),
@@ -231,9 +231,9 @@ class PesertaResource extends Resource
             ->map(function ($rooms, $blok) {
                 return collect($rooms)->map(function ($r) use ($blok) {
                     return [
-                        'blok' => $blok,
-                        'no'   => $r['no'],
-                        'bed'  => (int) $r['bed'],
+'blok' => $blok,
+'no'   => $r['no'],
+'bed'  => (int) $r['bed'],
                     ];
                 });
             })
@@ -260,23 +260,23 @@ class PesertaResource extends Resource
     {
         $kamars = session('kamars') ?? config('kamar');
         $pesertas = Peserta::where('jenis_kelamin', $record->jenis_kelamin)
-            ->orderBy('id')
-            ->get();
+->orderBy('id')
+->get();
 
-        // Cari kamar peserta
+// Cari kamar peserta
         $kamar = self::assignKamar($record);
         if ($kamar === 'Penuh') {
             return '-';
-        }
+}
 
         [$blok, $noText] = explode(' - No.', $kamar);
         $no = (int) $noText;
 
-        // Ambil kapasitas kamar
+// Ambil kapasitas kamar
         $capacity = collect($kamars[$blok] ?? [])
-            ->firstWhere('no', $no)['bed'] ?? 0;
+->firstWhere('no', $no)['bed'] ?? 0;
 
-        // Peserta yang berada di kamar itu saja
+// Peserta yang berada di kamar itu saja
         $pesertaInRoom = $pesertas->filter(function ($p) use ($blok, $no) {
             return self::assignKamar($p) === $blok . ' - No.' . $no;
         })->values();
@@ -291,7 +291,7 @@ class PesertaResource extends Resource
         return 'Bed ' . ($indexInRoom + 1);
     }
 
-    public static function getRelations(): array
+        public static function getRelations(): array
     {
         return [];
     }
