@@ -58,8 +58,6 @@ Route::get('/export-peserta', function () {
 // ============================
 // Pendaftaran (Form Pendaftaran Baru)
 // ============================
-Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
-Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
 
 // Kalau mau akses langsung registration-form-new.blade.php
 Route::get('/pendaftaran-baru', function () {
@@ -142,6 +140,7 @@ Route::get('test-peserta', function () {
 
 // route fix
 // route pendaftaran
+Route::resource('/pendaftaran', PendaftaranController::class);
 Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 
