@@ -20,7 +20,7 @@ class Peserta extends Model
         'instansi_id',
         'bidang_id',
         'nama',
-        'nik',  
+        'nik',
         'tempat_lahir',
         'tanggal_lahir',
         'jenis_kelamin',
@@ -36,11 +36,21 @@ class Peserta extends Model
         'created_at'    => 'datetime',
         'updated_at'    => 'datetime',
     ];
-    
+
     // 🔗 Relasi ke Pelatihan
     public function pelatihan(): BelongsTo
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
+    }
+
+    public function bidang(): BelongsTo
+    {
+        return $this->belongsTo(Bidang::class, 'bidang_id');
+    }
+
+    public function lampiran(): HasOne
+    {
+        return $this->hasOne(Lampiran::class);
     }
 
     // 🔗 Relasi ke Instansi
@@ -49,26 +59,12 @@ class Peserta extends Model
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
 
-    // 🔗 Relasi ke Bidang
-    public function bidang(): BelongsTo
-    {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
-    }
-
-    // 🔗 Relasi ke Lampiran
-    public function lampiran(): HasOne
-    {
-        return $this->hasOne(Lampiran::class, 'peserta_id');
-    }
-
-    // 📁 Folder Lampiran
     public function lampiranFolder(): string
     {
-        return 'lampiran/' . Str::slug($this->nama);
+        return 'lampiran/' . String::slug($this->nama); // folder storage/app/public/lampiran/{nama}
     }
 
-    // 📂 Ambil semua file lampiran
-    public function getLampirans(): array
+    public function lampirans(): array
     {
         $files = [];
         if ($this->lampiran) {
@@ -78,5 +74,16 @@ class Peserta extends Model
             }
         }
         return $files;
+    }
+
+    public function pertanyaan()
+    {
+        return $this->hasMany(Pertanyaan::class);
+    }
+
+    // Relasi ke komentar survei (sebelumnya ada di Participant)
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

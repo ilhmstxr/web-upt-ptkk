@@ -1,4 +1,4 @@
-@extends('peserta.layout.main', ['currentStep' => 2])
+@extends('peserta.pendaftaran.layout.main', ['currentStep' => 2])
 
 @section('title', 'Biodata Sekolah')
 

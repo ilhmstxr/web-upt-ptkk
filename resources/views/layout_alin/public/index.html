@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Peserta - MONEV Kegiatan Vokasi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .form-input { transition: all 0.3s; }
+    .form-input:focus { box-shadow: 0 0 0 4px rgba(129,140,248,.3); }
+    .btn-primary { transition: all .3s; background-image: linear-gradient(to right, #4f46e5, #7c3aed); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,.2); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 to-purple-50 min-h-screen">
+  <div class="container mx-auto px-4 py-8 flex items-center justify-center">
+    <div class="w-full max-w-3xl">
+
+      <!-- Header Logo UPT -->
+      <div class="flex items-center justify-center mb-6">
+        <img src="images/logo-upt.png" alt="Logo UPT" class="h-14 sm:h-16 md:h-20 mr-4" onerror="this.style.display='none'">
+        <h2 class="text-base sm:text-lg md:text-xl font-bold text-indigo-900 whitespace-nowrap">
+          UPT. PENGEMBANGAN TEKNIS KETRAMPILAN DAN KEJURUAN
+        </h2>
+      </div>
+
+      <!-- Header Section -->
+      <div class="text-center mb-8">
+        <img src="images/logo-kementrian pendidikan.png" alt="Logo Kementerian Pendidikan" class="mx-auto h-16 sm:h-20 md:h-24 mb-4" onerror="this.style.display='none'">
+        <h1 class="text-base sm:text-lg md:text-xl font-bold text-indigo-800 mb-2 leading-relaxed text-center">
+          MONEV KEGIATAN PENGEMBANGAN DAN PENINGKATAN KOMPETENSI VOKASI BAGI SISWA SMK/SMA MENUJU GENERASI EMAS 2045 TAHUN 2025
+        </h1>
+        <p class="text-indigo-600 text-sm sm:text-base">Silakan isi data diri Anda untuk memulai penilaian</p>
+      </div>
+
+      <!-- Form Section -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8">
+        <form id="participantInfo" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Nama Lengkap -->
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-user text-indigo-500 mr-2"></i> Nama Lengkap
+              </label>
+              <input type="text" id="name" name="name"
+                class="form-input w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                required>
+            </div>
+
+            <!-- Asal Lembaga -->
+            <div>
+              <label for="institution" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-school text-indigo-500 mr-2"></i> Asal Lembaga
+              </label>
+              <input type="text" id="institution" name="institution"
+                class="form-input w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                required>
+            </div>
+
+            <!-- Periode Kegiatan -->
+            <div>
+              <label for="period" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-calendar-alt text-indigo-500 mr-2"></i>
+                Periode Kegiatan
+              </label>
+              <input type="text" id="period" name="period" 
+                placeholder="Contoh = Angkatan I"
+                class="form-input w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" 
+                required>
+            </div>
+
+            <!-- Kompetensi -->
+            <div>
+              <label for="competency" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-graduation-cap text-indigo-500 mr-2"></i>
+                Kompetensi
+              </label>
+              <select id="competency" name="competency" 
+                class="form-input w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                <option value="" disabled selected>Pilih Kompetensi</option>
+                <option value="Teknik-Pemesinan">Teknik Pemesinan</option>
+                <option value="Teknik-Pemesinan-Bubut-Manual">Teknik Pemesinan Bubut Manual</option>
+                <option value="Teknik-Pemesinan-CNC">Teknik Pemesinan CNC</option>
+                <option value="Teknik-Pengelasan">Teknik Pengelasan</option>
+                <option value="Teknik-Otomotif-Sepeda">Teknik Otomotif Sepeda</option>
+                <option value="Teknik-Informatika">Teknik Informatika</option>
+                <option value="Teknik-Elektronika">Teknik Elektronika</option>
+                <option value="TPTU">Teknik Pendingin dan Tata Udara</option>
+                <option value="Tata-Busana">Tata Busana</option>
+                <option value="Tata-Boga">Tata Boga</option>
+                <option value="Tata-Kecantikan">Tata Kecantikan</option>
+                <option value="Desain-model">Desain Pemodelan dan Informasi Bangunan</option>
+                <option value="Bisnis-management">Bisnis Management</option>
+                <option value="Mulmed-web">Multimedia (Web Desainer)</option>
+                <option value="Mulmed-logo">Multimedia (Logo & Packaging)</option>
+                <option value="Mulmed-fotoproduk">Multimedia (Foto Produk)</option>
+                <option value="Mulmed-motion">Multimedia (Motion Animation)</option>
+                <option value="Mulmed-Video">Multimedia (Videography)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <button type="submit" id="submitBtn"
+              class="btn-primary w-full py-2 sm:py-3 px-4 text-white font-semibold rounded-lg flex items-center justify-center">
+              <span id="btnText">Selanjutnya</span>
+              <i id="btnIcon" class="fas fa-arrow-right ml-2"></i>
+            </button>
+          </div>
+        </form>
+
+        <!-- Notifikasi -->
+        <div id="msg" class="mt-4 text-sm"></div>
+      </div>
+
+      <!-- Footer -->
+      <div class="mt-8 text-center text-xs sm:text-sm text-gray-500">
+        <p>© UPT. PENGEMBANGAN TEKNIS KETRAMPILAN DAN KEJURUAN</p>
+        <p class="mt-1">Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('participantInfo');
+    const msg = document.getElementById('msg');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnIcon = document.getElementById('btnIcon');
+
+    // Function to show loading state
+    function setLoading(loading) {
+      if (loading) {
+        submitBtn.disabled = true;
+        btnText.textContent = 'Memproses...';
+        btnIcon.className = 'fas fa-spinner fa-spin ml-2';
+      } else {
+        submitBtn.disabled = false;
+        btnText.textContent = 'Selanjutnya';
+        btnIcon.className = 'fas fa-arrow-right ml-2';
+      }
+    }
+
+    // Function to show message
+    function showMessage(text, isError = false) {
+      msg.className = `mt-4 text-sm ${isError ? 'text-red-600' : 'text-green-600'}`;
+      msg.textContent = text;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      setLoading(true);
+      showMessage('');
+
+      const payload = {
+        name: document.getElementById('name').value.trim(),
+        institution: document.getElementById('institution').value.trim(),
+        period: document.getElementById('period').value.trim(),
+        competency: document.getElementById('competency').value
+      };
+
+      // Simpan ke localStorage sebagai backup
+      try {
+        localStorage.setItem('participantData', JSON.stringify(payload));
+      } catch (e) {
+        console.warn('Could not save to localStorage:', e);
+      }
+
+      // Coba berbagai path API
+      const apiPaths = [
+        'api/save_participant.php',      // jika file HTML di root
+        '../api/save_participant.php',   // jika file HTML di subfolder
+        '/api/save_participant.php',     // absolute path
+        './api/save_participant.php'     // relative path
+      ];
+
+      let success = false;
+      let lastError = null;
+
+      for (const apiPath of apiPaths) {
+        try {
+          console.log(`Trying API path: ${apiPath}`);
+          
+          const res = await fetch(apiPath, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload),
+          });
+
+          console.log(`Response status: ${res.status}`);
+          
+          const contentType = res.headers.get('content-type');
+          console.log(`Content-Type: ${contentType}`);
+
+          // Check if response is JSON
+          if (!contentType || !contentType.includes('application/json')) {
+            const text = await res.text();
+            console.log(`Non-JSON response: ${text.substring(0, 200)}...`);
+            throw new Error(`Server returned HTML instead of JSON. Response: ${text.substring(0, 100)}...`);
+          }
+
+          const result = await res.json();
+          console.log('API Response:', result);
+
+          if (!res.ok) {
+            throw new Error(result.error || `HTTP ${res.status}`);
+          }
+
+          if (!result.ok) {
+            throw new Error(result.error || 'Unknown error');
+          }
+
+          // Success!
+          success = true;
+          const pid = result.id;
+          
+          showMessage('Data berhasil disimpan! Mengarahkan ke halaman penilaian...', false);
+          
+          setTimeout(() => {
+            window.location.href = `penilaian.html?pid=${encodeURIComponent(pid)}`;
+          }, 1500);
+          
+          break;
+
+        } catch (err) {
+          console.log(`Failed with path ${apiPath}:`, err.message);
+          lastError = err;
+          continue;
+        }
+      }
+
+      if (!success) {
+        setLoading(false);
+        
+        // Jika semua API path gagal, berikan opsi untuk melanjutkan tanpa menyimpan ke database
+        showMessage(`Tidak dapat terhubung ke server: ${lastError.message}`, true);
+        
+        // Tambahkan opsi fallback
+        setTimeout(() => {
+          const fallback = confirm('Server tidak dapat dijangkau. Apakah Anda ingin melanjutkan ke halaman penilaian? (Data akan disimpan secara lokal)');
+          if (fallback) {
+            // Generate ID sementara berdasarkan timestamp
+            const tempId = Date.now();
+            window.location.href = `penilaian.html?pid=${tempId}&offline=1`;
+          }
+        }, 2000);
+      }
+    });
+
+    // Debug: Log current location info
+    console.log('Current URL:', window.location.href);
+    console.log('Current pathname:', window.location.pathname);
+    console.log('Current directory:', window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')));
+  </script>
+</body>
+</html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Kepuasan - Persepsi Program Pelatihan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .rating-option {
+            transition: all 0.3s;
+        }
+        .rating-option:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+        .rating-option.selected {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+        }
+        .emoji-rating {
+            font-size: 28px;
+            transition: all 0.3s;
+        }
+        
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 to-purple-50">
+    <div class="container mx-auto px-4 py-12 max-w-4xl">
+        <!-- Header Logo UPT -->
+        <div class="flex items-center justify-center mb-6">
+            <img src="images/logo-upt.png" alt="Logo UPT" class="h-14 sm:h-16 md:h-20 mr-4">
+            <h2 class="text-base sm:text-lg md:text-xl font-bold text-indigo-900 whitespace-nowrap">
+                UPT. PENGEMBANGAN TEKNIS KETRAMPILAN DAN KEJURUAN
+            </h2>
+        </div>
+
+
+        <!-- Header Section -->
+        <header class="text-center mb-10">
+            <div class="bg-white rounded-xl shadow-md inline-block px-6 py-4 mb-6">
+                <h2 class="text-xl font-semibold text-indigo-700">
+                    <i class="fas fa-graduation-cap text-indigo-500 mr-2"></i>
+                    PERSEPSI TERHADAP PROGRAM PELATIHAN
+                </h2>
+            </div>
+        </header>
+
+        <!-- Participant Info Card -->
+<div class="bg-white rounded-xl shadow-md overflow-hidden mb-10">
+  <div class="p-6 border-b border-gray-200 bg-gray-50">
+    <h3 class="font-medium text-indigo-700 flex items-center">
+      <i class="fas fa-user-circle text-indigo-600 mr-2"></i>
+      Data Peserta
+    </h3>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                    <p class="text-gray-500">Nama</p>
+                    <p class="font-medium" id="displayName">-</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Lembaga</p>
+                    <p class="font-medium" id="displayInstitution">-</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Periode</p>
+                    <p class="font-medium" id="displayPeriod">-</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Kompetensi</p>
+                    <p class="font-medium" id="displayCompetency">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instruksi Penilaian -->
+        <div class="bg-blue-50 border border-blue-200 rounded-t-lg p-4 text-sm text-gray-700">
+            📌 <em>Silakan pilih salah satu jawaban yang paling sesuai dengan persepsi Anda terhadap program pelatihan ini.</em>
+        </div>
+
+        <!-- Survey Section -->
+        <form id="trainingEvaluationSurvey">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <!-- Rating Legend -->
+                <div class="p-6 border-b border-gray-200">
+                    <div class="grid grid-cols-5 gap-4 text-center">
+                         <div>
+    <div class="text-3xl mb-1">🤩</div>
+    <p class="text-xs font-medium">Sangat Memuaskan</p>
+  </div>
+  <div>
+    <div class="text-3xl mb-1">😊</div>
+    <p class="text-xs font-medium">Memuaskan</p>
+  </div>
+  <div>
+    <div class="text-3xl mb-1">😐</div>
+    <p class="text-xs font-medium">Cukup Memuaskan</p>
+  </div>
+  <div>
+    <div class="text-3xl mb-1">😟</div>
+    <p class="text-xs font-medium">Tidak Memuaskan</p>
+  </div>
+  <div>
+    <div class="text-3xl mb-1">😠</div>
+    <p class="text-xs font-medium">Sangat Tidak Memuaskan</p>
+  </div>
+</div>
+                </div>
+
+                <div class="p-6">
+                    <!-- Section Title -->
+                    <h2 class="text-lg font-bold text-indigo-700 mb-6">2. Persepsi Terhadap Program Pelatihan</h2>
+
+                                                        <!-- Q1 - Kesesuaian materi dengan kebutuhan -->
+        <div class="mb-6" id="q1">
+            <p class="mb-2 font-medium text-gray-700">Bagaimana pendapat Saudara tentang waktu yang disediakan dalam penyelenggaraan pelatihan</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q1" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">Sangat Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q1" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q1" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">Cukup Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q1" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">Tidak Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q1" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">Sangat Tidak Memuaskan</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Q2 - Kualitas materi pelatihan -->
+        <div class="mb-6" id="q2">
+            <p class="mb-2 font-medium text-gray-700">Bagaimana pendapat Saudara apakah pelatihan ini bermanfaat bagi anda</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q2" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">Sangat Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q2" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q2" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">Cukup Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q2" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">Tidak Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q2" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">Sangat Tidak Memuaskan</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Q3 - Metode penyampaian -->
+        <div class="mb-6" id="q3">
+            <p class="mb-2 font-medium text-gray-700">Bagaimana pendapat Saudara tentang ketersediaan bahan-bahan praktek dalam pelaksanaan pelatihan</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q3" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">Sangat Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q3" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q3" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">Cukup Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q3" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">Tidak Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q3" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">Sangat Tidak Memuaskan</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Q4 - Kompetensi instruktur -->
+        <div class="mb-6" id="q4">
+            <p class="mb-2 font-medium text-gray-700">Bagaimana pendapat Saudara tentang ketersediaan mesin/peralatan untuk pelatihan</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q4" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">Sangat Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q4" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q4" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">Cukup Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q4" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">Tidak Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q4" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">Sangat Tidak Memuaskan</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Q5 - Durasi pelatihan -->
+        <div class="mb-6" id="q5">
+            <p class="mb-2 font-medium text-gray-700">Bagaimana pendapat Saudara tentang ketersediaan kondisi mesin/peralatan pelatihan</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q5" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">Sangat Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q5" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q5" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">Cukup Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q5" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">Tidak Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q5" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">Sangat Tidak Memuaskan</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Q6 - Fasilitas pelatihan -->
+        <div class="mb-6" id="q6">
+            <p class="mb-2 font-medium text-gray-700">Bagimana pendapat Saudara tentang ketersediaan materi pelatihan</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q6" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">Sangat Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q6" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q6" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">Cukup Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q6" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">Tidak Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q6" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">Sangat Tidak Memuaskan</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Q7 - Kesesuaian ekspektasi -->
+        <div class="mb-6" id="q7">
+            <p class="mb-2 font-medium text-gray-700">Berapa persen materi yang anda serap</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q7" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">100%</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q7" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">80%</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q7" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">60%</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q7" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">40%</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q7" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">20%</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Q8 - Manfaat pelatihan -->
+        <div class="mb-6" id="q8">
+            <p class="mb-2 font-medium text-gray-700">Bagaimana menurut anda apakah perlu penambahan materi pelatihan</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q8" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">Sangat Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q8" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q8" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">Cukup Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q8" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">Tidak Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q8" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">Sangat Tidak Memuaskan</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Q9 - Rekomendasi -->
+        <div class="mb-6" id="q9">
+            <p class="mb-2 font-medium text-gray-700">Bagaimana menurut anda apakah perlu pengurangan materi pelatihan</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q9" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">Sangat Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q9" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q9" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">Cukup Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q9" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">Tidak Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q9" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">Sangat Tidak Memuaskan</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Q10 - Kepuasan keseluruhan -->
+        <div class="mb-6" id="q10">
+            <p class="mb-2 font-medium text-gray-700">Apakah materi-materi pelatihan sangat mendukung kompetensi anda</p>
+            <div class="grid grid-cols-5 gap-3">
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q10" value="5" class="hidden">
+                    <span class="emoji-rating">🤩</span>
+                    <span class="text-xs text-gray-600 mt-1">Sangat Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q10" value="4" class="hidden">
+                    <span class="emoji-rating">😊</span>
+                    <span class="text-xs text-gray-600 mt-1">Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q10" value="3" class="hidden">
+                    <span class="emoji-rating">😐</span>
+                    <span class="text-xs text-gray-600 mt-1">Cukup Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q10" value="2" class="hidden">
+                    <span class="emoji-rating">😟</span>
+                    <span class="text-xs text-gray-600 mt-1">Tidak Memuaskan</span>
+                </label>
+                <label class="rating-option flex flex-col items-center p-3 border rounded-lg cursor-pointer">
+                    <input type="radio" name="q10" value="1" class="hidden">
+                    <span class="emoji-rating">😠</span>
+                    <span class="text-xs text-gray-600 mt-1 text-center">Sangat Tidak Memuaskan</span>
+                </label>    
+            </div>
+        </div>
+
+
+
+                    <!-- Komentar Tambahan -->
+                    <h3 class="text-lg font-bold text-indigo-700 mt-8 mb-4">Kesan dan Pesan</h3>
+                    <textarea name="training_comments" rows="4" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Berikan saran atau masukan untuk perbaikan program pelatihan ke depan..."></textarea>
+
+                    <!-- Navigation Buttons -->
+                    <div class="flex justify-between mt-8">
+                        <button type="button" onclick="goBack()" class="bg-gray-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>Kembali
+                        </button>
+                        <button type="button" onclick="submitTrainingEvaluation()" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                            Selanjutnya<i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-sm text-gray-500">
+            <p>© UPT. PENGEMBANGAN TEKNIS KETRAMPILAN DAN KEJURUAN</p>
+        </div>
+    </div>
+
+   <!-- <script>
+  // Ambil participant id dari query string
+  const params = new URLSearchParams(window.location.search);
+  const pid = parseInt(params.get('pid') || '0', 10);
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Kalau tidak ada pid, balik ke index
+    if (!pid) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    // Tampilkan data peserta (optional dari localStorage)
+    const participantData = JSON.parse(localStorage.getItem('participantData') || '{}');
+    if (participantData && participantData.name) {
+      document.getElementById('displayName').textContent = participantData.name || '-';
+      document.getElementById('displayInstitution').textContent = participantData.institution || '-';
+      document.getElementById('displayPeriod').textContent = (participantData.period || '-').replace(/-/g, ' ');
+      document.getElementById('displayCompetency').textContent = (participantData.competency || '-').replace(/-/g, ' ');
+    }
+
+    // Highlight opsi rating saat dipilih
+    document.querySelectorAll('.rating-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const input = this.querySelector('input');
+        if (!input) return;
+        const group = input.name;
+        document.querySelectorAll(`input[name="${group}"]`).forEach(i => {
+          i.closest('.rating-option').classList.remove('selected');
+        });
+        this.classList.add('selected');
+      });
+    });
+  });
+
+  function goBack() {
+    // kembali ke penilaian sebelumnya, tetap bawa pid
+    window.location.href = 'penilaian.html?pid=' + encodeURIComponent(pid);
+  }
+
+  async function submitTrainingEvaluation() {
+    const submitBtn = document.querySelector('button[onclick="submitTrainingEvaluation()"]');
+    submitBtn.disabled = true;
+
+    // daftar pertanyaan
+    const questions = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10'];
+
+    // validasi terisi semua
+    let allAnswered = true, firstUnanswered = null;
+    questions.forEach(q => {
+      const el = document.getElementById(q);
+      if (!document.querySelector(`input[name="${q}"]:checked`)) {
+        el.style.border = '2px solid #ef4444';
+        if (!firstUnanswered) firstUnanswered = q;
+        allAnswered = false;
+      } else {
+        el.style.border = '';
+      }
+    });
+
+    if (!allAnswered) {
+      alert('Harap isi semua pertanyaan sebelum melanjutkan!');
+      if (firstUnanswered) {
+        document.getElementById(firstUnanswered).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      submitBtn.disabled = false;
+      return;
+    }
+
+    // kumpulkan jawaban
+    const formData = new FormData(document.getElementById('trainingEvaluationSurvey'));
+    const answers = {};
+    questions.forEach(q => answers[q] = parseInt(formData.get(q), 10));
+    const comments = formData.get('training_comments') || '';
+
+    // simpan ringkas ke localStorage (opsional untuk rekap)
+    let surveyData = JSON.parse(localStorage.getItem('surveyData') || '{}');
+    surveyData = {
+      ...surveyData,
+      training_perception: { ...answers, training_comments: comments },
+      timestamp_p2: new Date().toISOString()
+    };
+    localStorage.setItem('surveyData', JSON.stringify(surveyData));
+
+    // kirim ke server
+    try {
+      const res = await fetch('../api/save_training_perception.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          participant_id: pid,
+          answers: answers,
+          training_comments: comments
+        })
+      });
+      const out = await res.json();
+
+      if (!res.ok || !out.ok) {
+        throw new Error(out.error || 'Gagal menyimpan jawaban');
+      }
+
+      // lanjut ke halaman berikutnya
+      window.location.href = 'penilaian2.html?pid=' + encodeURIComponent(pid);
+    } catch (err) {
+      alert('Terjadi kesalahan saat menyimpan: ' + err.message);
+      submitBtn.disabled = false;
+    }
+  }
+</script> -->

@@ -8,16 +8,22 @@
     "require": {
         "php": "^8.2",
         "alperenersoy/filament-export": "^3.0",
+        "barryvdh/laravel-dompdf": "^3.1",
         "filament/filament": "^3.3",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.1.1",
+        "livewire/livewire": "*",
         "livewire/volt": "^1.7.0",
         "maatwebsite/excel": "^3.1",
+        "phpoffice/phpword": "^1.4",
+        "spatie/laravel-permission": "^6.21",
         "mpdf/mpdf": "^8.2"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
+        "kevincobain2000/laravel-erd": "^1.7",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.18",
         "laravel/sail": "^1.41",
