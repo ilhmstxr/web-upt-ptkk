@@ -14,5 +14,11 @@ class PostTest extends Model
     {
         return $this->hasMany(PostTestAnswer::class);
     }
+
+    public function pelatihan()
+{
+    return $this->belongsTo(Pelatihan::class);
+}
+
 }
 

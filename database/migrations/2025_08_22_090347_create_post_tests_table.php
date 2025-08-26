@@ -13,15 +13,18 @@ return new class extends Migration
     {
         Schema::create('post_tests', function (Blueprint $table) {
     $table->id();
-    $table->text('question');   // pertanyaan
+    $table->foreignId('pelatihan_id')->constrained('pelatihans')->onDelete('cascade');
+    $table->integer('nomor');
+    $table->text('question');
     $table->string('option_a');
     $table->string('option_b');
     $table->string('option_c');
     $table->string('option_d');
     $table->enum('correct_answer', ['A','B','C','D']);
     $table->timestamps();
-});
 
+    $table->unique(['pelatihan_id', 'nomor']); // nomor pertanyaan unik per pelatihan
+});
     }
 
     /**

@@ -21,6 +21,16 @@ class PostTestResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
+            Forms\Components\Select::make('pelatihan_id')
+                ->label('Pelatihan')
+                ->relationship('pelatihan', 'nama_pelatihan')
+                ->required(),
+
+            Forms\Components\TextInput::make('nomor')
+                ->label('Nomor Pertanyaan')
+                ->numeric()
+                ->required(),
+
             Forms\Components\Textarea::make('question')
                 ->label('Pertanyaan')
                 ->required(),
@@ -44,25 +54,41 @@ class PostTestResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
-            Tables\Columns\TextColumn::make('question')->label('Pertanyaan')->limit(50)->searchable(),
-            Tables\Columns\TextColumn::make('correct_answer')->label('Jawaban'),
-            Tables\Columns\TextColumn::make('created_at')->dateTime('d M Y H:i'),
-        ])
-        ->filters([])
-        ->actions([
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\DeleteAction::make(),
-        ])
-        ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
-        ]);
-    }
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
+                    ->label('Pelatihan')
+                    ->sortable()
+                    ->searchable(),
 
+                Tables\Columns\TextColumn::make('nomor')
+                    ->label('No.')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('question')
+                    ->label('Pertanyaan')
+                    ->limit(50)
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('correct_answer')
+                    ->label('Jawaban'),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y H:i'),
+            ])
+            ->filters([])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]);
+    }
 
     public static function getPages(): array
     {
-        // Tetap pakai "Manage" (single page CRUD)
         return [
             'index' => Pages\ManagePostTests::route('/'),
         ];

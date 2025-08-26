@@ -12,4 +12,10 @@ class PreTest extends Model
     {
         return $this->hasMany(PreTestAnswer::class, 'pre_test_id');
     }
+
+    public function pelatihan()
+{
+    return $this->belongsTo(Pelatihan::class);
+}
+
 }
