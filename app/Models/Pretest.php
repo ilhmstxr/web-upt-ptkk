@@ -6,16 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 
 class PreTest extends Model
 {
-    protected $fillable = ['judul', 'deskripsi', 'soal', 'jawaban'];
+    protected $fillable = [
+        'judul',
+        'deskripsi',
+        'soal',
+        'jawaban',
+        'pelatihan_id',
+        'bidang_id', // relasi ke tabel Bidang
+    ];
 
     public function answers()
     {
-        return $this->hasMany(PreTestAnswer::class, 'pre_test_id');
+        return $this->hasMany(PreTestRsult::class, 'pre_test_id');
     }
 
     public function pelatihan()
-{
-    return $this->belongsTo(Pelatihan::class);
-}
+    {
+        return $this->belongsTo(Pelatihan::class);
+    }
 
+    public function bidang()
+    {
+        return $this->belongsTo(Bidang::class);
+    }
 }

@@ -3,16 +3,16 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PreTestResultsResource\Pages;
-use App\Models\PreTestResults;
+use App\Models\PreTestResult;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables;
 
 class PreTestResultsResource extends Resource
 {
-    protected static ?string $model = PreTestResults::class;
+    protected static ?string $model = PreTestResult::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
     protected static ?string $navigationGroup = 'Pre Test';
@@ -32,7 +32,8 @@ class PreTestResultsResource extends Resource
                     ->required(),
 
                 Forms\Components\Textarea::make('remarks')
-                    ->label('Remarks')
+                    ->label('Keterangan')
+                    ->wrap()
                     ->nullable(),
             ]);
     }
@@ -42,24 +43,35 @@ class PreTestResultsResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('User')
+                    ->label('Nama User')
+                    ->searchable()
                     ->sortable()
-                    ->searchable(),
+                    ->wrap()
+                    ->extraAttributes(['style' => 'min-width: 200px;']),
 
                 Tables\Columns\TextColumn::make('score')
+                    ->label('Skor')
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('remarks')
+                    ->label('Keterangan')
+                    ->wrap()
+                    ->extraAttributes(['style' => 'min-width: 250px;']),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
                     ->dateTime('d M Y H:i')
-                    ->label('Taken At')
                     ->sortable(),
             ])
-            ->filters([]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [];
+            ->filters([])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ])
+            ->contentWidth('full'); // tabel lebar penuh
     }
 
     public static function getPages(): array

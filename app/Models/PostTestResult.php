@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PreTestAnswer extends Model
+class PostTestResult extends Model
 {
-    protected $fillable = ['user_id', 'pre_test_id', 'answer', 'is_correct'];
+    protected $fillable = ['user_id', 'post_test_id', 'answer', 'is_correct'];
 
-    // Relasi ke pertanyaan (PreTest)
+    // Relasi ke pertanyaan (PostTest)
     public function question()
     {
-        return $this->belongsTo(PreTest::class, 'pre_test_id');
+        return $this->belongsTo(PostTest::class, 'post_test_id');
     }
 
     // Relasi ke user

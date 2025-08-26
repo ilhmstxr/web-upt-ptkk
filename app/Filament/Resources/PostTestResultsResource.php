@@ -3,15 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostTestResultsResource\Pages;
-use App\Models\PostTestAnswer;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
+use App\Models\PostTestResult;
 use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Table;
+use Filament\Tables;
 
 class PostTestResultsResource extends Resource
 {
-    protected static ?string $model = PostTestAnswer::class;
+    protected static ?string $model = PostTestResult::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static ?string $navigationGroup = 'Hasil Test';
@@ -21,18 +21,36 @@ class PostTestResultsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.id')->label('User ID'),
-                Tables\Columns\TextColumn::make('user.name')->label('Nama User')->searchable(),
+                Tables\Columns\TextColumn::make('user.id')
+                    ->label('User ID'),
+
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Nama User')
+                    ->searchable()
+                    ->wrap()
+                    ->extraAttributes(['style' => 'min-width: 200px;']),
+
                 Tables\Columns\TextColumn::make('skor')
                     ->label('Skor')
                     ->getStateUsing(fn ($record) =>
-                        PostTestAnswer::where('user_id', $record->user_id)
+                        PostTestResult::where('user_id', $record->user_id)
                             ->where('is_correct', true)
                             ->count()
                     ),
-                Tables\Columns\TextColumn::make('created_at')->dateTime('d M Y H:i'),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y H:i'),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('created_at', 'desc')
+            ->filters([])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ])
+            ->contentWidth('full'); // tabel lebar penuh
     }
 
     public static function getPages(): array

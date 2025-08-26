@@ -6,30 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('pre_tests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pelatihan_id')->constrained('pelatihans')->onDelete('cascade'); // relasi ke pelatihan
+            $table->foreignId('pelatihan_id')
+                  ->constrained('pelatihans')
+                  ->onDelete('cascade');
+            $table->foreignId('bidang_id')
+                  ->nullable()
+                  ->constrained('bidangs')
+                  ->onDelete('set null'); // relasi ke tabel Bidang
             $table->integer('nomor'); // nomor pertanyaan
             $table->string('pertanyaan');
             $table->string('opsi_a');
             $table->string('opsi_b');
             $table->string('opsi_c');
             $table->string('opsi_d');
-            $table->enum('jawaban_benar', ['A','B','C','D']); // jawaban benar, pakai enum supaya konsisten
+            $table->enum('jawaban_benar', ['A','B','C','D']);
             $table->timestamps();
 
-            $table->unique(['pelatihan_id', 'nomor']); // nomor pertanyaan unik per pelatihan
+            $table->unique(['pelatihan_id', 'nomor']); 
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('pre_tests');
