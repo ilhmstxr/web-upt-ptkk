@@ -59,6 +59,7 @@ class PostTestResource extends Resource
         ]);
     }
 
+
     public static function getPages(): array
     {
         // Tetap pakai "Manage" (single page CRUD)

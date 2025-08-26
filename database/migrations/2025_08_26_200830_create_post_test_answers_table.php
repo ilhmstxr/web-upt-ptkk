@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('post_tests', function (Blueprint $table) {
+        Schema::create('post_test_answers', function (Blueprint $table) {
     $table->id();
-    $table->text('question');   // pertanyaan
-    $table->string('option_a');
-    $table->string('option_b');
-    $table->string('option_c');
-    $table->string('option_d');
-    $table->enum('correct_answer', ['A','B','C','D']);
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+    $table->foreignId('post_test_id')->constrained()->onDelete('cascade');
+    $table->string('answer');      // jawaban user
+    $table->boolean('is_correct'); // benar/salah
     $table->timestamps();
 });
 
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('post_tests');
+        Schema::dropIfExists('post_test_answers');
     }
 };

@@ -15,6 +15,11 @@ use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
 use App\Models\Peserta;
+use App\Http\Controllers\PostTestController;
+
+Route::get('/dashboard/posttest/start', [PostTestController::class, 'start'])->name('dashboard.posttest.start');
+Route::post('/dashboard/posttest/submit', [PostTestController::class, 'submit'])->name('dashboard.posttest.submit');
+Route::get('/dashboard/posttest/result', [PostTestController::class, 'result'])->name('dashboard.posttest.result');
 
 // ============================
 // Test Excel Export
