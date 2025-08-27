@@ -55,6 +55,7 @@ class PendaftaranController extends Controller
         }
     }
 
+
     public function store(Request $request)
     {
         $currentStep = $request->input('current_step');
@@ -105,14 +106,20 @@ class PendaftaranController extends Controller
             $allData = array_merge($formData, $validatedData);
 
             DB::transaction(function () use ($allData, $request) {
-                $instansi = Instansi::create([
-                    'asal_instansi' => $allData['asal_instansi'],
-                    'alamat_instansi' => $allData['alamat_instansi'],
-                    'bidang_keahlian' => $allData['bidang_keahlian'],
-                    'kelas' => $allData['kelas'],
-                    'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
-                ]);
+                // 1. Simpan Instansi
+                $instansi = Instansi::firstOrCreate(
+                    [
+                        'asal_instansi'   => $allData['asal_instansi'],
+                        'alamat_instansi' => $allData['alamat_instansi'],
+                    ],
+                    [
+                        'bidang_keahlian'     => $allData['bidang_keahlian'],
+                        'kelas'               => $allData['kelas'],
+                        'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
+                    ]
+                );
 
+                // 2. Simpan Peserta
                 $peserta = Peserta::create([
                     'pelatihan_id' => $allData['pelatihan_id'],
                     'instansi_id' => $instansi->id,
@@ -128,21 +135,46 @@ class PendaftaranController extends Controller
                     'email' => $allData['email'],
                 ]);
 
-                $lampiranData = ['peserta_id' => $peserta->id, 'no_surat_tugas' => $allData['no_surat_tugas'] ?? null];
+                $lampiranData = [
+                    'peserta_id' => $peserta->id,
+                    'no_surat_tugas' => $allData['no_surat_tugas'] ?? null,
+                ];
 
-                $fileFields = ['fc_ktp', 'fc_ijazah', 'fc_surat_tugas', 'fc_surat_sehat', 'pas_foto'];
+                // 2. Buat daftar nama input file Anda
+                $fileFields = [
+                    'fc_ktp',
+                    'fc_ijazah',
+                    'fc_surat_tugas',
+                    'fc_surat_sehat',
+                    'pas_foto'
+                ];
+
                 foreach ($fileFields as $field) {
                     if ($request->hasFile($field)) {
                         $file = $request->file($field);
-                        $ext = $file->extension();
-                        $filename = Str::slug($peserta->nama) . '_' . $field . '_' . time() . '.' . $ext;
-                        $path = $file->storeAs('berkas_pendaftaran', $filename, 'public');
 
-                        // Resize pas foto saja
-                        if ($field === 'pas_foto') {
-                            $img = Image::make(storage_path('app/public/' . $path));
-                            $img->resize(300, 400)->save();
-                        }
+                        // Kumpulkan semua informasi yang Anda butuhkan
+                        $namaAsli = $file->getClientOriginalName();
+                        $ukuranFile = $file->getSize(); // dalam bytes
+                        $ekstensi = $file->extension();
+
+                        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
+
+                        // folder per peserta
+                        $folder = 'berkas_pendaftaran/' . $peserta->id;
+
+                        // Buat nama file custom
+                        $fileName = $peserta->id . '_' . $peserta->bidang_id . '_' . $peserta->instansi_id
+                            . '_' . $field . '.' . $file->extension();
+
+                        // Simpan file dan dapatkan path-nya
+                        // $path = $file->store('/berkas_pendaftaran'); // --> store ke disk private/public/berkas_pendaftaran
+                        $path = $file->storeAs(
+                            'berkas_pendaftaran',
+                            $fileName,
+                            'public'
+                        ); // --> store ke disk public/berkas_pendaftaran 
 
                         $lampiranData[$field] = $path;
                     }

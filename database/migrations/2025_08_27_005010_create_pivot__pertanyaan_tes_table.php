@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pivot__pertanyaan_tes', function (Blueprint $table) {
-            $table->foreignId('id_pertanyaan')->constrained('pertanyaan')->onDelete('cascade');
-            $table->foreignId('id_tes')->constrained('tes')->onDelete('cascade');
+            $table->foreignId('pertanyaan_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tes_id')->constrained()->onDelete('cascade');
             // Menjadikan keduanya sebagai primary key
-            $table->primary(['id_pertanyaan', 'id_tes']);
+            $table->primary(['pertanyaan_id', 'tes_id']);
             $table->timestamps();
         });
     }

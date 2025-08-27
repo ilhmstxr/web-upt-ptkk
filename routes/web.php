@@ -26,8 +26,9 @@ use App\Mail\TestMail;
 
 // Redirect root ke form pendaftaran
 Route::get('/', function () {
-    return redirect()->route('pendaftaran.create');
+    return view('landing');
 });
+
 
 // ============================
 // Pendaftaran
@@ -123,7 +124,39 @@ Route::get('test-peserta', function () {
     return Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')->get();
 });
 
-// ============================
-// Auth Routes
-// ============================
+// Route::get('pendaftaran_selesai', function () {
+//     return view('peserta.pendaftaran.selesai');
+// });
+
+
+// route fix
+// route pendaftaran
+Route::resource('/pendaftaran', PendaftaranController::class);
+Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
+Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
+
+Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
+Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
+Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])
+    ->name('peserta.download-pdf');
+Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])
+    ->name('peserta.download-bulk');
+
+// route monev
+Route::resource('/survey', SurveyController::class);
+
+// Rute untuk menampilkan setiap langkah/bagian survei
+// Menggunakan route model binding untuk {participant} dan slug untuk {section_slug}
+Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
+
+// Rute untuk menyimpan jawaban dari setiap langkah survei
+Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
+
+// Rute untuk halaman "Selesai"
+Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
+
+Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
+
+
+// Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';

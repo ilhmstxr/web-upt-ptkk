@@ -14,7 +14,7 @@
 
 <!-- Form Section -->
 <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8 max-w-xl mx-auto">
-    <form action="  " method="POST" class="space-y-6">
+    <form action="" method="POST" class="space-y-6">
     {{-- <form action="{{ route('survey.store') }}" method="POST" class="space-y-6"> --}}
         @csrf
         
