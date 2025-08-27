@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PostTest;
 use App\Models\PostTestAnswer;
+use App\Models\PostTestResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +27,7 @@ class PostTestController extends Controller
 
             $isCorrect = $answer === $question->correct_answer;
 
-            PostTestAnswer::updateOrCreate(
+            PostTestResult::updateOrCreate(
                 [
                     'user_id' => Auth::id(),
                     'post_test_id' => $question->id,
@@ -43,7 +44,7 @@ class PostTestController extends Controller
 
     public function result()
     {
-        $answers = PostTestAnswer::where('user_id', Auth::id())->with('question')->get();
+        $answers = PostTestResult::where('user_id', Auth::id())->with('question')->get();
         $score = $answers->where('is_correct', true)->count();
 
         // arahkan ke blade utama (dashboard.posttest.index)
