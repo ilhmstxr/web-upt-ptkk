@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class PostTest extends Model
 {
     protected $fillable = [
+        'nomor',
         'question',
         'option_a',
         'option_b',
-        'option_c',
         'option_d',
         'correct_answer',
         'pelatihan_id',

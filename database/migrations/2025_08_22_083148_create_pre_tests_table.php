@@ -12,21 +12,21 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pelatihan_id')
                   ->constrained('pelatihans')
-                  ->onDelete('cascade');
+                  ->onDelete('cascade'); // hapus pre_test jika pelatihan dihapus
             $table->foreignId('bidang_id')
                   ->nullable()
                   ->constrained('bidangs')
                   ->onDelete('set null'); // relasi ke tabel Bidang
-            $table->integer('nomor'); // nomor pertanyaan
-            $table->string('pertanyaan');
-            $table->string('opsi_a');
-            $table->string('opsi_b');
-            $table->string('opsi_c');
-            $table->string('opsi_d');
-            $table->enum('jawaban_benar', ['A','B','C','D']);
+            $table->integer('nomor');      // nomor pertanyaan
+            $table->text('pertanyaan');    // pertanyaan
+            $table->string('option_a');    // opsi A
+            $table->string('option_b');    // opsi B
+            $table->string('option_c');    // opsi C
+            $table->string('option_d');    // opsi D
+            $table->enum('correct_answer', ['A','B','C','D']); // jawaban benar
             $table->timestamps();
 
-            $table->unique(['pelatihan_id', 'nomor']); 
+            $table->unique(['pelatihan_id', 'nomor']); // nomor pertanyaan unik per pelatihan
         });
     }
 

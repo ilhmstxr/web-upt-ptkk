@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('bidang_id')
                   ->nullable()
                   ->constrained('bidangs')
-                  ->onDelete('set null'); // relasi ke tabel Bidang
+                  ->onDelete('set null');
             $table->integer('nomor');
             $table->text('question');
             $table->string('option_a');

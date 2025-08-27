@@ -6,26 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('post_test_answers', function (Blueprint $table) {
+        Schema::create('pre_test_answers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('post_test_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')
+                  ->constrained()
+                  ->onDelete('cascade');   // hapus jawaban jika user dihapus
+            $table->foreignId('pre_test_id')
+                  ->constrained('pre_tests')
+                  ->onDelete('cascade');   // hapus jawaban jika pre_test dihapus
             $table->string('answer');      // jawaban user
-            $table->boolean('is_correct'); // benar/salah
+            $table->boolean('is_correct'); // true = benar, false = salah
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('post_test_answers');
+        Schema::dropIfExists('pre_test_answers');
     }
 };
