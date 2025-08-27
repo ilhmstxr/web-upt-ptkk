@@ -9,6 +9,7 @@
         "php": "^8.2",
         "alperenersoy/filament-export": "^3.0",
         "barryvdh/laravel-dompdf": "^3.1",
+        "blade-ui-kit/blade-icons": "^1.8",
         "filament/filament": "^3.3",
         "intervention/image": "*",
         "laravel/framework": "^12.0",

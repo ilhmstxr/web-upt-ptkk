@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\TesJawabanUser;
 
 class TesJawabanUserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        TesJawabanUser::insert([
+            ['percobaan_tes_id' => 1, 'pertanyaan_id' => 1, 'opsi_jawaban_id' => 1],
+            ['percobaan_tes_id' => 1, 'pertanyaan_id' => 2, 'opsi_jawaban_id' => 3],
+        ]);
     }
 }

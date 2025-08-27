@@ -17,10 +17,9 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Facades\Image;
 use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipArchive;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PendaftaranController extends Controller
 {
@@ -54,7 +53,6 @@ class PendaftaranController extends Controller
                 return view('peserta.pendaftaran.lampiran', compact('currentStep', 'allowedStep', 'formData'));
         }
     }
-
 
     public function store(Request $request)
     {
@@ -106,20 +104,18 @@ class PendaftaranController extends Controller
             $allData = array_merge($formData, $validatedData);
 
             DB::transaction(function () use ($allData, $request) {
-                // 1. Simpan Instansi
                 $instansi = Instansi::firstOrCreate(
                     [
-                        'asal_instansi'   => $allData['asal_instansi'],
+                        'asal_instansi' => $allData['asal_instansi'],
                         'alamat_instansi' => $allData['alamat_instansi'],
                     ],
                     [
-                        'bidang_keahlian'     => $allData['bidang_keahlian'],
-                        'kelas'               => $allData['kelas'],
+                        'bidang_keahlian' => $allData['bidang_keahlian'],
+                        'kelas' => $allData['kelas'],
                         'cabang_dinas_wilayah' => $allData['cabang_dinas_wilayah'],
                     ]
                 );
 
-                // 2. Simpan Peserta
                 $peserta = Peserta::create([
                     'pelatihan_id' => $allData['pelatihan_id'],
                     'instansi_id' => $instansi->id,
@@ -140,42 +136,15 @@ class PendaftaranController extends Controller
                     'no_surat_tugas' => $allData['no_surat_tugas'] ?? null,
                 ];
 
-                // 2. Buat daftar nama input file Anda
-                $fileFields = [
-                    'fc_ktp',
-                    'fc_ijazah',
-                    'fc_surat_tugas',
-                    'fc_surat_sehat',
-                    'pas_foto'
-                ];
+                $fileFields = ['fc_ktp','fc_ijazah','fc_surat_tugas','fc_surat_sehat','pas_foto'];
 
                 foreach ($fileFields as $field) {
                     if ($request->hasFile($field)) {
                         $file = $request->file($field);
-
-                        // Kumpulkan semua informasi yang Anda butuhkan
-                        $namaAsli = $file->getClientOriginalName();
-                        $ukuranFile = $file->getSize(); // dalam bytes
-                        $ekstensi = $file->extension();
-
-                        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-
-
-                        // folder per peserta
-                        $folder = 'berkas_pendaftaran/' . $peserta->id;
-
-                        // Buat nama file custom
                         $fileName = $peserta->id . '_' . $peserta->bidang_id . '_' . $peserta->instansi_id
                             . '_' . $field . '.' . $file->extension();
 
-                        // Simpan file dan dapatkan path-nya
-                        // $path = $file->store('/berkas_pendaftaran'); // --> store ke disk private/public/berkas_pendaftaran
-                        $path = $file->storeAs(
-                            'berkas_pendaftaran',
-                            $fileName,
-                            'public'
-                        ); // --> store ke disk public/berkas_pendaftaran 
-
+                        $path = $file->storeAs('berkas_pendaftaran', $fileName, 'public');
                         $lampiranData[$field] = $path;
                     }
                 }
@@ -196,19 +165,18 @@ class PendaftaranController extends Controller
     public function generateMassal()
     {
         $instrukturs = Instruktur::with(['bidang', 'pelatihan'])->get();
-        $pdf = Pdf::loadView('instruktur.cetak_massal', ['instrukturs' => $instrukturs]);
-        $pdf->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('instruktur.cetak_massal', ['instrukturs' => $instrukturs])
+            ->setPaper('A4', 'portrait');
         $fileName = 'Biodata_Instruktur_Massal_' . Carbon::now()->format('Y-m-d') . '.pdf';
         return $pdf->stream($fileName);
     }
 
-    public function download_file(Request $request): StreamedResponse
+    public function download_file(Request $request): BinaryFileResponse
     {
         $request->validate(['path' => 'required|string']);
         $filePath = $request->input('path');
-        $disk = Storage::disk('public');
-        abort_if(!$disk->exists($filePath), 404, 'File not found.');
-        return $disk->download($filePath);
+        abort_if(!Storage::disk('public')->exists($filePath), 404, 'File not found.');
+        return Storage::disk('public')->download($filePath);
     }
 
     public function download(Peserta $peserta)
@@ -217,7 +185,6 @@ class PendaftaranController extends Controller
         if (!$lampiran) return back()->with('error', 'Peserta tidak memiliki lampiran.');
 
         $filesToZip = [$lampiran->pas_foto, $lampiran->fc_ktp, $lampiran->fc_ijazah, $lampiran->fc_surat_sehat, $lampiran->fc_surat_tugas];
-
         $zipFileName = 'lampiran-' . Str::slug($peserta->nama) . '.zip';
         $zipPath = storage_path('app/temp/' . $zipFileName);
 
@@ -255,6 +222,7 @@ class PendaftaranController extends Controller
         return view('admin.testing', compact('pesertas'));
     }
 
+    // Placeholder methods
     public function show(string $id) {}
     public function edit(string $id) {}
     public function update(Request $request, string $id) {}

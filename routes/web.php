@@ -10,7 +10,6 @@ use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuratController;
 use App\Http\Controllers\SurveyController;
-use App\Http\Controllers\PostTestController;
 
 use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
@@ -29,7 +28,6 @@ Route::get('/', function () {
     return view('landing');
 });
 
-
 // ============================
 // Pendaftaran
 // ============================
@@ -40,18 +38,10 @@ Route::get('download-file', [PendaftaranController::class, 'download_file'])->na
 Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
-Route::get('/pendaftaran-baru', function () { return view('registration-form-new'); })->name('pendaftaran.baru');
-
-// Route view testing step pendaftaran (opsional)
-Route::get('1', fn() => view('peserta.pendaftaran.bio-peserta'));
-Route::get('2', fn() => view('peserta.pendaftaran.bio-sekolah'));
-Route::get('3', fn() => view('peserta.pendaftaran.lampiran'));
-Route::get('4', fn() => view('peserta.pendaftaran.selesai'));
-Route::get('5', fn() => view('template_surat.instruktur'));
-Route::get('6', fn() => view('peserta.monev.pendaftaran'));
+Route::get('/pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
 
 // ============================
-// Dashboard & PostTest
+// Dashboard & PostTest melalui DashboardController
 // ============================
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/', [DashboardController::class, 'home'])->name('home');
@@ -62,14 +52,11 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/pretest/start', [DashboardController::class, 'pretestStart'])->name('pretest.start');
     Route::get('/posttest', [DashboardController::class, 'posttest'])->name('posttest');
     Route::get('/posttest/start', [DashboardController::class, 'posttestStart'])->name('posttest.start');
+    Route::post('/posttest/submit', [DashboardController::class, 'posttestSubmit'])->name('posttest.submit');
+    Route::get('/posttest/result', [DashboardController::class, 'posttestResult'])->name('posttest.result');
     Route::get('/feedback', [DashboardController::class, 'feedback'])->name('feedback');
     Route::post('/feedback/submit', [DashboardController::class, 'feedbackSubmit'])->name('feedback.submit');
     Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
-
-    // PostTest tambahan
-    Route::get('/posttest/start', [PostTestController::class, 'start'])->name('posttest.start');
-    Route::post('/posttest/submit', [PostTestController::class, 'submit'])->name('posttest.submit');
-    Route::get('/posttest/result', [PostTestController::class, 'result'])->name('posttest.result');
 });
 
 // ============================
@@ -98,8 +85,14 @@ Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredenti
 // ============================
 // Test Excel Export
 // ============================
-Route::get('/test-peserta', fn() => dd((new PesertaSheet())->collection()->take(5)));
-Route::get('/test-lampiran', fn() => dd((new LampiranSheet())->collection()->take(5)));
+Route::get('/test-peserta', function () {
+    $pesertaIds = null; // bisa diisi array ID peserta jika perlu
+    return dd((new PesertaSheet($pesertaIds))->collection()->take(5));
+});
+Route::get('/test-lampiran', function () {
+    $pesertaIds = null;
+    return dd((new LampiranSheet($pesertaIds))->collection()->take(5));
+});
 Route::get('/export-peserta', fn() => Excel::download(new PesertaExport(), 'peserta.xlsx'));
 
 // ============================
@@ -124,39 +117,7 @@ Route::get('test-peserta', function () {
     return Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')->get();
 });
 
-// Route::get('pendaftaran_selesai', function () {
-//     return view('peserta.pendaftaran.selesai');
-// });
-
-
-// route fix
-// route pendaftaran
-Route::resource('/pendaftaran', PendaftaranController::class);
-Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
-Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
-
-Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
-Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
-Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])
-    ->name('peserta.download-pdf');
-Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])
-    ->name('peserta.download-bulk');
-
-// route monev
-Route::resource('/survey', SurveyController::class);
-
-// Rute untuk menampilkan setiap langkah/bagian survei
-// Menggunakan route model binding untuk {participant} dan slug untuk {section_slug}
-Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
-
-// Rute untuk menyimpan jawaban dari setiap langkah survei
-Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
-
-// Rute untuk halaman "Selesai"
-Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
-
-Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
-
-
-// Rute untuk autentikasi (login, register, dll.)
+// ============================
+// Autentikasi
+// ============================
 require __DIR__ . '/auth.php';
