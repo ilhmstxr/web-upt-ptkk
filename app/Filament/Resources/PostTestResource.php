@@ -33,6 +33,11 @@ class PostTestResource extends Resource
                 ->options(Bidang::all()->pluck('nama_bidang', 'id'))
                 ->searchable()
                 ->required(),
+                
+            Forms\Components\TextInput::make('nomor')
+                ->label('Nomor Soal')
+                ->required()
+                ->numeric(),
 
             Forms\Components\Repeater::make('soal')
                 ->label('Soal Post-Test')
