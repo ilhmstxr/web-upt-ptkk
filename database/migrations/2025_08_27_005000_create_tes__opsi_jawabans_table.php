@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tes__opsi_jawabans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pertanyaan_id')->constrained()->onDelete('cascade');
+            $table->foreignId('pertanyaan_id')->constrained('tes__pertanyaans')->onDelete('cascade');
             $table->text('teks_opsi');
             $table->boolean('apakah_benar')->default(false);
             $table->timestamps();

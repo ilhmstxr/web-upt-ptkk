@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tes', function (Blueprint $table) {
             $table->id();
             $table->string('judul');
+            $table->foreignId('peserta_id')->constrained('pesertas')->onDelete('cascade');
             $table->enum('tipe', ['pre-test', 'post-test']);
             $table->string('bidang');
             $table->string('pelatihan');

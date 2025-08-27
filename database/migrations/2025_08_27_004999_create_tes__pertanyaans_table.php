@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tes__pertanyaans', function (Blueprint $table) {
             $table->id();
+            $table->integer('nomor');
             $table->text('teks_pertanyaan');
             $table->timestamps();
         });
