@@ -9,19 +9,25 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
-{
-    Schema::create('pelatihans', function (Blueprint $table) {
-        $table->id();
-        $table->string('nama_pelatihan');
-        $table->string('slug')->nullable()->unique();
-        $table->string('gambar')->nullable();
-        $table->date('tanggal_mulai');
-        $table->date('tanggal_selesai');
-        $table->text('deskripsi')->nullable();
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('pelatihans', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('instansi_id')
+                  ->nullable()
+                  ->constrained('instansis')
+                  ->onUpdate('cascade')
+                  ->onDelete('set null'); // Relasi ke tabel instansis
+
+            $table->string('nama_pelatihan');
+            $table->string('slug')->nullable()->unique();
+            $table->string('gambar')->nullable();
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
+            $table->text('deskripsi')->nullable();
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

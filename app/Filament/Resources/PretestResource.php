@@ -3,7 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PretestResource\Pages;
-use App\Models\Pretest;
+use App\Models\PreTest;
+use App\Models\Pelatihan;
+use App\Models\Bidang;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,7 +14,7 @@ use Filament\Tables\Table;
 
 class PretestResource extends Resource
 {
-    protected static ?string $model = Pretest::class;
+    protected static ?string $model = PreTest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Manajemen Soal';
@@ -20,51 +22,85 @@ class PretestResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Textarea::make('question')
-                    ->label('Pertanyaan')
-                    ->required(),
+        return $form->schema([
+            Forms\Components\Select::make('pelatihan_id')
+                ->label('Pelatihan')
+                ->relationship('pelatihan', 'nama_pelatihan')
+                ->required(),
 
-                Forms\Components\TextInput::make('option_a')
-                    ->label('Pilihan A')
-                    ->required(),
+            Forms\Components\Select::make('bidang_id')
+                ->label('Bidang Keahlian')
+                ->options(Bidang::all()->pluck('nama_bidang', 'id'))
+                ->searchable()
+                ->required(),
 
-                Forms\Components\TextInput::make('option_b')
-                    ->label('Pilihan B')
-                    ->required(),
+            Forms\Components\Repeater::make('soal')
+                ->label('Soal Pre-Test')
+                ->schema([
+                    Forms\Components\TextInput::make('nomor')
+                        ->label('Nomor Pertanyaan')
+                        ->numeric()
+                        ->required(),
 
-                Forms\Components\TextInput::make('option_c')
-                    ->label('Pilihan C')
-                    ->required(),
+                    Forms\Components\Textarea::make('pertanyaan')
+                        ->label('Pertanyaan')
+                        ->required(),
 
-                Forms\Components\TextInput::make('option_d')
-                    ->label('Pilihan D')
-                    ->required(),
+                    Forms\Components\TextInput::make('opsi_a')
+                        ->label('Pilihan A')
+                        ->required(),
+                    Forms\Components\TextInput::make('opsi_b')
+                        ->label('Pilihan B')
+                        ->required(),
+                    Forms\Components\TextInput::make('opsi_c')
+                        ->label('Pilihan C')
+                        ->required(),
+                    Forms\Components\TextInput::make('opsi_d')
+                        ->label('Pilihan D')
+                        ->required(),
 
-                Forms\Components\Select::make('correct_answer')
-                    ->label('Jawaban Benar')
-                    ->options([
-                        'A' => 'A',
-                        'B' => 'B',
-                        'C' => 'C',
-                        'D' => 'D',
-                    ])
-                    ->required(),
-            ]);
+                    Forms\Components\Select::make('jawaban_benar')
+                        ->label('Jawaban Benar')
+                        ->options([
+                            'A' => 'A',
+                            'B' => 'B',
+                            'C' => 'C',
+                            'D' => 'D',
+                        ])
+                        ->required(),
+                ])
+                ->columns(2)
+                ->createItemButtonLabel('Tambah Soal')
+                ->collapsed(false),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('question')
+                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
+                    ->label('Pelatihan')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('bidang.nama_bidang')
+                    ->label('Bidang Keahlian')
+                    ->sortable()
+                    ->searchable()
+                    ->getStateUsing(fn($record) => $record->bidang?->nama_bidang ?? '-'),
+
+                Tables\Columns\TextColumn::make('nomor')
+                    ->label('No.')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('pertanyaan')
                     ->label('Pertanyaan')
                     ->limit(50)
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('correct_answer')
-                    ->label('Jawaban Benar'),
+                Tables\Columns\TextColumn::make('jawaban_benar')
+                    ->label('Jawaban'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
@@ -80,17 +116,12 @@ class PretestResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [];
-    }
-
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPretests::route('/'),
+            'index'  => Pages\ListPretests::route('/'),
             'create' => Pages\CreatePretest::route('/create'),
-            'edit' => Pages\EditPretest::route('/{record}/edit'),
+            'edit'   => Pages\EditPretest::route('/{record}/edit'),
         ];
     }
 }
