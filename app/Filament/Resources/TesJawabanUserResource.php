@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TesJawabanUserResource\Pages;
-use App\Models\Tes_JawabanUser;
+use App\Models\JawabanUser;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Tables;
@@ -12,7 +12,7 @@ use Filament\Resources\Resource;
 
 class TesJawabanUserResource extends Resource
 {
-    protected static ?string $model = Tes_JawabanUser::class;
+    protected static ?string $model = TesJawabanUser::class;
 
     // Ganti ikon supaya tidak error
     protected static ?string $navigationIcon = 'heroicon-o-clipboard';

@@ -176,13 +176,16 @@ class PendaftaranController extends Controller
         $request->validate(['path' => 'required|string']);
         $filePath = $request->input('path');
         abort_if(!Storage::disk('public')->exists($filePath), 404, 'File not found.');
-        return Storage::disk('public')->download($filePath);
+
+        return response()->download(storage_path('app/public/' . $filePath));
     }
 
     public function download(Peserta $peserta)
     {
         $lampiran = $peserta->lampiran;
-        if (!$lampiran) return back()->with('error', 'Peserta tidak memiliki lampiran.');
+        if (!$lampiran) {
+            return back()->with('error', 'Peserta tidak memiliki lampiran.');
+        }
 
         $filesToZip = [$lampiran->pas_foto, $lampiran->fc_ktp, $lampiran->fc_ijazah, $lampiran->fc_surat_sehat, $lampiran->fc_surat_tugas];
         $zipFileName = 'lampiran-' . Str::slug($peserta->nama) . '.zip';
@@ -213,6 +216,7 @@ class PendaftaranController extends Controller
 
         $ids = $request->input('ids');
         $fileName = $request->input('excelFileName') . '.xlsx';
+
         return Excel::download(new PesertaExport($ids), $fileName);
     }
 

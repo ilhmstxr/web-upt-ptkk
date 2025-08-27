@@ -10,10 +10,15 @@ return new class extends Migration
     {
         Schema::create('opsi_jawabans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pertanyaan_id')->constrained('pertanyaans')->onDelete('cascade');
-            $table->text('teks_opsi');
+
+            $table->foreignId('pertanyaan_id')
+                ->constrained('pertanyaans')
+                ->cascadeOnDelete();
+
+            $table->text('teks_opsi')->nullable(); // bisa kosong kalau opsi hanya gambar
             $table->string('gambar')->nullable();
             $table->boolean('apakah_benar')->default(false);
+
             $table->timestamps();
         });
     }

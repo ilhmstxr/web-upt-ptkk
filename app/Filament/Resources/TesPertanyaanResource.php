@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TesPertanyaanResource\Pages;
-use App\Models\Tes_Pertanyaan;
+use App\Models\Pertanyaan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Tables;
@@ -12,7 +12,7 @@ use Filament\Resources\Resource;
 
 class TesPertanyaanResource extends Resource
 {
-    protected static ?string $model = Tes_Pertanyaan::class;
+    protected static ?string $model = Pertanyaan::class;
     protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
     protected static ?string $navigationLabel = 'Pertanyaan';
 

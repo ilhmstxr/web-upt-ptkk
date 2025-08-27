@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TesOpsiJawabanResource\Pages;
-use App\Models\Tes_OpsiJawaban;
+use App\Models\OpsiJawaban;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Tables;
@@ -12,7 +12,7 @@ use Filament\Resources\Resource;
 
 class TesOpsiJawabanResource extends Resource
 {
-    protected static ?string $model = Tes_OpsiJawaban::class;
+    protected static ?string $model = OpsiJawaban::class;
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?string $navigationLabel = 'Opsi Jawaban';
 

@@ -20,7 +20,8 @@
         "maatwebsite/excel": "^3.1",
         "mpdf/mpdf": "^8.2",
         "phpoffice/phpword": "^1.4",
-        "spatie/laravel-permission": "^6.21"
+        "spatie/laravel-permission": "^6.21",
+        "blade-ui-kit/blade-heroicons": "^2.5"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
@@ -86,5 +87,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    }
 }

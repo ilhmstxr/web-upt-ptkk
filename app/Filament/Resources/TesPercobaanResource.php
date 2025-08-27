@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TesPercobaanResource\Pages;
-use App\Models\Tes_Percobaan;
+use App\Models\Percobaan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Tables;
@@ -12,7 +12,7 @@ use Filament\Resources\Resource;
 
 class TesPercobaanResource extends Resource
 {
-    protected static ?string $model = Tes_Percobaan::class;
+    protected static ?string $model = Percobaan::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Percobaan Tes';
 

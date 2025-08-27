@@ -12,11 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pertanyaan_tes', function (Blueprint $table) {
-            $table->foreignId('pertanyaan_id')->constrained('pertanyaans')->onDelete('cascade');
-            $table->foreignId('kuis_id')->constrained('kuis')->onDelete('cascade');
-            // Menjadikan keduanya sebagai primary key
+            $table->foreignId('pertanyaan_id')
+                ->constrained('pertanyaans')
+                ->cascadeOnDelete();
+
+            $table->foreignId('kuis_id')
+                ->constrained('kuis') // kalau tabelmu default, ganti jadi 'kuises'
+                ->cascadeOnDelete();
+
             $table->primary(['pertanyaan_id', 'kuis_id']);
-            $table->timestamps();
         });
     }
 

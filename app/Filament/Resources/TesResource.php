@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TesResource\Pages;
-use App\Models\Tes;
+use App\Models\Kuis;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Tables;
@@ -12,7 +12,7 @@ use Filament\Resources\Resource;
 
 class TesResource extends Resource
 {
-    protected static ?string $model = Tes::class;
+    protected static ?string $model = Kuis::class;
     // Ganti ikon dengan yang pasti ada
     protected static ?string $navigationIcon = 'heroicon-o-archive';
     protected static ?string $navigationLabel = 'Tes';

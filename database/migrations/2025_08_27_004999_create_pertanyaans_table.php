@@ -13,11 +13,17 @@ return new class extends Migration
     {
         Schema::create('pertanyaans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('kuis_id')->constrained('kuis')->onDelete('cascade');
-            $table->integer('nomor');
+
+            // pastikan tabel induknya bernama 'kuis' (atau ganti jadi 'kuises' kalau default laravel)
+            $table->foreignId('kuis_id')
+                ->constrained('kuis') // kalau tabelmu bernama 'kuises', ganti ini
+                ->cascadeOnDelete();
+
+            $table->unsignedInteger('nomor');
             $table->text('teks_pertanyaan');
             $table->string('gambar')->nullable();
-            $table->enum('tipe_jawaban', ['pilihan_ganda', 'skala_likert']);
+            $table->enum('tipe_jawaban', ['pilihan_ganda', 'skala_likert'])
+                  ->default('pilihan_ganda');
             $table->timestamps();
         });
     }

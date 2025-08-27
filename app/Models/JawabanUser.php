@@ -4,30 +4,32 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class JawabanUser extends Model
 {
-    /** @use HasFactory<\Database\Factories\TesJawabanUserFactory> */
     use HasFactory;
-    protected $table = 'jawaban_users';
-    protected $fillable = ['percobaan_id', 'pertanyaan_id', 'opsi_jawaban_id'];
 
-    public function percobaanTes(): BelongsTo
+    protected $table = 'jawaban_users';
+
+    protected $fillable = [
+        'opsi_jawaban_id',
+        'pertanyaan_id',
+        'percobaan_id',
+        'nilai_jawaban',
+    ];
+
+    public function percobaan()
     {
-        // Merujuk ke model Tes_Percobaan
         return $this->belongsTo(Percobaan::class, 'percobaan_id');
     }
 
-    public function pertanyaan(): BelongsTo
+    public function pertanyaan()
     {
-        // Merujuk ke model Tes_Pertanyaan
         return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
     }
 
-    public function opsiJawaban(): BelongsTo
+    public function opsiJawaban()
     {
-        // Merujuk ke model Tes_OpsiJawaban
         return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id');
     }
 }

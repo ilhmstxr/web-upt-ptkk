@@ -4,21 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Kuis extends Model
 {
-    /** @use HasFactory<\Database\Factories\TesFactory> */
     use HasFactory;
-    protected $fillable = ['judul', 'tipe', 'bidang', 'pelatihan', 'durasi_menit'];
-    public function pertanyaan(): BelongsToMany
+
+    protected $table = 'kuis'; // atau 'kuises' kalau pakai default plural Laravel
+
+    protected $fillable = [
+        'nama_tes',
+        'deskripsi',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'status',
+    ];
+
+    // Relasi Many-to-Many ke Pertanyaan (via pivot pertanyaan_tes)
+    public function pertanyaans()
     {
-        return $this->belongsToMany(Pertanyaan::class, 'pertanyaan_tes', 'tes_id', 'pertanyaan_id');
+        return $this->belongsToMany(Pertanyaan::class, 'pertanyaan_tes', 'kuis_id', 'pertanyaan_id');
     }
 
-    public function percobaanTes(): HasMany
+    // Relasi ke percobaan
+    public function percobaans()
     {
-        return $this->hasMany(Percobaan::class, 'tes_id');
+        return $this->hasMany(Percobaan::class, 'kuis_id');
     }
 }
