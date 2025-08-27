@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pre_test_answers', function (Blueprint $table) {
+        Schema::create('tes__opsi_jawabans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('post_test_id')->constrained()->onDelete('cascade');
-            $table->string('answer');      // jawaban user
-            $table->boolean('is_correct'); // benar/salah
+            $table->foreignId('pertanyaan_id')->constrained('pertanyaan')->onDelete('cascade');
+            $table->text('teks_opsi');
+            $table->boolean('apakah_benar')->default(false);
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('post_test_answers');
+        Schema::dropIfExists('tes__opsi_jawabans');
     }
 };
