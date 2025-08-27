@@ -4,21 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pertanyaan extends Model
 {
-    /** @use HasFactory<\Database\Factories\PertanyaanFactory> */
+    /** @use HasFactory<\Database\Factories\TesPertanyaanFactory> */
     use HasFactory;
+    protected $fillable = ['nomor', 'teks_pertanyaan', 'tipe_jawaban', 'kuis_id','gambar'];
 
-    protected $fillable = ['survey_id', 'text', 'order'];
-
-    public function surveySection()
+    public function kuis(): BelongsToMany
     {
-        return $this->belongsTo(Survey::class);
+        // Merujuk ke model Tes
+        return $this->belongsToMany(Kuis::class, 'kuis_id');
     }
 
-    public function jawaban()
+    public function opsiJawaban(): HasMany
     {
-        return $this->hasMany(Jawaban::class);
+        // Merujuk ke model Tes_OpsiJawaban
+        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id');
     }
 }

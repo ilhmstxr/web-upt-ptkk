@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tes__percobaans', function (Blueprint $table) {
+        Schema::create('percobaans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('peserta_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('tes_id')->constrained()->onDelete('cascade');
+            $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
+            $table->foreignId('kuis_id')->constrained('kuis')->onDelete('cascade');
             $table->timestamp('waktu_mulai');
             $table->timestamp('waktu_selesai')->nullable();
             $table->decimal('skor', 5, 2)->nullable(); // 5 digit total, 2 di belakang koma
+            $table->text('pesan_kesan')->nullable(); // 5 digit total, 2 di belakang koma
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tes__percobaans');
+        Schema::dropIfExists('percobaans');
     }
 };

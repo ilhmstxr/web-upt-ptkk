@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tes', function (Blueprint $table) {
+        Schema::create('pertanyaans', function (Blueprint $table) {
             $table->id();
-            $table->string('judul');
-            $table->foreignId('peserta_id')->constrained('pesertas')->onDelete('cascade');
-            $table->enum('tipe', ['pre-test', 'post-test']);
-            $table->string('bidang');
-            $table->string('pelatihan');
-            $table->integer('durasi_menit');
+            $table->foreignId('kuis_id')->constrained('kuis')->onDelete('cascade');
+            $table->integer('nomor');
+            $table->text('teks_pertanyaan');
+            $table->string('gambar')->nullable();
+            $table->enum('tipe_jawaban', ['pilihan_ganda', 'skala_likert']);
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tes');
+        Schema::dropIfExists('pertanyaans');
     }
 };
