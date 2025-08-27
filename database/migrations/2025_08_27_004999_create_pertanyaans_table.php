@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('pertanyaans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('survey_id')->constrained()->onDelete('cascade');
-            $table->text('text');
-            $table->integer('order')->default(0);
+            $table->foreignId('kuis_id')->constrained('kuis')->onDelete('cascade');
+            $table->integer('nomor');
+            $table->text('teks_pertanyaan');
+            $table->string('gambar')->nullable();
+            $table->enum('tipe_jawaban', ['pilihan_ganda', 'skala_likert']);
             $table->timestamps();
         });
     }
