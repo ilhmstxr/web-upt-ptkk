@@ -183,5 +183,9 @@ Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBul
     ->name('peserta.download-bulk');
 
 
+route::get('/cek_icon',function (){
+    return view('cek_icon');
+});
+
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';
