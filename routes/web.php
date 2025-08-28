@@ -23,7 +23,7 @@ use App\Mail\TestMail;
 |--------------------------------------------------------------------------
 */
 
-// Redirect root ke form pendaftaran
+// Redirect root ke form pendaftaran / landing page
 Route::get('/', function () {
     return view('landing');
 });
@@ -41,22 +41,32 @@ Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->n
 Route::get('/pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
 
 // ============================
-// Dashboard & PostTest melalui DashboardController
+// Dashboard & Pre/Post Test
 // ============================
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
+
+    // Dashboard utama
     Route::get('/', [DashboardController::class, 'home'])->name('home');
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::get('/materi', [DashboardController::class, 'materi'])->name('materi');
     Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
+    Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
+
+    // Pre-test
     Route::get('/pretest', [DashboardController::class, 'pretest'])->name('pretest');
     Route::get('/pretest/start', [DashboardController::class, 'pretestStart'])->name('pretest.start');
+    Route::post('/pretest/submit', [DashboardController::class, 'pretestSubmit'])->name('pretest.submit');
+    Route::get('/pretest/result', [DashboardController::class, 'pretestResult'])->name('pretest.result');
+
+    // Post-test
     Route::get('/posttest', [DashboardController::class, 'posttest'])->name('posttest');
     Route::get('/posttest/start', [DashboardController::class, 'posttestStart'])->name('posttest.start');
     Route::post('/posttest/submit', [DashboardController::class, 'posttestSubmit'])->name('posttest.submit');
     Route::get('/posttest/result', [DashboardController::class, 'posttestResult'])->name('posttest.result');
+
+    // Feedback
     Route::get('/feedback', [DashboardController::class, 'feedback'])->name('feedback');
     Route::post('/feedback/submit', [DashboardController::class, 'feedbackSubmit'])->name('feedback.submit');
-    Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 });
 
 // ============================

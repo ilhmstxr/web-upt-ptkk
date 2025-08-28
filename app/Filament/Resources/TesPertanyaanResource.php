@@ -19,14 +19,32 @@ class TesPertanyaanResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
+            Forms\Components\Select::make('tes_id')
+                ->relationship('tes', 'judul')
+                ->required(),
+
+            Forms\Components\TextInput::make('nomor')
+                ->default(function (\Filament\Forms\Get $get) {
+                    $tesId = $get('tes_id');
+                    $nomorTerakhir = \App\Models\Pertanyaan::where('tes_id', $tesId)->max('nomor') ?? 0;
+                    return $nomorTerakhir + 1;
+                })
+                ->numeric()
+                ->required(),
+
             Forms\Components\Textarea::make('teks_pertanyaan')->required(),
+
+            Forms\Components\FileUpload::make('gambar')->image(),
+
             Forms\Components\Repeater::make('opsi_jawaban')
                 ->relationship('opsiJawaban')
                 ->schema([
                     Forms\Components\Textarea::make('teks_opsi')->required(),
+                    Forms\Components\FileUpload::make('gambar')->image(),
                     Forms\Components\Toggle::make('apakah_benar')->label('Benar?')->default(false),
                 ])
                 ->columns(2)
+                ->defaultItems(4)
                 ->required(),
         ]);
     }
@@ -34,6 +52,8 @@ class TesPertanyaanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
+            Tables\Columns\TextColumn::make('tes.judul')->label('Tes')->sortable(),
+            Tables\Columns\TextColumn::make('nomor')->sortable(),
             Tables\Columns\TextColumn::make('teks_pertanyaan')->limit(50)->searchable(),
             Tables\Columns\TextColumn::make('created_at')->dateTime(),
         ])

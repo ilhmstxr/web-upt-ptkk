@@ -13,25 +13,44 @@ class Percobaan extends Model
 
     protected $fillable = [
         'peserta_id',
-        'kuis_id',
+        'tes_id',
         'waktu_mulai',
         'waktu_selesai',
         'skor',
         'pesan_kesan',
     ];
 
+    // Relasi ke peserta
     public function peserta()
     {
         return $this->belongsTo(Peserta::class, 'peserta_id');
     }
 
-    public function kuis()
+    // Relasi ke tes
+    public function tes()
     {
-        return $this->belongsTo(Kuis::class, 'kuis_id');
+        return $this->belongsTo(Tes::class, 'tes_id');
     }
 
+    // Relasi ke jawaban user
     public function jawabanUsers()
     {
         return $this->hasMany(JawabanUser::class, 'percobaan_id');
+    }
+
+    // Hitung jumlah jawaban benar untuk percobaan ini
+    public function hitungSkor()
+    {
+        return $this->jawabanUsers()->whereHas('opsiJawaban', function($q) {
+            $q->where('apakah_benar', true);
+        })->count();
+    }
+
+    // Hitung skor dalam persen
+    public function hitungSkorPersen()
+    {
+        $total = $this->jawabanUsers()->count();
+        if ($total == 0) return 0;
+        return round($this->hitungSkor() / $total * 100, 2);
     }
 }

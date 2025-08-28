@@ -12,17 +12,17 @@ class Pertanyaan extends Model
     protected $table = 'pertanyaans';
 
     protected $fillable = [
-        'kuis_id',
+        'tes_id',
         'nomor',
         'teks_pertanyaan',
         'gambar',
         'tipe_jawaban',
     ];
 
-    // Relasi ke kuis
-    public function kuis()
+    // Relasi ke Tes
+    public function tes()
     {
-        return $this->belongsTo(Kuis::class, 'kuis_id');
+        return $this->belongsTo(Tes::class, 'tes_id');
     }
 
     // Relasi ke opsi jawaban
@@ -37,7 +37,7 @@ class Pertanyaan extends Model
         return $this->hasMany(JawabanUser::class, 'pertanyaan_id');
     }
 
-    // Accessor gambar
+    // Accessor untuk URL gambar
     public function getGambarUrlAttribute()
     {
         return $this->gambar ? asset('storage/' . $this->gambar) : null;
