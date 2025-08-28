@@ -1,4 +1,4 @@
-@extends('dashboard.layout.main')
+@extends('dashboard.layouts.main')
 
 @section('title', 'Pre-Test')
 @section('page-title', 'Pre-Test')

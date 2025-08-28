@@ -7,18 +7,39 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pertanyaan extends Model
 {
-    /** @use HasFactory<\Database\Factories\PertanyaanFactory> */
     use HasFactory;
 
-    protected $fillable = ['survey_id', 'text', 'order'];
+    protected $table = 'pertanyaans';
 
-    public function surveySection()
+    protected $fillable = [
+        'kuis_id',
+        'nomor',
+        'teks_pertanyaan',
+        'gambar',
+        'tipe_jawaban',
+    ];
+
+    // Relasi ke kuis
+    public function kuis()
     {
-        return $this->belongsTo(Survey::class);
+        return $this->belongsTo(Kuis::class, 'kuis_id');
     }
 
-    public function jawaban()
+    // Relasi ke opsi jawaban
+    public function opsiJawabans()
     {
-        return $this->hasMany(Jawaban::class);
+        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id');
+    }
+
+    // Relasi ke jawaban user
+    public function jawabanUsers()
+    {
+        return $this->hasMany(JawabanUser::class, 'pertanyaan_id');
+    }
+
+    // Accessor gambar
+    public function getGambarUrlAttribute()
+    {
+        return $this->gambar ? asset('storage/' . $this->gambar) : null;
     }
 }
