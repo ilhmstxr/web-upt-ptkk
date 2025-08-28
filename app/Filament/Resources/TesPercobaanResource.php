@@ -22,23 +22,41 @@ class TesPercobaanResource extends Resource
             Forms\Components\Select::make('peserta_id')
                 ->relationship('peserta', 'nama')
                 ->required(),
+
             Forms\Components\Select::make('tes_id')
                 ->relationship('tes', 'judul')
                 ->required(),
+
             Forms\Components\DateTimePicker::make('waktu_mulai')->required(),
             Forms\Components\DateTimePicker::make('waktu_selesai'),
-            Forms\Components\TextInput::make('skor')->numeric(),
+
+            // Kolom skor bisa diisi manual, tapi bisa juga otomatis dihitung
+            Forms\Components\TextInput::make('skor')
+                ->numeric()
+                ->disabled() // agar user tidak bisa edit langsung
+                ->default(fn ($record) => $record?->hitungSkor() ?? 0),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\TextColumn::make('peserta.nama')->label('Peserta')->searchable(),
-            Tables\Columns\TextColumn::make('tes.judul')->label('Tes')->searchable(),
+            Tables\Columns\TextColumn::make('peserta.nama')
+                ->label('Peserta')
+                ->searchable(),
+
+            Tables\Columns\TextColumn::make('tes.judul')
+                ->label('Tes')
+                ->searchable(),
+
             Tables\Columns\TextColumn::make('waktu_mulai')->dateTime(),
             Tables\Columns\TextColumn::make('waktu_selesai')->dateTime(),
-            Tables\Columns\TextColumn::make('skor')->sortable(),
+
+            Tables\Columns\TextColumn::make('skor')
+                ->label('Skor')
+                ->getStateUsing(fn ($record) => $record->hitungSkor())
+                ->sortable(),
+
             Tables\Columns\TextColumn::make('created_at')->dateTime(),
         ])
         ->actions([

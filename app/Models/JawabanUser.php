@@ -12,24 +12,34 @@ class JawabanUser extends Model
     protected $table = 'jawaban_users';
 
     protected $fillable = [
-        'opsi_jawaban_id',
-        'pertanyaan_id',
-        'percobaan_id',
-        'nilai_jawaban',
+        'opsi_jawabans_id', // untuk jawaban pilihan ganda
+        'pertanyaan_id',    // pertanyaan terkait
+        'percobaan_id',     // percobaan terkait (pre/post test)
+        'nilai_jawaban',    // untuk skala likert 1-5
+        'jawaban_teks',     // untuk jawaban esai / teks bebas
     ];
 
+    /**
+     * Relasi ke percobaan
+     */
     public function percobaan()
     {
         return $this->belongsTo(Percobaan::class, 'percobaan_id');
     }
 
+    /**
+     * Relasi ke pertanyaan
+     */
     public function pertanyaan()
     {
         return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
     }
 
-    public function opsiJawaban()
+    /**
+     * Relasi ke opsi jawaban (jika jawaban pilihan ganda)
+     */
+    public function opsiJawabans()
     {
-        return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id');
+        return $this->belongsTo(OpsiJawabans::class, 'opsi_jawabans_id');
     }
 }

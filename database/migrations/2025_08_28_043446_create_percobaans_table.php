@@ -13,19 +13,13 @@ return new class extends Migration
     {
         Schema::create('percobaans', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('peserta_id')
-                ->constrained('pesertas')
-                ->cascadeOnDelete();
-
-            $table->foreignId('kuis_id')
-                ->constrained('kuis') // kalau tabelmu default plural, ganti jadi 'kuises'
-                ->cascadeOnDelete();
-
+            $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
+            $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
             $table->timestamp('waktu_mulai');
             $table->timestamp('waktu_selesai')->nullable();
-            $table->decimal('skor', 5, 2)->nullable(); // contoh: 100.00
-            $table->text('pesan_kesan')->nullable();   // kesan/feedback dari peserta
+            $table->decimal('skor', 5, 2)->nullable(); // 5 digit total, 2 di belakang koma
+            $table->boolean('lulus')->default(false); // kolom baru untuk status lulus
+            $table->text('pesan_kesan')->nullable();
             $table->timestamps();
         });
     }

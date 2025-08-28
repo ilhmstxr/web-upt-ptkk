@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OpsiJawaban extends Model
+class OpsiJawabans extends Model
 {
     use HasFactory;
 
@@ -18,17 +18,19 @@ class OpsiJawaban extends Model
         'apakah_benar',
     ];
 
+    // Relasi ke Pertanyaan
     public function pertanyaan()
     {
         return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
     }
 
-    public function jawabanUsers()
+    // Relasi ke JawabanUser
+    public function jawabanUser()
     {
-        return $this->hasMany(JawabanUser::class, 'opsi_jawaban_id');
+        return $this->hasMany(JawabanUser::class, 'opsi_jawabans_id');
     }
 
-    // Accessor gambar
+    // Accessor untuk URL gambar
     public function getGambarUrlAttribute()
     {
         return $this->gambar ? asset('storage/' . $this->gambar) : null;
