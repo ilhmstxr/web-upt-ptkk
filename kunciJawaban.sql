@@ -1,7 +1,17 @@
+-- Pastikan Anda sudah memiliki data di tabel `bidangs` dan `pelatihans` sebelum menjalankan ini.
+
+INSERT INTO `kuis` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
+(1, 'Post-Test Teknik Pendingin', 'Tes akhir untuk mengukur pemahaman materi Teknik Pendingin dan Tata Udara.', 'tes', 'post-test', 4, 1, 30, NOW(), NOW()),
+(2, 'Post-Test Kecantikan', 'Tes akhir untuk mengukur pemahaman materi Kecantikan (Perawatan Rambut).', 'tes', 'post-test', 3, 1, 30, NOW(), NOW()),
+(3, 'Post-Test Tata Boga', 'Tes akhir untuk mengukur pemahaman materi Produk Bakery dan Pastry.', 'tes', 'post-test', 1, 1, 30, NOW(), NOW()),
+(4, 'Post-Test Tata Busana', 'Tes akhir untuk mengukur pemahaman materi Menjahit dan Pola.', 'tes', 'post-test', 2, 1, 30, NOW(), NOW()),
+(5, 'Survei Kepuasan Pelatihan', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 1, 1, NULL, NOW(), NOW());
+
+
 -- PERTANYAAN
 
 -- TPTU
-INSERT INTO pertanyaan (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (1, 1, 'Mesin 3R adalah mesin yang digunakan untuk melakukan proses:', 'pilihan_ganda'),
 (1, 2, 'Mesin 3R dapat melakukan tiga fungsi tersebut secara', 'pilihan_ganda'),
 (1, 3, 'Recovery pada mesin pendingin yaitu proses menampung', 'pilihan_ganda'),
@@ -25,7 +35,7 @@ INSERT INTO pertanyaan (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 
 -- KECANTIKAN
 
-INSERT INTO pertanyaan (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (2, 21, 'Fungsi diagnosa kulit kepala dan rambut adalah untuk….', 'pilihan_ganda'),
 (2, 22, 'Shampo yang memiliki kandungan asam nitrat yang dapat melarutkan lemak atau minyak pada kulit kepala dan rambut. adalah…', 'pilihan_ganda'),
 (2, 23, 'Syarat utama pada air yang digunakan untuk mencuci rambut adalah….', 'pilihan_ganda'),
@@ -49,7 +59,7 @@ INSERT INTO pertanyaan (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 
 
 -- TATA BOGA
-INSERT INTO pertanyaan (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (3, 41, 'Berikut ini yang merupakan bahan utama dalam membuat produk bakery dan pastry kecuali …..', 'pilihan_ganda'),
 (3, 42, 'Untuk membuat adonan roti diperlukan tepung terigu dengan kadar protein …..', 'pilihan_ganda'),
 (3, 43, 'Bahan pengembang untuk roti adalah …..', 'pilihan_ganda'),
@@ -72,7 +82,7 @@ INSERT INTO pertanyaan (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (3, 60, 'Danish pastry adalah …..', 'pilihan_ganda');
 
 -- TATA BUSANA
-INSERT INTO pertanyaan (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (4, 61, 'Seorang penjahit selain terampil menyelesaikan pakaian sesuai dengan model pesanan, juga harus bisa...', 'pilihan_ganda'),
 (4, 62, 'Tujuan merendam bahan sebelum digunting adalah...', 'pilihan_ganda'),
 (4, 63, 'Gaun yang mempunyai model punggung yang terlihat disebut model ...', 'pilihan_ganda'),
@@ -97,7 +107,7 @@ INSERT INTO pertanyaan (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 -- JAWABANS
 
 -- TPTU
-INSERT INTO jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Jawaban untuk Pertanyaan ID 1 (Kunci: A)
 (1, 'Recovery, recycling dan recharging pada mesin pendingin.', true),
 (1, 'Recycling dan recharging pada mesin pendingin', false),
@@ -139,12 +149,12 @@ INSERT INTO jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (6, 'Proses penggantian part', false),
 (6, 'Proses Recovery Freon', true),
 (6, 'Semua Jawaban Salah', false),
-
+ 
 -- Jawaban untuk Pertanyaan ID 7 (Kunci: A)
-(7, 'gambar 1', true),
-(7, 'gambar 2', false),
-(7, 'gambar 3', false),
-(7, 'gambar 4', false),
+(7, 'Proses Recovery Refigerant', true),
+(7, 'Proses Recovery Refigerant', false),
+(7, 'Proses Recovery Refigerant', false),
+(7, 'Proses Recovery Refigerant', false),
 (7, 'Semua Jawaban Salah', false),
 
 -- Jawaban untuk Pertanyaan ID 8 (Kunci: B)
@@ -236,9 +246,9 @@ INSERT INTO jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (20, 'Cabinet', false),
 (20, 'Propeller Fan', false),
 (20, 'Propeller Fan dan Cabinet outdoor', true),
-(20, 'Propeller dan Cabinet outbow', false);
+(20, 'Propeller dan Cabinet outbow', false),
 
--- KECANTIKANINSERT INTO jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+-- KECANTIKANINSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Jawaban untuk Pertanyaan ID 21 (Kunci: A)
 (21, 'Menentukan jenis rambut dan kulit kepala sehingga dapat menentukan perawatan kosmetika yang sesuai', true),
 (21, 'Menentukan warna pigmen rambut sehingga dapat menentukan jenis perawatan rambut', false),
@@ -357,10 +367,10 @@ INSERT INTO jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (40, 'Mencubit', false),
 (40, 'Mengetuk', false),
 (40, 'Mengusap', true),
-(40, 'Meremas', false);
+(40, 'Meremas', false),
 
 -- TATA BOGA
-INSERT INTO jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+-- INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Jawaban untuk Pertanyaan ID 41 (Kunci: C)
 (41, 'Tepung terigu', false),
 (41, 'Telur', false),
@@ -479,10 +489,10 @@ INSERT INTO jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (60, 'Pastry yang beragi dan berasa manis', true),
 (60, 'Pastry yang renyah', false),
 (60, 'Pastry yang menggunakan susu', false),
-(60, 'Pastry yang digiling', false);
+(60, 'Pastry yang digiling', false),
 
 -- TATA BUSANA
-INSERT INTO jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+-- INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Jawaban untuk Pertanyaan ID 61 (Kunci: D)
 (61, 'Berpakaian mewah seperti pakaian pesta', false),
 (61, 'Mempunyai modal besar untuk usaha menjahit', false),
@@ -602,3 +612,89 @@ INSERT INTO jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (80, 'Promosi usaha', false),
 (80, 'Kerja kelompok', false),
 (80, 'Bekerja sendiri', false);
+
+
+INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+(5, 81, 'Bagaimana pendapat Saudara tentang kesesuaian jenis pelayanan dengan penyelenggaraannya.........', 'skala_likert'),
+(5, 82, 'Bagaimana pendapat Saudara tentang kemudahan prosedur pelayanan penyelenggaraan pelatihan di instansi ini.......', 'skala_likert'),
+(5, 83, 'Bagaimana pendapat Saudara tentang kedisiplinan petugas / panitia penyelenggara dalam memberikan pelayanan.........', 'skala_likert'),
+(5, 84, 'Bagaimana pendapat Saudara tentang kesopanan dan keramahan petugas penyelenggara dalam memberikan pelayanan..........', 'skala_likert'),
+(5, 85, 'Bagaimana pendapat Saudara tentang petugas bengkel dalam memberikan pelayanan........', 'skala_likert'),
+(5, 86, 'Bagaimana pendapat Saudara tentang petugas asrama dalam memberikan pelayanan.........', 'skala_likert'),
+(5, 87, 'Bagaimana pendapat Saudara tentang petugas konsumsi dalam memberikan pelayanan.......', 'skala_likert'),
+(5, 88, 'Bagaimana pendapat Saudara tentang ketersediaan Sarana dan Prasarana di instansi ini.......', 'skala_likert'),
+(5, 89, 'Bagaimana pendapat Saudara tentang kebersihan tempat ibadah (mushola) yang ada di instansi ini.......', 'skala_likert'),
+(5, 90, 'Bagaimana pendapat Saudara tentang kebersihan asrama/ lingkungan asrama........', 'skala_likert'),
+(5, 91, 'Bagaimana pendapat Saudara tentang kebersihan kamar mandi/lingkungan kamar mandi......', 'skala_likert'),
+(5, 92, 'Bagaimana pendapat Saudara tentang kebersihan lingkungan taman dan halaman......', 'skala_likert'),
+(5, 93, 'Bagaimana pendapat Saudara tentang kebersihan bengkel / kelas /lingkungan kelas......', 'skala_likert'),
+(5, 94, 'Bagiamana pendapat Saudara tentang kebersihan ruang makan/ lingkungan ruang makan ......', 'skala_likert'),
+(5, 95, 'Bagaimana pendapat Saudara tentang keamanan pelayanan di instansi ini....', 'skala_likert'),
+(5, 96, 'Pesan Dan Kesan :', 'teks_bebas'),
+(5, 97, 'Bagaimana pendapat Saudara tentang waktu yang disediakan dalam penyelenggaraan pelatihan.', 'skala_likert'),
+(5, 98, 'Bagaimana pendapat Saudara apakah pelatihan ini bermanfaat bagi anda.', 'skala_likert'),
+(5, 99, 'Bagaimana pendapat Saudara tentang ketersediaan bahan-bahan praktek dalam pelaksanaan pelatihan', 'skala_likert'),
+(5, 100, 'Bagaimana pendapat Saudara tentang ketersediaan mesin/peralatan untuk pelatihan.', 'skala_likert'),
+(5, 101, 'Bagaimana pendapat Saudara tentang ketersediaan kondisi mesin/peralatan pelatihan.', 'skala_likert'),
+(5, 102, 'Bagimana pendapat Saudara tentang ketersediaan materi pelatihan', 'skala_likert'),
+(5, 103, 'Berapa persen materi yang anda serap', 'skala_likert'),
+(5, 104, 'Bagaimana menurut anda apakah perlu penambahan materi pelatihan', 'skala_likert'),
+(5, 105, 'Bagaimana menurut anda apakah perlu pengurangan materi pelatihan', 'skala_likert'),
+(5, 106, 'Apakah materi-materi pelatihan sangat mendukung kompetensi anda', 'skala_likert'),
+(5, 107, 'Pesan Dan Kesan :', 'teks_bebas'),
+(5, 108, 'Bagaimana pendapat saudara tentang penguasaan materi/ kompetensi pada proses pembelajaran', 'skala_likert'),
+(5, 109, 'Bagaimana pendapat saudara tentang kedisiplinan/ketepatan waktu Instruktur pada saat pelatihan', 'skala_likert'),
+(5, 110, 'Bagaimana pendapat saudara tentang metode mengajar Instruktur', 'skala_likert'),
+(5, 111, 'bagaimana pendapat saudara tentang sikap dan prilaku instruktur pada saat memberikan pengajaran', 'skala_likert'),
+(5, 112, 'bagaimana pendapat saudara tentang kerapian dalam berpakaian instruktur', 'skala_likert'),
+(5, 113, 'Bagaimana pendapat saudara tentang penggunaan bahasa yang digunakan Instruktur', 'skala_likert'),
+(5, 114, 'bagaimana pendapat saudara tentang instruktur dalam memberikan motivasi pada peserta pelatihan', 'skala_likert'),
+(5, 115, 'Bagaimana pendapat saudara cara instruktur menjawab pertanyaan dari peserta pelatihan', 'skala_likert'),
+(5, 116, 'Pesan dan Kesan', 'teks_bebas');
+
+INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+-- Opsi untuk Pertanyaan 81-87 (Sangat Memuaskan)
+(81, 'Tidak Memuaskan', 0), (81, 'Kurang Memuaskan', 0), (81, 'Memuaskan', 0), (81, 'Sangat Memuaskan', 0),
+(82, 'Tidak Memuaskan', 0), (82, 'Kurang Memuaskan', 0), (82, 'Memuaskan', 0), (82, 'Sangat Memuaskan', 0),
+(83, 'Tidak Memuaskan', 0), (83, 'Kurang Memuaskan', 0), (83, 'Memuaskan', 0), (83, 'Sangat Memuaskan', 0),
+(84, 'Tidak Memuaskan', 0), (84, 'Kurang Memuaskan', 0), (84, 'Memuaskan', 0), (84, 'Sangat Memuaskan', 0),
+(85, 'Tidak Memuaskan', 0), (85, 'Kurang Memuaskan', 0), (85, 'Memuaskan', 0), (85, 'Sangat Memuaskan', 0),
+(86, 'Tidak Memuaskan', 0), (86, 'Kurang Memuaskan', 0), (86, 'Memuaskan', 0), (86, 'Sangat Memuaskan', 0),
+(87, 'Tidak Memuaskan', 0), (87, 'Kurang Memuaskan', 0), (87, 'Memuaskan', 0), (87, 'Sangat Memuaskan', 0),
+(88, 'Tidak Memuaskan', 0), (88, 'Kurang Memuaskan', 0), (88, 'Memuaskan', 0), (88, 'Sangat Memuaskan', 0),
+(89, 'Tidak Memuaskan', 0), (89, 'Kurang Memuaskan', 0), (89, 'Memuaskan', 0), (89, 'Sangat Memuaskan', 0),
+(90, 'Tidak Memuaskan', 0), (90, 'Kurang Memuaskan', 0), (90, 'Memuaskan', 0), (90, 'Sangat Memuaskan', 0),
+(91, 'Tidak Memuaskan', 0), (91, 'Kurang Memuaskan', 0), (91, 'Memuaskan', 0), (91, 'Sangat Memuaskan', 0),
+(92, 'Tidak Memuaskan', 0), (92, 'Kurang Memuaskan', 0), (92, 'Memuaskan', 0), (92, 'Sangat Memuaskan', 0),
+(93, 'Tidak Memuaskan', 0), (93, 'Kurang Memuaskan', 0), (93, 'Memuaskan', 0), (93, 'Sangat Memuaskan', 0),
+(94, 'Tidak Memuaskan', 0), (94, 'Kurang Memuaskan', 0), (94, 'Memuaskan', 0), (94, 'Sangat Memuaskan', 0),
+(95, 'Tidak Memuaskan', 0), (95, 'Kurang Memuaskan', 0), (95, 'Memuaskan', 0), (95, 'Sangat Memuaskan', 0),
+(97, 'Tidak Memuaskan', 0), (97, 'Kurang Memuaskan', 0), (97, 'Memuaskan', 0), (97, 'Sangat Memuaskan', 0),
+-- Opsi untuk Pertanyaan 98 (Sangat Bermanfaat)
+(98, 'Tidak Bermanfaat', 0), (98, 'Kurang Bermanfaat', 0), (98, 'Bermanfaat', 0), (98, 'Sangat Bermanfaat', 0),
+-- Opsi untuk Pertanyaan 99-102 (Sangat Memuaskan)
+(99, 'Tidak Memuaskan', 0), (99, 'Kurang Memuaskan', 0), (99, 'Memuaskan', 0), (99, 'Sangat Memuaskan', 0),
+(100, 'Tidak Memuaskan', 0), (100, 'Kurang Memuaskan', 0), (100, 'Memuaskan', 0), (100, 'Sangat Memuaskan', 0),
+(101, 'Tidak Memuaskan', 0), (101, 'Kurang Memuaskan', 0), (101, 'Memuaskan', 0), (101, 'Sangat Memuaskan', 0),
+(102, 'Tidak Memuaskan', 0), (102, 'Kurang Memuaskan', 0), (102, 'Memuaskan', 0), (102, 'Sangat Memuaskan', 0),
+-- Opsi untuk Pertanyaan 103 (Persentase)
+(103, '25%', 0), (103, '50%', 0), (103, '75%', 0), (103, '100%', 0),
+-- Opsi untuk Pertanyaan 104-105 (Sangat Perlu)
+(104, 'Tidak Perlu', 0), (104, 'Kurang Perlu', 0), (104, 'Perlu', 0), (104, 'Sangat Perlu', 0),
+(105, 'Tidak Perlu', 0), (105, 'Kurang Perlu', 0), (105, 'Perlu', 0), (105, 'Sangat Perlu', 0),
+-- Opsi untuk Pertanyaan 106 (Sangat Mendukung)
+(106, 'Tidak Mendukung', 0), (106, 'Kurang Mendukung', 0), (106, 'Mendukung', 0), (106, 'Sangat Mendukung', 0),
+-- Opsi untuk Pertanyaan 108 (Sangat Memuaskan)
+(108, 'Tidak Memuaskan', 0), (108, 'Kurang Memuaskan', 0), (108, 'Memuaskan', 0), (108, 'Sangat Memuaskan', 0),
+-- Opsi untuk Pertanyaan 109 (Sangat Disiplin)
+(109, 'Tidak Disiplin', 0), (109, 'Kurang Disiplin', 0), (109, 'Disiplin', 0), (109, 'Sangat Disiplin', 0),
+-- Opsi untuk Pertanyaan 110-111 (Sangat Memuaskan)
+(110, 'Tidak Memuaskan', 0), (110, 'Kurang Memuaskan', 0), (110, 'Memuaskan', 0), (110, 'Sangat Memuaskan', 0),
+(111, 'Tidak Memuaskan', 0), (111, 'Kurang Memuaskan', 0), (111, 'Memuaskan', 0), (111, 'Sangat Memuaskan', 0),
+-- Opsi untuk Pertanyaan 112 (Sangat Rapi)
+(112, 'Tidak rapi', 0), (112, 'Kurang Rapi', 0), (112, 'Rapi', 0), (112, 'Sangat Rapi', 0),
+-- Opsi untuk Pertanyaan 113 (Sangat baik)
+(113, 'Tidak baik', 0), (113, 'Kurang baik', 0), (113, 'baik', 0), (113, 'Sangat baik', 0),
+-- Opsi untuk Pertanyaan 114-115 (Sangat Memuaskan)
+(114, 'Tidak Memuaskan', 0), (114, 'Kurang Memuaskan', 0), (114, 'Memuaskan', 0), (114, 'Sangat Memuaskan', 0),
+(115, 'Tidak Memuaskan', 0), (115, 'Kurang Memuaskan', 0), (115, 'Memuaskan', 0), (115, 'Sangat Memuaskan', 0);

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('pertanyaan_id')->constrained('pertanyaans')->onDelete('cascade');
             $table->foreignId('percobaan_id')->constrained('percobaans')->onDelete('cascade');
             $table->tinyInteger('nilai_jawaban')->nullable(); // Untuk skala likert (1-5)
+                $table->text('jawaban_teks')->nullable(); // Untuk jawaban esai / teks bebas
             $table->timestamps();
         });
     }

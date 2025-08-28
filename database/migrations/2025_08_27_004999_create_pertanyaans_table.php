@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('nomor');
             $table->text('teks_pertanyaan');
             $table->string('gambar')->nullable();
-            $table->enum('tipe_jawaban', ['pilihan_ganda', 'skala_likert']);
+$table->enum('tipe_jawaban', ['pilihan_ganda', 'skala_likert', 'teks_bebas']);
             $table->timestamps();
         });
     }
