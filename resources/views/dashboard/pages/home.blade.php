@@ -38,10 +38,14 @@
                class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-center">
                Mulai Post-Test
             </a>
-            <a href="{{ route('dashboard.feedback') }}" 
-               class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-center">
-               Berikan Feedback
+            <a href="{{ route('survey.index') }}"
+               class="inline-block text-blue-600 hover:underline">
+               Survey Evaluasi
             </a>
+            {{-- <a href="{{ route('dashboard.feedback') }}"
+               class="inline-block text-blue-600 hover:underline">
+               Feedback
+            </a> --}}
         </div>
     </div>
 
