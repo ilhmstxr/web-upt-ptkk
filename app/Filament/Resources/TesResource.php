@@ -14,7 +14,7 @@ class TesResource extends Resource
 {
     protected static ?string $model = Kuis::class;
     // Ganti ikon dengan yang pasti ada
-    protected static ?string $navigationIcon = 'heroicon-o-archive';
+    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
     protected static ?string $navigationLabel = 'Tes';
 
     public static function form(Form $form): Form

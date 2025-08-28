@@ -26,7 +26,7 @@ class Pertanyaan extends Model
     }
 
     // Relasi ke opsi jawaban
-    public function opsiJawabans()
+    public function opsiJawaban()
     {
         return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id');
     }
