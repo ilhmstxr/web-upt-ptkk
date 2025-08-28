@@ -16,19 +16,43 @@
             // REVISI: Definisikan "peta emoji" menggunakan teks_opsi sebagai kunci (key).
             // Ini membuat pemetaan menjadi dinamis dan tidak bergantung pada kolom 'nilai'.
             $emojiMap = [
+                // Skala Kepuasan
                 'Sangat Tidak Memuaskan' => '😠',
                 'Tidak Memuaskan' => '😟',
-                'Cukup' => '😐',
+                'Kurang Memuaskan' => '😐',
                 'Memuaskan' => '😊',
                 'Sangat Memuaskan' => '🤩',
-                // Anda bisa menambahkan pemetaan lain di sini jika perlu
+
+                // Skala Manfaat & Kebutuhan & Dukungan
                 'Tidak Bermanfaat' => '👎',
                 'Kurang Bermanfaat' => '🤔',
                 'Bermanfaat' => '👍',
                 'Sangat Bermanfaat' => '🎉',
+                'Tidak Perlu' => '👎',
+                'Kurang Perlu' => '🤔',
+                'Perlu' => '👍',
+                'Sangat Perlu' => '🎉',
+                'Tidak Mendukung' => '👎',
+                'Kurang Mendukung' => '🤔',
+                'Mendukung' => '👍',
+                'Sangat Mendukung' => '🎉',
+
+                // Skala Lainnya (Disiplin, Rapi, Baik)
+                'Tidak Disiplin' => '😟',
+                'Kurang Disiplin' => '😐',
+                'Disiplin' => '😊',
+                'Sangat Disiplin' => '🤩',
+                'Tidak rapi' => '😟',
+                'Kurang Rapi' => '😐',
+                'Rapi' => '😊',
+                'Sangat Rapi' => '🤩',
+                'Tidak baik' => '😟',
+                'Kurang baik' => '😐',
+                'baik' => '😊',
+                'Sangat baik' => '🤩',
             ];
         @endphp
-        <div class="rating-options-container grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <div class="rating-options-container grid grid-cols-2 sm:grid-cols-4 gap-2">
             {{-- Loop tetap menggunakan accessor 'opsiJawabanFinal' --}}
             @foreach ($question->opsiJawabanFinal->sortBy('nilai') as $opsi)
                 <label

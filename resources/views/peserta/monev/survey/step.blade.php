@@ -11,7 +11,7 @@
                 {{-- Judul kuis/section --}}
                 {{ $section->judul }}
             </h2>
-            @if($section->deskripsi)
+            @if ($section->deskripsi)
                 <p class="text-sm text-gray-500 mt-1">{{ $section->deskripsi }}</p>
             @endif
         </div>
@@ -76,11 +76,6 @@
                     @include('peserta.monev.survey.partials.question_card', ['question' => $question])
                 @endforeach
 
-                <h3 class="text-lg font-bold text-indigo-700 mt-8 mb-4">Kesan dan Pesan (Opsional)</h3>
-                <textarea name="comments" rows="4"
-                    class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                    placeholder="Berikan saran atau masukan untuk perbaikan program pelatihan ke depan...">{{ old('comments') }}</textarea>
-
                 {{-- Tombol submit diubah menjadi 'Simpan' atau 'Selesai' --}}
                 <div class="flex justify-end mt-8">
                     <button type="submit"
@@ -110,7 +105,8 @@
 
                     // Hapus kelas 'selected' dari semua pilihan dalam satu grup pertanyaan
                     container.querySelectorAll('.rating-option').forEach(opt => {
-                        opt.classList.remove('selected', 'bg-indigo-100', 'border-indigo-400');
+                        opt.classList.remove('selected', 'bg-indigo-100',
+                            'border-indigo-400');
                         opt.classList.add('bg-gray-50', 'border-gray-200');
                     });
 
