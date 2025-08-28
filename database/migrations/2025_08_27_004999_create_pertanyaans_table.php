@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jawabans', function (Blueprint $table) {
+        Schema::create('pertanyaans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('peserta_id')->constrained('pesertas')->onDelete('cascade');
-            $table->foreignId('pertanyaan_id')->constrained()->onDelete('cascade');
-            $table->tinyInteger('value'); // 1-5
+            $table->foreignId('kuis_id')->constrained('kuis')->onDelete('cascade');
+            $table->integer('nomor');
+            $table->text('teks_pertanyaan');
+            $table->string('gambar')->nullable();
+            $table->enum('tipe_jawaban', ['pilihan_ganda', 'skala_likert', 'teks_bebas']);
             $table->timestamps();
-
-            $table->unique(['peserta_id', 'pertanyaan_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jawabans');
+        Schema::dropIfExists('pertanyaans');
     }
 };

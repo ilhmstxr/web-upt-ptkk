@@ -61,7 +61,7 @@ class Peserta extends Model
 
     public function lampiranFolder(): string
     {
-        return 'lampiran/' . String::slug($this->nama); // folder storage/app/public/lampiran/{nama}
+        return 'lampiran/' . Str::slug($this->nama); // folder storage/app/public/lampiran/{nama}
     }
 
     public function lampirans(): array

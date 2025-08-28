@@ -26,7 +26,6 @@ use Filament\Tables\Actions\BulkAction;
 class PesertaResource extends Resource
 {
     protected static ?string $model = Peserta::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Pendaftaran';
 
@@ -96,6 +95,7 @@ class PesertaResource extends Resource
                 Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
                 Tables\Columns\TextColumn::make('jenis_kelamin')->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
                 // tambahan kamar & bed
                 Tables\Columns\TextColumn::make('kamar_virtual')
@@ -117,7 +117,6 @@ class PesertaResource extends Resource
                     ->label('Atur Jumlah Kamar & Bed')
                     ->form(function () {
                         $kamars = session('kamars') ?? config('kamar');
-
                         return [
                             Forms\Components\Repeater::make('kamars')
                                 ->label('Daftar Asrama & Kamar')
@@ -157,7 +156,6 @@ class PesertaResource extends Resource
                                 ->toArray()
                         ]);
                     }),
-
                 FilamentExportHeaderAction::make('export'),
             ])
             ->actions([
@@ -305,7 +303,6 @@ class PesertaResource extends Resource
             return self::assignKamar($p) === $blok . ' - No.' . $no;
         })->values();
 
-        // Cari index peserta di kamar tersebut
         $indexInRoom = $pesertaInRoom->search(fn ($p) => $p->id === $record->id);
 
         if ($indexInRoom === false || $indexInRoom >= $capacity) {
