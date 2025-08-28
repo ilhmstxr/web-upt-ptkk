@@ -6,26 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        if (!Schema::hasTable('percobaans')) {
-            Schema::create('percobaans', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
-                $table->foreignId('tes_id')->constrained('tes')->cascadeOnDelete();
-                $table->timestamp('waktu_mulai');
-                $table->timestamp('waktu_selesai')->nullable();
-                $table->decimal('skor', 5, 2)->nullable();
-                $table->text('pesan_kesan')->nullable();
-                $table->timestamps();
-            });
-        }
+        Schema::create('percobaans', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
+            $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
+            $table->timestamp('waktu_mulai');
+            $table->timestamp('waktu_selesai')->nullable();
+            $table->decimal('skor', 5, 2)->nullable(); // 5 digit total, 2 di belakang koma
+            $table->text('pesan_kesan')->nullable(); // 5 digit total, 2 di belakang koma
+            $table->timestamps();
+        });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        if (Schema::hasTable('percobaans')) {
-            Schema::dropIfExists('percobaans');
-        }
+        Schema::dropIfExists('percobaans');
     }
 };

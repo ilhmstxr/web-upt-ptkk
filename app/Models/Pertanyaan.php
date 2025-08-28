@@ -25,13 +25,13 @@ class Pertanyaan extends Model
         return $this->belongsTo(Tes::class, 'tes_id');
     }
 
-    // Relasi ke opsi jawaban
-    public function opsiJawaban()
+    // Relasi ke Opsi Jawaban (plural karena hasMany)
+    public function opsiJawabans()
     {
-        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id');
+        return $this->hasMany(OpsiJawabans::class, 'pertanyaan_id');
     }
 
-    // Relasi ke jawaban user
+    // Relasi ke Jawaban User
     public function jawabanUsers()
     {
         return $this->hasMany(JawabanUser::class, 'pertanyaan_id');

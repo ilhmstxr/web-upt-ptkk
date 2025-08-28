@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OpsiJawaban;
+use App\Models\OpsiJawabans;
 use Illuminate\Http\Request;
 
 class OpsiJawabanController extends Controller
@@ -22,22 +22,22 @@ class OpsiJawabanController extends Controller
         //
     }
 
-    public function show(OpsiJawaban $opsiJawaban)
+    public function show(OpsiJawabans $opsiJawabans)
     {
         //
     }
 
-    public function edit(OpsiJawaban $opsiJawaban)
+    public function edit(OpsiJawabans $opsiJawabans)
     {
         //
     }
 
-    public function update(Request $request, OpsiJawaban $opsiJawaban)
+    public function update(Request $request, OpsiJawabans $opsiJawabans)
     {
         //
     }
 
-    public function destroy(OpsiJawaban $opsiJawaban)
+    public function destroy(OpsiJawabans $opsiJawabans)
     {
         //
     }

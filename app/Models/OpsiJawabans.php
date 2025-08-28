@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OpsiJawaban extends Model
+class OpsiJawabans extends Model
 {
     use HasFactory;
 
-    protected $table = 'opsi_jawaban';
+    protected $table = 'opsi_jawabans';
 
     protected $fillable = [
         'pertanyaan_id',
@@ -25,7 +25,7 @@ class OpsiJawaban extends Model
 
     public function jawabanUsers()
     {
-        return $this->hasMany(JawabanUser::class, 'opsi_jawaban_id');
+        return $this->hasMany(JawabanUser::class, 'opsi_jawabans_id');
     }
 
     // Accessor gambar

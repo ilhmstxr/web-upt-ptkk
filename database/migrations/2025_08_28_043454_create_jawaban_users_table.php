@@ -6,24 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        if (!Schema::hasTable('jawaban_users')) {
-            Schema::create('jawaban_users', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('opsi_jawaban_id')->nullable()->constrained('opsi_jawaban')->cascadeOnDelete();
-                $table->foreignId('pertanyaan_id')->constrained('pertanyaans')->cascadeOnDelete();
-                $table->foreignId('percobaan_id')->constrained('percobaans')->cascadeOnDelete();
-                $table->unsignedTinyInteger('nilai_jawaban')->nullable();
-                $table->timestamps();
-            });
-        }
+        Schema::create('jawaban_users', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('opsi_jawabans_id')->nullable()->constrained('opsi_jawabans')->onDelete('cascade');
+            $table->foreignId('pertanyaan_id')->constrained('pertanyaans')->onDelete('cascade');
+            $table->foreignId('percobaan_id')->constrained('percobaans')->onDelete('cascade');
+            $table->tinyInteger('nilai_jawaban')->nullable(); // Untuk skala likert (1-5)
+                $table->text('jawaban_teks')->nullable(); // Untuk jawaban esai / teks bebas
+            $table->timestamps();
+        });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        if (Schema::hasTable('jawaban_users')) {
-            Schema::dropIfExists('jawaban_users');
-        }
+        Schema::dropIfExists('jawaban_users');
     }
 };

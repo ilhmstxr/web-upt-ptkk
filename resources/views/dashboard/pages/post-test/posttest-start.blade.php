@@ -17,7 +17,7 @@
             @endif
 
             <div class="space-y-2 mb-4">
-                @foreach($pertanyaan->opsiJawaban as $opsi)
+                @foreach($pertanyaan->opsiJawabans as $opsi)
                     <label class="block p-2 border rounded hover:bg-gray-100 cursor-pointer">
                         <input type="radio" name="jawaban[{{ $pertanyaan->id }}]" value="{{ $opsi->id }}" class="mr-2">
                         @if($opsi->gambar)

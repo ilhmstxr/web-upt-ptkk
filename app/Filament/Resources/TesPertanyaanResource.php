@@ -44,8 +44,8 @@ class TesPertanyaanResource extends Resource
 
             Forms\Components\FileUpload::make('gambar')->image(),
 
-            Forms\Components\Repeater::make('opsi_jawaban')
-                ->relationship('opsiJawaban')
+            Forms\Components\Repeater::make('opsi_jawabans')
+                ->relationship('opsiJawabans')
                 ->schema([
                     Forms\Components\Textarea::make('teks_opsi')->required(),
                     Forms\Components\FileUpload::make('gambar')->image(),

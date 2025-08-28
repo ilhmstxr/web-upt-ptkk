@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Tes;
-use App\Models\Percobaan; // model percobaan jawaban peserta
+use App\Models\Percobaan;
+use App\Models\JawabanUser;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -12,107 +13,114 @@ class DashboardController extends Controller
     // ======================
     // HOME & PROFILE
     // ======================
-    public function home()
-    {
+    public function home() {
         return view('dashboard.pages.home');
     }
 
-    public function profile()
-    {
+    public function profile() {
         return view('dashboard.pages.profile');
     }
 
-    public function materi()
-    {
+    public function materi() {
         return view('dashboard.pages.materi');
     }
 
-    public function materiShow($materi)
-    {
+    public function materiShow($materi) {
         return view('dashboard.pages.materi-show', compact('materi'));
     }
 
     // ======================
     // PRE-TEST
     // ======================
-    public function pretest()
-    {
-        $tes = Tes::all(); // ambil semua pre-test
+    public function pretest() {
+        $tes = Tes::all();
         return view('dashboard.pages.pre-test.pretest', compact('tes'));
     }
 
-    public function pretestShow(Tes $tes)
-    {
-        // periksa apakah peserta sudah pernah mencoba tes ini
-        $percobaan = Percobaan::where('peserta_id', Auth::id())
-                               ->where('tes_id', $tes->id)
-                               ->first();
+    public function pretestShow(Tes $tes) {
+        $userId = Auth::id();
 
-        return view('dashboard.pages.pre-test.pretest-start', compact('tes', 'percobaan'));
+        // Ambil atau buat percobaan
+        $percobaan = Percobaan::firstOrCreate(
+            ['peserta_id' => $userId, 'tes_id' => $tes->id],
+            ['waktu_mulai' => now()]
+        );
+
+        // Ambil pertanyaan yang belum dijawab
+        $pertanyaan = $tes->pertanyaans()
+            ->whereDoesntHave('jawabanUsers', fn($q) => $q->where('percobaan_id', $percobaan->id))
+            ->first();
+
+        return view('dashboard.pages.pre-test.pretest-start', compact('tes', 'pertanyaan', 'percobaan'));
     }
 
-    public function pretestSubmit(Request $request, Tes $tes)
-    {
-        $percobaan = Percobaan::create([
-            'peserta_id' => Auth::id(),
-            'tes_id' => $tes->id,
-            'jawaban' => json_encode($request->jawaban),
-            'waktu_mulai' => now(),
-        ]);
+    public function pretestSubmit(Request $request, Percobaan $percobaan) {
+        foreach ($request->jawaban as $pertanyaanId => $opsiId) {
+            JawabanUser::updateOrCreate(
+                [
+                    'percobaan_id' => $percobaan->id,
+                    'pertanyaan_id' => $pertanyaanId,
+                ],
+                ['opsi_jawabans_id' => $opsiId]
+            );
+        }
 
-        return redirect()->route('dashboard.pretest.result', $percobaan->id);
+        return redirect()->route('dashboard.pretestShow', $percobaan->tes_id);
     }
 
-    public function pretestResult(Percobaan $percobaan)
-    {
+    public function pretestResult(Percobaan $percobaan) {
         return view('dashboard.pages.pre-test.pretest-result', compact('percobaan'));
     }
 
     // ======================
     // POST-TEST
     // ======================
-    public function posttest()
-    {
-        $tes = Tes::all(); // ambil semua post-test
+    public function posttest() {
+        $tes = Tes::all();
         return view('dashboard.pages.post-test.posttest', compact('tes'));
     }
 
-    public function posttestShow(Tes $tes)
-    {
-        $percobaan = Percobaan::where('peserta_id', Auth::id())
-                               ->where('tes_id', $tes->id)
-                               ->first();
+    public function posttestShow(Tes $tes) {
+        $userId = Auth::id();
 
-        return view('dashboard.pages.post-test.posttest-start', compact('tes', 'percobaan'));
+        $percobaan = Percobaan::firstOrCreate(
+            ['peserta_id' => $userId, 'tes_id' => $tes->id],
+            ['waktu_mulai' => now()]
+        );
+
+        $pertanyaan = $tes->pertanyaans()
+            ->whereDoesntHave('jawabanUsers', fn($q) => $q->where('percobaan_id', $percobaan->id))
+            ->first();
+
+        return view('dashboard.pages.post-test.posttest-start', compact('tes', 'pertanyaan', 'percobaan'));
     }
 
-    public function posttestSubmit(Request $request, Tes $tes)
-    {
-        $percobaan = Percobaan::create([
-            'peserta_id' => Auth::id(),
-            'tes_id' => $tes->id,
-            'jawaban' => json_encode($request->jawaban),
-            'waktu_mulai' => now(),
-        ]);
+    public function posttestSubmit(Request $request, Percobaan $percobaan) {
+        foreach ($request->jawaban as $pertanyaanId => $opsiId) {
+            JawabanUser::updateOrCreate(
+                [
+                    'percobaan_id' => $percobaan->id,
+                    'pertanyaan_id' => $pertanyaanId,
+                ],
+                ['opsi_jawabans_id' => $opsiId]
+            );
+        }
 
-        return redirect()->route('dashboard.posttest.result', $percobaan->id);
+        return redirect()->route('dashboard.posttestShow', $percobaan->tes_id);
     }
 
-    public function posttestResult(Percobaan $percobaan)
-    {
+    public function posttestResult(Percobaan $percobaan) {
         return view('dashboard.pages.post-test.posttest-result', compact('percobaan'));
     }
 
     // ======================
     // FEEDBACK
     // ======================
-    public function feedback()
-    {
+    public function feedback() {
         return view('dashboard.pages.feedback');
     }
 
-    public function feedbackSubmit(Request $request)
-    {
+    public function feedbackSubmit(Request $request) {
         return redirect()->route('dashboard.feedback')->with('success', 'Feedback berhasil dikirim!');
     }
 }

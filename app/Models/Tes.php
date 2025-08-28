@@ -9,7 +9,7 @@ class Tes extends Model
 {
     use HasFactory;
 
-    protected $table = 'tes'; // biar jelas
+    protected $table = 'tes';
 
     protected $fillable = [
         'judul',
@@ -33,9 +33,18 @@ class Tes extends Model
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
-    // Relasi ke Pertanyaan (kalau ada pivot table tes_pertanyaan / tes_pertanyaan)
+    // Relasi ke Pertanyaan
+    // Kalau tiap pertanyaan punya kolom tes_id, pakai hasMany
+    public function pertanyaans()
+    {
+        return $this->hasMany(Pertanyaan::class, 'tes_id');
+    }
+
+    // Jika kamu memang pakai pivot table tes_pertanyaan, gunakan ini:
+    /*
     public function pertanyaans()
     {
         return $this->belongsToMany(Pertanyaan::class, 'tes_pertanyaan', 'tes_id', 'pertanyaan_id');
     }
+    */
 }

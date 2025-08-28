@@ -8,34 +8,39 @@
     @if(isset($pertanyaan))
         <form action="{{ route('dashboard.pretest.submit', $percobaan->id) }}" method="POST">
             @csrf
+
             {{-- Nomor & teks pertanyaan --}}
             <p class="text-gray-700 mb-4">
-                {{ $pertanyaan->nomor }}. {{ $pertanyaan->teks_pertanyaan }}
+                {{ $pertanyaan->nomor ?? '?' }}. {{ $pertanyaan->teks_pertanyaan ?? '-' }}
             </p>
 
             {{-- Gambar pertanyaan jika ada --}}
-            @if($pertanyaan->gambar)
+            @if(!empty($pertanyaan->gambar))
                 <img src="{{ asset('storage/'.$pertanyaan->gambar) }}" class="mb-4 rounded shadow">
             @endif
 
             {{-- Opsi jawaban --}}
             <div class="space-y-2 mb-4">
-                @foreach($pertanyaan->opsiJawaban as $opsi)
-                    <label class="block p-2 border rounded hover:bg-gray-100 cursor-pointer">
-                        <input type="radio" name="jawaban[{{ $pertanyaan->id }}]" value="{{ $opsi->id }}" class="mr-2" required>
-                        
-                        {{-- Gambar opsi jika ada --}}
-                        @if($opsi->gambar)
-                            <img src="{{ asset('storage/'.$opsi->gambar) }}" class="inline-block w-12 h-12 mr-2 rounded">
-                        @endif
+                @if($pertanyaan->opsiJawabans && $pertanyaan->opsiJawabans->count() > 0)
+                    @foreach($pertanyaan->opsiJawabans as $opsi)
+                        <label class="block p-2 border rounded hover:bg-gray-100 cursor-pointer">
+                            <input type="radio" name="jawaban[{{ $pertanyaan->id }}]" value="{{ $opsi->id }}" class="mr-2" required>
+                            
+                            {{-- Gambar opsi jika ada --}}
+                            @if(!empty($opsi->gambar))
+                                <img src="{{ asset('storage/'.$opsi->gambar) }}" class="inline-block w-12 h-12 mr-2 rounded">
+                            @endif
 
-                        {{ $opsi->teks_opsi }}
-                    </label>
-                @endforeach
+                            {{ $opsi->teks_opsi ?? '-' }}
+                        </label>
+                    @endforeach
+                @else
+                    <p class="text-red-500">Belum ada opsi jawaban untuk pertanyaan ini.</p>
+                @endif
             </div>
 
             {{-- Hidden input untuk tracking pertanyaan saat submit --}}
-            <input type="hidden" name="current_question_id" value="{{ $pertanyaan->id }}">
+            <input type="hidden" name="current_question_id" value="{{ $pertanyaan->id ?? 0 }}">
 
             {{-- Tombol submit --}}
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
@@ -45,7 +50,7 @@
     @else
         {{-- Jika semua soal selesai --}}
         <p class="text-gray-500">Semua soal telah selesai.</p>
-        <a href="{{ route('dashboard.pretest.result', $percobaan->id) }}" 
+        <a href="{{ route('dashboard.pretest.result', $percobaan->id ?? 0) }}" 
            class="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
            Lihat Hasil
         </a>

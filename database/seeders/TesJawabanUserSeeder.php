@@ -10,8 +10,8 @@ class TesJawabanUserSeeder extends Seeder
     public function run(): void
     {
         JawabanUser::insert([
-            ['percobaan_tes_id' => 1, 'pertanyaan_id' => 1, 'opsi_jawaban_id' => 1],
-            ['percobaan_tes_id' => 1, 'pertanyaan_id' => 2, 'opsi_jawaban_id' => 3],
+            ['percobaan_tes_id' => 1, 'pertanyaan_id' => 1, 'opsi_jawabans_id' => 1],
+            ['percobaan_tes_id' => 1, 'pertanyaan_id' => 2, 'opsi_jawabans_id' => 3],
         ]);
     }
 }

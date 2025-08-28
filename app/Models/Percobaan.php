@@ -41,7 +41,7 @@ class Percobaan extends Model
     // Hitung jumlah jawaban benar untuk percobaan ini
     public function hitungSkor()
     {
-        return $this->jawabanUsers()->whereHas('opsiJawaban', function($q) {
+        return $this->jawabanUsers()->whereHas('opsiJawabans', function($q) {
             $q->where('apakah_benar', true);
         })->count();
     }

@@ -12,7 +12,7 @@ class JawabanUser extends Model
     protected $table = 'jawaban_users';
 
     protected $fillable = [
-        'opsi_jawaban_id',
+        'opsi_jawabans_id',
         'pertanyaan_id',
         'percobaan_id',
         'nilai_jawaban',
@@ -28,8 +28,8 @@ class JawabanUser extends Model
         return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
     }
 
-    public function opsiJawaban()
+    public function opsiJawabans()
     {
-        return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id');
+        return $this->belongsTo(OpsiJawabans::class, 'opsi_jawabans_id');
     }
 }
