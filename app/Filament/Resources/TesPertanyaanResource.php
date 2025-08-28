@@ -19,41 +19,59 @@ class TesPertanyaanResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            // Pilih Tes dulu, reaktif supaya field nomor tahu tes yang dipilih
+            // Field Tes di atas container pertanyaan
             Forms\Components\Select::make('tes_id')
                 ->relationship('tes', 'judul')
                 ->label('Tes')
                 ->required()
-                ->reactive(), // <--- penting
+                ->reactive(),
 
-            // Nomor pertanyaan otomatis bertambah berdasarkan tes yang dipilih
-            Forms\Components\TextInput::make('nomor')
-                ->label('Nomor Pertanyaan')
-                ->default(function (\Filament\Forms\Get $get) {
-                    $tesId = $get('tes_id');
-                    if (!$tesId) {
-                        return 1; // default kalau tes belum dipilih
-                    }
-                    $nomorTerakhir = Pertanyaan::where('tes_id', $tesId)->max('nomor') ?? 0;
-                    return $nomorTerakhir + 1;
-                })
-                ->numeric()
-                ->required(),
-
-            Forms\Components\Textarea::make('teks_pertanyaan')->required(),
-
-            Forms\Components\FileUpload::make('gambar')->image(),
-
-            Forms\Components\Repeater::make('opsi_jawabans')
-                ->relationship('opsiJawabans')
+            // Container Daftar Pertanyaan
+            Forms\Components\Card::make()
                 ->schema([
-                    Forms\Components\Textarea::make('teks_opsi')->required(),
-                    Forms\Components\FileUpload::make('gambar')->image(),
-                    Forms\Components\Toggle::make('apakah_benar')->label('Benar?')->default(false),
+                    Forms\Components\Repeater::make('pertanyaan_list')
+                        ->label('Daftar Pertanyaan')
+                        ->schema([
+                            // Nomor pertanyaan otomatis
+                            Forms\Components\TextInput::make('nomor')
+                                ->label('Nomor Pertanyaan')
+                                ->default(function (\Filament\Forms\Get $get) {
+                                    $tesId = $get('tes_id');
+                                    if (!$tesId) {
+                                        return 1;
+                                    }
+                                    $nomorTerakhir = Pertanyaan::where('tes_id', $tesId)->max('nomor') ?? 0;
+                                    return $nomorTerakhir + 1;
+                                })
+                                ->numeric()
+                                ->required(),
+
+                            // Teks pertanyaan
+                            Forms\Components\Textarea::make('teks_pertanyaan')
+                                ->label('Pertanyaan')
+                                ->required(),
+
+                            // Upload gambar opsional
+                            Forms\Components\FileUpload::make('gambar')
+                                ->label('Gambar Pertanyaan')
+                                ->image(),
+
+                            // Nested Repeater untuk opsi jawaban
+                            Forms\Components\Repeater::make('opsi_jawabans')
+                                ->relationship('opsiJawabans')
+                                ->schema([
+                                    Forms\Components\Textarea::make('teks_opsi')->required(),
+                                    Forms\Components\FileUpload::make('gambar')->image(),
+                                    Forms\Components\Toggle::make('apakah_benar')->label('Benar?')->default(false),
+                                ])
+                                ->columns(2)
+                                ->defaultItems(4)
+                                ->label('Opsi Jawaban'),
+                        ])
+                        ->createItemButtonLabel('Tambah Soal')
+                        ->columns(1),
                 ])
-                ->columns(2)
-                ->defaultItems(4)
-                ->required(),
+                ->columns(1),
         ]);
     }
 
