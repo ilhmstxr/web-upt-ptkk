@@ -18,17 +18,19 @@ class OpsiJawabans extends Model
         'apakah_benar',
     ];
 
+    // Relasi ke Pertanyaan
     public function pertanyaan()
     {
         return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
     }
 
+    // Relasi ke JawabanUser
     public function jawabanUser()
     {
         return $this->hasMany(JawabanUser::class, 'opsi_jawabans_id');
     }
 
-    // Accessor gambar
+    // Accessor untuk URL gambar
     public function getGambarUrlAttribute()
     {
         return $this->gambar ? asset('storage/' . $this->gambar) : null;
