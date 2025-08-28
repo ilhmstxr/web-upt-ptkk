@@ -32,16 +32,16 @@ class Percobaan extends Model
         return $this->belongsTo(Tes::class, 'tes_id');
     }
 
-    // Relasi ke jawaban user
-    public function jawabanUsers()
+    // Relasi ke jawaban user (konsisten dengan controller)
+    public function jawabanUser()
     {
         return $this->hasMany(JawabanUser::class, 'percobaan_id');
     }
 
-    // Hitung jumlah jawaban benar untuk percobaan ini
+    // Hitung jumlah jawaban benar
     public function hitungSkor()
     {
-        return $this->jawabanUsers()->whereHas('opsiJawabans', function($q) {
+        return $this->jawabanUser()->whereHas('opsiJawabans', function($q) {
             $q->where('apakah_benar', true);
         })->count();
     }
@@ -49,7 +49,7 @@ class Percobaan extends Model
     // Hitung skor dalam persen
     public function hitungSkorPersen()
     {
-        $total = $this->jawabanUsers()->count();
+        $total = $this->jawabanUser()->count();
         if ($total == 0) return 0;
         return round($this->hitungSkor() / $total * 100, 2);
     }

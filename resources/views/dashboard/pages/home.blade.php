@@ -22,7 +22,7 @@
         <span class="absolute top-4 right-4 bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-1 rounded-full">Wajib</span>
         <h3 class="font-semibold text-xl mb-2">Pre-Test</h3>
         <p class="text-gray-600">Cek kesiapanmu sebelum mengikuti materi agar hasil maksimal.</p>
-        <a href="{{ route('dashboard.pretest') }}" 
+        <a href="{{ route('dashboard.pretest.index') }}" 
            class="mt-4 inline-block px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">
            Kerjakan Pre-Test
         </a>
@@ -34,7 +34,7 @@
         <h3 class="font-semibold text-xl mb-2">Post-Test & Feedback</h3>
         <p class="text-gray-600">Evaluasi hasil belajarmu dan berikan feedback untuk peningkatan materi.</p>
         <div class="mt-4 flex flex-col space-y-2">
-            <a href="{{ route('dashboard.posttest') }}" 
+            <a href="{{ route('dashboard.posttest.index') }}" 
                class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-center">
                Mulai Post-Test
             </a>

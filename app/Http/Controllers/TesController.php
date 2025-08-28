@@ -25,9 +25,11 @@ class TesController extends Controller
      */
     public function show(Tes $tes, Request $request)
     {
+        $userId = Auth::id();
+
         $percobaan = Percobaan::firstOrCreate(
             [
-                'peserta_id' => Auth::id(),
+                'peserta_id' => $userId,
                 'tes_id' => $tes->id,
             ],
             [
@@ -35,12 +37,10 @@ class TesController extends Controller
             ]
         );
 
-        // Ambil semua pertanyaan beserta opsi jawaban
         $pertanyaanList = $tes->pertanyaans()->with('opsiJawabans')->get();
 
-        // Tentukan pertanyaan saat ini (default: 0)
-        $currentQuestion = (int) $request->query('q', 0);
-        $pertanyaan = $pertanyaanList->get($currentQuestion);
+        $currentQuestionIndex = (int) $request->query('q', 0);
+        $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
         return view('tes.show', compact(
             'tes',
@@ -54,15 +54,17 @@ class TesController extends Controller
     /**
      * Menyimpan jawaban user dan hitung skor jika selesai.
      */
-    public function submit(Request $request, Tes $tes)
+    public function submit(Request $request, Percobaan $percobaan)
     {
-        $percobaan = Percobaan::where('peserta_id', Auth::id())
-            ->where('tes_id', $tes->id)
-            ->firstOrFail();
+        $userId = Auth::id();
 
-        $jawaban = $request->input('jawaban', []); // ['pertanyaan_id' => 'opsi_jawabans_id']
+        // Pastikan percobaan milik user
+        if ($percobaan->peserta_id != $userId) {
+            abort(403, 'Unauthorized');
+        }
 
-        // Simpan jawaban user
+        $jawaban = $request->input('jawaban', []);
+
         foreach ($jawaban as $pertanyaan_id => $opsi_jawabans_id) {
             JawabanUser::updateOrCreate(
                 [
@@ -70,17 +72,17 @@ class TesController extends Controller
                     'pertanyaan_id' => $pertanyaan_id,
                 ],
                 [
-                    'opsi_jawabans_id' => $opsi_jawabans_id, // nama kolom diperbaiki
+                    'opsi_jawabans_id' => $opsi_jawabans_id,
                 ]
             );
         }
 
         // Ambil semua pertanyaan
-        $pertanyaanList = $tes->pertanyaans()->get();
+        $pertanyaanList = $percobaan->tes->pertanyaans()->get();
         $total = $pertanyaanList->count();
 
-        $currentQuestion = (int) $request->query('q', 0);
-        $nextQuestion = $currentQuestion + 1;
+        $currentQuestionIndex = (int) $request->query('q', 0);
+        $nextQuestion = $currentQuestionIndex + 1;
 
         if ($nextQuestion >= $total) {
             // Semua soal selesai, hitung skor
@@ -92,7 +94,7 @@ class TesController extends Controller
         }
 
         // Lanjut ke pertanyaan berikutnya
-        return redirect()->route('tes.show', ['tes' => $tes->id, 'q' => $nextQuestion]);
+        return redirect()->route('tes.show', ['tes' => $percobaan->tes_id, 'q' => $nextQuestion]);
     }
 
     /**
@@ -100,6 +102,11 @@ class TesController extends Controller
      */
     public function result(Percobaan $percobaan)
     {
+        // Pastikan percobaan milik user
+        if ($percobaan->peserta_id != Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
+
         return view('tes.result', compact('percobaan'));
     }
 
@@ -113,7 +120,6 @@ class TesController extends Controller
 
         if ($total === 0) return 0;
 
-        // 'apakah_benar' sesuai kolom di tabel opsi_jawaban
         $benar = $jawabanUser->filter(fn($j) => $j->opsiJawabans->apakah_benar)->count();
 
         return round(($benar / $total) * 100);

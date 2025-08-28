@@ -23,7 +23,7 @@ class OpsiJawabans extends Model
         return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
     }
 
-    public function jawabanUsers()
+    public function jawabanUser()
     {
         return $this->hasMany(JawabanUser::class, 'opsi_jawabans_id');
     }

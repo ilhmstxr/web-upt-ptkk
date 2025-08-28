@@ -35,7 +35,6 @@
             transform: translateY(10px);
             z-index: 10;
         }
-
         .error-popup.visible {
             opacity: 1;
             visibility: visible;
@@ -45,27 +44,20 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
-    {{-- Jika halaman pendaftaran --}}
     @isset($isPendaftaran)
+        {{-- Halaman Pendaftaran --}}
         <div class="container mx-auto p-4 sm:p-6 lg:p-8">
             <header class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm mb-8">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 overflow-hidden rounded-full flex-shrink-0">
-                        <img src="{{ asset('../images/logo-upt-ptkk.png') }}" alt="Logo UPT PTKK"
-                            class="w-full h-full object-cover"
-                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="w-full h-full bg-blue-600 text-white font-bold text-sm items-center justify-center text-center leading-tight hidden">
-                            UPT<br>PTKK
-                        </div>
+                    <div class="w-14 h-14 overflow-hidden rounded-full flex-shrink-0 flex items-center justify-center bg-blue-600 text-white font-bold text-sm">
+                        <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt="Logo UPT PTKK" class="w-full h-full object-cover"
+                             onerror="this.style.display='none'; this.parentElement.style.display='flex';">
+                        <span class="hidden">UPT PTKK</span>
                     </div>
-                    <h1 class="text-lg md:text-xl font-bold text-slate-900">
-                        UPT PTKK Dinas Pendidikan Jawa Timur
-                    </h1>
+                    <h1 class="text-lg md:text-xl font-bold text-slate-900">UPT PTKK Dinas Pendidikan Jawa Timur</h1>
                 </div>
                 <a href="#" title="Tutup Pendaftaran"
-                    class="w-9 h-9 flex items-center justify-center bg-red-100 rounded-full text-red-600 font-bold text-2xl transition-all duration-300 hover:bg-red-200 hover:rotate-90">
-                    ×
-                </a>
+                   class="w-9 h-9 flex items-center justify-center bg-red-100 rounded-full text-red-600 font-bold text-2xl transition-all duration-300 hover:bg-red-200 hover:rotate-90">×</a>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -80,19 +72,13 @@
                         <div class="relative space-y-4">
                             <div class="absolute left-4 top-4 bottom-4 w-0.5 bg-sky-200"></div>
 
-                            @foreach ([
-                                1 => 'Biodata Diri',
-                                2 => 'Biodata Sekolah',
-                                3 => 'Lampiran'
-                            ] as $step => $label)
+                            @foreach ([1 => 'Biodata Diri', 2 => 'Biodata Sekolah', 3 => 'Lampiran'] as $step => $label)
                                 <a href="{{ $allowedStep >= $step ? route('pendaftaran.create', ['step' => $step]) : '#' }}" 
                                    class="flex items-center gap-4 relative {{ $allowedStep < $step ? 'pointer-events-none opacity-50' : '' }}">
                                     <div class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors {{ $currentStep >= $step ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600' }}">
                                         {!! $allowedStep > $step ? '&#10003;' : $step !!}
                                     </div>
-                                    <span class="font-semibold transition-colors {{ $currentStep == $step ? 'text-blue-700' : 'text-slate-800' }}">
-                                        {{ $label }}
-                                    </span>
+                                    <span class="font-semibold transition-colors {{ $currentStep == $step ? 'text-blue-700' : 'text-slate-800' }}">{{ $label }}</span>
                                 </a>
                             @endforeach
                         </div>
@@ -106,9 +92,8 @@
             </div>
         </div>
 
-    {{-- Jika halaman dashboard --}}
     @else
-        {{-- SIDEBAR DASHBOARD --}}
+        {{-- Halaman Dashboard --}}
         <aside class="w-64 bg-white shadow-md h-screen sticky top-0 flex flex-col">
             <div class="p-6 flex flex-col items-center border-b border-gray-200">
                 <img src="https://placehold.co/80x80/5c76c1/fff?text=Logo" class="rounded-full mb-2">
@@ -124,35 +109,29 @@
             </nav>
         </aside>
 
-        {{-- MAIN DASHBOARD CONTENT --}}
         <main class="flex-1 p-6 overflow-auto">
             <header class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">@yield('page-title')</h1>
                 <div class="flex items-center space-x-4">
-                    <span class="text-gray-600">
-                        Hai, {{ Auth::check() ? Auth::user()->name : 'Peserta' }}
-                    </span>
-                    @if(Auth::check())
+                    <span class="text-gray-600">Hai, {{ Auth::check() ? Auth::user()->name : 'Peserta' }}</span>
+                    @auth
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">Logout</button>
                         </form>
-                    @endif
+                    @endauth
                 </div>
             </header>
 
+            {{-- Flash Message --}}
             @if(session('success'))
-                <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
-                    {{ session('success') }}
-                </div>
+                <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
             @endif
-
             @if(session('error'))
-                <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">
-                    {{ session('error') }}
-                </div>
+                <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">{{ session('error') }}</div>
             @endif
 
+            {{-- Konten Dashboard --}}
             <div class="space-y-6 fade-in">
                 @yield('content')
             </div>

@@ -13,12 +13,33 @@ return new class extends Migration
     {
         Schema::create('jawaban_users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('opsi_jawabans_id')->nullable()->constrained('opsi_jawabans')->onDelete('cascade');
-            $table->foreignId('pertanyaan_id')->constrained('pertanyaans')->onDelete('cascade');
-            $table->foreignId('percobaan_id')->constrained('percobaans')->onDelete('cascade');
-            $table->tinyInteger('nilai_jawaban')->nullable(); // Untuk skala likert (1-5)
-                $table->text('jawaban_teks')->nullable(); // Untuk jawaban esai / teks bebas
+
+            // Jawaban pilihan ganda (nullable karena bisa tidak ada)
+            $table->foreignId('opsi_jawabans_id')
+                ->nullable()
+                ->constrained('opsi_jawabans')
+                ->onDelete('cascade');
+
+            // Pertanyaan terkait
+            $table->foreignId('pertanyaan_id')
+                ->constrained('pertanyaans')
+                ->onDelete('cascade');
+
+            // Percobaan terkait
+            $table->foreignId('percobaan_id')
+                ->constrained('percobaans')
+                ->onDelete('cascade');
+
+            // Nilai untuk skala likert (1-5), nullable
+            $table->tinyInteger('nilai_jawaban')->nullable();
+
+            // Jawaban esai / teks bebas
+            $table->text('jawaban_teks')->nullable();
+
             $table->timestamps();
+
+            // Index untuk performa query filter dan join
+            $table->index(['percobaan_id', 'pertanyaan_id']);
         });
     }
 

@@ -30,7 +30,18 @@ class TesJawabanUserResource extends Resource
 
             Forms\Components\Select::make('opsi_jawabans_id')
                 ->relationship('opsiJawabans', 'teks_opsi')
-                ->required(),
+                ->nullable(),
+
+            Forms\Components\TextInput::make('nilai_jawaban')
+                ->numeric()
+                ->min(1)
+                ->max(5)
+                ->label('Nilai (Likert)')
+                ->nullable(),
+
+            Forms\Components\Textarea::make('jawaban_teks')
+                ->label('Jawaban Esai / Teks')
+                ->nullable(),
         ]);
     }
 
@@ -41,22 +52,31 @@ class TesJawabanUserResource extends Resource
                 Tables\Columns\TextColumn::make('percobaan.peserta.nama')->label('Nama Siswa'),
                 Tables\Columns\TextColumn::make('percobaan.peserta.instansi')->label('Instansi'),
                 Tables\Columns\TextColumn::make('percobaan.tes.tipe')->label('Tipe Tes'),
+                Tables\Columns\TextColumn::make('percobaan.tes.sub_tipe')->label('Sub-Tipe'),
                 Tables\Columns\TextColumn::make('percobaan.tes.bidang.nama_bidang')->label('Bidang Keahlian'),
-                Tables\Columns\TextColumn::make('percobaan.hitungSkor')->label('Skor'),
-                Tables\Columns\TextColumn::make('percobaan.hitungSkorPersen')->label('Skor (%)'),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->label('Jawaban Dikirim'),
+                Tables\Columns\TextColumn::make('pertanyaan.teks_pertanyaan')->label('Pertanyaan'),
+                Tables\Columns\TextColumn::make('opsiJawabans.teks_opsi')->label('Jawaban Pilihan'),
+                Tables\Columns\TextColumn::make('jawaban_teks')->label('Jawaban Teks'),
+                Tables\Columns\TextColumn::make('nilai_jawaban')->label('Nilai Likert'),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->label('Dikirim'),
             ])
             ->filters([
-                // Filter tipe tes menggunakan filter closure aman
-                Tables\Filters\SelectFilter::make('tipe_tes')
-                    ->label('Tipe Tes')
-                    ->options([
-                        'pre-test' => 'Pre-Test',
-                        'post-test' => 'Post-Test',
+                // Filter sub-tipe tes
+                Tables\Filters\Filter::make('sub_tipe')
+                    ->label('Sub-Tipe Tes')
+                    ->form([
+                        Forms\Components\Select::make('sub_tipe')
+                            ->options([
+                                'pre-test' => 'Pre-Test',
+                                'post-test' => 'Post-Test',
+                            ])
+                            ->placeholder('Pilih Sub-Tipe'),
                     ])
-                    ->filter(function ($query, $value) {
-                        $query->whereHas('percobaan.tes', fn($q) => $q->where('tipe', $value));
-                    }),
+                    ->query(fn($query, array $data) => 
+                        $data['sub_tipe'] 
+                            ? $query->whereHas('percobaan.tes', fn($q) => $q->where('sub_tipe', $data['sub_tipe'])) 
+                            : $query
+                    ),
 
                 // Filter bidang keahlian
                 Tables\Filters\SelectFilter::make('bidang')

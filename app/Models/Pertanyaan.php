@@ -32,7 +32,7 @@ class Pertanyaan extends Model
     }
 
     // Relasi ke Jawaban User
-    public function jawabanUsers()
+    public function jawabanUser()
     {
         return $this->hasMany(JawabanUser::class, 'pertanyaan_id');
     }
