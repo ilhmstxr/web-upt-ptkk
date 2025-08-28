@@ -16,7 +16,6 @@ use App\Mail\TestMail;
 use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
-use App\Http\Controllers\SurveyController;
 
 Route::get('/', function () {
     return view('landing');
@@ -50,7 +49,7 @@ Route::get('/', function () {
 // ============================
 // Pendaftaran
 // ============================
-<<<<<<< HEAD
+
 // Route::prefix('api/flow')->middleware('api')->group(function () {
 //     Route::post('/register', [RegistrationFlowController::class, 'register'])->name('flow.register');
 //     Route::post('/biodata-sekolah', [RegistrationFlowController::class, 'saveSchool'])->name('flow.school');
@@ -67,7 +66,6 @@ Route::resource('/pendaftaran', PendaftaranController::class);
 
 
 // Kalau mau akses langsung registration-form-new.blade.php
-=======
 Route::resource('pendaftaran', PendaftaranController::class);
 Route::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('pendaftaran-testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
@@ -75,7 +73,7 @@ Route::get('download-file', [PendaftaranController::class, 'download_file'])->na
 Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
->>>>>>> 047fca122df661b75dfc8032662022f2b267ded0
+
 Route::get('/pendaftaran-baru', function () {
     return view('registration-form-new');
 })->name('pendaftaran.baru');
@@ -174,7 +172,6 @@ Route::get('test-peserta', function () {
 
 // route fix
 // route pendaftaran
-Route::resource('/pendaftaran', PendaftaranController::class);
 Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 
