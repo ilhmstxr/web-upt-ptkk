@@ -12,6 +12,10 @@ use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
 use App\Http\Controllers\SurveyController;
 
+Route::get('/', function () {
+    return view('landing');
+});
+
 Route::get('/test-peserta', function () {
     // ambil 5 data pertama dari PesertaSheet
     dd((new PesertaSheet())->collection()->take(5));
@@ -58,8 +62,10 @@ Route::get('/export-peserta', function () {
 // ============================
 // Pendaftaran (Form Pendaftaran Baru)
 // ============================
-Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
-Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
+// Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
+// Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
+Route::resource('/pendaftaran', PendaftaranController::class);
+
 
 // Kalau mau akses langsung registration-form-new.blade.php
 Route::get('/pendaftaran-baru', function () {
