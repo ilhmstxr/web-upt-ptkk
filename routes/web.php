@@ -40,7 +40,9 @@ Route::get('download-file', [PendaftaranController::class, 'download_file'])->na
 Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
-Route::get('/pendaftaran-baru', function () { return view('registration-form-new'); })->name('pendaftaran.baru');
+Route::get('/pendaftaran-baru', function () {
+    return view('registration-form-new');
+})->name('pendaftaran.baru');
 
 // Route view testing step pendaftaran (opsional)
 Route::get('1', fn() => view('peserta.pendaftaran.bio-peserta'));
@@ -89,11 +91,19 @@ Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
 // ============================
 // Survey / Monev
 // ============================
+// Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
+// Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
+Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
+Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
+Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
+
 Route::resource('/survey', SurveyController::class);
 Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
+
+// Rute untuk menyimpan jawaban dari setiap langkah survei
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
-Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
-Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
+
+
 
 // ============================
 // Test Excel Export
@@ -138,21 +148,6 @@ Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'do
     ->name('peserta.download-pdf');
 Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])
     ->name('peserta.download-bulk');
-
-// route monev
-Route::resource('/survey', SurveyController::class);
-
-// Rute untuk menampilkan setiap langkah/bagian survei
-// Menggunakan route model binding untuk {participant} dan slug untuk {section_slug}
-Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
-
-// Rute untuk menyimpan jawaban dari setiap langkah survei
-Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
-
-// Rute untuk halaman "Selesai"
-Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
-
-Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
 
 
 // Rute untuk autentikasi (login, register, dll.)

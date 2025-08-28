@@ -149,7 +149,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (6, 'Proses penggantian part', false),
 (6, 'Proses Recovery Freon', true),
 (6, 'Semua Jawaban Salah', false),
- 
+
 -- Jawaban untuk Pertanyaan ID 7 (Kunci: A)
 (7, 'Proses Recovery Refigerant', true),
 (7, 'Proses Recovery Refigerant', false),
@@ -651,50 +651,90 @@ INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (5, 114, 'bagaimana pendapat saudara tentang instruktur dalam memberikan motivasi pada peserta pelatihan', 'skala_likert'),
 (5, 115, 'Bagaimana pendapat saudara cara instruktur menjawab pertanyaan dari peserta pelatihan', 'skala_likert'),
 (5, 116, 'Pesan dan Kesan', 'teks_bebas');
+-- ===================================================================
+-- LANGKAH 1: ISI TABEL opsi_jawabans HANYA DENGAN SET JAWABAN MASTER
+-- ===================================================================
 
 INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
--- Opsi untuk Pertanyaan 81-87 (Sangat Memuaskan)
-(81, 'Tidak Memuaskan', 0), (81, 'Kurang Memuaskan', 0), (81, 'Memuaskan', 0), (81, 'Sangat Memuaskan', 0),
-(82, 'Tidak Memuaskan', 0), (82, 'Kurang Memuaskan', 0), (82, 'Memuaskan', 0), (82, 'Sangat Memuaskan', 0),
-(83, 'Tidak Memuaskan', 0), (83, 'Kurang Memuaskan', 0), (83, 'Memuaskan', 0), (83, 'Sangat Memuaskan', 0),
-(84, 'Tidak Memuaskan', 0), (84, 'Kurang Memuaskan', 0), (84, 'Memuaskan', 0), (84, 'Sangat Memuaskan', 0),
-(85, 'Tidak Memuaskan', 0), (85, 'Kurang Memuaskan', 0), (85, 'Memuaskan', 0), (85, 'Sangat Memuaskan', 0),
-(86, 'Tidak Memuaskan', 0), (86, 'Kurang Memuaskan', 0), (86, 'Memuaskan', 0), (86, 'Sangat Memuaskan', 0),
-(87, 'Tidak Memuaskan', 0), (87, 'Kurang Memuaskan', 0), (87, 'Memuaskan', 0), (87, 'Sangat Memuaskan', 0),
-(88, 'Tidak Memuaskan', 0), (88, 'Kurang Memuaskan', 0), (88, 'Memuaskan', 0), (88, 'Sangat Memuaskan', 0),
-(89, 'Tidak Memuaskan', 0), (89, 'Kurang Memuaskan', 0), (89, 'Memuaskan', 0), (89, 'Sangat Memuaskan', 0),
-(90, 'Tidak Memuaskan', 0), (90, 'Kurang Memuaskan', 0), (90, 'Memuaskan', 0), (90, 'Sangat Memuaskan', 0),
-(91, 'Tidak Memuaskan', 0), (91, 'Kurang Memuaskan', 0), (91, 'Memuaskan', 0), (91, 'Sangat Memuaskan', 0),
-(92, 'Tidak Memuaskan', 0), (92, 'Kurang Memuaskan', 0), (92, 'Memuaskan', 0), (92, 'Sangat Memuaskan', 0),
-(93, 'Tidak Memuaskan', 0), (93, 'Kurang Memuaskan', 0), (93, 'Memuaskan', 0), (93, 'Sangat Memuaskan', 0),
-(94, 'Tidak Memuaskan', 0), (94, 'Kurang Memuaskan', 0), (94, 'Memuaskan', 0), (94, 'Sangat Memuaskan', 0),
-(95, 'Tidak Memuaskan', 0), (95, 'Kurang Memuaskan', 0), (95, 'Memuaskan', 0), (95, 'Sangat Memuaskan', 0),
-(97, 'Tidak Memuaskan', 0), (97, 'Kurang Memuaskan', 0), (97, 'Memuaskan', 0), (97, 'Sangat Memuaskan', 0),
--- Opsi untuk Pertanyaan 98 (Sangat Bermanfaat)
-(98, 'Tidak Bermanfaat', 0), (98, 'Kurang Bermanfaat', 0), (98, 'Bermanfaat', 0), (98, 'Sangat Bermanfaat', 0),
--- Opsi untuk Pertanyaan 99-102 (Sangat Memuaskan)
-(99, 'Tidak Memuaskan', 0), (99, 'Kurang Memuaskan', 0), (99, 'Memuaskan', 0), (99, 'Sangat Memuaskan', 0),
-(100, 'Tidak Memuaskan', 0), (100, 'Kurang Memuaskan', 0), (100, 'Memuaskan', 0), (100, 'Sangat Memuaskan', 0),
-(101, 'Tidak Memuaskan', 0), (101, 'Kurang Memuaskan', 0), (101, 'Memuaskan', 0), (101, 'Sangat Memuaskan', 0),
-(102, 'Tidak Memuaskan', 0), (102, 'Kurang Memuaskan', 0), (102, 'Memuaskan', 0), (102, 'Sangat Memuaskan', 0),
--- Opsi untuk Pertanyaan 103 (Persentase)
-(103, '25%', 0), (103, '50%', 0), (103, '75%', 0), (103, '100%', 0),
--- Opsi untuk Pertanyaan 104-105 (Sangat Perlu)
-(104, 'Tidak Perlu', 0), (104, 'Kurang Perlu', 0), (104, 'Perlu', 0), (104, 'Sangat Perlu', 0),
-(105, 'Tidak Perlu', 0), (105, 'Kurang Perlu', 0), (105, 'Perlu', 0), (105, 'Sangat Perlu', 0),
--- Opsi untuk Pertanyaan 106 (Sangat Mendukung)
-(106, 'Tidak Mendukung', 0), (106, 'Kurang Mendukung', 0), (106, 'Mendukung', 0), (106, 'Sangat Mendukung', 0),
--- Opsi untuk Pertanyaan 108 (Sangat Memuaskan)
-(108, 'Tidak Memuaskan', 0), (108, 'Kurang Memuaskan', 0), (108, 'Memuaskan', 0), (108, 'Sangat Memuaskan', 0),
--- Opsi untuk Pertanyaan 109 (Sangat Disiplin)
-(109, 'Tidak Disiplin', 0), (109, 'Kurang Disiplin', 0), (109, 'Disiplin', 0), (109, 'Sangat Disiplin', 0),
--- Opsi untuk Pertanyaan 110-111 (Sangat Memuaskan)
-(110, 'Tidak Memuaskan', 0), (110, 'Kurang Memuaskan', 0), (110, 'Memuaskan', 0), (110, 'Sangat Memuaskan', 0),
-(111, 'Tidak Memuaskan', 0), (111, 'Kurang Memuaskan', 0), (111, 'Memuaskan', 0), (111, 'Sangat Memuaskan', 0),
--- Opsi untuk Pertanyaan 112 (Sangat Rapi)
-(112, 'Tidak rapi', 0), (112, 'Kurang Rapi', 0), (112, 'Rapi', 0), (112, 'Sangat Rapi', 0),
--- Opsi untuk Pertanyaan 113 (Sangat baik)
-(113, 'Tidak baik', 0), (113, 'Kurang baik', 0), (113, 'baik', 0), (113, 'Sangat baik', 0),
--- Opsi untuk Pertanyaan 114-115 (Sangat Memuaskan)
-(114, 'Tidak Memuaskan', 0), (114, 'Kurang Memuaskan', 0), (114, 'Memuaskan', 0), (114, 'Sangat Memuaskan', 0),
-(115, 'Tidak Memuaskan', 0), (115, 'Kurang Memuaskan', 0), (115, 'Memuaskan', 0), (115, 'Sangat Memuaskan', 0);
+-- Set Opsi 1: Skala "Memuaskan" (Master Pertanyaan ID: 81)
+(81, 'Tidak Memuaskan', 0),
+(81, 'Kurang Memuaskan', 0),
+(81, 'Memuaskan', 0),
+(81, 'Sangat Memuaskan', 0),
+
+-- Set Opsi 2: Skala "Bermanfaat" (Master Pertanyaan ID: 98)
+(98, 'Tidak Bermanfaat', 0),
+(98, 'Kurang Bermanfaat', 0),
+(98, 'Bermanfaat', 0),
+(98, 'Sangat Bermanfaat', 0),
+
+-- Set Opsi 3: Skala "Persentase" (Master Pertanyaan ID: 103)
+(103, '25%', 0),
+(103, '50%', 0),
+(103, '75%', 0),
+(103, '100%', 0),
+
+-- Set Opsi 4: Skala "Perlu" (Master Pertanyaan ID: 104)
+(104, 'Tidak Perlu', 0),
+(104, 'Kurang Perlu', 0),
+(104, 'Perlu', 0),
+(104, 'Sangat Perlu', 0),
+
+-- Set Opsi 5: Skala "Mendukung" (Master Pertanyaan ID: 106)
+(106, 'Tidak Mendukung', 0),
+(106, 'Kurang Mendukung', 0),
+(106, 'Mendukung', 0),
+(106, 'Sangat Mendukung', 0),
+
+-- Set Opsi 6: Skala "Disiplin" (Master Pertanyaan ID: 109)
+(109, 'Tidak Disiplin', 0),
+(109, 'Kurang Disiplin', 0),
+(109, 'Disiplin', 0),
+(109, 'Sangat Disiplin', 0),
+
+-- Set Opsi 7: Skala "Rapi" (Master Pertanyaan ID: 112)
+(112, 'Tidak rapi', 0),
+(112, 'Kurang Rapi', 0),
+(112, 'Rapi', 0),
+(112, 'Sangat Rapi', 0),
+
+-- Set Opsi 8: Skala "Baik" (Master Pertanyaan ID: 113)
+(113, 'Tidak baik', 0),
+(113, 'Kurang baik', 0),
+(113, 'baik', 0),
+(113, 'Sangat baik', 0);
+
+
+-- ===================================================================
+-- LANGKAH 2: ISI TABEL PIVOT pertanyaan_opsi_link
+-- ===================================================================
+
+INSERT INTO pivot_jawaban (pertanyaan_id, template_pertanyaan_id) VALUES
+-- Pertanyaan yang menggunakan opsi dari master ID 81 (Skala Memuaskan)
+(82, 81),
+(83, 81),
+(84, 81),
+(85, 81),
+(86, 81),
+(87, 81),
+(88, 81),
+(89, 81),
+(90, 81),
+(91, 81),
+(92, 81),
+(93, 81),
+(94, 81),
+(95, 81),
+(97, 81),
+(99, 81),
+(100, 81),
+(101, 81),
+(102, 81),
+(108, 81),
+(110, 81),
+(111, 81),
+(114, 81),
+(115, 81),
+
+-- Pertanyaan yang menggunakan opsi dari master ID 104 (Skala Perlu)
+(105, 104);

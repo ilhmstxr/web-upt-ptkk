@@ -14,9 +14,9 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8 max-w-xl mx-auto">
-        <form action="{{ route('survey.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('survey.start') }}" method="POST" class="space-y-6">
             @csrf
-
+            <input type="hidden" name="kuis_id" value="{{ $kuis->id }}">
             <div>
                 <label for="nama" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                     <i class="fas fa-user text-indigo-500 mr-2"></i> Nama Lengkap

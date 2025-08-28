@@ -9,7 +9,9 @@ use App\Models\Survey;
 use App\Models\Jawaban;
 use App\Models\JawabanUser;
 use App\Models\Kuis;
+use App\Models\OpsiJawaban;
 use App\Models\Percobaan;
+use App\Models\Pertanyaan;
 use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +25,8 @@ class SurveyController extends Controller
     public function index()
     {
         // Mengambil kuis yang akan dikerjakan.
-        $kuis = Kuis::where('tipe', 'survei')->firstOrFail();
+        $kuis = Kuis::where('tipe', 'survei')->firstorfail();
+        // return $kuis;
         return view('peserta.monev.survey.start', compact('kuis'));
     }
 
@@ -91,42 +94,180 @@ class SurveyController extends Controller
         }
     }
 
+    public function start(Request $request)
+    {
+        // return $request;
+        $validated = $request->validate([
+            'email'   => 'required|email|exists:pesertas,email',
+            'kuis_id' => 'required|integer|exists:kuis,id'
+        ]);
+
+        $peserta = Peserta::where('email', $validated['email'])->first();
+
+        // return $request;
+        // PERBAIKAN DI SINI:
+        // Kirimkan parameter 'peserta' dan 'order' sesuai yang diminta route
+        return redirect()->route('survey.show', [
+            'peserta' => $peserta->id,           // Menggunakan ID peserta
+            // 'order'   => 1,   // Asumsi 'order' adalah ID kuis
+            // 'kuis_id' => $validated['kuis_id']
+            'order' => $validated['kuis_id']
+        ]);
+    }
+
+    // app/Http/Controllers/SurveyController.php
+
+    // Laravel akan otomatis mencari Peserta berdasarkan ID yang ada di URL
+    public function show(Peserta $peserta, $order, Request $request)
+    {
+        $kuisId = $order;
+        // return $request;s
+        // Langkah 1 & 2: Ambil data Kuis yang akan kita sebut sebagai 'section'
+        $section = Kuis::findOrFail($kuisId);
+        // return $section;
+
+        // Langkah 3: Ambil semua pertanyaan yang terkait, diurutkan berdasarkan nomor
+        $questions = Pertanyaan::where('kuis_id', $section->id)
+            ->with([
+                'opsiJawabans', // Untuk pertanyaan yang punya opsi sendiri
+                'opsiLink.templatePertanyaan.opsiJawabans' // Untuk pertanyaan yang mencontek dari template
+            ])
+            ->orderBy('nomor', 'asc')
+            ->get();
+
+        // return $questions;
+
+        // Langkah 4: Tampilkan view dengan data yang sudah disiapkan
+        return view('peserta.monev.survey.step', [
+            'peserta'   => $peserta,
+            'section'   => $section,
+            'questions' => $questions,
+        ]);
+    }
+
+    //   public function show(Peserta $peserta, Kuis $kuis, $page = 1)
+    // {
+    //     // 1. Ambil SEMUA pertanyaan untuk kuis ini sekali saja dari database
+    //     $allQuestions = Pertanyaan::where('kuis_id', $kuis->id)->orderBy('nomor')->get();
+
+    //     // 2. Kelompokkan pertanyaan menjadi beberapa halaman
+    //     $pages = new Collection();
+    //     $currentPageQuestions = new Collection();
+
+    //     foreach ($allQuestions as $question) {
+    //         $currentPageQuestions->push($question);
+    //         if ($question->tipe_jawaban === 'teks_bebas') {
+    //             $pages->push($currentPageQuestions);
+    //             $currentPageQuestions = new Collection();
+    //         }
+    //     }
+
+    //     // 3. Jangan lupa masukkan sisa pertanyaan terakhir jika ada
+    //     if ($currentPageQuestions->isNotEmpty()) {
+    //         $pages->push($currentPageQuestions);
+    //     }
+
+    //     // 4. Ambil data untuk halaman saat ini (array index dimulai dari 0)
+    //     $questionForCurrentPage = $pages->get($page - 1);
+
+    //     // Jika user mencoba mengakses halaman yang tidak ada, arahkan ke halaman selesai
+    //     if (!$questionForCurrentPage) {
+    //         return redirect()->route('survey.complete'); // Buat route ini nanti
+    //     }
+
+    //     return view('peserta.monev.survey.step', [
+    //         'peserta'     => $peserta,
+    //         'kuis'        => $kuis,
+    //         'questions'   => $questionForCurrentPage,
+    //         'currentPage' => $page,
+    //         'totalPages'  => $pages->count(),
+    //     ]);
+    // }
+
 
     /**
      * Menyimpan semua data yang terkumpul ke database.
      * Fungsi ini hanya dipanggil satu kali di akhir.
      */
+    // public function store(Request $request)
+    // {
+    //     // return $request;
+    //     $peserta = Peserta::where('email', $request->email)->firstOrFail();
+    //     $kuisId = $request->input('kuis_id');
+    //     $allAnswers = $request->input('answers', []);
+
+    //     // Memulai transaksi database untuk memastikan semua data tersimpan
+    //     $percobaan = DB::transaction(function () use ($peserta, $kuisId, $allAnswers, $request) {
+    //         // Buat record percobaan
+    //         $percobaan = Percobaan::create([
+    //             'peserta_id' => $peserta->id,
+    //             'kuis_id' => $kuisId,
+    //             'waktu_mulai' => now(), // Bisa disesuaikan jika waktu mulai dicatat lebih awal
+    //             'waktu_selesai' => now(),
+    //             'pesan_kesan' => $request->input('comments'),
+    //         ]);
+
+    //         // Simpan setiap jawaban
+    //         foreach ($allAnswers as $pertanyaanId => $answerValue) {
+    //             JawabanUser::create([
+    //                 'percobaan_id' => $percobaan->id,
+    //                 'pertanyaan_id' => $pertanyaanId,
+    //                 'nilai_jawaban' => $answerValue,
+    //             ]);
+    //         }
+
+    //         return $percobaan;
+    //     });
+
+    //     // Arahkan ke halaman selesai
+    //     return redirect()->route('kuis.complete');
+    // }
+
     public function store(Request $request)
     {
-        $peserta = Peserta::where('email', $request->email)->firstOrFail();
-        $kuisId = $request->input('kuis_id');
-        $allAnswers = $request->input('answers', []);
+        // 1. Validasi semua data yang masuk
+        $validatedData = $request->validate([
+            'peserta_id' => 'required|integer|exists:pesertas,id',
+            'kuis_id'    => 'required|integer|exists:kuis,id',
+            'answers'    => 'required|array',
+            'answers.*'  => 'required', // Setiap jawaban harus diisi
+            'comments'   => 'nullable|string|max:1000',
+        ]);
 
-        // Memulai transaksi database untuk memastikan semua data tersimpan
-        $percobaan = DB::transaction(function () use ($peserta, $kuisId, $allAnswers, $request) {
-            // Buat record percobaan
-            $percobaan = Percobaan::create([
-                'peserta_id' => $peserta->id,
-                'kuis_id' => $kuisId,
-                'waktu_mulai' => now(), // Bisa disesuaikan jika waktu mulai dicatat lebih awal
-                'waktu_selesai' => now(),
-                'pesan_kesan' => $request->input('comments'),
-            ]);
-
-            // Simpan setiap jawaban
-            foreach ($allAnswers as $pertanyaanId => $answerValue) {
-                JawabanUser::create([
-                    'percobaan_id' => $percobaan->id,
-                    'pertanyaan_id' => $pertanyaanId,
-                    'nilai_jawaban' => $answerValue,
+        try {
+            // 2. Gunakan transaksi untuk memastikan semua data aman tersimpan
+            DB::transaction(function () use ($validatedData) {
+                // Buat record percobaan (attempt)
+                $percobaan = Percobaan::create([
+                    'peserta_id'    => $validatedData['peserta_id'],
+                    'kuis_id'       => $validatedData['kuis_id'],
+                    'waktu_mulai'   => now(), // Bisa disesuaikan
+                    'waktu_selesai' => now(),
+                    'pesan_kesan'   => $validatedData['comments'] ?? null,
                 ]);
-            }
 
-            return $percobaan;
-        });
+                // Siapkan data jawaban untuk disimpan massal
+                $jawabanUntukDisimpan = [];
+                foreach ($validatedData['answers'] as $pertanyaanId => $nilaiJawaban) {
+                    $jawabanUntukDisimpan[] = [
+                        'percobaan_id'  => $percobaan->id,
+                        'pertanyaan_id' => $pertanyaanId,
+                        'nilai_jawaban' => $nilaiJawaban,
+                        'created_at'    => now(),
+                        'updated_at'    => now(),
+                    ];
+                }
 
-        // Arahkan ke halaman selesai
-        return redirect()->route('kuis.complete');
+                // Simpan semua jawaban dengan satu query untuk performa lebih baik
+                JawabanUser::insert($jawabanUntukDisimpan);
+            });
+
+            // 3. Arahkan ke halaman selesai jika berhasil
+            return redirect()->route('survey.complete')->with('success', 'Terima kasih, survei Anda berhasil disimpan.');
+        } catch (\Exception $e) {
+            // Jika terjadi error, kembalikan ke halaman sebelumnya dengan pesan error
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        }
     }
 
 
