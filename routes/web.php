@@ -124,9 +124,6 @@ Route::get('test-peserta', function () {
     return Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')->get();
 });
 
-// Route::get('pendaftaran_selesai', function () {
-//     return view('peserta.pendaftaran.selesai');
-// });
 
 
 // route fix

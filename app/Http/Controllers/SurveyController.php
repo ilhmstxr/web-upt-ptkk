@@ -7,163 +7,146 @@ use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\StoreSurveyRequest;
 use App\Models\Survey;
 use App\Models\Jawaban;
+use App\Models\JawabanUser;
+use App\Models\Kuis;
+use App\Models\Percobaan;
 use App\Models\Peserta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SurveyController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan halaman awal (form pendaftaran).
+     * Ini adalah gerbang masuk utama.
      */
     public function index()
     {
-        return redirect()->route('survey.create');
+        // Mengambil kuis yang akan dikerjakan.
+        $kuis = Kuis::where('tipe', 'survei')->firstOrFail();
+        return view('peserta.monev.survey.start', compact('kuis'));
     }
 
     /**
-     * Menampilkan formulir untuk membuat resource baru (memulai survei).
-     * (Sebelumnya: showStartForm)
+     * Menampilkan halaman-halaman survei secara dinamis.
+     * Fungsi ini menangani logika perpindahan halaman dan pengumpulan data.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('peserta.monev.survey.start');
+        // 1. Validasi data pendaftar di halaman pertama
+        $request->validate([
+            'email' => 'required|email',
+            'nama' => 'required|string',
+        ]);
+
+        $peserta = Peserta::where('email', $request->email)
+            ->where('nama', $request->nama)
+            ->first();
+
+        if (!$peserta) {
+            return redirect()->route('kuis.index')->withErrors(['message' => 'Kombinasi nama dan email tidak ditemukan.'])->withInput();
+        }
+
+        // 2. Mengumpulkan dan menggabungkan jawaban dari halaman sebelumnya
+        $allAnswers = json_decode($request->input('all_answers', '[]'), true);
+        $newAnswers = $request->input('answers', []);
+        $allAnswers = array_merge($allAnswers, $newAnswers);
+
+        // 3. Menentukan halaman berikutnya
+        $kuis = Kuis::where('tipe', 'survei')->firstOrFail();
+        $currentPage = $request->input('page', 0);
+        $nextPage = $currentPage + 1;
+
+        // 4. Mengambil pertanyaan untuk halaman berikutnya
+        $itemsPerPage = 15;
+        $questions = $kuis->pertanyaan()
+            ->orderBy('nomor_urut', 'asc')
+            ->paginate($itemsPerPage, ['*'], 'page', $nextPage);
+
+        // 5. Logika Navigasi
+        if ($questions->isNotEmpty()) {
+            // Jika masih ada pertanyaan, tampilkan halaman berikutnya
+            $section = $kuis;
+            $section->order = $nextPage;
+
+            return view('peserta.kuis.step', [
+                'section' => $section,
+                'peserta' => $peserta,
+                'questions' => $questions,
+                'all_answers_json' => json_encode($allAnswers), // Kirim data yang sudah terkumpul
+            ]);
+        } else {
+            // Jika tidak ada lagi pertanyaan, ini adalah halaman terakhir.
+            // Siapkan data final untuk disimpan.
+            $finalData = [
+                'nama' => $peserta->nama,
+                'email' => $peserta->email,
+                'kuis_id' => $kuis->id,
+                'answers' => $allAnswers,
+                'comments' => $request->input('comments'),
+            ];
+
+            // Panggil fungsi store untuk menyimpan semuanya
+            return $this->store(new Request($finalData));
+        }
     }
 
+
     /**
-     * Menyimpan resource yang baru dibuat ke dalam storage.
-     * (Sebelumnya: storepeserta)
-     */
-    /**
-     * Menyimpan resource yang baru dibuat ke dalam storage.
+     * Menyimpan semua data yang terkumpul ke database.
+     * Fungsi ini hanya dipanggil satu kali di akhir.
      */
     public function store(Request $request)
     {
-        // return $request;
-        $peserta = Peserta::where('email', $request->email)
-            // ->where('nama', $request->nama)
-            ->first();
+        $peserta = Peserta::where('email', $request->email)->firstOrFail();
+        $kuisId = $request->input('kuis_id');
+        $allAnswers = $request->input('answers', []);
 
-        // return $peserta;
-        // return $request;
-        if (!$peserta) {
-            return redirect()->back()->withErrors(['message' => 'Data peserta tidak ditemukan. Silahkan periksa kembali email dan nama Anda.'])->withInput();
-        }
-
-        $firstSection = Survey::orderBy('order', 'asc')->first();
-        // return $firstSection;
-        if (!$firstSection) {
-            return redirect()->route('survey.complete')->with('message', 'Belum ada survei yang tersedia.');
-        }
-
-        return redirect()->route('survey.show', [
-            'peserta' => $peserta->id,
-            'order' => $firstSection->order
-        ]);
-    }
-
-    /**
-     * Menampilkan resource yang spesifik (satu langkah/seksi survei).
-     * (Sebelumnya: showSurveyStep)
-     */
-    public function show(Peserta $peserta, $order)
-    {
-        // return $peserta;
-        // return $order;
-        $section = Survey::where('order', $order)->firstOrFail();
-        $questions = $section->pertanyaan()->orderBy('order', 'asc')->get();
-
-        return view('peserta.monev.survey.step', compact('peserta', 'section', 'questions'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-
-    /**
-     * Memperbarui resource yang spesifik di dalam storage.
-     * (Sebelumnya: storeSurveyStep)
-     */
-    public function update(StoreSurveyRequest $request, Peserta $peserta, $order)
-    {
-        return $request;
-        $section = Survey::where('order', $order)->firstOrFail();
-
-        $validated = $request->validated();
-        $answers = $validated['jawaban'];
-        $comments = $validated['comments'] ?? null;
-
-        foreach ($answers as $questionId => $value) {
-            Jawaban::updateOrCreate(
-                [
-                    'peserta_id' => $peserta->id,
-                    'pertanyaan_id' => $questionId,
-                ],
-                [
-                    'value' => $value,
-                ]
-            );
-        }
-
-        // Simpan komentar jika ada
-        if ($comments) {
-            $peserta->comments()->updateOrCreate(
-                ['survey_id' => $section->id],
-                ['content' => $comments]
-            );
-        }
-
-        // Tentukan langkah selanjutnya
-        $nextSection = Survey::where('order', '>', $section->order)
-            ->orderBy('order', 'asc')
-            ->first();
-
-        if ($nextSection) {
-            return redirect()->route('survey.show', [
-                'peserta' => $peserta->id,
-                'order' => $nextSection->order
+        // Memulai transaksi database untuk memastikan semua data tersimpan
+        $percobaan = DB::transaction(function () use ($peserta, $kuisId, $allAnswers, $request) {
+            // Buat record percobaan
+            $percobaan = Percobaan::create([
+                'peserta_id' => $peserta->id,
+                'kuis_id' => $kuisId,
+                'waktu_mulai' => now(), // Bisa disesuaikan jika waktu mulai dicatat lebih awal
+                'waktu_selesai' => now(),
+                'pesan_kesan' => $request->input('comments'),
             ]);
-        }
 
-        // Jika tidak ada langkah selanjutnya, arahkan ke halaman selesai
-        return redirect()->route('survey.complete');
-    }
+            // Simpan setiap jawaban
+            foreach ($allAnswers as $pertanyaanId => $answerValue) {
+                JawabanUser::create([
+                    'percobaan_id' => $percobaan->id,
+                    'pertanyaan_id' => $pertanyaanId,
+                    'nilai_jawaban' => $answerValue,
+                ]);
+            }
 
+            return $percobaan;
+        });
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Arahkan ke halaman selesai
+        return redirect()->route('kuis.complete');
     }
 
 
     /**
      * Menampilkan halaman "Terima Kasih".
-     * (Sebelumnya: showCompletePage)
      */
     public function complete()
     {
-        return view('peserta.monev.survey.complete');
+        return view('peserta.kuis.complete');
     }
 
-    public function checkEmail(Request $request)
+    /**
+     * Fungsi untuk validasi AJAX dari halaman start.
+     */
+    public function checkCredentials(Request $request)
     {
-        // Validasi sederhana untuk memastikan email dikirim
-        $request->validate(['email' => 'required|email']);
-
-        // Cari peserta berdasarkan email dan nama yang dikirim
         $exists = Peserta::where('email', $request->email)
-            // ->where('nama', $request->nama) // Cek nama juga untuk akurasi
+            ->where('nama', $request->nama)
             ->exists();
 
-        return $exists;
-        // Kembalikan response dalam format JSON
         return response()->json(['exists' => $exists]);
     }
 }
