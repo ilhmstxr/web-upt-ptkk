@@ -23,10 +23,8 @@ use App\Mail\TestMail;
 |--------------------------------------------------------------------------
 */
 
-// Redirect root ke form pendaftaran / landing page
-Route::get('/', function () {
-    return view('landing');
-});
+// Root / Landing Page
+Route::get('/', fn() => view('landing'));
 
 // ============================
 // Pendaftaran
@@ -52,19 +50,25 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
     Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 
-    // Pre-test
-    Route::get('/pretest', [DashboardController::class, 'pretest'])->name('pretest');
-    Route::get('/pretest/start', [DashboardController::class, 'pretestStart'])->name('pretest.start');
+    // ============================
+    // Pre-Test
+    // ============================
+    Route::get('/pretest', [DashboardController::class, 'pretest'])->name('pretest.index');
+    Route::get('/pretest/{tes}', [DashboardController::class, 'pretestShow'])->name('pretest.show');
     Route::post('/pretest/submit', [DashboardController::class, 'pretestSubmit'])->name('pretest.submit');
-    Route::get('/pretest/result', [DashboardController::class, 'pretestResult'])->name('pretest.result');
+    Route::get('/pretest/result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('pretest.result');
 
-    // Post-test
-    Route::get('/posttest', [DashboardController::class, 'posttest'])->name('posttest');
-    Route::get('/posttest/start', [DashboardController::class, 'posttestStart'])->name('posttest.start');
+    // ============================
+    // Post-Test
+    // ============================
+    Route::get('/posttest', [DashboardController::class, 'posttest'])->name('posttest.index');
+    Route::get('/posttest/{tes}', [DashboardController::class, 'posttestShow'])->name('posttest.show');
     Route::post('/posttest/submit', [DashboardController::class, 'posttestSubmit'])->name('posttest.submit');
-    Route::get('/posttest/result', [DashboardController::class, 'posttestResult'])->name('posttest.result');
+    Route::get('/posttest/result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('posttest.result');
 
+    // ============================
     // Feedback
+    // ============================
     Route::get('/feedback', [DashboardController::class, 'feedback'])->name('feedback');
     Route::post('/feedback/submit', [DashboardController::class, 'feedbackSubmit'])->name('feedback.submit');
 });
@@ -93,10 +97,10 @@ Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.com
 Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
 
 // ============================
-// Test Excel Export
+// Excel Export Test
 // ============================
 Route::get('/test-peserta', function () {
-    $pesertaIds = null; // bisa diisi array ID peserta jika perlu
+    $pesertaIds = null;
     return dd((new PesertaSheet($pesertaIds))->collection()->take(5));
 });
 Route::get('/test-lampiran', function () {
@@ -123,7 +127,7 @@ Route::get('/send', fn() => Mail::to(['23082010166@student.upnjatim.ac.id'])->se
 // ============================
 // Data Peserta API
 // ============================
-Route::get('test-peserta', function () {
+Route::get('api/peserta', function () {
     return Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')->get();
 });
 

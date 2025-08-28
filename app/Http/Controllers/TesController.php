@@ -15,7 +15,8 @@ class TesController extends Controller
      */
     public function index()
     {
-        $tes = Tes::with(['bidang', 'pelatihan'])->get(); // Bisa ditambahkan filter user/pelatihan
+        // Ambil semua tes pre-test / post-test sesuai kebutuhan
+        $tes = Tes::with(['bidang', 'pelatihan'])->get();
         return view('tes.index', compact('tes'));
     }
 
@@ -36,14 +37,20 @@ class TesController extends Controller
             ]
         );
 
-        // Ambil semua pertanyaan
+        // Ambil semua pertanyaan beserta opsi jawaban
         $pertanyaanList = $tes->pertanyaans()->with('opsiJawaban')->get();
 
         // Tentukan pertanyaan saat ini (default: 0)
         $currentQuestion = (int) $request->query('q', 0);
         $pertanyaan = $pertanyaanList->get($currentQuestion);
 
-        return view('tes.show', compact('tes', 'pertanyaan', 'percobaan', 'currentQuestion', 'pertanyaanList'));
+        return view('tes.show', compact(
+            'tes',
+            'pertanyaan',
+            'percobaan',
+            'currentQuestion',
+            'pertanyaanList'
+        ));
     }
 
     /**
@@ -55,7 +62,7 @@ class TesController extends Controller
             ->where('tes_id', $tes->id)
             ->firstOrFail();
 
-        $jawaban = $request->input('jawaban', []);
+        $jawaban = $request->input('jawaban', []); // pastikan array ['pertanyaan_id' => 'opsi_jawaban_id']
 
         // Simpan jawaban user
         foreach ($jawaban as $pertanyaan_id => $opsi_jawaban_id) {
@@ -74,7 +81,6 @@ class TesController extends Controller
         $pertanyaanList = $tes->pertanyaans()->get();
         $total = $pertanyaanList->count();
 
-        // Tentukan pertanyaan berikutnya
         $currentQuestion = (int) $request->query('q', 0);
         $nextQuestion = $currentQuestion + 1;
 
@@ -109,7 +115,8 @@ class TesController extends Controller
 
         if ($total === 0) return 0;
 
-        $benar = $jawabanUser->filter(fn($j) => $j->opsiJawaban->is_correct)->count();
+        // Sesuaikan nama kolom benar di tabel opsi_jawaban: 'apakah_benar'
+        $benar = $jawabanUser->filter(fn($j) => $j->opsiJawaban->apakah_benar)->count();
 
         return round(($benar / $total) * 100);
     }

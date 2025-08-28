@@ -19,14 +19,22 @@ class TesPertanyaanResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
+            // Pilih Tes dulu, reaktif supaya field nomor tahu tes yang dipilih
             Forms\Components\Select::make('tes_id')
                 ->relationship('tes', 'judul')
-                ->required(),
+                ->label('Tes')
+                ->required()
+                ->reactive(), // <--- penting
 
+            // Nomor pertanyaan otomatis bertambah berdasarkan tes yang dipilih
             Forms\Components\TextInput::make('nomor')
+                ->label('Nomor Pertanyaan')
                 ->default(function (\Filament\Forms\Get $get) {
                     $tesId = $get('tes_id');
-                    $nomorTerakhir = \App\Models\Pertanyaan::where('tes_id', $tesId)->max('nomor') ?? 0;
+                    if (!$tesId) {
+                        return 1; // default kalau tes belum dipilih
+                    }
+                    $nomorTerakhir = Pertanyaan::where('tes_id', $tesId)->max('nomor') ?? 0;
                     return $nomorTerakhir + 1;
                 })
                 ->numeric()

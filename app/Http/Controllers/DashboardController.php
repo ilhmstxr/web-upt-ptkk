@@ -3,60 +3,109 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Peserta;
+use App\Models\Tes;
+use App\Models\Percobaan; // model percobaan jawaban peserta
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    // Halaman utama dashboard
+    // ======================
+    // HOME & PROFILE
+    // ======================
     public function home()
     {
-        // ambil semua peserta dari database
-        $peserta = Peserta::all();
-
-        return view('dashboard.pages.home', compact('peserta'));
+        return view('dashboard.pages.home');
     }
 
-    // Profil peserta
     public function profile()
     {
         return view('dashboard.pages.profile');
     }
 
-    // Materi
     public function materi()
     {
         return view('dashboard.pages.materi');
     }
 
-    // Materi per detail (opsional)
     public function materiShow($materi)
     {
-        return view('dashboard.pages.materi', compact('materi'));
+        return view('dashboard.pages.materi-show', compact('materi'));
     }
 
-    // Pre-test
+    // ======================
+    // PRE-TEST
+    // ======================
     public function pretest()
     {
-        return view('dashboard.pages.pretest');
+        $tes = Tes::all(); // ambil semua pre-test
+        return view('dashboard.pages.pre-test.pretest', compact('tes'));
     }
 
-    public function pretestStart()
+    public function pretestShow(Tes $tes)
     {
-        return view('dashboard.pages.pretest');
+        // periksa apakah peserta sudah pernah mencoba tes ini
+        $percobaan = Percobaan::where('peserta_id', Auth::id())
+                               ->where('tes_id', $tes->id)
+                               ->first();
+
+        return view('dashboard.pages.pre-test.pretest-start', compact('tes', 'percobaan'));
     }
 
-    // Post-test
+    public function pretestSubmit(Request $request, Tes $tes)
+    {
+        $percobaan = Percobaan::create([
+            'peserta_id' => Auth::id(),
+            'tes_id' => $tes->id,
+            'jawaban' => json_encode($request->jawaban),
+            'waktu_mulai' => now(),
+        ]);
+
+        return redirect()->route('dashboard.pretest.result', $percobaan->id);
+    }
+
+    public function pretestResult(Percobaan $percobaan)
+    {
+        return view('dashboard.pages.pre-test.pretest-result', compact('percobaan'));
+    }
+
+    // ======================
+    // POST-TEST
+    // ======================
     public function posttest()
     {
-        return view('dashboard.pages.posttest');
+        $tes = Tes::all(); // ambil semua post-test
+        return view('dashboard.pages.post-test.posttest', compact('tes'));
     }
 
-    public function posttestStart()
+    public function posttestShow(Tes $tes)
     {
-        return view('dashboard.pages.posttest');
+        $percobaan = Percobaan::where('peserta_id', Auth::id())
+                               ->where('tes_id', $tes->id)
+                               ->first();
+
+        return view('dashboard.pages.post-test.posttest-start', compact('tes', 'percobaan'));
     }
 
-    // Feedback
+    public function posttestSubmit(Request $request, Tes $tes)
+    {
+        $percobaan = Percobaan::create([
+            'peserta_id' => Auth::id(),
+            'tes_id' => $tes->id,
+            'jawaban' => json_encode($request->jawaban),
+            'waktu_mulai' => now(),
+        ]);
+
+        return redirect()->route('dashboard.posttest.result', $percobaan->id);
+    }
+
+    public function posttestResult(Percobaan $percobaan)
+    {
+        return view('dashboard.pages.post-test.posttest-result', compact('percobaan'));
+    }
+
+    // ======================
+    // FEEDBACK
+    // ======================
     public function feedback()
     {
         return view('dashboard.pages.feedback');
@@ -64,7 +113,6 @@ class DashboardController extends Controller
 
     public function feedbackSubmit(Request $request)
     {
-        // proses submit feedback
         return redirect()->route('dashboard.feedback')->with('success', 'Feedback berhasil dikirim!');
     }
 }

@@ -1,3 +1,4 @@
+{{-- resources/views/dashboard/pretest/index.blade.php --}}
 @extends('dashboard.layouts.main')
 
 @section('title', 'Pre-Test')
@@ -17,7 +18,7 @@
             </a>
         </div>
     @empty
-        <p class="text-gray-500">Tidak ada tes tersedia saat ini.</p>
+        <p class="text-gray-500">Tidak ada pre-test tersedia saat ini.</p>
     @endforelse
 </div>
 @endsection

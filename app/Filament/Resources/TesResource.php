@@ -38,9 +38,6 @@ class TesResource extends Resource
                 ->required(),
 
             Forms\Components\TextInput::make('durasi_menit')->numeric()->required(),
-
-            Forms\Components\MultiSelect::make('pertanyaans')
-                ->relationship('pertanyaans', 'teks_pertanyaan'),
         ]);
     }
 
