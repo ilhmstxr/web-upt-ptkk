@@ -93,11 +93,11 @@ Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
 // ============================
 // Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
 // Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
+Route::resource('/survey', SurveyController::class);
 Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
 Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
 Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
 
-Route::resource('/survey', SurveyController::class);
 Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
 
 // Rute untuk menyimpan jawaban dari setiap langkah survei
