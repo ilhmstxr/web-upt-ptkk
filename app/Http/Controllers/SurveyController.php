@@ -37,19 +37,14 @@ class SurveyController extends Controller
      */
     public function create(Request $request)
     {
-        // 1. Validasi data pendaftar di halaman pertama
+        // 1. Validasi data pendaftar di halaman pertama (tetap diperlukan)
         $request->validate([
             'email' => 'required|email',
             'nama' => 'required|string',
         ]);
 
-        $peserta = Peserta::where('email', $request->email)
-            ->where('nama', $request->nama)
-            ->first();
-
-        if (!$peserta) {
-            return redirect()->route('kuis.index')->withErrors(['message' => 'Kombinasi nama dan email tidak ditemukan.'])->withInput();
-        }
+        // PERUBAHAN: Blok untuk mengecek data peserta ke database dihapus.
+        // Data nama dan email dari request akan langsung digunakan.
 
         // 2. Mengumpulkan dan menggabungkan jawaban dari halaman sebelumnya
         $allAnswers = json_decode($request->input('all_answers', '[]'), true);
@@ -70,21 +65,30 @@ class SurveyController extends Controller
         // 5. Logika Navigasi
         if ($questions->isNotEmpty()) {
             // Jika masih ada pertanyaan, tampilkan halaman berikutnya
+
+            // PERUBAHAN: Buat objek sementara untuk data peserta agar
+            // variabel di view tidak perlu diubah.
+            $pesertaData = new \stdClass();
+            $pesertaData->nama = $request->input('nama');
+            $pesertaData->email = $request->input('email');
+
             $section = $kuis;
             $section->order = $nextPage;
 
             return view('peserta.kuis.step', [
                 'section' => $section,
-                'peserta' => $peserta,
+                'peserta' => $pesertaData, // Kirim objek sementara ke view
                 'questions' => $questions,
-                'all_answers_json' => json_encode($allAnswers), // Kirim data yang sudah terkumpul
+                'all_answers_json' => json_encode($allAnswers),
             ]);
         } else {
             // Jika tidak ada lagi pertanyaan, ini adalah halaman terakhir.
             // Siapkan data final untuk disimpan.
             $finalData = [
-                'nama' => $peserta->nama,
-                'email' => $peserta->email,
+                // PERUBAHAN: Ambil nama dan email langsung dari request,
+                // bukan dari objek model Peserta.
+                'nama' => $request->input('nama'),
+                'email' => $request->input('email'),
                 'kuis_id' => $kuis->id,
                 'answers' => $allAnswers,
                 'comments' => $request->input('comments'),
