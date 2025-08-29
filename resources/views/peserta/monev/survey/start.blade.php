@@ -13,7 +13,7 @@
         </h1>
 
         <p class="text-gray-600 sm:text-lg">
-            Silakan masuk dengan Nama dan Email yang terdaftar untuk memulai penilaian
+            silakan masuk dengan nama dan email untuk memulai penilaian
         </p>
 
     </div>

@@ -4,8 +4,7 @@
 @section('title', $section->judul)
 
 @section('content')
-<h1>oi</h1>
-<header class="text-center mb-10">
+    <header class="text-center mb-10">
         <div class="bg-white rounded-xl shadow-md inline-block px-6 py-4 mb-6">
             <h2 class="text-xl font-semibold text-indigo-700">
                 <i class="fas fa-poll-h text-indigo-500 mr-2"></i>
@@ -74,7 +73,10 @@
 
                 {{-- Loop untuk menampilkan semua kartu pertanyaan --}}
                 @foreach ($questions as $question)
-                    @include('peserta.monev.survey.partials.question_card', ['question' => $question])
+                    @include('peserta.monev.survey.partials.question_card', [
+                        'question' => $question,
+                        'loop' => $loop,
+                    ])
                 @endforeach
 
                 {{-- Tombol submit diubah menjadi 'Simpan' atau 'Selesai' --}}
