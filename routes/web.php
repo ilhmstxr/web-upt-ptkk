@@ -11,27 +11,72 @@ use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuratController;
 use App\Http\Controllers\SurveyController;
-
+use App\Http\Controllers\PostTestController;
+use App\Models\Peserta;
+use App\Mail\TestMail;
 use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
-use App\Models\Peserta;
-use App\Mail\TestMail;
 
+Route::get('/test-peserta', function () {
+    // ambil 5 data pertama dari PesertaSheet
+    dd((new PesertaSheet())->collection()->take(5));
+});
+
+Route::get('/test-lampiran', function () {
+    // ambil 5 data pertama dari LampiranSheet
+    dd((new LampiranSheet())->collection()->take(5));
+});
+
+Route::get('/export-peserta', function () {
+    return Excel::download(new PesertaExport(), 'peserta.xlsx');
+});
+
+/*------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// Redirect root ke form pendaftaran
+Route::get('/', function () {
+    return view('landing');
+});
+
+=======
 // Root / Landing Page
 Route::get('/', fn() => view('landing'))->name('landing');
+>>>>>>> 6224b604f276d0713859909bcc718c4f76af18cf
 
 // ============================
 // Pendaftaran
 // ============================
+
+// Route::prefix('api/flow')->middleware('api')->group(function () {
+//     Route::post('/register', [RegistrationFlowController::class, 'register'])->name('flow.register');
+//     Route::post('/biodata-sekolah', [RegistrationFlowController::class, 'saveSchool'])->name('flow.school');
+//     Route::post('/biodata-diri', [RegistrationFlowController::class, 'savePersonal'])->name('flow.personal');
+//     Route::post('/finish', [RegistrationFlowController::class, 'finish'])->name('flow.finish');
+// });
+
+// ============================
+// Pendaftaran (Form Pendaftaran Baru)
+ ============================
+// Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
+// Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
+Route::resource('/pendaftaran', PendaftaranController::class);
+
+
+// Kalau mau akses langsung registration-form-new.blade.php
 Route::resource('pendaftaran', PendaftaranController::class);
-Route::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
+oute::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('pendaftaran-testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
+
 Route::get('pendaftaran/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download');
 Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
+
 
 // Step pendaftaran opsional
 Route::prefix('pendaftaran/step')->group(function () {
@@ -131,7 +176,6 @@ Route::get('api/peserta', fn() => Peserta::with('lampiran', 'bidang', 'pelatihan
 
 // route fix
 // route pendaftaran
-Route::resource('/pendaftaran', PendaftaranController::class);
 Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 
