@@ -37,15 +37,8 @@ Route::get('/export-peserta', function () {
 |--------------------------------------------------------------------------
 */
 
-// Redirect root ke form pendaftaran
-Route::get('/', function () {
-    return view('landing');
-});
-
-=======
 // Root / Landing Page
 Route::get('/', fn() => view('landing'))->name('landing');
->>>>>>> 6224b604f276d0713859909bcc718c4f76af18cf
 
 // ============================
 // Pendaftaran
@@ -60,7 +53,7 @@ Route::get('/', fn() => view('landing'))->name('landing');
 
 // ============================
 // Pendaftaran (Form Pendaftaran Baru)
- ============================
+// ============================
 // Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
 // Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
 Route::resource('/pendaftaran', PendaftaranController::class);
@@ -68,7 +61,7 @@ Route::resource('/pendaftaran', PendaftaranController::class);
 
 // Kalau mau akses langsung registration-form-new.blade.php
 Route::resource('pendaftaran', PendaftaranController::class);
-oute::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
+Route::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('pendaftaran-testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
 
 Route::get('pendaftaran/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download');
@@ -193,3 +186,5 @@ route::get('/cek_icon',function (){
 
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';
+
+// route fix
