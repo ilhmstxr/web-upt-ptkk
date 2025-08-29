@@ -261,33 +261,36 @@ class SurveyController extends Controller
     {
         return $request;
         $validatedData = $request->validate([
-            'nama'      => 'required|string',
-            'email'     => 'required|email',
-            'tes_id'   => 'required|integer|exists:tes,id',
-            'answers'   => 'required|array',
-            'answers.*' => 'required',
-            'comments'  => 'nullable|string',
+            'peserta_id' => 'required|integer|exists:pesertas,id',
+            'kuis_id'    => 'required|integer|exists:kuis,id',
+            'answers'    => 'required|array',
+            'answers.*'  => 'required', // Setiap jawaban harus diisi
+            'comments'   => 'nullable|string', // Validasi untuk kesan & pesan
         ]);
 
         // return $validatedData;
         // Buat percobaan tanpa foreign key peserta
-        $percobaan = Percobaan::create([
-            'nama'          => $validatedData['nama'],
-            'email'         => $validatedData['email'],
-            'tes_id'       => $validatedData['tes_id'],
+   $percobaan = Percobaan::create([
+            'peserta_id'    => $validatedData['peserta_id'],
+            'kuis_id'       => $validatedData['kuis_id'],
             'waktu_mulai'   => now(),
             'waktu_selesai' => now(),
             'pesan_kesan'   => $validatedData['comments'] ?? null,
         ]);
 
-        $questions = Pertanyaan::where('tes_id', $validatedData['tes_id'])->get()->keyBy('id');
+
+      $questions = Pertanyaan::where('kuis_id', $validatedData['kuis_id'])->get()->keyBy('id');
         $questionIds = $questions->pluck('id');
 
+        // Ambil semua ID template yang mungkin digunakan oleh pertanyaan-pertanyaan ini
         $templateIds = PivotJawaban::whereIn('pertanyaan_id', $questionIds)
             ->pluck('template_pertanyaan_id');
 
+        // Gabungkan semua ID pertanyaan (asli dan template) untuk mengambil semua opsi jawaban yang relevan sekaligus
         $allRelevantQuestionIds = $questionIds->merge($templateIds)->unique();
-        $allOptions = OpsiJawaban::whereIn('pertanyaan_id', $allRelevantQuestionIds)->get()->keyBy('id');
+        $allOptions = OpsiJawaban::whereIn('pertanyaan_id', $allRelevantQuestionIds)
+            ->get()
+            ->keyBy('id'); // Jadikan ID opsi sebagai kunci untuk pencarian cepat
 
         $jawabanUntukDisimpan = [];
         foreach ($validatedData['answers'] as $pertanyaanId => $jawabanValue) {
@@ -325,8 +328,6 @@ class SurveyController extends Controller
         return redirect()->route('survey.complete')
             ->with('success', 'Terima kasih, survei Anda berhasil disimpan.');
     }
-
-
 
 
     /**
