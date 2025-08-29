@@ -14,6 +14,7 @@ use App\Models\Percobaan;
 use App\Models\Pertanyaan;
 use App\Models\Peserta;
 use App\Models\PivotJawaban;
+use App\Models\Tes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +29,7 @@ class SurveyController extends Controller
         // return true;
         // Mengambil kuis yang akan dikerjakan.
         // return 'konto';
-        $kuis = Kuis::where('tipe', 'survei')->firstorfail();
+        $kuis = Tes::where('tipe', 'survei')->firstorfail();
         // return $kuis;
         return view('peserta.monev.survey.start', compact('kuis'));
     }
@@ -54,7 +55,7 @@ class SurveyController extends Controller
         $allAnswers = array_merge($allAnswers, $newAnswers);
 
         // 3. Menentukan halaman berikutnya
-        $kuis = Kuis::where('tipe', 'survei')->firstOrFail();
+        $kuis = Tes::where('tipe', 'survei')->firstOrFail();
         $currentPage = $request->input('page', 0);
         $nextPage = $currentPage + 1;
 
@@ -159,7 +160,7 @@ class SurveyController extends Controller
     {
         $kuisId = $order;
 
-        $section = Kuis::findOrFail($kuisId);
+        $section = Tes::findOrFail($kuisId);
         // Langkah 3: Ambil semua pertanyaan yang terkait, diurutkan berdasarkan nomor
         $questions = Pertanyaan::where('kuis_id', $section->id)
             ->with([
