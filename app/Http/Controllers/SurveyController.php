@@ -107,15 +107,15 @@ class SurveyController extends Controller
     public function search(Request $request)
     {
         // Ambil query pencarian dari request, contoh: /api/peserta/search?nama=bud
-        $query = $request->input('nama');
+        // $query = $request->input('nama');
 
-        // Lakukan pencarian di database menggunakan 'LIKE'
-        $peserta = Peserta::where('nama', 'LIKE', "%{$query}%")
-            ->limit(10) // Batasi hasilnya agar tidak terlalu banyak
-            ->get(['id', 'nama']); // Ambil kolom id dan nama saja
+        // // Lakukan pencarian di database menggunakan 'LIKE'
+        // $peserta = Peserta::where('nama', 'LIKE', "%{$query}%")
+        //     ->limit(10) // Batasi hasilnya agar tidak terlalu banyak
+        //     ->get(['id', 'nama']); // Ambil kolom id dan nama saja
 
-        // Kembalikan hasilnya dalam format JSON
-        return response()->json($peserta);
+        // // Kembalikan hasilnya dalam format JSON
+        // return response()->json($peserta);
     }
 
     public function start(Request $request)
@@ -160,7 +160,7 @@ class SurveyController extends Controller
     // app/Http/Controllers/SurveyController.php
 
     // Laravel akan otomatis mencari Peserta berdasarkan ID yang ada di URL
-    public function show(Peserta $peserta, $order, Request $request)
+    public function show(PesertaSurvei $peserta, $order, Request $request)
     {
         $tesId = $order;
 
