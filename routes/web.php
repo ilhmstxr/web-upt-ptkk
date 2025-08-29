@@ -95,7 +95,7 @@ Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(func
 
     // Pre-Test
     Route::prefix('pretest')->name('pretest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'pretest'])->name('index'); 
+        Route::get('/', [DashboardController::class, 'pretest'])->name('index');
         Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
         Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
         Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
@@ -103,7 +103,7 @@ Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(func
 
     // Post-Test
     Route::prefix('posttest')->name('posttest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'posttest'])->name('index'); 
+        Route::get('/', [DashboardController::class, 'posttest'])->name('index');
         Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
         Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
         Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
@@ -131,12 +131,20 @@ Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
 // ============================
 // Survey / Monev
 // ============================
+
+// Route untuk manajemen Survey (Admin)
+Route::get('/survey', [SurveyController::class, 'index'])->name('survey.index');
+Route::get('/survey/create', [SurveyController::class, 'create'])->name('survey.create'); // Diubah
+Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');         // Sebaiknya ada untuk menyimpan survey baru
+
+// Route untuk peserta yang mengisi survey
 Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
 Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
-Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
+Route::post('/survey/check-credentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials'); // Diubah
+
+// Route utama untuk menampilkan & menyimpan jawaban per halaman
 Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
-Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
-Route::resource('/survey', SurveyController::class);
+Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update'); // Route::resource('/survey', SurveyController::class);
 
 
 // ============================ Excel Export ============================
@@ -182,7 +190,7 @@ Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBul
     ->name('peserta.download-bulk');
 
 
-route::get('/cek_icon',function (){
+route::get('/cek_icon', function () {
     return view('cek_icon');
 });
 

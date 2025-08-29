@@ -92,7 +92,7 @@ class SurveyController extends Controller
                 // bukan dari objek model Peserta.
                 'nama' => $request->input('nama'),
                 'email' => $request->input('email'),
-                'kuis_id' => $kuis->id,
+                'tes_id' => $kuis->id,
                 'answers' => $allAnswers,
                 'comments' => $request->input('comments'),
             ];
@@ -119,43 +119,39 @@ class SurveyController extends Controller
 
     public function start(Request $request)
     {
-        // return $request;
+        // 1. Validasi input
         $validated = $request->validate([
             'email'   => 'required|email',
-            'nama' => 'required|string',
-            'kuis_id' => 'required|integer|exists:tes,id'
+            'nama'    => 'required|string',
+            'tes_id' => 'required|integer|exists:tes,id'
         ]);
 
-        // Ambil nama lengkap dari input yang sudah divalidasi
         $namaLengkap = $validated['nama'];
         $email = $validated['email'];
-
-        // 1. Pecah string nama menjadi array berisi kata-kata kunci
         $keywords = explode(' ', $namaLengkap);
 
-        // 2. Lakukan pencarian dengan query builder dinamis
+        // 2. Cari peserta berdasarkan nama ATAU email
         $peserta = Peserta::query()
-            // Blok pertama: mencari berdasarkan nama
             ->where(function ($query) use ($keywords) {
-                // Loop setiap kata kunci dan cari menggunakan OR WHERE
                 foreach ($keywords as $keyword) {
-                    // Gunakan orWhereRaw untuk pencarian case-insensitive dan parsial
                     $query->orWhereRaw('LOWER(nama) LIKE ?', ['%' . strtolower($keyword) . '%']);
                 }
             })
-            // Blok kedua: tambahkan kondisi OR untuk mencari berdasarkan email
             ->orWhere('email', $email)
             ->first();
-        // return $peserta;
-        // return $findPeserta;
+
+        // 3. Tambahkan pengecekan jika peserta tidak ditemukan
+        if (!$peserta) {
+            return back()->withErrors(['message' => 'Data peserta tidak ditemukan.'])->withInput();
+        }
+
+        // 4. Redirect ke route 'survey.show' dengan parameter yang sesuai
+        //    Hanya kirim 'peserta' dan 'order' karena hanya itu yang ada di URI route.
         return redirect()->route('survey.show', [
-            'email' => $validated['email'], // Menggunakan email peserta->id,           // Menggunakan ID peserta
-            'nama' => $validated['nama'],
-            'order' => $validated['kuis_id'],
             'peserta' => $peserta->id,
+            'order'   => $validated['tes_id'],
         ]);
     }
-
     // app/Http/Controllers/SurveyController.php
 
     // Laravel akan otomatis mencari Peserta berdasarkan ID yang ada di URL
@@ -165,7 +161,7 @@ class SurveyController extends Controller
 
         $section = Tes::findOrFail($kuisId);
         // Langkah 3: Ambil semua pertanyaan yang terkait, diurutkan berdasarkan nomor
-        $questions = Pertanyaan::where('kuis_id', $section->id)
+        $questions = Pertanyaan::where('tes_id', $section->id)
             ->with([
                 'opsiJawabans', // Untuk pertanyaan yang punya opsi sendiri
                 'opsiLink.templatePertanyaan.opsiJawabans' // Untuk pertanyaan yang mencontek dari template
@@ -186,7 +182,7 @@ class SurveyController extends Controller
     //   public function show(Peserta $peserta, Kuis $kuis, $page = 1)
     // {
     //     // 1. Ambil SEMUA pertanyaan untuk kuis ini sekali saja dari database
-    //     $allQuestions = Pertanyaan::where('kuis_id', $kuis->id)->orderBy('nomor')->get();
+    //     $allQuestions = Pertanyaan::where('tes_id', $kuis->id)->orderBy('nomor')->get();
 
     //     // 2. Kelompokkan pertanyaan menjadi beberapa halaman
     //     $pages = new Collection();
@@ -231,7 +227,7 @@ class SurveyController extends Controller
     // {
     //     // return $request;
     //     $peserta = Peserta::where('email', $request->email)->firstOrFail();
-    //     $kuisId = $request->input('kuis_id');
+    //     $kuisId = $request->input('tes_id');
     //     $allAnswers = $request->input('answers', []);
 
     //     // Memulai transaksi database untuk memastikan semua data tersimpan
@@ -239,7 +235,7 @@ class SurveyController extends Controller
     //         // Buat record percobaan
     //         $percobaan = Percobaan::create([
     //             'peserta_id' => $peserta->id,
-    //             'kuis_id' => $kuisId,
+    //             'tes_id' => $kuisId,
     //             'waktu_mulai' => now(), // Bisa disesuaikan jika waktu mulai dicatat lebih awal
     //             'waktu_selesai' => now(),
     //             'pesan_kesan' => $request->input('comments'),
@@ -266,7 +262,7 @@ class SurveyController extends Controller
         $validatedData = $request->validate([
             'nama'      => 'required|string',
             'email'     => 'required|email',
-            'kuis_id'   => 'required|integer|exists:tes,id',
+            'tes_id'   => 'required|integer|exists:tes,id',
             'answers'   => 'required|array',
             'answers.*' => 'required',
             'comments'  => 'nullable|string',
@@ -276,13 +272,13 @@ class SurveyController extends Controller
         $percobaan = Percobaan::create([
             'nama'          => $validatedData['nama'],
             'email'         => $validatedData['email'],
-            'kuis_id'       => $validatedData['kuis_id'],
+            'tes_id'       => $validatedData['tes_id'],
             'waktu_mulai'   => now(),
             'waktu_selesai' => now(),
             'pesan_kesan'   => $validatedData['comments'] ?? null,
         ]);
 
-        $questions = Pertanyaan::where('kuis_id', $validatedData['kuis_id'])->get()->keyBy('id');
+        $questions = Pertanyaan::where('tes_id', $validatedData['tes_id'])->get()->keyBy('id');
         $questionIds = $questions->pluck('id');
 
         $templateIds = PivotJawaban::whereIn('pertanyaan_id', $questionIds)
