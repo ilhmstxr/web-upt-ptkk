@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::create('opsi_jawabans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pertanyaan_id')->constrained('pertanyaans')->onDelete('cascade');
+<<<<<<< HEAD:database/migrations/2025_08_28_043434_create_opsi_jawabans_table.php
+=======
+            $table->foreignId('percobaan_id')->constrained('percobaans')->onDelete('cascade');
+            $table->integer('nilai_jawaban')->nullable(); // Untuk skala likert (1-5)
+>>>>>>> merge-test-monev:database/migrations/2025_08_28_044434_create_opsi_jawabans_table.php
             $table->text('teks_opsi')->nullable();
             $table->string('gambar')->nullable();
             $table->boolean('apakah_benar')->default(false);
