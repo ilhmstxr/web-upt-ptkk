@@ -18,6 +18,17 @@
 
     </div>
 
+
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+            <strong class="font-bold">Harap perbaiki error berikut:</strong>
+            <ul class="list-disc list-inside mt-2">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8 max-w-xl mx-auto">
         <form action="{{ route('survey.start') }}" method="POST" class="space-y-6">
             @csrf
