@@ -29,4 +29,14 @@ class PesertaSurvei extends Model
     {
         return $this->hasMany(Percobaan::class);
     }
+
+    public function pelatihan()
+    {
+        return $this->belongsTo(Pelatihan::class);
+    }
+
+    public function bidang()
+    {
+        return $this->belongsTo(Bidang::class);
+    }
 }
