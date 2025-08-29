@@ -17,7 +17,7 @@ class Instansi extends Model
         'alamat_instansi',
         'bidang_keahlian',
         'kelas',
-        'cabang_dinas_id',
+        'cabang_dinas_wilayah',
     ];
 
     public function pesertas(): HasMany
