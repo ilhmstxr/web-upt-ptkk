@@ -32,7 +32,7 @@
     <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8 max-w-xl mx-auto">
         <form action="{{ route('survey.start') }}" method="POST" class="space-y-6">
             @csrf
-            <input type="hidden" name="kuis_id" value="{{ $kuis->id }}">
+            <input type="hidden" name="tes_id" value="{{ $kuis->id }}">
             <div class="relative">
 
                 <label for="nama" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">

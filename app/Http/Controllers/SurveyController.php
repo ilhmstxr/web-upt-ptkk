@@ -26,7 +26,7 @@ class SurveyController extends Controller
      */
     public function index()
     {
-        // return true;
+        return true;
         // Mengambil kuis yang akan dikerjakan.
         // return 'konto';
         $kuis = Tes::where('tipe', 'survei')->firstorfail();
