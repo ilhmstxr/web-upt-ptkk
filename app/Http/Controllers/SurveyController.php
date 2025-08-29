@@ -145,6 +145,7 @@ class SurveyController extends Controller
             // Array 2: Data yang akan di-update atau dibuat
             [
                 'nama'         => $validated['nama'],
+                'angkatan'         => $validated['angkatan'],
                 'pelatihan_id' => $validated['pelatihan_id'],
                 'bidang_id'    => $validated['bidang_id'] // Sesuaikan dengan nama dari form
             ]

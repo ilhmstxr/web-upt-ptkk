@@ -105,6 +105,20 @@
                     @endif
                 </div>
 
+                {{-- angkatan --}}
+                <div>
+                    <label for="angkatan" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fas fa-envelope text-indigo-500 mr-2"></i> Angkatan
+                    </label>
+                    <input type="text" id="angkatan" name="angkatan" value="{{ old('angkatan') }}"
+                        class="form-input w-full px-4 py-3 border {{ $errors->has('angkatan') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        required placeholder="contoh: Angkatan II">
+
+                    @if ($errors->has('angkatan'))
+                        <p class="text-red-500 text-xs mt-1">{{ $errors->first('angkatan') }}</p>
+                    @endif
+                </div>
+
 
                 {{-- Kolom 4: Pelatihan --}}
                 <div>
