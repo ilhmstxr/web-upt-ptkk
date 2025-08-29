@@ -131,6 +131,7 @@ class SurveyController extends Controller
         $validated = $request->validate([
             'email'        => 'required|email',
             'nama'         => 'required|string',
+            'angkatan'         => 'required|string',
             'pelatihan_id' => 'required|integer|exists:pelatihans,id', // Sebaiknya integer & exists
             'bidang_id' => 'required|integer|exists:bidangs,id',   // Ganti nama & validasi
             'tes_id'       => 'required|integer|exists:tes,id'
