@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('percobaans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
+            // $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
+            $table->foreignId('pesertaSurvei_id')->constrained('peserta_surveis')->cascadeOnDelete();
             $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
             $table->timestamp('waktu_mulai');
             $table->timestamp('waktu_selesai')->nullable();

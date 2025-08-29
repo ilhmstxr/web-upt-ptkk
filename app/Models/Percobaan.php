@@ -12,7 +12,7 @@ class Percobaan extends Model
     protected $table = 'percobaans';
 
     protected $fillable = [
-        'peserta_id',
+        'pesertaSurvei_id',
         'tes_id',
         'waktu_mulai',
         'waktu_selesai',
@@ -21,10 +21,14 @@ class Percobaan extends Model
     ];
 
     // Relasi ke peserta
-    public function peserta()
+    public function pesertaSurvei()
     {
-        return $this->belongsTo(Peserta::class, 'peserta_id');
+        return $this->belongsTo(PesertaSurvei::class, 'pesertaSurvei_id');
     }
+    // public function peserta()
+    // {
+    //     return $this->belongsTo(Peserta::class, 'peserta_id');
+    // }
 
     // Relasi ke tes
     public function tes()
@@ -41,7 +45,7 @@ class Percobaan extends Model
     // Hitung jumlah jawaban benar
     public function hitungSkor()
     {
-        return $this->jawabanUser()->whereHas('opsiJawabans', function($q) {
+        return $this->jawabanUser()->whereHas('opsiJawabans', function ($q) {
             $q->where('apakah_benar', true);
         })->count();
     }

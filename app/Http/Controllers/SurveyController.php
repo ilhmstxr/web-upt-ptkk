@@ -294,7 +294,7 @@ class SurveyController extends Controller
 
         // 3. Buat record percobaan (attempt)
         $percobaan = Percobaan::create([
-            'peserta_id'  => $validatedData['peserta_id'],
+            'pesertaSurvei_id'  => $validatedData['peserta_id'],
             'tes_id'      => $validatedData['tes_id'],
             'waktu_mulai' => now(), // Sebaiknya ada waktu mulai yang sebenarnya
             'waktu_selesai' => now(),

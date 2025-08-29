@@ -6,6 +6,7 @@ use App\Filament\Resources\JawabanSurveiResource\Pages;
 use App\Filament\Resources\JawabanSurveiResource\RelationManagers;
 use App\Models\JawabanSurvei;
 use App\Models\JawabanUser;
+use App\Models\PesertaSurvei;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class JawabanSurveiResource extends Resource
 {
-    protected static ?string $model = JawabanUser::class;
+    protected static ?string $model = PesertaSurvei::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -38,6 +39,7 @@ class JawabanSurveiResource extends Resource
                 Tables\Columns\TextColumn::make('deleted_at')->dateTime(),
                 Tables\Columns\TextColumn::make('jawaban_survei_id'),
                 Tables\Columns\TextColumn::make('jawaban_user_id'),
+                Tables\Columns\TextColumn::make('percobaan.pesertaSurvei.nama'),
             ])
             ->filters([
                 //

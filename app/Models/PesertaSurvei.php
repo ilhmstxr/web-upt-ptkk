@@ -20,4 +20,9 @@ class PesertaSurvei extends Model
     {
         return $this->hasMany(JawabanUser::class);
     }
+
+    public function percobaan()
+    {
+        return $this->hasMany(Percobaan::class);
+    }
 }
