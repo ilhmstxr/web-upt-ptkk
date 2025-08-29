@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PesertaSurveiResource\Widgets;
 
 use App\Filament\Resources\PesertaSurveiResource;
 use App\Models\Pelatihan;
+use App\Models\Peserta;
 use App\Models\PesertaSurvei;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -24,18 +25,25 @@ class PesertaBelumMengisi extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            // 2. Ubah query agar dinamis berdasarkan pelatihan yang dipilih
-            ->query(
-                PesertaSurvei::query()
-                    ->where('pelatihan_id', $this->pelatihan?->id)
-                    ->whereDoesntHave('percobaans')
-            )
+            ->query(function () {
+                // 2. Ambil ID pelatihan saat ini
+                $pelatihanId = $this->pelatihan?->id;
+
+                // 3. Dapatkan daftar email peserta yang SUDAH mengisi survei
+                $emailPesertaSudahMengisi = PesertaSurvei::where('pelatihan_id', $pelatihanId)
+                    ->pluck('email')
+                    ->all();
+
+                // 4. Kembalikan query utama:
+                // Cari Peserta di pelatihan ini yang emailnya TIDAK ADA di daftar di atas
+                return Peserta::query()
+                    ->where('pelatihan_id', $pelatihanId)
+                    ->whereNotIn('email', $emailPesertaSudahMengisi);
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('email'), 
-                Tables\Columns\TextColumn::make('bidang.nama_bidang'), 
-                // Kolom pelatihan tidak perlu lagi karena sudah spesifik
-                // Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->label('Pelatihan'),
+                Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('bidang.nama_bidang'),
             ]);
     }
 }
