@@ -19,6 +19,7 @@ class JawabanSurveiResource extends Resource
 {
     protected static ?string $model = PesertaSurvei::class;
 
+    protected static ?string $navigationGroup = 'Survei Monev';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -63,7 +64,7 @@ class JawabanSurveiResource extends Resource
             'create' => Pages\CreateJawabanSurvei::route('/create'),
             'edit' => Pages\EditJawabanSurvei::route('/{record}/edit'),
             'report' => Pages\PelatihanReport::route('/{pelatihanId}/report'),
-
+            'belum-mengisi' => Pages\DaftarPesertaBelumMengisi::route('/belum-mengisi'),
         ];
     }
 }

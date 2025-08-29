@@ -6,6 +6,7 @@ use App\Filament\Resources\JawabanSurveiResource;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanChart;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\PelatihanDetailStats;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\StatistikPesertaInteraktif;
+use App\Filament\Resources\PesertaSurveiResource\Widgets\PesertaBelumMengisi;
 use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
 
@@ -16,7 +17,7 @@ class PelatihanReport extends Page
     protected static string $view = 'filament.resources.jawaban-survei-resource.pages.pelatihan-report';
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    
+
     protected static bool $shouldRegisterNavigation = false; // Sembunyikan dari menu
 
     public ?Pelatihan $pelatihan;
@@ -38,6 +39,7 @@ class PelatihanReport extends Page
             PelatihanDetailStats::make(['pelatihan' => $this->pelatihan]),
             // StatistikPesertaInteraktif::make(['pelatihan' => $this->pelatihan]),
             JawabanChart::make(['pelatihan' => $this->pelatihan]),
+            PesertaBelumMengisi::make(['pelatihan' => $this->pelatihan]),
         ];
     }
 }
