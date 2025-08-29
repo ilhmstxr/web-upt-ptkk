@@ -86,4 +86,9 @@ class Peserta extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function percobaans()
+    {
+        return $this->hasMany(Percobaan::class, 'peserta_id');
+    }
 }
