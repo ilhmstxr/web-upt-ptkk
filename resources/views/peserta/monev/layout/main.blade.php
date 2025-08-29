@@ -27,7 +27,7 @@
                 <!-- Ganti src dengan asset() jika gambar ada di public/images -->
                 <img src="/images/logo-upt.png" alt="Logo UPT" class="h-14 sm:h-16 md:h-20 mr-4" onerror="this.style.display='none'">
                 <h2 class="text-base sm:text-lg md:text-xl font-bold text-indigo-900 whitespace-nowrap">
-                    UPT. PENGEMBANGAN TEKNIS KETRAMPILAN DAN KEJURUAN
+                    UPT. PENGEMBANGAN TEKNIS DAN KETERAMPILAN KEJURUAN
                 </h2>
             </div>
 
@@ -37,7 +37,7 @@
 
             <!-- Footer -->
             <div class="mt-8 text-center text-xs sm:text-sm text-gray-500">
-                <p>© UPT. PENGEMBANGAN TEKNIS KETRAMPILAN DAN KEJURUAN</p>
+                <p>© UPT. PENGEMBANGAN TEKNIS DAN KETERAMPILAN KEJURUAN</p>
                 <p class="mt-1">Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi</p>
             </div>
         </div>
