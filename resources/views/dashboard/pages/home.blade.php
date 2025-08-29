@@ -30,17 +30,13 @@
 
     <!-- Post-Test & Feedback -->
     <div class="p-6 bg-white rounded-xl shadow-md hover:shadow-xl transition card-hover relative">
-        <span class="absolute top-4 right-4 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">Opsional</span>
-        <h3 class="font-semibold text-xl mb-2">Post-Test & Feedback</h3>
-        <p class="text-gray-600">Evaluasi hasil belajarmu dan berikan feedback untuk peningkatan materi.</p>
+        <span class="absolute top-4 right-4 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">Wajib</span>
+        <h3 class="font-semibold text-xl mb-2">Post-Test</h3>
+        <p class="text-gray-600">Evaluasi hasil belajarmu untuk peningkatan materi.</p>
         <div class="mt-4 flex flex-col space-y-2">
             <a href="{{ route('dashboard.posttest.index') }}" 
                class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-center">
                Mulai Post-Test
-            </a>
-            <a href="{{ route('dashboard.feedback') }}" 
-               class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-center">
-               Berikan Feedback
             </a>
         </div>
     </div>
@@ -65,8 +61,8 @@
     </div>
     <div class="p-6 bg-white rounded-xl shadow-md card-hover flex items-center justify-between">
         <div>
-            <h4 class="font-bold text-lg">Feedback</h4>
-            <p class="text-gray-600 mt-1">Belum dikirim</p>
+            <h4 class="font-bold text-lg">Post-Test</h4>
+            <p class="text-gray-600 mt-1">Belum dikerjakan</p>
         </div>
         <div class="text-green-500 text-3xl font-bold">💬</div>
     </div>
