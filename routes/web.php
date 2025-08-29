@@ -40,6 +40,14 @@ Route::get('/export-peserta', function () {
 // Root / Landing Page
 Route::get('/', fn() => view('landing'))->name('landing');
 
+// Compatibility route 'home' (dipakai oleh beberapa blade)
+Route::get('/home', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard.home');
+    }
+    return redirect()->route('landing');
+})->name('home');
+
 // ============================
 // Pendaftaran
 // ============================
@@ -84,29 +92,47 @@ Route::view('template/instruktur', 'template_surat.instruktur');
 Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 
 // ============================
-// Dashboard & Pre/Post Test (auth)
+// Dashboard (PUBLIK - guest friendly)
 // ============================
-Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(function () {
-    // Dashboard utama
-    Route::get('/', [DashboardController::class, 'home'])->name('home'); // <-- cukup '/'
+Route::prefix('dashboard')->name('dashboard.')->group(function () {
+    // Dashboard utama (path -> /dashboard)
+    Route::get('/', [DashboardController::class, 'home'])->name('home');
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::get('/materi', [DashboardController::class, 'materi'])->name('materi');
     Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
     Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 
-    // Pre-Test
+    // Pre-Test (guest-friendly flow)
     Route::prefix('pretest')->name('pretest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'pretest'])->name('index'); 
+        Route::get('/', [DashboardController::class, 'pretest'])->name('index');
+
+        // show form singkat minta nama sebelum memulai (guest)
+        Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
+
+        // proses create peserta + percobaan (guest) lalu redirect ke show?percobaan=ID
+        Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
+
+        // tampil soal; untuk guest mengharapkan query param ?percobaan=ID
         Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
+
+        // submit jawaban (bisa lewat percobaan_id di body atau route percobaan)
         Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
+
+        // hasil
         Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
     });
 
-    // Post-Test
+    // Post-Test (guest-friendly)
     Route::prefix('posttest')->name('posttest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'posttest'])->name('index'); 
+        Route::get('/', [DashboardController::class, 'posttest'])->name('index');
+
+        Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
+        Route::post('{tes}/begin', [DashboardController::class, 'posttestBegin'])->name('begin');
+
         Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
+
         Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
+
         Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
     });
 
@@ -146,7 +172,7 @@ Route::get('/test-lampiran', fn() => dd((new LampiranSheet(null))->collection()-
 Route::get('/export-peserta', fn() => Excel::download(new PesertaExport(), 'peserta.xlsx'))->name('export.peserta');
 
 // ============================
-// Settings (Volt) - auth
+// Settings (Volt) - requires auth
 // ============================
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

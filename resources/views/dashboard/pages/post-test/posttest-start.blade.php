@@ -11,7 +11,7 @@
         {{-- Timer --}}
         @php
             $duration = $elapsedSeconds ?? ($percobaan->waktu_mulai ? now()->diffInSeconds($percobaan->waktu_mulai) : 0);
-            $jawabanCollection = $percobaan->jawabanUser ?? collect(); 
+            $jawabanCollection = $percobaan->jawabanUser ?? collect();
             $totalSoal = $pertanyaanList->count();
             $terjawab = $jawabanCollection->count();
             $progress = $totalSoal > 0 ? round(($terjawab / $totalSoal) * 100, 2) : 0;
@@ -23,7 +23,7 @@
         {{-- Progress Bar --}}
         <div class="mb-4">
             <div class="w-full bg-gray-200 rounded-full h-4">
-                <div class="bg-green-600 h-4 rounded-full" style="width: {{ $progress }}%;"></div>
+                <div class="bg-blue-600 h-4 rounded-full" style="width: {{ $progress }}%;"></div>
             </div>
             <p class="text-sm mt-1 text-gray-600">
                 Terjawab: {{ $terjawab }} / {{ $totalSoal }}
@@ -98,7 +98,7 @@
                     <span></span>
                 @endif
 
-                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
                     {{ $currentQuestionIndex + 1 == $totalSoal ? 'Selesai' : 'Selanjutnya' }}
                 </button>
             </div>
