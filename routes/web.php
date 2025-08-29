@@ -154,5 +154,8 @@ route::get('/cek_icon',function (){
     return view('cek_icon');
 });
 
+route::get('/100',function(){
+    return view('peserta.monev.pendaftaran');
+});
 // Rute untuk autentikasi (login, register, dll.)
 require __DIR__ . '/auth.php';
