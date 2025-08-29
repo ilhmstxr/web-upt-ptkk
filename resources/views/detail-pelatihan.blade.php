@@ -4,11 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Pelatihan - {{ $kompetensi ?? 'Tidak Ditemukan' }}</title>
-    <!-- Tailwind CSS CDN untuk styling yang responsif dan modern -->
+    <title>Detail Pelatihan - {{ $pelatihan->judul ?? 'Tidak Ditemukan' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Mengimpor font Inter dari Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
         body {
@@ -48,22 +46,19 @@
 
 <body class="bg-gray-100 min-h-screen">
 
-    <!-- Header dengan navigasi sederhana -->
     <header class="bg-white shadow-sm p-4 sticky top-0 z-50">
         <div class="container mx-auto flex items-center justify-between">
-            <!-- Logo dan nama UPT PTKK -->
             <a href="/" class="flex items-center space-x-4">
-                <img src="https://placehold.co/40x40/5c76c1/ffffff?text=Logo" alt="Logo UPT PTKK" class="rounded-full">
+                <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt="Logo UPT PTKK" class="w-10 h-10 rounded-full">
                 <h1 class="text-xl font-bold text-gray-800">UPT PTKK</h1>
             </a>
-            <!-- Tombol untuk mendaftar -->
             <nav>
-                <a href="/pendaftaran" class="px-4 py-2 text-white font-semibold rounded-lg shadow-md btn-primary">Daftar Sekarang</a>
+                <!-- Menyesuaikan tautan "Daftar Sekarang" di header untuk menyertakan slug pelatihan -->
+                <a href="/pendaftaran?pelatihan={{ $pelatihan->slug }}" class="px-4 py-2 text-white font-semibold rounded-lg shadow-md btn-primary">Daftar Sekarang</a>
             </nav>
         </div>
     </header>
 
-    <!-- Konten Utama Halaman -->
     <main class="container mx-auto p-4 md:p-8">
         @php
         // Array data mock untuk berbagai jenis pelatihan

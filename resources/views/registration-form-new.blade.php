@@ -808,15 +808,11 @@
     form.addEventListener('submit', function (e) {
         e.preventDefault(); // cegah default sementara supaya kita bisa validasi client-side
         if (validateStep('step-3')) {
-             // Disable button saat submit (hindari double click)
             const submitBtn = $('#submit-form');
             if (submitBtn) {
                 submitBtn.setAttribute('disabled', 'disabled');
                 submitBtn.textContent = 'Mengirim...';
             }
-
-            // KIRIM DENGAN SUBMIT BIASA sehingga Laravel dapat melakukan redirect()
-            // form.submit() memicu pengiriman tanpa memicu kembali event 'submit' handler
             form.submit();
 
             // NOTE: tidak perlu re-enable tombol di sini karena akan pindah halaman.

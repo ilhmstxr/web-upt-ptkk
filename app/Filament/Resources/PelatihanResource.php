@@ -41,6 +41,8 @@ class PelatihanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Menambahkan withCount untuk menghitung relasi 'registrations'
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('bidang.nama_bidang')->searchable(),
                 Tables\Columns\TextColumn::make('tanggal_mulai')

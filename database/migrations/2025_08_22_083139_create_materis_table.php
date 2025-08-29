@@ -11,13 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('materis', function (Blueprint $table) {
-        $table->id();
-        $table->string('judul');
-        $table->text('deskripsi')->nullable();
-        $table->string('file')->nullable(); // bisa PDF, video, dll
-        $table->timestamps();
-    });
+        Schema::create('pelatihans', function (Blueprint $table) {
+            $table->id();
+            $table->string('judul');
+            $table->string('slug')->unique();
+            $table->string('gambar')->nullable();
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
+            $table->string('durasi')->nullable();
+            $table->string('waktu')->nullable();
+            $table->text('tujuan')->nullable();
+            $table->text('target_peserta')->nullable();
+            $table->text('materi')->nullable();
+            $table->json('galeri')->nullable();
+            $table->text('deskripsi')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
