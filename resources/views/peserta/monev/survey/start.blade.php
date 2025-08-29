@@ -3,32 +3,55 @@
 @section('title', 'Pendaftaran MONEV Kegiatan Vokasi')
 
 @section('content')
-    <div class="text-center mb-8">
-        <img src="/images/logo-kementrian pendidikan.png" alt="Logo Kementerian Pendidikan"
-            class="mx-auto h-16 sm:h-20 md:h-24 mb-4" onerror="this.style.display='none'">
-        <h1 class="text-base sm:text-lg md:text-xl font-bold text-indigo-800 mb-2 leading-relaxed text-center">
+    <div class="max-w-2xl mx-auto text-center px-4 py-8 sm:py-12">
+
+        <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt="Logo Kementerian Pendidikan"
+            class="mx-auto h-20 sm:h-24 md:h-28 mb-6" onerror="this.style.display='none'">
+
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-indigo-800 mb-3 leading-tight break-words">
             MONEV KEGIATAN PENGEMBANGAN DAN PENINGKATAN KOMPETENSI VOKASI
         </h1>
-        <p class="text-indigo-600 text-sm sm:text-base">Silakan masuk dengan Nama dan Email yang terdaftar untuk memulai
-            penilaian</p>
+
+        <p class="text-gray-600 sm:text-lg">
+            silakan masuk dengan nama dan email untuk memulai penilaian
+        </p>
+
     </div>
 
+
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+            <strong class="font-bold">Harap perbaiki error berikut:</strong>
+            <ul class="list-disc list-inside mt-2">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8 max-w-xl mx-auto">
         <form action="{{ route('survey.start') }}" method="POST" class="space-y-6">
             @csrf
-            <input type="hidden" name="kuis_id" value="{{ $kuis->id }}">
-            <div>
+            <input type="hidden" name="tes_id" value="{{ $kuis->id }}">
+            <div class="relative">
+
                 <label for="nama" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                     <i class="fas fa-user text-indigo-500 mr-2"></i> Nama Lengkap
                 </label>
+
                 <input type="text" id="nama" name="nama" value="{{ old('nama') }}"
                     class="form-input w-full px-4 py-2 sm:py-3 border {{ $errors->has('nama') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                    required placeholder="Masukkan nama lengkap sesuai registrasi">
+                    required placeholder="Ketik nama Anda, sistem akan membantu..." autocomplete="off">
+
+                <div id="suggestions"
+                    class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg hidden">
+                </div>
+
                 @if ($errors->has('nama'))
                     <p class="text-red-500 text-xs mt-1">{{ $errors->first('nama') }}</p>
                 @endif
-            </div>
 
+            </div>
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                     <i class="fas fa-envelope text-indigo-500 mr-2"></i> Alamat Email
@@ -58,68 +81,89 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const nameInput = document.getElementById('nama');
-            const emailInput = document.getElementById('email');
-            const statusIcon = document.getElementById('status-icon');
-            const statusMessage = document.getElementById('status-message');
-            const checkUrl = "{{ route('survey.checkCredentials') }}";
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            let debounceTimeout;
+        emailInput.addEventListener('input', function() {
+            const email = emailInput.value.trim();
+            if (email && email.includes('@')) {
+                statusIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+                statusMessage.textContent = 'Format email valid.';
+                statusMessage.className = 'text-xs mt-1 text-green-600';
+            } else {
+                statusIcon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
+                statusMessage.textContent = 'Format email tidak valid.';
+                statusMessage.className = 'text-xs mt-1 text-red-600';
+            }
+        });
 
-            const performCheck = () => {
-                const name = nameInput.value.trim();
-                const email = emailInput.value.trim();
+        // Ambil elemen input nama dan div untuk saran
+        const nameInput = document.getElementById('nama');
+        const suggestionsPanel = document.getElementById('suggestions');
 
-                if (!name || !email || !email.includes('@')) {
-                    statusIcon.innerHTML = '';
-                    statusMessage.textContent = '';
-                    return;
-                }
+        // Fungsi debounce untuk mencegah terlalu banyak request ke server
+        // Request hanya akan dikirim setelah pengguna berhenti mengetik selama 300ms
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
 
-                statusIcon.innerHTML = '<i class="fas fa-spinner fa-spin text-gray-400"></i>';
-                statusMessage.textContent = '';
+        // Fungsi utama untuk mengambil dan menampilkan data
+        const getSuggestions = async (query) => {
+            // Jika input kosong, sembunyikan panel
+            if (query.length < 3) { // Hanya cari jika input lebih dari 2 karakter
+                suggestionsPanel.innerHTML = '';
+                suggestionsPanel.style.display = 'none';
+                return;
+            }
 
-                fetch(checkUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            nama: name,
-                            email: email
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.exists) {
-                            statusIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
-                            statusMessage.textContent = 'Data peserta ditemukan. Silakan lanjut.';
-                            statusMessage.className = 'text-xs mt-1 text-green-600';
-                        } else {
-                            statusIcon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
-                            statusMessage.textContent = 'Kombinasi nama dan email tidak ditemukan.';
-                            statusMessage.className = 'text-xs mt-1 text-red-600';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        statusIcon.innerHTML =
-                            '<i class="fas fa-exclamation-triangle text-yellow-500"></i>';
-                        statusMessage.textContent = 'Gagal terhubung ke server.';
-                        statusMessage.className = 'text-xs mt-1 text-yellow-600';
+            try {
+                // Panggil API yang sudah kita buat
+                const response = await fetch(`/api/peserta/search?nama=${query}`);
+                const suggestions = await response.json();
+
+                // Kosongkan saran sebelumnya
+                suggestionsPanel.innerHTML = '';
+
+                if (suggestions.length > 0) {
+                    // Tampilkan panel
+                    suggestionsPanel.style.display = 'block';
+
+                    // Tampilkan setiap saran di dalam panel
+                    suggestions.forEach(suggestion => {
+                        const suggestionDiv = document.createElement('div');
+                        suggestionDiv.textContent = suggestion.nama;
+                        suggestionDiv.className = 'p-2 hover:bg-gray-100 cursor-pointer';
+
+                        // Tambahkan event listener saat saran di-klik
+                        suggestionDiv.onclick = () => {
+                            nameInput.value = suggestion.nama; // Isi input dengan nama yang dipilih
+                            suggestionsPanel.innerHTML = ''; // Kosongkan saran
+                            suggestionsPanel.style.display = 'none'; // Sembunyikan panel
+                        };
+
+                        suggestionsPanel.appendChild(suggestionDiv);
                     });
-            };
+                } else {
+                    // Jika tidak ada hasil, sembunyikan panel
+                    suggestionsPanel.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+                suggestionsPanel.style.display = 'none';
+            }
+        };
 
-            const debounceCheck = () => {
-                clearTimeout(debounceTimeout);
-                debounceTimeout = setTimeout(performCheck, 500);
-            };
+        // Tambahkan event listener pada input nama
+        nameInput.addEventListener('input', debounce((e) => {
+            getSuggestions(e.target.value);
+        }, 300));
 
-            nameInput.addEventListener('input', debounceCheck);
-            emailInput.addEventListener('input', debounceCheck);
+        // Sembunyikan saran jika user mengklik di luar area
+        document.addEventListener('click', function(e) {
+            if (!nameInput.contains(e.target)) {
+                suggestionsPanel.style.display = 'none';
+            }
         });
     </script>
 @endpush

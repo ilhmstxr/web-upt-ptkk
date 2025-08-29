@@ -4,30 +4,42 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class JawabanUser extends Model
 {
-    /** @use HasFactory<\Database\Factories\TesJawabanUserFactory> */
     use HasFactory;
-    protected $table = 'jawaban_users';
-    protected $fillable = ['percobaan_id', 'pertanyaan_id', 'opsi_jawaban_id'];
 
-    public function percobaanTes(): BelongsTo
+    protected $table = 'jawaban_users';
+
+    protected $fillable = [
+        'opsi_jawabans_id', // untuk jawaban pilihan ganda
+        'pertanyaan_id',    // pertanyaan terkait
+        'percobaan_id',     // percobaan terkait (pre/post test)
+        'nilai_jawaban',    // untuk skala likert 1-5
+        'jawaban_teks',     // untuk jawaban esai / teks bebas
+    ];
+
+    /**
+     * Relasi ke percobaan
+     */
+    public function percobaan()
     {
-        // Merujuk ke model Tes_Percobaan
         return $this->belongsTo(Percobaan::class, 'percobaan_id');
     }
 
-    public function pertanyaan(): BelongsTo
+    /**
+     * Relasi ke pertanyaan
+     */
+    public function pertanyaan()
     {
-        // Merujuk ke model Tes_Pertanyaan
         return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
     }
 
-    public function opsiJawaban(): BelongsTo
+    /**
+     * Relasi ke opsi jawaban (jika jawaban pilihan ganda)
+     */
+    public function opsiJawabans()
     {
-        // Merujuk ke model Tes_OpsiJawaban
-        return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id');
+        return $this->belongsTo(OpsiJawabans::class, 'opsi_jawabans_id');
     }
 }

@@ -73,7 +73,10 @@
 
                 {{-- Loop untuk menampilkan semua kartu pertanyaan --}}
                 @foreach ($questions as $question)
-                    @include('peserta.monev.survey.partials.question_card', ['question' => $question])
+                    @include('peserta.monev.survey.partials.question_card', [
+                        'question' => $question,
+                        'loop' => $loop,
+                    ])
                 @endforeach
 
                 {{-- Tombol submit diubah menjadi 'Simpan' atau 'Selesai' --}}
