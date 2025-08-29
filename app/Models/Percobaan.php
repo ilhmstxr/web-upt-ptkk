@@ -4,29 +4,53 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Percobaan extends Model
 {
-    /** @use HasFactory<\Database\Factories\TesPercobaanFactory> */
     use HasFactory;
-    protected $table = 'percobaans';
-    protected $fillable = ['peserta_id', 'kuis_id', 'waktu_mulai', 'waktu_selesai', 'skor', 'pesan_kesan'];
 
-    public function pengguna(): BelongsTo
+    protected $table = 'percobaans';
+
+    protected $fillable = [
+        'peserta_id',
+        'tes_id',
+        'waktu_mulai',
+        'waktu_selesai',
+        'skor',
+        'pesan_kesan',
+    ];
+
+    // Relasi ke peserta
+    public function peserta()
     {
         return $this->belongsTo(Peserta::class, 'peserta_id');
     }
 
-    public function tes(): BelongsTo
+    // Relasi ke tes
+    public function tes()
     {
-        return $this->belongsTo(Kuis::class, 'kuis_id');
+        return $this->belongsTo(Tes::class, 'tes_id');
     }
 
-    public function jawabanUser(): HasMany
+    // Relasi ke jawaban user (konsisten dengan controller)
+    public function jawabanUser()
     {
-        // Merujuk ke model Tes_JawabanUser
         return $this->hasMany(JawabanUser::class, 'percobaan_id');
+    }
+
+    // Hitung jumlah jawaban benar
+    public function hitungSkor()
+    {
+        return $this->jawabanUser()->whereHas('opsiJawabans', function($q) {
+            $q->where('apakah_benar', true);
+        })->count();
+    }
+
+    // Hitung skor dalam persen
+    public function hitungSkorPersen()
+    {
+        $total = $this->jawabanUser()->count();
+        if ($total == 0) return 0;
+        return round($this->hitungSkor() / $total * 100, 2);
     }
 }
