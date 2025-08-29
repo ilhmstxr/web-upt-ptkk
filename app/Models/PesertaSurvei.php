@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany; // <-- Tambahkan ini
 
 class PesertaSurvei extends Model
 {
@@ -20,14 +21,14 @@ class PesertaSurvei extends Model
         'angkatan'
     ];
 
-    public function jawaban()
+    public function jawabanUsers()
     {
-        return $this->hasMany(JawabanUser::class);
+        return $this->hasMany(JawabanUser::class, 'pesertaSurvei_id');
     }
 
-    public function percobaan()
+    public function percobaans()
     {
-        return $this->hasMany(Percobaan::class);
+        return $this->hasMany(Percobaan::class, 'pesertaSurvei_id');
     }
 
     public function pelatihan()

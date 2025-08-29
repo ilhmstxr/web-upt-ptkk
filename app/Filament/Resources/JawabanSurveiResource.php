@@ -62,6 +62,8 @@ class JawabanSurveiResource extends Resource
             'index' => Pages\ListJawabanSurveis::route('/'),
             'create' => Pages\CreateJawabanSurvei::route('/create'),
             'edit' => Pages\EditJawabanSurvei::route('/{record}/edit'),
+            'report' => Pages\PelatihanReport::route('/{pelatihanId}/report'),
+
         ];
     }
 }
