@@ -39,4 +39,10 @@ class Pelatihan extends Model
     {
         return $this->hasMany(Peserta::class, 'pelatihan_id');
     }
+
+    public function pesertaSurveis(): HasMany
+    {
+        // GANTI Peserta::class menjadi PesertaSurvei::class
+        return $this->hasMany(PesertaSurvei::class, 'pelatihan_id');
+    }   
 }

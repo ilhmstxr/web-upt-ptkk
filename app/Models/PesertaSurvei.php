@@ -21,6 +21,7 @@ class PesertaSurvei extends Model
         'angkatan'
     ];
 
+
     public function jawabanUsers()
     {
         return $this->hasMany(JawabanUser::class, 'pesertaSurvei_id');
@@ -33,7 +34,7 @@ class PesertaSurvei extends Model
 
     public function pelatihan()
     {
-        return $this->belongsTo(Pelatihan::class);
+        return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
     public function bidang()

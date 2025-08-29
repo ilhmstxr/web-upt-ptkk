@@ -5,6 +5,7 @@ namespace App\Filament\Resources\JawabanSurveiResource\Pages;
 use App\Filament\Resources\JawabanSurveiResource;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanChart;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\PelatihanDetailStats;
+use App\Filament\Resources\JawabanSurveiResource\Widgets\StatistikPesertaInteraktif;
 use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
 
@@ -35,6 +36,7 @@ class PelatihanReport extends Page
         // Widget ini akan kita buat di Langkah 3
         return [
             PelatihanDetailStats::make(['pelatihan' => $this->pelatihan]),
+            // StatistikPesertaInteraktif::make(['pelatihan' => $this->pelatihan]),
             JawabanChart::make(['pelatihan' => $this->pelatihan]),
         ];
     }
