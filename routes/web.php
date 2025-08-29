@@ -137,7 +137,7 @@ Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
 Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
 Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
-
+Route::resource('/survey', SurveyController::class);
 // ============================
 // Excel Export
 // ============================
@@ -188,3 +188,4 @@ route::get('/cek_icon',function (){
 require __DIR__ . '/auth.php';
 
 // route fix
+
