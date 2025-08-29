@@ -13,7 +13,11 @@ class PesertaSurvei extends Model
     // protected $table = 'peserta_survei';
     protected $fillable = [
         'email',
-        'nama'
+        'nama',
+        'pelatihan_id',
+        'bidang_id',
+        'tes_id',
+        'angkatan'
     ];
 
     public function jawaban()

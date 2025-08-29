@@ -33,13 +33,8 @@ class JawabanSurveiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('jawaban')->limit(50),
-                Tables\Columns\TextColumn::make('created_at')->dateTime(),
-                Tables\Columns\TextColumn::make('updated_at')->dateTime(),
-                Tables\Columns\TextColumn::make('deleted_at')->dateTime(),
-                Tables\Columns\TextColumn::make('jawaban_survei_id'),
-                Tables\Columns\TextColumn::make('jawaban_user_id'),
-                Tables\Columns\TextColumn::make('percobaan.pesertaSurvei.nama'),
+                Tables\Columns\TextColumn::make('nama')->limit(50),
+                Tables\Columns\TextColumn::make('email')->limit(50),
             ])
             ->filters([
                 //

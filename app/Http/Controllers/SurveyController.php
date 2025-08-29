@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StartSurveyRequest;
 use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\StoreSurveyRequest;
+use App\Models\Bidang;
 use App\Models\Survey;
 use App\Models\Jawaban;
 use App\Models\JawabanUser;
 use App\Models\Kuis;
 use App\Models\OpsiJawaban;
+use App\Models\Pelatihan;
 use App\Models\Percobaan;
 use App\Models\Pertanyaan;
 use App\Models\Peserta;
@@ -31,8 +33,11 @@ class SurveyController extends Controller
         // Mengambil tes yang akan dikerjakan.
         // return 'konto';
         $tes = Tes::where('tipe', 'survei')->firstorfail();
+        $pelatihan = Pelatihan::all();
+        $bidang = Bidang::all();
+        // return $bidang;  
         // return $tes;
-        return view('peserta.monev.survey.start', compact('tes'));
+        return view('peserta.monev.survey.start', compact('tes', 'pelatihan', 'bidang'));
     }
 
     /**
@@ -120,34 +125,29 @@ class SurveyController extends Controller
 
     public function start(Request $request)
     {
+        // return $request;
+        // 1. Validasi input
         // 1. Validasi input
         $validated = $request->validate([
-            'email'   => 'required|email',
-            'nama'    => 'required|string',
-            'tes_id' => 'required|integer|exists:tes,id'
+            'email'        => 'required|email',
+            'nama'         => 'required|string',
+            'pelatihan_id' => 'required|integer|exists:pelatihans,id', // Sebaiknya integer & exists
+            'bidang_id' => 'required|integer|exists:bidangs,id',   // Ganti nama & validasi
+            'tes_id'       => 'required|integer|exists:tes,id'
         ]);
 
-        $namaLengkap = $validated['nama'];
-        $email = $validated['email'];
-        $keywords = explode(' ', $namaLengkap);
-
-        // 2. Cari peserta berdasarkan nama ATAU email
-        // $peserta = Peserta::query()
-        //     ->where(function ($query) use ($keywords) {
-        //         foreach ($keywords as $keyword) {
-        //             $query->orWhereRaw('LOWER(nama) LIKE ?', ['%' . strtolower($keyword) . '%']);
-        //         }
-        //     })
-        //     ->orWhere('email', $email)
-        //     ->first();
-
-        // // 3. Tambahkan pengecekan jika peserta tidak ditemukan
-        // if (!$peserta) {
-        //     return back()->withErrors(['message' => 'Data peserta tidak ditemukan.'])->withInput();
-        // }
+        // REVISI DI SINI
         $peserta = PesertaSurvei::updateOrCreate(
-            ['email' => $validated['email']], // Kunci unik untuk mencari
-            ['nama' => $validated['nama']]     // Data yang akan di-update atau dibuat
+            // Array 1: Kunci unik untuk mencari data
+            [
+                'email' => $validated['email']
+            ],
+            // Array 2: Data yang akan di-update atau dibuat
+            [
+                'nama'         => $validated['nama'],
+                'pelatihan_id' => $validated['pelatihan_id'],
+                'bidang_id'    => $validated['bidang_id'] // Sesuaikan dengan nama dari form
+            ]
         );
 
         // 4. Redirect ke route 'survey.show' dengan parameter yang sesuai

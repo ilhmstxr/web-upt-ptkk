@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('email');
+            $table->string('angkatan')->nullable();
+            $table->foreignId('bidang_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('pelatihan_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
