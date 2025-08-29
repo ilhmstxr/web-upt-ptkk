@@ -56,7 +56,6 @@ Route::get('/', fn() => view('landing'))->name('landing');
 // ============================
 // Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
 // Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
-Route::resource('/pendaftaran', PendaftaranController::class);
 
 
 // Kalau mau akses langsung registration-form-new.blade.php
@@ -138,6 +137,9 @@ Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredenti
 Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
 Route::resource('/survey', SurveyController::class);
+
+
+// ============================ Excel Export ============================
 // ============================
 // Excel Export
 // ============================
@@ -188,4 +190,3 @@ route::get('/cek_icon',function (){
 require __DIR__ . '/auth.php';
 
 // route fix
-
