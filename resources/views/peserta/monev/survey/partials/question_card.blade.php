@@ -54,7 +54,7 @@
         @endphp
         <div class="rating-options-container grid grid-cols-2 sm:grid-cols-4 gap-2">
             {{-- Loop tetap menggunakan accessor 'opsiJawabanFinal' --}}
-            @foreach ($question->opsiJawabanFinal->sortBy('nilai') as $opsi)
+            @foreach ($question->opsiJawabanFinal->sortByDesc('id') as $opsi)
                 <label
                     class="rating-option flex flex-col items-center p-3 border-2 bg-gray-50 border-gray-200 rounded-lg cursor-pointer transition-all duration-200 hover:border-indigo-300 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-400">
                     <input type="radio" name="answers[{{ $question->id }}]" value="{{ $opsi->nilai ?? $opsi->id }}"
