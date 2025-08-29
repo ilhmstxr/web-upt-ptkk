@@ -1,6 +1,6 @@
 @extends('peserta.monev.layout.main')
 
-{{-- Judul halaman diambil dari judul kuis/section --}}
+{{-- Judul halaman diambil dari judul tes/section --}}
 @section('title', $section->judul)
 
 @section('content')
@@ -8,7 +8,7 @@
         <div class="bg-white rounded-xl shadow-md inline-block px-6 py-4 mb-6">
             <h2 class="text-xl font-semibold text-indigo-700">
                 <i class="fas fa-poll-h text-indigo-500 mr-2"></i>
-                {{-- Judul kuis/section --}}
+                {{-- Judul tes/section --}}
                 {{ $section->judul }}
             </h2>
             @if ($section->deskripsi)
@@ -27,13 +27,13 @@
         PERUBAHAN UTAMA:
         1. 'action' sekarang mengarah ke route 'survey.store'.
         2. @method('PUT') dihapus karena kita menggunakan metode POST.
-        3. Menambahkan hidden input untuk 'peserta_id' dan 'kuis_id'.
+        3. Menambahkan hidden input untuk 'peserta_id' dan 'tes_id'.
     --}}
     <form action="{{ route('survey.store') }}" method="POST">
         @csrf
 
         <input type="hidden" name="peserta_id" value="{{ $peserta->id }}">
-        <input type="hidden" name="kuis_id" value="{{ $section->id }}">
+        <input type="hidden" name="tes_id" value="{{ $section->id }}">
 
         <div class="bg-white rounded-b-xl shadow-md overflow-hidden">
             {{-- Bagian Header Skala (opsional, bisa dipindah jika perlu) --}}
