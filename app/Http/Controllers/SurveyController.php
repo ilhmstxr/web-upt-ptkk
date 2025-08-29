@@ -123,27 +123,30 @@ class SurveyController extends Controller
         $validated = $request->validate([
             'email'   => 'required|email',
             'nama' => 'required|string',
-            'kuis_id' => 'required|integer|exists:kuis,id'
+            'kuis_id' => 'required|integer|exists:tes,id'
         ]);
 
         // Ambil nama lengkap dari input yang sudah divalidasi
         $namaLengkap = $validated['nama'];
+        $email = $validated['email'];
 
         // 1. Pecah string nama menjadi array berisi kata-kata kunci
         $keywords = explode(' ', $namaLengkap);
 
         // 2. Lakukan pencarian dengan query builder dinamis
         $peserta = Peserta::query()
+            // Blok pertama: mencari berdasarkan nama
             ->where(function ($query) use ($keywords) {
-                // 3. Loop setiap kata kunci dan cari menggunakan OR WHERE
+                // Loop setiap kata kunci dan cari menggunakan OR WHERE
                 foreach ($keywords as $keyword) {
-                    // Gunakan orWhereRaw untuk pencarian case-insensitive (LOWER) 
-                    // dan pencarian parsial (LIKE)
+                    // Gunakan orWhereRaw untuk pencarian case-insensitive dan parsial
                     $query->orWhereRaw('LOWER(nama) LIKE ?', ['%' . strtolower($keyword) . '%']);
                 }
             })
-            ->first(); // Ambil data pertama yang cocok
-
+            // Blok kedua: tambahkan kondisi OR untuk mencari berdasarkan email
+            ->orWhere('email', $email)
+            ->first();
+        return $peserta;
         // return $findPeserta;
         return redirect()->route('survey.show', [
             'email' => $validated['email'], // Menggunakan email peserta->id,           // Menggunakan ID peserta
@@ -263,7 +266,7 @@ class SurveyController extends Controller
         $validatedData = $request->validate([
             'nama'      => 'required|string',
             'email'     => 'required|email',
-            'kuis_id'   => 'required|integer|exists:kuis,id',
+            'kuis_id'   => 'required|integer|exists:tes,id',
             'answers'   => 'required|array',
             'answers.*' => 'required',
             'comments'  => 'nullable|string',
