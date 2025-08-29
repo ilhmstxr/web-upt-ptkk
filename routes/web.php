@@ -56,7 +56,6 @@ Route::get('/', fn() => view('landing'))->name('landing');
 // ============================
 // Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
 // Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
-Route::resource('/pendaftaran', PendaftaranController::class);
 
 
 // Kalau mau akses langsung registration-form-new.blade.php
@@ -137,10 +136,10 @@ Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
 Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
 Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
+Route::resource('/survey', SurveyController::class);
 
-// ============================
-// Excel Export
-// ============================
+
+// ============================ Excel Export ============================
 Route::get('/test-peserta', fn() => dd((new PesertaSheet(null))->collection()->take(5)));
 Route::get('/test-lampiran', fn() => dd((new LampiranSheet(null))->collection()->take(5)));
 Route::get('/export-peserta', fn() => Excel::download(new PesertaExport(), 'peserta.xlsx'))->name('export.peserta');
