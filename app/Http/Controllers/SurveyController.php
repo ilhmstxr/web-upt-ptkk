@@ -259,6 +259,7 @@ class SurveyController extends Controller
 
     public function store(Request $request)
     {
+        return $request;
         $validatedData = $request->validate([
             'nama'      => 'required|string',
             'email'     => 'required|email',
@@ -268,6 +269,7 @@ class SurveyController extends Controller
             'comments'  => 'nullable|string',
         ]);
 
+        // return $validatedData;
         // Buat percobaan tanpa foreign key peserta
         $percobaan = Percobaan::create([
             'nama'          => $validatedData['nama'],
@@ -314,6 +316,7 @@ class SurveyController extends Controller
 
             $jawabanUntukDisimpan[] = $dataJawaban;
         }
+        return $jawabanUntukDisimpan;
 
         if (!empty($jawabanUntukDisimpan)) {
             JawabanUser::insert($jawabanUntukDisimpan);
