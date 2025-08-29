@@ -5,9 +5,9 @@
     opsi jawaban dari template jika ada.
 --}}
 <div class="mb-8 @error('answers.' . $question->id) border border-red-500 rounded-lg p-3 @enderror"
-    id="q-{{ $loop->iteration }}">
+    id="q-{{ $question->id }}">
 
-    <p class="mb-4 font-medium text-gray-800 leading-relaxed">{{ $question->nomor }}. {{ $question->teks_pertanyaan }}
+    <p class="mb-4 font-medium text-gray-800 leading-relaxed">{{ $loop->iteration }}. {{ $question->teks_pertanyaan }}
     </p>
 
     {{-- KONDISI 1: Tampilan khusus untuk SKALA LIKERT dengan EMOJI --}}
