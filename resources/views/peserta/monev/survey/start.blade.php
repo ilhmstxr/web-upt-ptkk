@@ -13,15 +13,26 @@
         </h1>
 
         <p class="text-gray-600 sm:text-lg">
-            Silakan masuk dengan Nama dan Email yang terdaftar untuk memulai penilaian
+            silakan masuk dengan nama dan email untuk memulai penilaian
         </p>
 
     </div>
 
+
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+            <strong class="font-bold">Harap perbaiki error berikut:</strong>
+            <ul class="list-disc list-inside mt-2">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8 max-w-xl mx-auto">
         <form action="{{ route('survey.start') }}" method="POST" class="space-y-6">
             @csrf
-            <input type="hidden" name="kuis_id" value="{{ $kuis->id }}">
+            <input type="hidden" name="tes_id" value="{{ $tes->id }}">
             <div class="relative">
 
                 <label for="nama" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">

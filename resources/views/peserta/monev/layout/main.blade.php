@@ -23,13 +23,13 @@
         <div class="w-full max-w-4xl">
 
             <!-- Header Logo UPT -->
-            <div class="flex items-center justify-center mb-6">
-                <!-- Ganti src dengan asset() jika gambar ada di public/images -->
-                <img src="/images/logo-upt.png" alt="Logo UPT" class="h-14 sm:h-16 md:h-20 mr-4" onerror="this.style.display='none'">
-                <h2 class="text-base sm:text-lg md:text-xl font-bold text-indigo-900 whitespace-nowrap">
-                    UPT. PENGEMBANGAN TEKNIS DAN KETERAMPILAN KEJURUAN
-                </h2>
-            </div>
+            <div class="flex flex-col sm:flex-row items-center justify-center mb-6 text-center sm:text-left">
+    <img src="/images/logo-upt.png" alt="Logo UPT" class="h-14 sm:h-16 md:h-20 mb-2 sm:mb-0 sm:mr-4" onerror="this.style.display='none'">
+
+    <h2 class="text-base sm:text-lg md:text-xl font-bold text-indigo-900">
+        UPT. PENGEMBANGAN TEKNIS KETERAMPILAN DAN KEJURUAN
+    </h2>
+</div>
 
             <main>
                 @yield('content')
@@ -37,7 +37,7 @@
 
             <!-- Footer -->
             <div class="mt-8 text-center text-xs sm:text-sm text-gray-500">
-                <p>© UPT. PENGEMBANGAN TEKNIS DAN KETERAMPILAN KEJURUAN</p>
+                <p>© UPT.   PENGEMBANGAN TEKNIS KETERAMPILAN DAN KEJURUAN</p>
                 <p class="mt-1">Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi</p>
             </div>
         </div>
