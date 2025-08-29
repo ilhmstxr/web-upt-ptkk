@@ -13,6 +13,7 @@ use App\Models\OpsiJawaban;
 use App\Models\Percobaan;
 use App\Models\Pertanyaan;
 use App\Models\Peserta;
+use App\Models\PesertaSurvei;
 use App\Models\PivotJawaban;
 use App\Models\Tes;
 use Illuminate\Http\Request;
@@ -131,19 +132,23 @@ class SurveyController extends Controller
         $keywords = explode(' ', $namaLengkap);
 
         // 2. Cari peserta berdasarkan nama ATAU email
-        $peserta = Peserta::query()
-            ->where(function ($query) use ($keywords) {
-                foreach ($keywords as $keyword) {
-                    $query->orWhereRaw('LOWER(nama) LIKE ?', ['%' . strtolower($keyword) . '%']);
-                }
-            })
-            ->orWhere('email', $email)
-            ->first();
+        // $peserta = Peserta::query()
+        //     ->where(function ($query) use ($keywords) {
+        //         foreach ($keywords as $keyword) {
+        //             $query->orWhereRaw('LOWER(nama) LIKE ?', ['%' . strtolower($keyword) . '%']);
+        //         }
+        //     })
+        //     ->orWhere('email', $email)
+        //     ->first();
 
-        // 3. Tambahkan pengecekan jika peserta tidak ditemukan
-        if (!$peserta) {
-            return back()->withErrors(['message' => 'Data peserta tidak ditemukan.'])->withInput();
-        }
+        // // 3. Tambahkan pengecekan jika peserta tidak ditemukan
+        // if (!$peserta) {
+        //     return back()->withErrors(['message' => 'Data peserta tidak ditemukan.'])->withInput();
+        // }
+        $peserta = PesertaSurvei::updateOrCreate(
+            ['email' => $validated['email']], // Kunci unik untuk mencari
+            ['nama' => $validated['nama']]     // Data yang akan di-update atau dibuat
+        );
 
         // 4. Redirect ke route 'survey.show' dengan parameter yang sesuai
         //    Hanya kirim 'peserta' dan 'order' karena hanya itu yang ada di URI route.
@@ -297,15 +302,17 @@ class SurveyController extends Controller
         ]);
 
         // 4. Siapkan array jawaban untuk disimpan secara massal (bulk insert)
+        // ...
         $jawabanUntukDisimpan = [];
         foreach ($validatedData['answers'] as $pertanyaanId => $jawabanValue) {
             $question = $questions->get($pertanyaanId);
             if (!$question) continue; // Lewati jika pertanyaan tidak valid
 
+            // REVISI: Mengganti 'teks_opsi' menjadi 'opsi_jawaban_id'
             $dataJawaban = [
+                'opsi_jawabans_id' => null, // INI YANG DIUBAH
                 'percobaan_id'    => $percobaan->id,
                 'pertanyaan_id'   => $pertanyaanId,
-                'teks_opsi' => null,
                 'nilai_jawaban'   => null,
                 'jawaban_teks'    => null,
                 'created_at'      => now(),
@@ -317,7 +324,8 @@ class SurveyController extends Controller
             } else {
                 $selectedOption = $allOptions->get($jawabanValue);
                 if ($selectedOption) {
-                    $dataJawaban['teks_opsi'] = $selectedOption->id;
+                    // REVISI: Menyesuaikan kunci array dengan nama kolom yang benar
+                    $dataJawaban['opsi_jawabans_id'] = $selectedOption->id; // INI YANG DIUBAH
                     $dataJawaban['nilai_jawaban']   = $selectedOption->nilai;
                 }
             }
@@ -325,7 +333,15 @@ class SurveyController extends Controller
             $jawabanUntukDisimpan[] = $dataJawaban;
         }
 
-        return $jawabanUntukDisimpan;
+
+        // return $jawabanUntukDisimpan;
+        //      protected $fillable = [
+        //     'opsi_jawabans_id', // untuk jawaban pilihan ganda
+        //     'pertanyaan_id',    // pertanyaan terkait
+        //     'percobaan_id',     // percobaan terkait (pre/post test)
+        //     'nilai_jawaban',    // untuk skala likert 1-5
+        //     'jawaban_teks',     // untuk jawaban esai / teks bebas
+        // ];
 
         // 5. Simpan semua jawaban sekaligus jika ada
         if (!empty($jawabanUntukDisimpan)) {
@@ -359,5 +375,3 @@ class SurveyController extends Controller
     //     return response()->json(['exists' => $exists]);
     // }
 }
-
-
