@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\JawabanSurveiResource\Widgets;
 
 use App\Models\JawabanUser;
+use App\Models\Peserta;
 use App\Models\PesertaSurvei;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -13,7 +14,7 @@ class SurveyStatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $totalResponden = PesertaSurvei::count();
+        $totalResponden = Peserta::count();
         $totalJawaban = JawabanUser::count();
         $rataRataJawaban = $totalResponden > 0 ? number_format($totalJawaban / $totalResponden, 1) : 0;
 

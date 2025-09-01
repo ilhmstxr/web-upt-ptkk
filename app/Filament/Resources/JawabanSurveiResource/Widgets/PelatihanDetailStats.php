@@ -20,12 +20,27 @@ class PelatihanDetailStats extends BaseWidget
             return [];
         }
 
-        // ... (kode perhitungan Anda)
-        $totalPeserta = Peserta::where('pelatihan_id', $this->pelatihan->id)->count();
-        $pesertaMengisi = PesertaSurvei::where('pelatihan_id', $this->pelatihan->id)
-            ->whereHas('percobaans')
-            ->count();
-        $pesertaBelumMengisi = $totalPeserta - $pesertaMengisi;
+
+        // 1. Ambil SEMUA peserta dari pelatihan ini sebagai Collection
+        $semuaPeserta = Peserta::where('pelatihan_id', $this->pelatihan->id)->get();
+
+        // 2. Ambil SEMUA peserta yang sudah mengisi survei sebagai Collection
+        $pesertaSudahMengisiCollection = PesertaSurvei::where('pelatihan_id', $this->pelatihan->id)->get();
+
+        // 3. Lakukan filter untuk menemukan peserta yang belum mengisi, sama seperti di widget tabel
+        $pesertaBelumMengisiCollection = $semuaPeserta->reject(function ($peserta) use ($pesertaSudahMengisiCollection) {
+            // Cek apakah ada data di $pesertaSudahMengisiCollection yang cocok dengan $peserta saat ini
+            return $pesertaSudahMengisiCollection->contains(function ($survei) use ($peserta) {
+                // Kondisi pencocokan: nama ATAU email sama (case-insensitive)
+                return strtolower($survei->nama) === strtolower($peserta->nama)
+                    || strtolower($survei->email) === strtolower($peserta->email);
+            });
+        });
+
+        // 4. Hitung angka-angka statistik berdasarkan hasil filter
+        $totalPeserta = $semuaPeserta->count();
+        $pesertaBelumMengisi = $pesertaBelumMengisiCollection->count();
+        $pesertaMengisi = $totalPeserta - $pesertaBelumMengisi; // Dihitung dari selisih
         $persentase = $totalPeserta > 0 ? round(($pesertaMengisi / $totalPeserta) * 100) : 0;
 
         // Buat URL dasar ke halaman daftar peserta
@@ -41,7 +56,7 @@ class PelatihanDetailStats extends BaseWidget
                 ->icon('heroicon-m-x-circle')
                 // URL ini akan menampilkan daftar peserta yang belum mengisi
                 ->url($baseUrl . '?tableFilters[status][value]=belum'),
-                
+
             Stat::make('Peserta Sudah Mengisi', $pesertaMengisi)
                 ->icon('heroicon-m-check-circle')
                 // URL ini akan menampilkan daftar peserta yang sudah mengisi
