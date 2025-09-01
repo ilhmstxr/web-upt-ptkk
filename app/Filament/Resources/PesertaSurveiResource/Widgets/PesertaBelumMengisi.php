@@ -2,10 +2,8 @@
 
 namespace App\Filament\Resources\PesertaSurveiResource\Widgets;
 
-use App\Filament\Resources\PesertaSurveiResource;
 use App\Models\Pelatihan;
 use App\Models\Peserta;
-use App\Models\PesertaSurvei;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -13,50 +11,33 @@ use Illuminate\Support\Facades\DB;
 
 class PesertaBelumMengisi extends BaseWidget
 {
-    // Atur judul widget
     protected static ?string $heading = 'Daftar Peserta Belum Mengisi Survei';
-
-    protected static bool $shouldRegisterNavigation = false; // Sembunyikan dari menu
-
+    protected static bool $shouldRegisterNavigation = false;
     public ?Pelatihan $pelatihan = null;
-
-    // Atur seberapa banyak data yang ditampilkan per halaman
     protected static ?int $defaultSortColumnDirection = 5;
 
     public function table(Table $table): Table
     {
         return $table
             ->query(function () {
-                // 1. Ambil ID pelatihan saat ini
                 $pelatihanId = $this->pelatihan?->id;
 
-                // --- Di sinilah kita mengimplementasikan logika murninya ---
-
-                // 2. Ambil SEMUA peserta dari pelatihan ini sebagai Collection
-                $semuaPeserta = Peserta::where('pelatihan_id', $pelatihanId)->get();
-
-                // 3. Ambil SEMUA peserta yang sudah mengisi survei sebagai Collection
-                $pesertaSudahMengisi = PesertaSurvei::where('pelatihan_id', $pelatihanId)->get();
-
-                // 4. Lakukan filter di level PHP (ini adalah logika intinya)
-                // Kita "membuang" (reject) peserta jika ia ditemukan di daftar yang sudah mengisi
-                $pesertaBelumMengisi = $semuaPeserta->reject(function ($peserta) use ($pesertaSudahMengisi) {
-
-                    // Cek apakah ada data di $pesertaSudahMengisi yang cocok dengan $peserta saat ini
-                    return $pesertaSudahMengisi->contains(function ($survei) use ($peserta) {
-
-                        // Kondisi pencocokan: nama ATAU email sama (case-insensitive)
-                        return strtolower($survei->nama) === strtolower($peserta->nama)
-                            || strtolower($survei->email) === strtolower($peserta->email);
-                    });
-                });
-
-                // 5. Ambil hanya ID dari peserta yang belum mengisi
-                $idPesertaBelumMengisi = $pesertaBelumMengisi->pluck('id')->all();
-
-                // 6. Kembalikan query builder yang mencari berdasarkan ID yang sudah kita saring
+                // --- Query yang Efisien dengan TRIM() dan LOWER() ---
                 return Peserta::query()
-                    ->whereIn('id', $idPesertaBelumMengisi);
+                    ->select('pesertas.*')
+                    ->leftJoin('peserta_surveis as ps', function ($join) use ($pelatihanId) {
+                        $join
+                            // Cocokkan nama (case-insensitive dan tanpa spasi ekstra)
+                            ->on(DB::raw('LOWER(TRIM(pesertas.nama))'), '=', DB::raw('LOWER(TRIM(ps.nama))'))
+                            // ATAU cocokkan email (case-insensitive dan tanpa spasi ekstra)
+                            ->orOn(DB::raw('LOWER(TRIM(pesertas.email))'), '=', DB::raw('LOWER(TRIM(ps.email))'))
+                            // Pastikan join hanya pada pelatihan yang sama
+                            ->where('ps.pelatihan_id', '=', $pelatihanId);
+                    })
+                    // Filter utama: Hanya peserta dari pelatihan ini
+                    ->where('pesertas.pelatihan_id', $pelatihanId)
+                    // Kunci Logika: Ambil hanya yang GAGAL join
+                    ->whereNull('ps.id');
             })
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable()->sortable(),
