@@ -5,7 +5,6 @@ namespace App\Filament\Resources\JawabanSurveiResource\Pages;
 use App\Filament\Resources\JawabanSurveiResource;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanChart;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\PelatihanDetailStats;
-use App\Filament\Resources\JawabanSurveiResource\Widgets\StatistikPesertaInteraktif;
 use App\Filament\Resources\PesertaSurveiResource\Widgets\PesertaBelumMengisi;
 use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
@@ -13,12 +12,8 @@ use Filament\Resources\Pages\Page;
 class PelatihanReport extends Page
 {
     protected static string $resource = JawabanSurveiResource::class;
-
     protected static string $view = 'filament.resources.jawaban-survei-resource.pages.pelatihan-report';
-
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
-
-    protected static bool $shouldRegisterNavigation = false; // Sembunyikan dari menu
+    protected static bool $shouldRegisterNavigation = false;
 
     public ?Pelatihan $pelatihan;
 
@@ -32,13 +27,12 @@ class PelatihanReport extends Page
         return 'Laporan Survei: ' . $this->pelatihan->nama_pelatihan;
     }
 
+    // Cukup panggil satu JawabanChart dan widget lainnya
     protected function getHeaderWidgets(): array
     {
-        // Widget ini akan kita buat di Langkah 3
         return [
             PelatihanDetailStats::make(['pelatihan' => $this->pelatihan]),
-            // StatistikPesertaInteraktif::make(['pelatihan' => $this->pelatihan]),
-            JawabanChart::make(['pelatihan' => $this->pelatihan]),
+            JawabanChart::make(['pelatihan' => $this->pelatihan]), // Panggil satu kali saja
             PesertaBelumMengisi::make(['pelatihan' => $this->pelatihan]),
         ];
     }
