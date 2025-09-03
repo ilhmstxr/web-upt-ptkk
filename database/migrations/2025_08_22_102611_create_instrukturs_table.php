@@ -18,6 +18,14 @@ return new class extends Migration
             // $table->date('tanggal_akhir'); // pelatihan
             $table->foreignId('bidang_id')->constrained('bidangs')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('pelatihan')->constrained('pelatihans')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->foreignId('kamar_id')
+                ->constrained('rooms')
+                ->cascadeOnDelete()->nullable();
             $table->string('nama_gelar');
             $table->string('tempat_lahir');
             $table->date('tgl_lahir');

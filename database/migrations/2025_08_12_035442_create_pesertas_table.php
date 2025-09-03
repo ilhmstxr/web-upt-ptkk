@@ -27,7 +27,16 @@ return new class extends Migration
                 ->constrained('instansis')
                 ->cascadeOnDelete();
 
+            $table->foreignId('kamar_id')
+                ->constrained('rooms')
+                ->cascadeOnDelete()->nullable();
+
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
             // --- Data Diri Peserta ---
+            $table->string('token')->unique();
             $table->string('nama', 150);
             $table->string('nik', 20)->unique();
             $table->string('tempat_lahir', 100);
@@ -36,8 +45,7 @@ return new class extends Migration
             $table->string('agama', 50);
             $table->text('alamat');
             $table->string('no_hp', 20);
-            $table->string('email', 150)->unique();
-
+            
             $table->timestamps();
         });
     }
