@@ -8,17 +8,20 @@
     <h2 class="font-bold text-xl mb-4">Hasil Pre-Test</h2>
 
     @if(!empty($percobaan))
+        {{-- Nama Peserta --}}
+        <div class="mb-4">
+            <h3 class="font-semibold text-lg">Nama Peserta</h3>
+            <p class="text-gray-700 text-lg font-bold">
+                {{ $percobaan->peserta->nama ?? 'Tidak ada nama' }}
+            </p>
+        </div>
+
+        {{-- Detail Skor dan Status --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div class="p-4 bg-gray-50 rounded-lg shadow">
                 <h3 class="font-semibold text-lg">Skor</h3>
                 <p class="text-gray-700 text-xl font-bold">
                     {{ $percobaan->skor ?? 0 }}
-                </p>
-            </div>
-            <div class="p-4 bg-gray-50 rounded-lg shadow">
-                <h3 class="font-semibold text-lg">Status</h3>
-                <p class="text-gray-700">
-                    {{ ($percobaan->skor ?? 0) >= 75 ? 'Lulus' : 'Belum Lulus' }}
                 </p>
             </div>
         </div>
