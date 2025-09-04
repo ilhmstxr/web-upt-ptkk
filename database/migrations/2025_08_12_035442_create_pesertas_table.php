@@ -27,9 +27,9 @@ return new class extends Migration
                 ->constrained('instansis')
                 ->cascadeOnDelete();
 
-            $table->foreignId('kamar_id')
-                ->constrained('rooms')
-                ->cascadeOnDelete()->nullable();
+            // $table->foreignId('kamar_id')
+            //     ->constrained('kamars')
+            //     ->cascadeOnDelete()->nullable();
 
             $table->foreignId('user_id')
                 ->constrained('users')

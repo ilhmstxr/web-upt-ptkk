@@ -24,7 +24,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->foreignId('kamar_id')
-                ->constrained('rooms')
+                ->constrained('kamars')
                 ->cascadeOnDelete()->nullable();
             $table->string('nama_gelar');
             $table->string('tempat_lahir');
