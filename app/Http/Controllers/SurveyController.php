@@ -146,7 +146,7 @@ class SurveyController extends Controller
             // Blok kedua: tambahkan kondisi OR untuk mencari berdasarkan email
             ->orWhere('email', $email)
             ->first();
-        return $peserta;
+        // return $peserta;
         // return $findPeserta;
         return redirect()->route('survey.show', [
             'email' => $validated['email'], // Menggunakan email peserta->id,           // Menggunakan ID peserta
