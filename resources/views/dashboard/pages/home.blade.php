@@ -28,7 +28,7 @@
         </a>
     </div>
 
-    <!-- Post-Test & Feedback -->
+    <!-- Post-Test & Survey -->
     <div class="p-6 bg-white rounded-xl shadow-md hover:shadow-xl transition card-hover relative">
         <span class="absolute top-4 right-4 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">Wajib</span>
         <h3 class="font-semibold text-xl mb-2">Post-Test</h3>

@@ -115,8 +115,8 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     });
 
     // Feedback
-    Route::get('feedback', [DashboardController::class, 'feedback'])->name('feedback');
-    Route::post('feedback/submit', [DashboardController::class, 'feedbackSubmit'])->name('feedback.submit');
+    Route::get('survey', [DashboardController::class, 'survey'])->name('survey');
+    Route::post('survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
 });
 
 // ============================

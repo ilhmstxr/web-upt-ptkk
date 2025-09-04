@@ -94,49 +94,68 @@
 
     @else
         {{-- Halaman Dashboard --}}
-        <aside class="w-64 bg-white shadow-md h-screen sticky top-0 flex flex-col">
-            <div class="p-6 flex flex-col items-center border-b border-gray-200">
-                <img src="https://placehold.co/80x80/5c76c1/fff?text=Logo" class="rounded-full mb-2">
-                <h2 class="font-bold text-lg text-gray-800">Peserta Dashboard</h2>
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <a href="{{ route('dashboard.home') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.home') ? 'active-link' : '' }}">Home</a>
-                <a href="{{ route('dashboard.profile') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.profile') ? 'active-link' : '' }}">Profile</a>
-                <a href="{{ route('dashboard.materi') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.materi*') ? 'active-link' : '' }}">Materi</a>
-                <a href="{{ route('dashboard.pretest.index') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.pretest.*') ? 'active-link' : '' }}">Pre-Test</a>
-                <a href="{{ route('dashboard.posttest.index') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.posttest.*') ? 'active-link' : '' }}">Post-Test</a>
-                <a href="{{ route('dashboard.feedback') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.feedback') ? 'active-link' : '' }}">Feedback</a>
-            </nav>
-        </aside>
-
-        <main class="flex-1 p-6 overflow-auto">
-            <header class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">@yield('page-title')</h1>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-600">Hai, {{ Auth::check() ? Auth::user()->name : 'Peserta' }}</span>
-                    @auth
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">Logout</button>
-                        </form>
-                    @endauth
+        <div class="flex flex-1">
+            {{-- Sidebar --}}
+            <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-md transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40">
+                <div class="p-6 flex flex-col items-center border-b border-gray-200">
+                    <img src="https://placehold.co/80x80/5c76c1/fff?text=Logo" class="rounded-full mb-2">
+                    <h2 class="font-bold text-lg text-gray-800">Peserta Dashboard</h2>
                 </div>
-            </header>
+                <nav class="flex-1 p-4 space-y-2">
+                    <a href="{{ route('dashboard.home') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.home') ? 'active-link' : '' }}">Home</a>
+                    <a href="{{ route('dashboard.profile') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.profile') ? 'active-link' : '' }}">Profile</a>
+                    <a href="{{ route('dashboard.materi') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.materi*') ? 'active-link' : '' }}">Materi</a>
+                    <a href="{{ route('dashboard.pretest.index') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.pretest.*') ? 'active-link' : '' }}">Pre-Test</a>
+                    <a href="{{ route('dashboard.posttest.index') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.posttest.*') ? 'active-link' : '' }}">Post-Test</a>
+                    <a href="{{ route('dashboard.survey') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white {{ request()->routeIs('dashboard.survey') ? 'active-link' : '' }}">Survey</a>
+                </nav>
+            </aside>
 
-            {{-- Flash Message --}}
-            @if(session('success'))
-                <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">{{ session('error') }}</div>
-            @endif
+            {{-- Main content --}}
+            <main class="flex-1 lg:ml-64 p-6 overflow-auto">
+                <header class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-4">
+                        {{-- Toggle Sidebar on Mobile --}}
+                        <button id="menu-toggle" class="lg:hidden p-2 rounded-md border border-gray-300 hover:bg-gray-100">
+                            ☰
+                        </button>
+                        <h1 class="text-2xl font-bold text-gray-800">@yield('page-title')</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-600">Hai, {{ Auth::check() ? Auth::user()->name : 'Peserta' }}</span>
+                        @auth
+                            <form method="POST" action="{{ route('logout') }}" class="inline">
+                                @csrf
+                                <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">Logout</button>
+                            </form>
+                        @endauth
+                    </div>
+                </header>
 
-            {{-- Konten Dashboard --}}
-            <div class="space-y-6 fade-in">
-                @yield('content')
-            </div>
-        </main>
+                {{-- Flash Message --}}
+                @if(session('success'))
+                    <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
+                @endif
+                @if(session('error'))
+                    <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">{{ session('error') }}</div>
+                @endif
+
+                {{-- Konten Dashboard --}}
+                <div class="space-y-6 fade-in">
+                    @yield('content')
+                </div>
+            </main>
+        </div>
     @endisset
 
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('menu-toggle');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+        }
+    </script>
 </body>
 </html>

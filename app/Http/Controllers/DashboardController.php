@@ -12,6 +12,17 @@ use Illuminate\Support\Facades\Auth;
 class DashboardController extends Controller
 {
     // ======================
+    // DASHBOARD INDEX
+    // ======================
+    public function index()
+    {
+        $user = Auth::user();
+        $surveyStatus = $user && $user->survey ? 'done' : 'pending';
+
+        return view('dashboard.index', compact('surveyStatus'));
+    }
+
+    // ======================
     // HOME & PROFILE
     // ======================
     public function home()
@@ -45,7 +56,7 @@ class DashboardController extends Controller
 
     public function pretestStart(Tes $tes)
     {
-        $pesertas = Peserta::all(); // ambil semua peserta
+        $pesertas = Peserta::all();
         return view('dashboard.pages.pre-test.pretest-start-form', compact('tes', 'pesertas'));
     }
 
@@ -75,6 +86,7 @@ class DashboardController extends Controller
             return redirect()->route('dashboard.pretest.start', $tes->id)
                 ->with('error', 'Pilih peserta terlebih dahulu untuk memulai pre-test.');
         }
+
         $percobaan = Percobaan::findOrFail($percobaanId);
         if ($percobaan->tes_id !== $tes->id) abort(404);
 
@@ -86,7 +98,9 @@ class DashboardController extends Controller
             return redirect()->route('dashboard.pretest.result', ['percobaan' => $percobaan->id]);
         }
 
-        $elapsedSeconds = $percobaan->waktu_mulai ? now()->diffInSeconds($percobaan->waktu_mulai) : 0;
+        $elapsedSeconds = $percobaan->waktu_mulai
+            ? now()->diffInSeconds($percobaan->waktu_mulai)
+            : 0;
 
         return view('dashboard.pages.pre-test.pretest-start', compact(
             'tes',
@@ -101,7 +115,9 @@ class DashboardController extends Controller
     public function pretestSubmit(Request $request, ?Percobaan $percobaan = null)
     {
         if (!$percobaan) {
-            $percobaanId = $request->input('percobaan_id') ?? $request->route('percobaan') ?? $request->query('percobaan');
+            $percobaanId = $request->input('percobaan_id')
+                ?? $request->route('percobaan')
+                ?? $request->query('percobaan');
             $percobaan = Percobaan::find($percobaanId);
             if (!$percobaan) abort(404, 'Percobaan tidak ditemukan.');
         }
@@ -153,7 +169,7 @@ class DashboardController extends Controller
 
     public function posttestStart(Tes $tes)
     {
-        $pesertas = Peserta::all(); // ambil semua peserta
+        $pesertas = Peserta::all();
         return view('dashboard.pages.post-test.posttest-start-form', compact('tes', 'pesertas'));
     }
 
@@ -183,6 +199,7 @@ class DashboardController extends Controller
             return redirect()->route('dashboard.posttest.start', $tes->id)
                 ->with('error', 'Pilih peserta terlebih dahulu untuk memulai post-test.');
         }
+
         $percobaan = Percobaan::findOrFail($percobaanId);
         if ($percobaan->tes_id !== $tes->id) abort(404);
 
@@ -194,7 +211,9 @@ class DashboardController extends Controller
             return redirect()->route('dashboard.posttest.result', ['percobaan' => $percobaan->id]);
         }
 
-        $elapsedSeconds = $percobaan->waktu_mulai ? now()->diffInSeconds($percobaan->waktu_mulai) : 0;
+        $elapsedSeconds = $percobaan->waktu_mulai
+            ? now()->diffInSeconds($percobaan->waktu_mulai)
+            : 0;
 
         return view('dashboard.pages.post-test.posttest-start', compact(
             'tes',
@@ -209,7 +228,9 @@ class DashboardController extends Controller
     public function posttestSubmit(Request $request, ?Percobaan $percobaan = null)
     {
         if (!$percobaan) {
-            $percobaanId = $request->input('percobaan_id') ?? $request->route('percobaan') ?? $request->query('percobaan');
+            $percobaanId = $request->input('percobaan_id')
+                ?? $request->route('percobaan')
+                ?? $request->query('percobaan');
             $percobaan = Percobaan::find($percobaanId);
             if (!$percobaan) abort(404, 'Percobaan tidak ditemukan.');
         }
@@ -251,16 +272,16 @@ class DashboardController extends Controller
     }
 
     // ======================
-    // FEEDBACK
+    // SURVEY
     // ======================
-    public function feedback()
+    public function survey()
     {
-        return view('dashboard.pages.feedback');
+        return view('dashboard.pages.survey');
     }
 
-    public function feedbackSubmit(Request $request)
+    public function surveySubmit(Request $request)
     {
-        return redirect()->route('dashboard.feedback')->with('success', 'Feedback berhasil dikirim!');
+        return redirect()->route('dashboard.survey')->with('success', 'Survey berhasil dikerjakan!');
     }
 
     // ======================
