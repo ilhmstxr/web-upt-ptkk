@@ -20,6 +20,7 @@ return new class extends Migration
                   ->onDelete('set null'); // Relasi ke tabel instansis
 
             $table->string('nama_pelatihan');
+            $table->enum('jenis_program',['akselerasi','reguler','mtu']);
             $table->string('slug')->nullable()->unique();
             $table->string('gambar')->nullable();
             $table->date('tanggal_mulai');

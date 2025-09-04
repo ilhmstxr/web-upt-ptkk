@@ -46,6 +46,22 @@ Route::get('/home', function () {
 // ============================
 // Pendaftaran
 // ============================
+
+// Route::prefix('api/flow')->middleware('api')->group(function () {
+//     Route::post('/register', [RegistrationFlowController::class, 'register'])->name('flow.register');
+//     Route::post('/biodata-sekolah', [RegistrationFlowController::class, 'saveSchool'])->name('flow.school');
+//     Route::post('/biodata-diri', [RegistrationFlowController::class, 'savePersonal'])->name('flow.personal');
+//     Route::post('/finish', [RegistrationFlowController::class, 'finish'])->name('flow.finish');
+// });
+
+// ============================
+// Pendaftaran (Form Pendaftaran Baru)
+// ============================
+// Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
+// Route::post('/pendaftaran', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
+
+
+// Kalau mau akses langsung registration-form-new.blade.php
 Route::resource('pendaftaran', PendaftaranController::class);
 Route::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('pendaftaran-testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
@@ -120,9 +136,18 @@ Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
 // ============================
 // Survey / Monev
 // ============================
+
+// Route untuk manajemen Survey (Admin)
+Route::get('/survey', [SurveyController::class, 'index'])->name('survey.index');
+Route::get('/survey/create', [SurveyController::class, 'create'])->name('survey.create'); // Diubah
+Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');         // Sebaiknya ada untuk menyimpan survey baru
+
+// Route untuk peserta yang mengisi survey
 Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
 Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
-Route::post('/survey_checkCredentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
+Route::post('/survey/check-credentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials'); // Diubah
+
+// Route utama untuk menampilkan & menyimpan jawaban per halaman
 Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
 Route::resource('/survey', SurveyController::class);

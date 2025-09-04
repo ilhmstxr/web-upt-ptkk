@@ -24,7 +24,7 @@ class Tes extends Model
     // Relasi ke Bidang
     public function bidang()
     {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
+        return  $this->belongsTo(Bidang::class, 'bidang_id');
     }
 
     // Relasi ke Pelatihan

@@ -1,6 +1,6 @@
 -- Pastikan Anda sudah memiliki data di tabel `bidangs` dan `pelatihans` sebelum menjalankan ini.
 
-INSERT INTO `kuis` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
+INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
 (1, 'Post-Test Teknik Pendingin', 'Tes akhir untuk mengukur pemahaman materi Teknik Pendingin dan Tata Udara.', 'tes', 'post-test', 4, 1, 30, NOW(), NOW()),
 (2, 'Post-Test Kecantikan', 'Tes akhir untuk mengukur pemahaman materi Kecantikan (Perawatan Rambut).', 'tes', 'post-test', 3, 1, 30, NOW(), NOW()),
 (3, 'Post-Test Tata Boga', 'Tes akhir untuk mengukur pemahaman materi Produk Bakery dan Pastry.', 'tes', 'post-test', 1, 1, 30, NOW(), NOW()),
@@ -11,7 +11,7 @@ INSERT INTO `kuis` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`,
 -- PERTANYAAN
 
 -- TPTU
-INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (1, 1, 'Mesin 3R adalah mesin yang digunakan untuk melakukan proses:', 'pilihan_ganda'),
 (1, 2, 'Mesin 3R dapat melakukan tiga fungsi tersebut secara', 'pilihan_ganda'),
 (1, 3, 'Recovery pada mesin pendingin yaitu proses menampung', 'pilihan_ganda'),
@@ -35,7 +35,7 @@ INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 
 -- KECANTIKAN
 
-INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (2, 21, 'Fungsi diagnosa kulit kepala dan rambut adalah untuk….', 'pilihan_ganda'),
 (2, 22, 'Shampo yang memiliki kandungan asam nitrat yang dapat melarutkan lemak atau minyak pada kulit kepala dan rambut. adalah…', 'pilihan_ganda'),
 (2, 23, 'Syarat utama pada air yang digunakan untuk mencuci rambut adalah….', 'pilihan_ganda'),
@@ -59,7 +59,7 @@ INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 
 
 -- TATA BOGA
-INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (3, 41, 'Berikut ini yang merupakan bahan utama dalam membuat produk bakery dan pastry kecuali …..', 'pilihan_ganda'),
 (3, 42, 'Untuk membuat adonan roti diperlukan tepung terigu dengan kadar protein …..', 'pilihan_ganda'),
 (3, 43, 'Bahan pengembang untuk roti adalah …..', 'pilihan_ganda'),
@@ -82,7 +82,7 @@ INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (3, 60, 'Danish pastry adalah …..', 'pilihan_ganda');
 
 -- TATA BUSANA
-INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (4, 61, 'Seorang penjahit selain terampil menyelesaikan pakaian sesuai dengan model pesanan, juga harus bisa...', 'pilihan_ganda'),
 (4, 62, 'Tujuan merendam bahan sebelum digunting adalah...', 'pilihan_ganda'),
 (4, 63, 'Gaun yang mempunyai model punggung yang terlihat disebut model ...', 'pilihan_ganda'),
@@ -614,7 +614,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (80, 'Bekerja sendiri', false);
 
 
-INSERT INTO pertanyaans (kuis_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (5, 81, 'Bagaimana pendapat Saudara tentang kesesuaian jenis pelayanan dengan penyelenggaraannya.........', 'skala_likert'),
 (5, 82, 'Bagaimana pendapat Saudara tentang kemudahan prosedur pelayanan penyelenggaraan pelatihan di instansi ini.......', 'skala_likert'),
 (5, 83, 'Bagaimana pendapat Saudara tentang kedisiplinan petugas / panitia penyelenggara dalam memberikan pelayanan.........', 'skala_likert'),

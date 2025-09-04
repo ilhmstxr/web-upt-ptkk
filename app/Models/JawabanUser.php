@@ -42,4 +42,8 @@ class JawabanUser extends Model
     {
         return $this->belongsTo(OpsiJawabans::class, 'opsi_jawabans_id');
     }
+
+    public function pesertaSurvei(){
+        return $this->belongsTo(PesertaSurvei::class, 'pesertaSurvei_id');
+    }
 }
