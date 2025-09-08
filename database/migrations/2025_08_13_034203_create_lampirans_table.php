@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('fc_ktp');
             $table->string('fc_ijazah'); 
             $table->string('fc_surat_tugas')->nullable(); 
-            $table->string('fc_surat_sehat'); 
+            $table->string('fc_surat_sehat')->nullable(); 
             $table->string('pas_foto'); 
 
             $table->timestamps();
