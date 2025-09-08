@@ -27,6 +27,7 @@ return new class extends Migration
             $table->date('tanggal_selesai');
             $table->text('deskripsi')->nullable();
             $table->timestamps();
+            $table->string('status')->nullable()->default('belum dimulai');
         });
     }
 
