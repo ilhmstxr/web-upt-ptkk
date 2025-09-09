@@ -13,7 +13,7 @@ class Peserta extends Model
 {
     use HasFactory;
 
-    protected $table = 'pesertas';
+    protected $table = 'peserta';
 
     protected $fillable = [
         'pelatihan_id',

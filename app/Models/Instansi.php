@@ -11,7 +11,7 @@ class Instansi extends Model
 {
     use HasFactory;
 
-    protected $table = 'instansis';
+    protected $table = 'instansi';
 
     protected $fillable = [
         'asal_instansi',

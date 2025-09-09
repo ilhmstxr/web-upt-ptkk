@@ -157,22 +157,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 <div>
-                    <label for="cabang_dinas_wilayah" class="block text-sm font-semibold mb-2 text-slate-700">Kota / Kabupaten</label>
+                    <label for="kota" class="block text-sm font-semibold mb-2 text-slate-700">Kota /
+                        Kabupaten</label>
                     <div class="relative">
-                        <select id="cabang_dinas_wilayah" name="cabang_dinas_wilayah"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabang_dinas_wilayah') border-red-500 @enderror"
-                            required>
-                            <option value="">Pilih Dinas Wilayah</option>
-                            @foreach ($cabangDinas as $cb)
-                                {{-- <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
-                            Surabaya</option> --}}
-                                <option value="{{ $cb->id }}" @selected(old('cabang_dinas_wilayah', $formData['cabang_dinas_wilayah'] ?? '') == $cb->id)>
-                                    {{ $cb->nama }}
-                                </option>
-                            @endforeach
-                            {{-- (Tambahkan opsi lain di sini) --}}
-                        </select>
-                        <div id="cabang_dinas_wilayahError"
+                        <input type="text" id="kota" name="kota"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('kota') border-red-500 @enderror"
+                            placeholder="Masukkan nama kota" required>
+                        <div id="kotaError"
                             class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
                                 viewBox="0 0 20 20" fill="currentColor">
@@ -183,7 +174,7 @@
                             <span class="error-message-text"></span>
                         </div>
                     </div>
-                    @error('cabang_dinas_wilayah')
+                    @error('kota')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
@@ -253,6 +244,21 @@
 </style>
 
 <script>
+    // KABUPATEN / KOTA
+    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/35.json`)
+        .then(response => response.json())
+        .then(regencies => console.log(regencies));
+
+    // KECAMATAN
+    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/3503.json`)
+        .then(response => response.json())
+        .then(districts => console.log(districts));
+
+    // KELURAHAN
+    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/3503110.json`)
+        .then(response => response.json())
+        .then(villages => console.log(villages));
+        
     document.addEventListener("DOMContentLoaded", function() {
         const form = document.getElementById('biodataSekolahForm');
 

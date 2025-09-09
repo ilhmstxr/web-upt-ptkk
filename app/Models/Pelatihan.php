@@ -11,7 +11,7 @@ class Pelatihan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pelatihans';
+    protected $table = 'pelatihan';
 
     protected $fillable = [
         'instansi_id', // diganti dari bidang_id agar sesuai migration

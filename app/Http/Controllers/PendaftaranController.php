@@ -49,10 +49,14 @@ class PendaftaranController extends Controller
                 $pelatihan = Pelatihan::where('status', 'aktif')->get();
                 $bidang = Bidang::all();
                 $cabangDinas = CabangDinas::all();
-                // return $pelatihan;
                 return view('peserta.pendaftaran.bio-sekolah', compact('currentStep', 'allowedStep', 'formData', 'pelatihan', 'bidang', 'cabangDinas'));
             case 3:
-                return view('peserta.pendaftaran.lampiran', compact('currentStep', 'allowedStep', 'formData'));
+                $pelatihanId = $formData['pelatihan_id'] ?? null;
+                // return $pelatihanId;
+                // Ambil data pelatihan spesifik beserta lampiran wajibnya
+                $pelatihan = Pelatihan::find($pelatihanId);
+                // return $pelatihan;
+                return view('peserta.pendaftaran.lampiran', compact('currentStep', 'allowedStep', 'formData', 'pelatihan'));
         }
     }
 

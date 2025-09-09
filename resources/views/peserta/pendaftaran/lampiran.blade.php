@@ -217,15 +217,13 @@
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                    TODO: if else kalau semisal jenis_program MTU, gapake surat sehat
-                    DONE:  
+
                     {{-- =================================================== --}}
                     {{-- Input File Surat Sehat (Struktur Baru) --}}
                     {{-- =================================================== --}}
+                    @if ($pelatihan->jenis_program != 'mtu')
                     <div>
-                        @if ()
 
-                        @endif
                         <label for="fc_surat_sehat" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Surat
                             Sehat</label>
 
@@ -281,7 +279,8 @@
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                </div>
+                </div> @endif
+                       
 
                 {{-- Baris 3: Nomor Surat & Pas Foto --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
