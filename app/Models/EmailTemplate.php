@@ -9,6 +9,8 @@ class EmailTemplate extends Model
 {
     use HasFactory;
 
+    protected $table = 'email_template';
+
     protected $fillable = [
         'slug',
         'subject',

@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lampirans', function (Blueprint $table) {
+        Schema::create('lampiran', function (Blueprint $table) {
             $table->id();
             // --- Berkas & Dokumen ---
-            $table->foreignId('peserta_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
             $table->string('no_surat_tugas')->nullable() ;
             $table->string('fc_ktp');
             $table->string('fc_ijazah'); 
@@ -28,6 +28,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('lampirans');
+        Schema::dropIfExists('lampiran');
     }
 };

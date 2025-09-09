@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('email_templates', function (Blueprint $table) {
+        Schema::create('kamar', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique()->comment('Pengenal unik untuk template');
-            $table->string('subject')->comment('Subjek email (bisa mengandung placeholder)');
-            $table->longText('body')->comment('Isi email dalam format HTML (bisa mengandung placeholder)');
+            $table->foreignId('asrama_id')->constrained('asrama')->cascadeOnDelete();
+            $table->string('nomor_kamar');
+            $table->integer('total_beds')->default(0);
+            $table->integer('available_beds')->default(0);
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('email_templates');
+        Schema::dropIfExists('kamar');
     }
 };

@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sertifikats', function (Blueprint $table) {
+        Schema::create('asrama', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pelatihan_id')
-                ->constrained('pelatihans')
-                ->cascadeOnDelete()->nullable();
+            $table->string('name');
+            $table->enum('gender', ['Laki-laki', 'Perempuan']);
+            $table->integer('total_kamar')->default(0);
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sertifikats');
+        Schema::dropIfExists('asrama');
     }
 };

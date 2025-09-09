@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('instansi_id')
                   ->nullable()
-                  ->constrained('instansis')
+                  ->constrained('instansi')
                   ->onUpdate('cascade')
                   ->onDelete('set null'); // Relasi ke tabel instansis
 

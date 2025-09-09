@@ -12,7 +12,7 @@ class Lampiran extends Model
 {
     use HasFactory;
     
-    protected $table = 'lampirans';
+    protected $table = 'lampiran';
 
     protected $fillable = [
         'peserta_id',

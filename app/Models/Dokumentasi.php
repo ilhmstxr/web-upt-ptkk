@@ -9,4 +9,5 @@ class Dokumentasi extends Model
 {
     /** @use HasFactory<\Database\Factories\DokumentasiFactory> */
     use HasFactory;
+    protected $table = 'dokumentasi';
 }

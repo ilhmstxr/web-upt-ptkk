@@ -9,4 +9,6 @@ class Kamar extends Model
 {
     /** @use HasFactory<\Database\Factories\KamarFactory> */
     use HasFactory;
+
+    protected $table = 'kamar';
 }

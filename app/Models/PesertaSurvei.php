@@ -11,7 +11,7 @@ class PesertaSurvei extends Model
     /** @use HasFactory<\Database\Factories\PesertaSurveiFactory> */
     use HasFactory;
 
-    // protected $table = 'peserta_survei';
+    protected $table = 'peserta_survei';
     protected $fillable = [
         'email',
         'nama',

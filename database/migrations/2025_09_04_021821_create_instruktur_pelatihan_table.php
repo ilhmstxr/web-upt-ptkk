@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('instruktur_pelatihan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('instruktur_id')->constrained('instrukturs')->cascadeOnDelete();
-            $table->foreignId('pelatihan_id')->constrained('pelatihans')->cascadeOnDelete();
-            $table->foreignId('kamar_id')->constrained('kamars')->cascadeOnDelete()->nullable();
+            $table->foreignId('instruktur_id')->constrained('instruktur')->cascadeOnDelete();
+            $table->foreignId('pelatihan_id')->constrained('pelatihan')->cascadeOnDelete();
+            $table->foreignId('kamar_id')->constrained('kamar')->cascadeOnDelete()->nullable();
             $table->timestamps();
         });
     }

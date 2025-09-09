@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('asramas', function (Blueprint $table) {
+        Schema::create('dokumentasi', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->enum('gender', ['Laki-laki', 'Perempuan']);
-            $table->integer('total_kamar')->default(0);
+            $table->foreignId('pelatihan_id')
+                ->constrained('pelatihan')
+                ->cascadeOnDelete()->nullable();
+            $table->string('url_drive');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('asramas');
+        Schema::dropIfExists('dokumentasi');
     }
 };

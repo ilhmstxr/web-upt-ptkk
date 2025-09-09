@@ -9,7 +9,7 @@ class JawabanUser extends Model
 {
     use HasFactory;
 
-    protected $table = 'jawaban_users';
+    protected $table = 'jawaban_user';
 
     protected $fillable = [
         'opsi_jawabans_id', // untuk jawaban pilihan ganda

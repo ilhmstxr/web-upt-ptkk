@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kamars', function (Blueprint $table) {
+        Schema::create('pertanyaan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asrama_id')->constrained('asramas')->cascadeOnDelete();
-            $table->string('nomor_kamar');
-            $table->integer('total_beds')->default(0);
-            $table->integer('available_beds')->default(0);
+            $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
+            $table->integer('nomor');
+            $table->text('teks_pertanyaan');
+            $table->string('gambar')->nullable();
+            $table->enum('tipe_jawaban', ['pilihan_ganda', 'skala_likert', 'teks_bebas']);
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kamars');
+        Schema::dropIfExists('pertanyaan');
     }
 };

@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bidangs', function (Blueprint $table) {
+        Schema::create('email_template', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_bidang');
-            $table->text('deskripsi')->nullable();
-            $table->text('kode')->nullable();
+            $table->string('slug')->unique()->comment('Pengenal unik untuk template');
+            $table->string('subject')->comment('Subjek email (bisa mengandung placeholder)');
+            $table->longText('body')->comment('Isi email dalam format HTML (bisa mengandung placeholder)');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bidangs');
+        Schema::dropIfExists('email_template');
     }
 };

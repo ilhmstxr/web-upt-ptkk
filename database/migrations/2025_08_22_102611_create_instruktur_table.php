@@ -11,20 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('instrukturs', function (Blueprint $table) {
+        Schema::create('instruktur', function (Blueprint $table) {
             $table->id();
             // $table->string('kompetensi'); // bidang
             // $table->date('tanggal_mulai'); // pelatihan
             // $table->date('tanggal_akhir'); // pelatihan
-            $table->foreignId('bidang_id')->constrained('bidangs')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('pelatihan')->constrained('pelatihans')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('bidang_id')->constrained('bidang')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('pelatihan')->constrained('pelatihan')->onUpdate('cascade')->onDelete('cascade');
 
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
 
             $table->foreignId('kamar_id')
-                ->constrained('kamars')
+                ->constrained('kamar')
                 ->cascadeOnDelete()->nullable();
             $table->string('nama_gelar');
             $table->string('tempat_lahir');
@@ -49,6 +49,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('instrukturs');
+        Schema::dropIfExists('instruktur');
     }
 };

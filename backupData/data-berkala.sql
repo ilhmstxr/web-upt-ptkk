@@ -1,6 +1,6 @@
 -- data bidang
 INSERT INTO
-  `bidangs` (
+  `bidang` (
     `id`,
     `nama_bidang`,
     `deskripsi`,
@@ -297,7 +297,7 @@ VALUES
 
 -- instansi
 INSERT INTO
-  `instansis` (
+  `instansi` (
     `id`,
     `asal_instansi`,
     `alamat_instansi`,
@@ -1005,7 +1005,7 @@ VALUES
 
 -- pelatihan
 INSERT INTO
-  `pelatihans` (
+  `pelatihan` (
     `id`,
     `instansi_id`,
     `nama_pelatihan`,
@@ -1127,7 +1127,7 @@ VALUES
 
 -- pertanyaan
 INSERT INTO
-  `pertanyaans` (
+  `pertanyaan` (
     `id`,
     `tes_id`,
     `nomor`,
@@ -2301,7 +2301,7 @@ VALUES
 
 -- opsi jawaban
 INSERT INTO
-  `opsi_jawabans` (
+  `opsi_jawaban` (
     `id`,
     `pertanyaan_id`,
     `teks_opsi`,
@@ -3820,7 +3820,7 @@ VALUES
 -- tabel peserta survei
 -- tabel peserta_survei
 INSERT INTO
-  `peserta_surveis` (
+  `peserta_survei` (
     `id`,
     `nama`,
     `email`,
@@ -4394,7 +4394,7 @@ VALUES
 
 -- percobaan
 INSERT INTO
-  `percobaans` (
+  `percobaan` (
     `id`,
     `pesertaSurvei_id`,
     `tes_id`,
@@ -5785,7 +5785,7 @@ VALUES
 -- 2. Kolom 'token' telah ditambahkan dengan nilai unik yang dibuat secara acak.
 -- 3. Kolom 'email' dan nilainya telah dihapus agar sesuai dengan skema tabel.
 INSERT INTO
-  `pesertas` (
+  `peserta` (
     `id`,
     `pelatihan_id`,
     `bidang_id`,
@@ -6826,7 +6826,7 @@ VALUES
 
 -- lampiran
 INSERT INTO
-  `lampirans` (
+  `lampiran` (
     `id`,
     `peserta_id`,
     `no_surat_tugas`,
@@ -7562,7 +7562,7 @@ VALUES
 
 -- jawaban user
 INSERT INTO
-  `jawaban_users` (
+  `jawaban_user` (
     `id`,
     `opsi_jawabans_id`,
     `pertanyaan_id`,
@@ -13675,7 +13675,7 @@ VALUES
   );
 
 INSERT INTO
-  `jawaban_users` (
+  `jawaban_user` (
     `id`,
     `opsi_jawabans_id`,
     `pertanyaan_id`,
@@ -19038,7 +19038,7 @@ VALUES
   );
 
 INSERT INTO
-  `jawaban_users` (
+  `jawaban_user` (
     `id`,
     `opsi_jawabans_id`,
     `pertanyaan_id`,
@@ -24981,7 +24981,7 @@ VALUES
   );
 
 INSERT INTO
-  `jawaban_users` (
+  `jawaban_user` (
     `id`,
     `opsi_jawabans_id`,
     `pertanyaan_id`,
@@ -30302,7 +30302,7 @@ VALUES
 -- PERTANYAAN
 -- Videografi
 INSERT INTO
-  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+  `pertanyaan` (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
 VALUES
   (
     6,
@@ -30427,7 +30427,7 @@ VALUES
 
 -- PLC
 INSERT INTO
-  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+  `pertanyaan` (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
 VALUES
   (
     7,
@@ -30542,7 +30542,7 @@ VALUES
 
 -- FOTOGRAFI
 INSERT INTO
-  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+  `pertanyaan` (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
 VALUES
   (
     8,
@@ -30670,7 +30670,7 @@ VALUES
 -- ===================================================================
 -- Videografi
 INSERT INTO
-  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+  `opsi_jawaban` (pertanyaan_id, teks_opsi, apakah_benar)
 VALUES
   (
     117,
@@ -30871,7 +30871,7 @@ VALUES
 
 -- PLC
 INSERT INTO
-  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+  `opsi_jawaban` (pertanyaan_id, teks_opsi, apakah_benar)
 VALUES
   (
     137,
@@ -31140,7 +31140,7 @@ VALUES
 
 -- FOTOGRAFI
 INSERT INTO
-  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+  `opsi_jawaban` (pertanyaan_id, teks_opsi, apakah_benar)
 VALUES
   (157, 'Mulai proses foto', false),
   (157, 'Mengobrol sambil minum kopi', false),
@@ -31265,7 +31265,7 @@ VALUES
 
 -- monev MTU
 INSERT INTO
-  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+  `pertanyaan` (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
 VALUES
   (
     9,
@@ -31414,7 +31414,7 @@ VALUES
 -- LANGKAH 1 (SURVEI MTU): ISI OPSI JAWABAN MASTER
 -- ===================================================================
 INSERT INTO
-  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+  `opsi_jawaban` (pertanyaan_id, teks_opsi, apakah_benar)
 VALUES
   -- Set Opsi 1: Skala "Memuaskan" (Master Pertanyaan ID: 177)
   (177, 'Tidak Memuaskan', 0),
@@ -31461,7 +31461,7 @@ VALUES
 -- LANGKAH 2 (SURVEI MTU): ISI TABEL PIVOT pivot_jawaban
 -- ===================================================================
 INSERT INTO
-  pivot_jawaban (pertanyaan_id, template_pertanyaan_id)
+  `pivot_jawaban` (pertanyaan_id, template_pertanyaan_id)
 VALUES
   -- Pertanyaan yang menggunakan opsi dari master ID 177 (Skala Memuaskan)
   (178, 177),

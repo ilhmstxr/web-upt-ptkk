@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('penempatan_asrama', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pendaftaran_id')->constrained('pendaftaran_pelatihan')->cascadeOnDelete();
-            $table->foreignId('kamar_id')->constrained('kamars')->cascadeOnDelete();
+            $table->foreignId('kamar_id')->constrained('kamar')->cascadeOnDelete();
             // $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
             $table->timestamps();
         });
