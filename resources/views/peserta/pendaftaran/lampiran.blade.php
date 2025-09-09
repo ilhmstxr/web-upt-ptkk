@@ -217,7 +217,8 @@
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                    {{-- TODO: if else kalau semisal jenis_program MTU, surat sehat gapake --}}
+                    TODO: if else kalau semisal jenis_program MTU, gapake surat sehat
+                    DONE:  
                     {{-- =================================================== --}}
                     {{-- Input File Surat Sehat (Struktur Baru) --}}
                     {{-- =================================================== --}}

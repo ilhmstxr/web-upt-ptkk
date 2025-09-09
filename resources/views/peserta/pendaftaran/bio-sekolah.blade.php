@@ -10,7 +10,8 @@
             <input type="hidden" name="current_step" value="{{ $currentStep }}">
             {{-- Asal Lembaga --}}
             <div>
-                <label for="asal_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Asal Lembaga Instansi</label>
+                <label for="asal_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Asal Lembaga
+                    Instansi</label>
                 <div class="relative">
                     <input type="text" id="asal_instansi" name="asal_instansi" placeholder="Masukkan Asal Lembaga"
                         value="{{ old('asal_instansi', $formData['asal_instansi'] ?? '') }}"
@@ -151,38 +152,73 @@
                 @enderror
             </div>
 
+            {{-- TODO: penambahan kolom kota / kabupaten --}}
             {{-- Cabang Dinas --}}
-            <div>
-                <label for="cabang_dinas_wilayah" class="block text-sm font-semibold mb-2 text-slate-700">Cabang Dinas
-                    Wilayah</label>
-                <div class="relative">
-                    <select id="cabang_dinas_wilayah" name="cabang_dinas_wilayah"
-                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabang_dinas_wilayah') border-red-500 @enderror"
-                        required>
-                        <option value="">Pilih Dinas Wilayah</option>
-                        @foreach ($cabangDinas as $cb)
-                            {{-- <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div>
+                    <label for="cabang_dinas_wilayah" class="block text-sm font-semibold mb-2 text-slate-700">Kota / Kabupaten</label>
+                    <div class="relative">
+                        <select id="cabang_dinas_wilayah" name="cabang_dinas_wilayah"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabang_dinas_wilayah') border-red-500 @enderror"
+                            required>
+                            <option value="">Pilih Dinas Wilayah</option>
+                            @foreach ($cabangDinas as $cb)
+                                {{-- <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
                             Surabaya</option> --}}
-                            <option value="{{ $cb->id }}" @selected(old('cabang_dinas_wilayah', $formData['cabang_dinas_wilayah'] ?? '') == $cb->id)>
-                                {{ $cb->nama }}
-                            </option>
-                        @endforeach
-                        {{-- (Tambahkan opsi lain di sini) --}}
-                    </select>
-                    <div id="cabang_dinas_wilayahError"
-                        class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="error-message-text"></span>
+                                <option value="{{ $cb->id }}" @selected(old('cabang_dinas_wilayah', $formData['cabang_dinas_wilayah'] ?? '') == $cb->id)>
+                                    {{ $cb->nama }}
+                                </option>
+                            @endforeach
+                            {{-- (Tambahkan opsi lain di sini) --}}
+                        </select>
+                        <div id="cabang_dinas_wilayahError"
+                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
                     </div>
+                    @error('cabang_dinas_wilayah')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-                @error('cabang_dinas_wilayah')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <div>
+                    <label for="cabang_dinas_wilayah" class="block text-sm font-semibold mb-2 text-slate-700">Cabang Dinas
+                        Wilayah</label>
+                    <div class="relative">
+                        <select id="cabang_dinas_wilayah" name="cabang_dinas_wilayah"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabang_dinas_wilayah') border-red-500 @enderror"
+                            required>
+                            <option value="">Pilih Dinas Wilayah</option>
+                            @foreach ($cabangDinas as $cb)
+                                {{-- <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
+                            Surabaya</option> --}}
+                                <option value="{{ $cb->id }}" @selected(old('cabang_dinas_wilayah', $formData['cabang_dinas_wilayah'] ?? '') == $cb->id)>
+                                    {{ $cb->nama }}
+                                </option>
+                            @endforeach
+                            {{-- (Tambahkan opsi lain di sini) --}}
+                        </select>
+                        <div id="cabang_dinas_wilayahError"
+                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('cabang_dinas_wilayah')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             {{-- Tombol Navigasi --}}
@@ -200,105 +236,105 @@
     </div>
 @endsection
 
-    <style>
-        .error-popup {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-            transform: translateY(10px);
-            z-index: 10;
-        }
+<style>
+    .error-popup {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        transform: translateY(10px);
+        z-index: 10;
+    }
 
-        .error-popup.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-    </style>
+    .error-popup.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+</style>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.getElementById('biodataSekolahForm');
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById('biodataSekolahForm');
 
-            // Fungsi untuk menampilkan pop-up error
-            const showError = (element, message) => {
-                const errorPopup = document.getElementById(element.id + 'Error');
-                if (errorPopup) {
-                    errorPopup.querySelector('.error-message-text').textContent = message;
-                    errorPopup.classList.add('visible');
-                    element.classList.add('border-red-500', 'focus:ring-red-500');
-                }
-            };
+        // Fungsi untuk menampilkan pop-up error
+        const showError = (element, message) => {
+            const errorPopup = document.getElementById(element.id + 'Error');
+            if (errorPopup) {
+                errorPopup.querySelector('.error-message-text').textContent = message;
+                errorPopup.classList.add('visible');
+                element.classList.add('border-red-500', 'focus:ring-red-500');
+            }
+        };
 
-            // Fungsi untuk menyembunyikan pop-up error
-            const hideError = (element) => {
-                const errorPopup = document.getElementById(element.id + 'Error');
-                if (errorPopup) {
-                    errorPopup.classList.remove('visible');
-                    element.classList.remove('border-red-500', 'focus:ring-red-500');
-                }
-            };
+        // Fungsi untuk menyembunyikan pop-up error
+        const hideError = (element) => {
+            const errorPopup = document.getElementById(element.id + 'Error');
+            if (errorPopup) {
+                errorPopup.classList.remove('visible');
+                element.classList.remove('border-red-500', 'focus:ring-red-500');
+            }
+        };
 
-            // Sembunyikan semua error saat form di-reset atau dimuat ulang
-            const hideAllErrors = () => {
-                form.querySelectorAll('input[required], select[required]').forEach(hideError);
-            };
+        // Sembunyikan semua error saat form di-reset atau dimuat ulang
+        const hideAllErrors = () => {
+            form.querySelectorAll('input[required], select[required]').forEach(hideError);
+        };
 
-            // Tambahkan event listener untuk menyembunyikan error saat input/select diubah
-            form.querySelectorAll('input[required], select[required]').forEach(element => {
-                element.addEventListener('input', () => hideError(element));
-                element.addEventListener('change', () => hideError(element));
-            });
+        // Tambahkan event listener untuk menyembunyikan error saat input/select diubah
+        form.querySelectorAll('input[required], select[required]').forEach(element => {
+            element.addEventListener('input', () => hideError(element));
+            element.addEventListener('change', () => hideError(element));
+        });
 
-            form.addEventListener('submit', function(event) {
-                hideAllErrors();
-                let firstErrorElement = null;
+        form.addEventListener('submit', function(event) {
+            hideAllErrors();
+            let firstErrorElement = null;
 
-                for (const element of form.elements) {
-                    if (element.hasAttribute('required') && !element.validity.valid) {
-                        event.preventDefault();
+            for (const element of form.elements) {
+                if (element.hasAttribute('required') && !element.validity.valid) {
+                    event.preventDefault();
 
-                        let message = 'Kolom ini wajib diisi.'; // Pesan default
+                    let message = 'Kolom ini wajib diisi.'; // Pesan default
 
-                        // Pesan kustom berdasarkan ID elemen
-                        switch (element.id) {
-                            case 'asal_instansi':
-                                message = 'Asal instansi sekolah wajib diisi.';
-                                break;
-                            case 'alamat_instansi':
-                                message = 'Alamat instansi tidak boleh kosong.';
-                                break;
-                            case 'bidang_keahlian':
-                                message = 'Silakan pilih kompetensi keahlian Anda.';
-                                break;
-                            case 'pelatihan_id':
-                                message = 'Silakan pilih pelatihan yang ingin diikuti.';
-                                break;
-                            case 'kelas':
-                                message = 'Anda harus memilih kelas.';
-                                break;
-                            case 'cabang_dinas_wilayah':
-                                message = 'Mohon pilih cabang dinas wilayah.';
-                                break;
-                        }
+                    // Pesan kustom berdasarkan ID elemen
+                    switch (element.id) {
+                        case 'asal_instansi':
+                            message = 'Asal instansi sekolah wajib diisi.';
+                            break;
+                        case 'alamat_instansi':
+                            message = 'Alamat instansi tidak boleh kosong.';
+                            break;
+                        case 'bidang_keahlian':
+                            message = 'Silakan pilih kompetensi keahlian Anda.';
+                            break;
+                        case 'pelatihan_id':
+                            message = 'Silakan pilih pelatihan yang ingin diikuti.';
+                            break;
+                        case 'kelas':
+                            message = 'Anda harus memilih kelas.';
+                            break;
+                        case 'cabang_dinas_wilayah':
+                            message = 'Mohon pilih cabang dinas wilayah.';
+                            break;
+                    }
 
-                        showError(element, message);
+                    showError(element, message);
 
-                        if (!firstErrorElement) {
-                            firstErrorElement = element;
-                        }
+                    if (!firstErrorElement) {
+                        firstErrorElement = element;
                     }
                 }
+            }
 
-                if (firstErrorElement) {
-                    firstErrorElement.focus();
-                }
-            });
+            if (firstErrorElement) {
+                firstErrorElement.focus();
+            }
+        });
 
-            
+
         // Pilih semua radio button yang memiliki nama 'pelatihan_id'
         const radioButtons = document.querySelectorAll('input[type="radio"][name="pelatihan_id"]');
-        
+
         // Variabel untuk melacak radio button yang terakhir dicentang
         let lastChecked = null;
 
@@ -317,6 +353,5 @@
                 }
             });
         });
-        });
-
-    </script>
+    });
+</script>

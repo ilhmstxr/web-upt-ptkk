@@ -44,12 +44,12 @@ class PendaftaranController extends Controller
             case 1:
                 $cabangDinas = CabangDinas::all();
                 $pelatihan = Pelatihan::all();
-                return $pelatihan;
                 return view('peserta.pendaftaran.bio-peserta', compact('currentStep', 'allowedStep', 'formData', 'cabangDinas'));
             case 2:
-                $pelatihan = Pelatihan::all();
+                $pelatihan = Pelatihan::where('status', 'aktif')->get();
                 $bidang = Bidang::all();
                 $cabangDinas = CabangDinas::all();
+                // return $pelatihan;
                 return view('peserta.pendaftaran.bio-sekolah', compact('currentStep', 'allowedStep', 'formData', 'pelatihan', 'bidang', 'cabangDinas'));
             case 3:
                 return view('peserta.pendaftaran.lampiran', compact('currentStep', 'allowedStep', 'formData'));
@@ -61,14 +61,12 @@ class PendaftaranController extends Controller
         $currentStep = $request->input('current_step');
         $formData = $request->session()->get('pendaftaran_data', []);
 
-
-        //  TODO:  benerin error, karena emailnya sudah di user
         if ($currentStep == 1) {
             $validatedData = $request->validate([
-                'nama' => 'required|string|max:255',
-                'nik' => 'required|string|digits:16|unique:pesertas,nik',
-                'no_hp' => 'required|string|max:15',
-                'email' => 'required|email|max:255|unique:pesertas,email',
+                'nama' => 'required|string|max:150',
+                'nik' => 'required|string|digits:16|max:20|unique:pesertas,nik',
+                'no_hp' => 'required|string|max:20',
+                'email' => 'required|email|max:255|unique:users,email',
                 'tempat_lahir' => 'required|string|max:100',
                 'tanggal_lahir' => 'required|date',
                 'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
@@ -140,7 +138,7 @@ class PendaftaranController extends Controller
                     'no_surat_tugas' => $allData['no_surat_tugas'] ?? null,
                 ];
 
-                $fileFields = ['fc_ktp','fc_ijazah','fc_surat_tugas','fc_surat_sehat','pas_foto'];
+                $fileFields = ['fc_ktp', 'fc_ijazah', 'fc_surat_tugas', 'fc_surat_sehat', 'pas_foto'];
 
                 foreach ($fileFields as $field) {
                     if ($request->hasFile($field)) {
