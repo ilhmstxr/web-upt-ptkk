@@ -740,8 +740,9 @@ INSERT INTO pivot_jawaban (pertanyaan_id, template_pertanyaan_id) VALUES
 -- Pertanyaan yang menggunakan opsi dari master ID 104 (Skala Perlu)
 (105, 104);
 
-
-
+-- ===================================================================
+-- KUNCI JAWABAN BARU 09/09/2025
+-- ===================================================================
 INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
 (6, 'Post-Test Videografi', 'Tes akhir untuk mengukur pemahaman materi Videografi.', 'tes', 'post-test', 5, 1, 30, NOW(), NOW()),
 (7, 'Post-Test PLC', 'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).', 'tes', 'post-test', 6, 1, 30, NOW(), NOW()),
