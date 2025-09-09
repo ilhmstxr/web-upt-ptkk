@@ -6,10 +6,6 @@ INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, 
 (3, 'Post-Test Tata Boga', 'Tes akhir untuk mengukur pemahaman materi Produk Bakery dan Pastry.', 'tes', 'post-test', 1, 1, 30, NOW(), NOW()),
 (4, 'Post-Test Tata Busana', 'Tes akhir untuk mengukur pemahaman materi Menjahit dan Pola.', 'tes', 'post-test', 2, 1, 30, NOW(), NOW()),
 (5, 'Survei Kepuasan Pelatihan', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 1, 1, NULL, NOW(), NOW()),
-(6, 'Post-Test Videografi', 'Tes akhir untuk mengukur pemahaman materi Videografi.', 'tes', 'post-test', 5, 1, 30, NOW(), NOW()),
-(7, 'Post-Test PLC', 'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).', 'tes', 'post-test', 6, 1, 30, NOW(), NOW()),
-(8, 'Post-Test Fotografi', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'tes', 'post-test', 7, 1, 30, NOW(), NOW()),
-(9, 'Survei Kepuasan Pelatihan - MTU', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 1, 1, NULL, NOW(), NOW());
 
 
 
@@ -744,6 +740,14 @@ INSERT INTO pivot_jawaban (pertanyaan_id, template_pertanyaan_id) VALUES
 -- Pertanyaan yang menggunakan opsi dari master ID 104 (Skala Perlu)
 (105, 104);
 
+
+
+INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
+(6, 'Post-Test Videografi', 'Tes akhir untuk mengukur pemahaman materi Videografi.', 'tes', 'post-test', 5, 1, 30, NOW(), NOW()),
+(7, 'Post-Test PLC', 'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).', 'tes', 'post-test', 6, 1, 30, NOW(), NOW()),
+(8, 'Post-Test Fotografi', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'tes', 'post-test', 7, 1, 30, NOW(), NOW()),
+(9, 'Survei Kepuasan Pelatihan - MTU', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 1, 1, NULL, NOW(), NOW());
+
 -- PERTANYAAN
 
 -- Videografi
@@ -890,8 +894,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 
 
 
---monev-mtu
-
+-- monev MTU
 INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (9, 177, 'Bagaimana pendapat Saudara tentang kesesuaian jenis pelayanan dengan penyelenggaraannya.........', 'skala_likert'),
 (9, 178, 'Bagaimana pendapat Saudara tentang kedisiplinan  penyelenggara dalam memberikan pelayanan.........', 'skala_likert'),
