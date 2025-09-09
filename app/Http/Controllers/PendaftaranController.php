@@ -105,6 +105,12 @@ class PendaftaranController extends Controller
                 'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             ]);
 
+            $bidang = Bidang::all();
+            $pelatihan = pelatihan::all();
+            // return $pelatihan;
+            // return $bidang;
+
+
             $allData = array_merge($formData, $validatedData);
 
             DB::transaction(function () use ($allData, $request) {

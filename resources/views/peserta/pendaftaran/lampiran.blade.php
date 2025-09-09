@@ -161,35 +161,20 @@
                     {{-- Input File Surat Tugas (Struktur Baru) --}}
                     {{-- =================================================== --}}
                     <div>
-                        <label for="fc_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Unggah
-                            Fotocopy Surat Tugas</label>
-
-                        <div id="fc_surat_tugas-component">
-                            <input type="file" id="fc_surat_tugas" name="fc_surat_tugas" class="hidden"
-                                accept=".jpg,.jpeg,.png">
-
-                            <div id="fc_surat_tugas-default">
-                                <label for="fc_surat_tugas"
-                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                    <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 9v6m3-3H7"></path>
-                                    </svg>
-                                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk
-                                            unggah</span></p>
-                                    <p class="text-xs text-gray-500">JPG atau PNG (MAX. 2MB)</p>
-                                </label>
-                            </div>
-
-                            <div id="fc_surat_tugas-image-preview"
-                                class="hidden relative w-full h-48 border border-gray-200 rounded-lg p-2 bg-slate-50">
-                                <img id="fc_surat_tugas-preview-image" src="" alt="Pratinjau Gambar"
-                                    class="w-full h-full object-contain">
-                                <button type="button" id="fc_surat_tugas-remove-btn-image"
-                                    class="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1.5 text-red-500 hover:bg-opacity-100">&times;</button>
+                        <label for="fc_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Fotocopy
+                            Surat Tugas (bisa menyusul)</label>
+                        <div class="relative">
+                            <div class="file-input-wrapper border border-gray-300 rounded-lg">
+                                <input type="file" id="fc_surat_tugas" name="fc_surat_tugas"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(this)">
+                                <div class="flex items-center justify-between px-4 py-2.5">
+                                    <span id="fc_surat_tugas-status" class="text-sm text-gray-500 truncate">Tidak ada file
+                                        dipilih</span>
+                                    <div
+                                        class="px-3 py-1 bg-slate-100 text-slate-700 text-sm font-semibold rounded-md pointer-events-none">
+                                        Pilih File</div>
+                                </div>
                             </div>
 
                             <div id="fc_surat_tugas-file-preview"
@@ -287,7 +272,7 @@
                     {{-- Input Nomor Surat Tugas --}}
                     <div>
                         <label for="no_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Nomor Surat
-                            Tugas</label>
+                            Tugas (bisa menyusul)</label>
                         <div class="relative">
                             <input type="text" id="no_surat_tugas" name="no_surat_tugas"
                                 placeholder="Masukkan Nomor Surat" value="{{ old('no_surat_tugas') }}"
