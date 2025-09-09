@@ -1,5 +1,5 @@
 INSERT INTO
-    `pelatihans` (
+    `pelatihan` (
         `id`,
         `instansi_id`,
         `nama_pelatihan`,
@@ -26,7 +26,7 @@ VALUES
         NULL
     ),
 INSERT INTO
-    `bidangs` (
+    `bidang` (
         `id`,
         `nama_bidang`,
         `deskripsi`,
@@ -117,7 +117,7 @@ VALUES
     );
 
 INSERT INTO
-    `pesertas` (
+    `peserta` (
         `id`,
         `pelatihan_id`,
         `bidang_id`,

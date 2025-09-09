@@ -7564,7 +7564,7 @@ VALUES
 INSERT INTO
   `jawaban_user` (
     `id`,
-    `opsi_jawabans_id`,
+    `opsi_jawaban_id`,
     `pertanyaan_id`,
     `percobaan_id`,
     `nilai_jawaban`,
@@ -13677,7 +13677,7 @@ VALUES
 INSERT INTO
   `jawaban_user` (
     `id`,
-    `opsi_jawabans_id`,
+    `opsi_jawaban_id`,
     `pertanyaan_id`,
     `percobaan_id`,
     `nilai_jawaban`,
@@ -19040,7 +19040,7 @@ VALUES
 INSERT INTO
   `jawaban_user` (
     `id`,
-    `opsi_jawabans_id`,
+    `opsi_jawaban_id`,
     `pertanyaan_id`,
     `percobaan_id`,
     `nilai_jawaban`,
@@ -24983,7 +24983,7 @@ VALUES
 INSERT INTO
   `jawaban_user` (
     `id`,
-    `opsi_jawabans_id`,
+    `opsi_jawaban_id`,
     `pertanyaan_id`,
     `percobaan_id`,
     `nilai_jawaban`,

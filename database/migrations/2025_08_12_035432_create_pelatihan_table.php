@@ -17,7 +17,7 @@ return new class extends Migration
                   ->nullable()
                   ->constrained('instansi')
                   ->onUpdate('cascade')
-                  ->onDelete('set null'); // Relasi ke tabel instansis
+                  ->onDelete('set null'); // Relasi ke tabel instansi
 
             $table->string('nama_pelatihan');
             $table->enum('jenis_program',['reguler','akselerasi','mtu'])->default('reguler');

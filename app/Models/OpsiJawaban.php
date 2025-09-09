@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OpsiJawabans extends Model
+class OpsiJawaban extends Model
 {
     use HasFactory;
 
@@ -27,7 +27,7 @@ class OpsiJawabans extends Model
     // Relasi ke JawabanUser
     public function jawabanUser()
     {
-        return $this->hasMany(JawabanUser::class, 'opsi_jawabans_id');
+        return $this->hasMany(JawabanUser::class, 'opsi_jawaban_id');
     }
 
     // Accessor untuk URL gambar

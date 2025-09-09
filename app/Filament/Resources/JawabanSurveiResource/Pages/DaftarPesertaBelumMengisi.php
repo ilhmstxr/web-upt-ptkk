@@ -29,7 +29,7 @@ class DaftarPesertaBelumMengisi extends Page implements HasTable
     {
         return $table
             ->query(
-                PesertaSurvei::query()->whereDoesntHave('percobaans')
+                PesertaSurvei::query()->whereDoesntHave('percobaan')
             )
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable(),

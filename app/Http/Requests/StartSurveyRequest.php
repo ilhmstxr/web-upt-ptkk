@@ -17,8 +17,8 @@ class StartSurveyRequest extends FormRequest
     public function rules()
     {
         return [
-            // Validasi bahwa 'peserta_id' harus ada dan merupakan ID yang valid di tabel 'pesertas'
-            'peserta_id' => 'required|exists:pesertas,id'
+            // Validasi bahwa 'peserta_id' harus ada dan merupakan ID yang valid di tabel 'peserta'
+            'peserta_id' => 'required|exists:peserta,id'
         ];
     }
 

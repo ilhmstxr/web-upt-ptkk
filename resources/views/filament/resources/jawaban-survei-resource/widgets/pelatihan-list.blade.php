@@ -4,7 +4,7 @@
             Laporan per Pelatihan
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            @forelse ($pelatihans as $pelatihan)
+            @forelse ($pelatihan as $pelatihan)
                 <a href="{{ route('filament.admin.resources.jawaban-surveis.report', ['pelatihanId' => $pelatihan->id]) }}"
                     class="block p-4 bg-white border rounded-lg shadow-sm hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition">
                     <h3 class="font-semibold text-gray-900 dark:text-white">{{ $pelatihan->nama_pelatihan }}</h3>

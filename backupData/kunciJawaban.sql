@@ -1,4 +1,4 @@
--- Pastikan Anda sudah memiliki data di tabel `bidangs` dan `pelatihans` sebelum menjalankan ini.
+-- Pastikan Anda sudah memiliki data di tabel `bidang` dan `pelatihan` sebelum menjalankan ini.
 
 INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
 (1, 'Post-Test Teknik Pendingin', 'Tes akhir untuk mengukur pemahaman materi Teknik Pendingin dan Tata Udara.', 'tes', 'post-test', 4, 1, 30, NOW(), NOW()),
@@ -12,7 +12,7 @@ INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, 
 -- PERTANYAAN
 
 -- TPTU
-INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaan (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (1, 1, 'Mesin 3R adalah mesin yang digunakan untuk melakukan proses:', 'pilihan_ganda'),
 (1, 2, 'Mesin 3R dapat melakukan tiga fungsi tersebut secara', 'pilihan_ganda'),
 (1, 3, 'Recovery pada mesin pendingin yaitu proses menampung', 'pilihan_ganda'),
@@ -36,7 +36,7 @@ INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 
 -- KECANTIKAN
 
-INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaan (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (2, 21, 'Fungsi diagnosa kulit kepala dan rambut adalah untuk….', 'pilihan_ganda'),
 (2, 22, 'Shampo yang memiliki kandungan asam nitrat yang dapat melarutkan lemak atau minyak pada kulit kepala dan rambut. adalah…', 'pilihan_ganda'),
 (2, 23, 'Syarat utama pada air yang digunakan untuk mencuci rambut adalah….', 'pilihan_ganda'),
@@ -60,7 +60,7 @@ INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 
 
 -- TATA BOGA
-INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaan (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (3, 41, 'Berikut ini yang merupakan bahan utama dalam membuat produk bakery dan pastry kecuali …..', 'pilihan_ganda'),
 (3, 42, 'Untuk membuat adonan roti diperlukan tepung terigu dengan kadar protein …..', 'pilihan_ganda'),
 (3, 43, 'Bahan pengembang untuk roti adalah …..', 'pilihan_ganda'),
@@ -83,7 +83,7 @@ INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (3, 60, 'Danish pastry adalah …..', 'pilihan_ganda');
 
 -- TATA BUSANA
-INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaan (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (4, 61, 'Seorang penjahit selain terampil menyelesaikan pakaian sesuai dengan model pesanan, juga harus bisa...', 'pilihan_ganda'),
 (4, 62, 'Tujuan merendam bahan sebelum digunting adalah...', 'pilihan_ganda'),
 (4, 63, 'Gaun yang mempunyai model punggung yang terlihat disebut model ...', 'pilihan_ganda'),
@@ -108,7 +108,7 @@ INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 -- JAWABANS
 
 -- TPTU
-INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Jawaban untuk Pertanyaan ID 1 (Kunci: A)
 (1, 'Recovery, recycling dan recharging pada mesin pendingin.', true),
 (1, 'Recycling dan recharging pada mesin pendingin', false),
@@ -249,7 +249,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (20, 'Propeller Fan dan Cabinet outdoor', true),
 (20, 'Propeller dan Cabinet outbow', false),
 
--- KECANTIKANINSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+-- KECANTIKANINSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Jawaban untuk Pertanyaan ID 21 (Kunci: A)
 (21, 'Menentukan jenis rambut dan kulit kepala sehingga dapat menentukan perawatan kosmetika yang sesuai', true),
 (21, 'Menentukan warna pigmen rambut sehingga dapat menentukan jenis perawatan rambut', false),
@@ -371,7 +371,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (40, 'Meremas', false),
 
 -- TATA BOGA
--- INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+-- INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Jawaban untuk Pertanyaan ID 41 (Kunci: C)
 (41, 'Tepung terigu', false),
 (41, 'Telur', false),
@@ -493,7 +493,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (60, 'Pastry yang digiling', false),
 
 -- TATA BUSANA
--- INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+-- INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Jawaban untuk Pertanyaan ID 61 (Kunci: D)
 (61, 'Berpakaian mewah seperti pakaian pesta', false),
 (61, 'Mempunyai modal besar untuk usaha menjahit', false),
@@ -615,7 +615,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (80, 'Bekerja sendiri', false);
 
 
-INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaan (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (5, 81, 'Bagaimana pendapat Saudara tentang kesesuaian jenis pelayanan dengan penyelenggaraannya.........', 'skala_likert'),
 (5, 82, 'Bagaimana pendapat Saudara tentang kemudahan prosedur pelayanan penyelenggaraan pelatihan di instansi ini.......', 'skala_likert'),
 (5, 83, 'Bagaimana pendapat Saudara tentang kedisiplinan petugas / panitia penyelenggara dalam memberikan pelayanan.........', 'skala_likert'),
@@ -653,10 +653,10 @@ INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (5, 115, 'Bagaimana pendapat saudara cara instruktur menjawab pertanyaan dari peserta pelatihan', 'skala_likert'),
 (5, 116, 'Pesan dan Kesan', 'teks_bebas');
 -- ===================================================================
--- LANGKAH 1: ISI TABEL opsi_jawabans HANYA DENGAN SET JAWABAN MASTER
+-- LANGKAH 1: ISI TABEL opsi_jawaban HANYA DENGAN SET JAWABAN MASTER
 -- ===================================================================
 
-INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Set Opsi 1: Skala "Memuaskan" (Master Pertanyaan ID: 81)
 (81, 'Tidak Memuaskan', 0),
 (81, 'Kurang Memuaskan', 0),
@@ -752,7 +752,7 @@ INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, 
 -- PERTANYAAN
 
 -- Videografi
-INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaan (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (6, 117, 'Mengapa videografi menjadi semakin penting dalam pendidikan modern ?', 'pilihan_ganda'),
 (6, 118, 'Berikut ini adalah manfaat penggunaan video dalam pembelajaran, kecuali...', 'pilihan_ganda'),
 (6, 119, 'Istilah yang merujuk pada jumlah gambar diam yang ditampilkan per detik dalam video adalah...', 'pilihan_ganda'),
@@ -775,7 +775,7 @@ INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (6, 136, 'Dalam teknik pencahayaan tiga titik (three-point lighting), lampu yang berfungsi untuk mengurangi bayangan keras yang dihasilkan oleh lampu utama (key light) dan memberikan detail pada area gelap adalah...', 'pilihan_ganda');
 
 -- PLC
-INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaan (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (7, 137, 'Programmable Logic Controllers (PLC) adalah', 'pilihan_ganda'),
 (7, 138, 'Berdasarkan namanya konsep PLC adalah sebagai berikut :Penjelasan di atas digambarkan. Pada gambar dibawah ini :', 'pilihan_ganda'),
 (7, 139, 'Kode 1a dan 1b adalah', 'pilihan_ganda'),
@@ -798,7 +798,7 @@ INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (7, 156, 'Untuk menggambarkan penjelasan diatas maka buatlah program kontrol yang menggunakan Clock Puls Bit dengan satuan detik seperti gambar berikut ini', 'pilihan_ganda');
 
 -- FOTOGRAFI
-INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaan (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (8, 157, 'Proses pra produksi dalam fotografi produk adalah ketika …', 'pilihan_ganda'),
 (8, 158, 'Salah satu pengaruh foto produk terhadap kegiatan branding adalah …', 'pilihan_ganda'),
 (8, 159, 'Rafathar ditunjuk sebagai fotografer di kelasnya, namun Ketika foto di dalam kelas, foto yang dihasilkan kamera mirrorless nya tampak gelap, yang harus dilakukan Rafathar adalah …', 'pilihan_ganda'),
@@ -825,7 +825,7 @@ INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 -- ===================================================================
 
 -- Videografi
-INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (117, 'Karena buku teks sudah tidak relevan lagi', false), (117, 'Karena siswa hanya suka belajar dengan video', false), (117, 'Karena video lebih menarik dan efektif untuk menyampaikan informasi visual dan kompleks', true), (117, 'Karena membuat video lebih murah daripada membuat materi cetak', false), (117, 'Karena semua guru harus menjadi YouTuber', false),
 (118, 'Meningkatkan pemahaman dan daya ingat siswa', false), (118, 'Membuat materi abstrak menjadi lebih konkret dan mudah dipahami', false), (118, 'Menyajikan pengalaman belajar yang otentik dan menarik', false), (118, 'Menggantikan peran guru sepenuhnya di dalam kelas', true), (118, 'Mengakomodasi gaya belajar siswa yang beragam', false),
 (119, 'Resolusi', false), (119, 'Aspect Ratio', false), (119, 'Frame Rate', true), (119, 'Bit Rate', false), (119, 'White Balance', false),
@@ -848,7 +848,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (136, 'Key Light', false), (136, 'Fill Light', true), (136, 'Back Light', false), (136, 'Hair Light', false), (136, 'Rim Light', false);
 
 -- PLC
-INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (137, 'Komputer elektronik yang mudah digunakan', false), (137, 'Komputer elektronik yang memiliki fungsi kendali untuk berbagai tipe dan tingkat kesulitan yang beraneka ragam', false), (137, 'Komputer elektronik yang mudah digunakan (user friendly) yang memiliki fungsi kendali', false), (137, 'Komputer elektronik yang mudah digunakan (user friendly) yang memiliki fungsi kendali untuk berbagai tipe dan tingkat kesulitan yang beraneka ragam', false), (137, 'Komputer elektronik yang mudah digunakan (user friendly) yang memiliki fungsi kendali untuk berbagai tipe dan tingkat kesulitan yang beraneka ragam', true),
 (138, 'Seperangkat  Software', false), (138, 'Seperangkat Computer', false), (138, 'Software', false), (138, 'Seperangkat Computer Software', true), (138, 'Computer Software', false),
 (139, 'Input PLC :  Input PLC (Push Button, sensor, Limit Swith, dll) , b. Input sumber 220 Volt AC', true), (139, 'Alamat Input : a. Alamat input PLC, b. Keterangan input tegangan 220 Volt AC', false), (139, 'Output PLC : a. Output PLC, b. Output sumber PLC Volt 24 DC', false), (139, 'Alamat Output : a. Alamat Output PLC, b. Keterangan Output tegangan 24 Volt DC', false), (139, 'Baterai PLC', false),
@@ -871,7 +871,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (156, '• Buatlah File simpan dengan nama Clock Puls, • Selesai membuat program kontrol diatas, simpanlah dengan memiih save,  • Transfer ke PLC dan operasikan, • Amati Outputnya dan coba jelaskan secara singkat', true), (156, '• Selesai membuat program kontrol diatas, simpanlah dengan memiih save, • Transfer ke PLC dan operasikan, • Amati Outputnya dan coba jelaskan secara singkat', false), (156, 'Transfer ke PLC dan operasikan  dan Amati Outputnya dan coba jelaskan secara singkat.', false), (156, 'Transfer ke PLC dan Amati Outputnya dan coba jelaskan secara singkat', false), (156, 'Semua Jawaban Salah', false);
 
 -- FOTOGRAFI
-INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (157, 'Mulai proses foto', false), (157, 'Mengobrol sambil minum kopi', false), (157, 'Saat pengeditan foto', false), (157, 'Proses membuat konsep foto', true), (157, 'Membersihkan lensa kamera', false),
 (158, 'Membuat fotografer lebih terkenal', false), (158, 'Membuat rasa produk yang difoto lebih enak', false), (158, 'Membuat produk yang difoto memiliki nilai jual lebih', true), (158, 'Membuat fotografer jadi lebih pintar memasak', false), (158, 'Semua jawaban benar', false),
 (159, 'Merubah settingan ISO', true), (159, 'Membeli kamera baru', false), (159, 'Membayar fotografer profesional', false), (159, 'Merubah settingan shutter speed', false), (159, 'Menyuruh teman temannya foto di luar kelas', false),
@@ -896,7 +896,7 @@ INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 
 
 -- monev MTU
-INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
+INSERT INTO pertanyaan (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (9, 177, 'Bagaimana pendapat Saudara tentang kesesuaian jenis pelayanan dengan penyelenggaraannya.........', 'skala_likert'),
 (9, 178, 'Bagaimana pendapat Saudara tentang kedisiplinan  penyelenggara dalam memberikan pelayanan.........', 'skala_likert'),
 (9, 179, 'Bagaimana pendapat Saudara tentang kesopanan dan keramahan petugas penyelenggara dalam memberikan pelayanan..........', 'skala_likert'),
@@ -928,7 +928,7 @@ INSERT INTO pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 -- ===================================================================
 -- LANGKAH 1 (SURVEI MTU): ISI OPSI JAWABAN MASTER
 -- ===================================================================
-INSERT INTO opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar) VALUES
+INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 -- Set Opsi 1: Skala "Memuaskan" (Master Pertanyaan ID: 177)
 (177, 'Tidak Memuaskan', 0), (177, 'Kurang Memuaskan', 0), (177, 'Memuaskan', 0), (177, 'Sangat Memuaskan', 0),
 -- Set Opsi 2: Skala "Bermanfaat" (Master Pertanyaan ID: 184)

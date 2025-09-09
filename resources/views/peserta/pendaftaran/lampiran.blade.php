@@ -102,8 +102,8 @@
                             Ijazah</label>
 
                         <div id="fc_ijazah-component">
-                            <input type="file" id="fc_ijazah" name="fc_ijazah" class="hidden"
-                                accept=".jpg,.jpeg,.png" required>
+                            <input type="file" id="fc_ijazah" name="fc_ijazah" class="hidden" accept=".jpg,.jpeg,.png"
+                                required>
 
                             <div id="fc_ijazah-default">
                                 <label for="fc_ijazah"
@@ -155,216 +155,383 @@
                     </div>
                 </div>
 
-                {{-- Baris 2: Surat Tugas & Surat Sehat --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- =================================================== --}}
-                    {{-- Input File Surat Tugas (Struktur Baru) --}}
-                    {{-- =================================================== --}}
-                    <div>
-                        <label for="fc_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Unggah
-                            Fotocopy Surat Tugas</label>
+                {{-- IMPROVE: if else e masih jelek banget --}}
+                @if ($pelatihan->jenis_program != 'mtu')
+                    {{-- Baris 2: Surat Tugas & Surat Sehat --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- =================================================== --}}
+                        {{-- Input File Surat Tugas (Struktur Baru) --}}
+                        {{-- =================================================== --}}
+                        <div>
+                            <label for="fc_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Unggah
+                                Fotocopy Surat Tugas</label>
 
-                        <div id="fc_surat_tugas-component">
-                            <input type="file" id="fc_surat_tugas" name="fc_surat_tugas" class="hidden"
-                                accept=".jpg,.jpeg,.png">
+                            <div id="fc_surat_tugas-component">
+                                <input type="file" id="fc_surat_tugas" name="fc_surat_tugas" class="hidden"
+                                    accept=".jpg,.jpeg,.png">
 
-                            <div id="fc_surat_tugas-default">
-                                <label for="fc_surat_tugas"
-                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                    <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 9v6m3-3H7"></path>
-                                    </svg>
-                                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk
-                                            unggah</span></p>
-                                    <p class="text-xs text-gray-500">JPG atau PNG (MAX. 2MB)</p>
-                                </label>
-                            </div>
-
-                            <div id="fc_surat_tugas-image-preview"
-                                class="hidden relative w-full h-48 border border-gray-200 rounded-lg p-2 bg-slate-50">
-                                <img id="fc_surat_tugas-preview-image" src="" alt="Pratinjau Gambar"
-                                    class="w-full h-full object-contain">
-                                <button type="button" id="fc_surat_tugas-remove-btn-image"
-                                    class="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1.5 text-red-500 hover:bg-opacity-100">&times;</button>
-                            </div>
-
-                            <div id="fc_surat_tugas-file-preview"
-                                class="hidden flex items-center justify-between w-full h-48 border border-gray-300 rounded-lg p-4 bg-slate-50">
-                                <div class="flex items-center gap-4 truncate">
-                                    <svg class="w-12 h-12 text-gray-500 shrink-0" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                        </path>
-                                    </svg>
-                                    <div class="truncate">
-                                        <p id="fc_surat_tugas-preview-filename"
-                                            class="font-semibold text-slate-700 truncate"></p>
-                                        <p id="fc_surat_tugas-preview-filesize" class="text-sm text-slate-500"></p>
-                                    </div>
+                                <div id="fc_surat_tugas-default">
+                                    <label for="fc_surat_tugas"
+                                        class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z">
+                                            </path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10 9v6m3-3H7"></path>
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk
+                                                unggah</span></p>
+                                        <p class="text-xs text-gray-500">JPG atau PNG (MAX. 2MB)</p>
+                                    </label>
                                 </div>
-                                <button type="button" id="fc_surat_tugas-remove-btn-file"
-                                    class="p-1.5 text-red-500 shrink-0">&times;</button>
-                            </div>
-                        </div>
 
-                        <p class="text-xs text-slate-500 mt-1">Surat Tugas dapat dilampirkan menyusul.</p>
-                        @error('fc_surat_tugas')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- =================================================== --}}
-                    {{-- Input File Surat Sehat (Struktur Baru) --}}
-                    {{-- =================================================== --}}
-                    @if ($pelatihan->jenis_program != 'mtu')
-                    <div>
-
-                        <label for="fc_surat_sehat" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Surat
-                            Sehat</label>
-
-                        <div id="fc_surat_sehat-component">
-                            <input type="file" id="fc_surat_sehat" name="fc_surat_sehat" class="hidden"
-                                accept=".jpg,.jpeg,.png" required>
-
-                            <div id="fc_surat_sehat-default">
-                                <label for="fc_surat_sehat"
-                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                    <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 9v6m3-3H7"></path>
-                                    </svg>
-                                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk
-                                            unggah</span></p>
-                                    <p class="text-xs text-gray-500"> JPG, atau PNG (MAX. 2MB)</p>
-                                </label>
-                            </div>
-
-                            <div id="fc_surat_sehat-image-preview"
-                                class="hidden relative w-full h-48 border border-gray-200 rounded-lg p-2 bg-slate-50">
-                                <img id="fc_surat_sehat-preview-image" src="" alt="Pratinjau Gambar"
-                                    class="w-full h-full object-contain">
-                                <button type="button" id="fc_surat_sehat-remove-btn-image"
-                                    class="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1.5 text-red-500 hover:bg-opacity-100">&times;</button>
-                            </div>
-
-                            <div id="fc_surat_sehat-file-preview"
-                                class="hidden flex items-center justify-between w-full h-48 border border-gray-300 rounded-lg p-4 bg-slate-50">
-                                <div class="flex items-center gap-4 truncate">
-                                    <svg class="w-12 h-12 text-gray-500 shrink-0" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                        </path>
-                                    </svg>
-                                    <div class="truncate">
-                                        <p id="fc_surat_sehat-preview-filename"
-                                            class="font-semibold text-slate-700 truncate"></p>
-                                        <p id="fc_surat_sehat-preview-filesize" class="text-sm text-slate-500"></p>
-                                    </div>
+                                <div id="fc_surat_tugas-image-preview"
+                                    class="hidden relative w-full h-48 border border-gray-200 rounded-lg p-2 bg-slate-50">
+                                    <img id="fc_surat_tugas-preview-image" src="" alt="Pratinjau Gambar"
+                                        class="w-full h-full object-contain">
+                                    <button type="button" id="fc_surat_tugas-remove-btn-image"
+                                        class="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1.5 text-red-500 hover:bg-opacity-100">&times;</button>
                                 </div>
-                                <button type="button" id="fc_surat_sehat-remove-btn-file"
-                                    class="p-1.5 text-red-500 shrink-0">&times;</button>
-                            </div>
-                        </div>
 
-                        @error('fc_surat_sehat')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div> @endif
-                       
-
-                {{-- Baris 3: Nomor Surat & Pas Foto --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Input Nomor Surat Tugas --}}
-                    <div>
-                        <label for="no_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Nomor Surat
-                            Tugas</label>
-                        <div class="relative">
-                            <input type="text" id="no_surat_tugas" name="no_surat_tugas"
-                                placeholder="Masukkan Nomor Surat" value="{{ old('no_surat_tugas') }}"
-                                class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('no_surat_tugas') border-red-500 @enderror">
-                            <div id="no_surat_tugasError"
-                                class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
-                                <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="error-message-text"></span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-500 mt-1">Nomor Surat Tugas dapat dilampirkan menyusul.</p>
-                        @error('no_surat_tugas')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Input Pas Foto --}}
-                    <div>
-                        <label for="pas_foto" class="block text-sm font-semibold mb-2 text-slate-700">Pas Foto</label>
-
-                        <div id="pas_foto-component">
-                            <input type="file" id="pas_foto" name="pas_foto" class="hidden"
-                                accept=".jpg,.jpeg,.png" required>
-
-                            <div id="pas_foto-default">
-                                <label for="pas_foto"
-                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                    <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 9v6m3-3H7"></path>
-                                    </svg>
-                                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk
-                                            unggah</span></p>
-                                    <p class="text-xs text-gray-500"> JPG atau PNG (MAX. 5MB)</p>
-                                </label>
-                            </div>
-
-                            <div id="pas_foto-image-preview"
-                                class="hidden relative w-full h-48 border border-gray-200 rounded-lg p-2 bg-slate-50">
-                                <img id="pas_foto-preview-image" src="" alt="Pratinjau Gambar"
-                                    class="w-full h-full object-contain">
-                                <button type="button" id="pas_foto-remove-btn-image"
-                                    class="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1.5 text-red-500 hover:bg-opacity-100">&times;</button>
-                            </div>
-
-                            <div id="pas_foto-file-preview"
-                                class="hidden flex items-center justify-between w-full h-48 border border-gray-300 rounded-lg p-4 bg-slate-50">
-                                <div class="flex items-center gap-4 truncate">
-                                    <svg class="w-12 h-12 text-gray-500 shrink-0" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                        </path>
-                                    </svg>
-                                    <div class="truncate">
-                                        <p id="pas_foto-preview-filename" class="font-semibold text-slate-700 truncate">
-                                        </p>
-                                        <p id="pas_foto-preview-filesize" class="text-sm text-slate-500"></p>
+                                <div id="fc_surat_tugas-file-preview"
+                                    class="hidden flex items-center justify-between w-full h-48 border border-gray-300 rounded-lg p-4 bg-slate-50">
+                                    <div class="flex items-center gap-4 truncate">
+                                        <svg class="w-12 h-12 text-gray-500 shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                        <div class="truncate">
+                                            <p id="fc_surat_tugas-preview-filename"
+                                                class="font-semibold text-slate-700 truncate"></p>
+                                            <p id="fc_surat_tugas-preview-filesize" class="text-sm text-slate-500"></p>
+                                        </div>
                                     </div>
+                                    <button type="button" id="fc_surat_tugas-remove-btn-file"
+                                        class="p-1.5 text-red-500 shrink-0">&times;</button>
                                 </div>
-                                <button type="button" id="pas_foto-remove-btn-file"
-                                    class="p-1.5 text-red-500 shrink-0">&times;</button>
                             </div>
+
+                            <p class="text-xs text-slate-500 mt-1">Surat Tugas dapat dilampirkan menyusul.</p>
+                            @error('fc_surat_tugas')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        @error('pas_foto')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        {{-- =================================================== --}}
+                        {{-- Input File Surat Sehat (Struktur Baru) --}}
+                        {{-- =================================================== --}}
+                        <div> {{-- Surat Sehat --}}
+
+                            <label for="fc_surat_sehat" class="block text-sm font-semibold mb-2 text-slate-700">Unggah
+                                Surat
+                                Sehat</label>
+
+                            <div id="fc_surat_sehat-component">
+                                <input type="file" id="fc_surat_sehat" name="fc_surat_sehat" class="hidden"
+                                    accept=".jpg,.jpeg,.png" required>
+
+                                <div id="fc_surat_sehat-default">
+                                    <label for="fc_surat_sehat"
+                                        class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z">
+                                            </path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10 9v6m3-3H7"></path>
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk
+                                                unggah</span></p>
+                                        <p class="text-xs text-gray-500"> JPG, atau PNG (MAX. 2MB)</p>
+                                    </label>
+                                </div>
+
+                                <div id="fc_surat_sehat-image-preview"
+                                    class="hidden relative w-full h-48 border border-gray-200 rounded-lg p-2 bg-slate-50">
+                                    <img id="fc_surat_sehat-preview-image" src="" alt="Pratinjau Gambar"
+                                        class="w-full h-full object-contain">
+                                    <button type="button" id="fc_surat_sehat-remove-btn-image"
+                                        class="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1.5 text-red-500 hover:bg-opacity-100">&times;</button>
+                                </div>
+
+                                <div id="fc_surat_sehat-file-preview"
+                                    class="hidden flex items-center justify-between w-full h-48 border border-gray-300 rounded-lg p-4 bg-slate-50">
+                                    <div class="flex items-center gap-4 truncate">
+                                        <svg class="w-12 h-12 text-gray-500 shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                        <div class="truncate">
+                                            <p id="fc_surat_sehat-preview-filename"
+                                                class="font-semibold text-slate-700 truncate"></p>
+                                            <p id="fc_surat_sehat-preview-filesize" class="text-sm text-slate-500"></p>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="fc_surat_sehat-remove-btn-file"
+                                        class="p-1.5 text-red-500 shrink-0">&times;</button>
+                                </div>
+                            </div>
+
+                            @error('fc_surat_sehat')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
-                </div>
+
+
+                    {{-- Baris 3: Nomor Surat & Pas Foto --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Input Nomor Surat Tugas --}}
+                        <div>
+                            <label for="no_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Nomor
+                                Surat
+                                Tugas</label>
+                            <div class="relative">
+                                <input type="text" id="no_surat_tugas" name="no_surat_tugas"
+                                    placeholder="Masukkan Nomor Surat" value="{{ old('no_surat_tugas') }}"
+                                    class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('no_surat_tugas') border-red-500 @enderror">
+                                <div id="no_surat_tugasError"
+                                    class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                                    <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="error-message-text"></span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Nomor Surat Tugas dapat dilampirkan menyusul.</p>
+                            @error('no_surat_tugas')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Input Pas Foto --}}
+                        <div>
+                            <label for="pas_foto" class="block text-sm font-semibold mb-2 text-slate-700">Pas Foto</label>
+
+                            <div id="pas_foto-component">
+                                <input type="file" id="pas_foto" name="pas_foto" class="hidden"
+                                    accept=".jpg,.jpeg,.png" required>
+
+                                <div id="pas_foto-default">
+                                    <label for="pas_foto"
+                                        class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z">
+                                            </path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10 9v6m3-3H7"></path>
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk
+                                                unggah</span></p>
+                                        <p class="text-xs text-gray-500"> JPG atau PNG (MAX. 5MB)</p>
+                                    </label>
+                                </div>
+
+                                <div id="pas_foto-image-preview"
+                                    class="hidden relative w-full h-48 border border-gray-200 rounded-lg p-2 bg-slate-50">
+                                    <img id="pas_foto-preview-image" src="" alt="Pratinjau Gambar"
+                                        class="w-full h-full object-contain">
+                                    <button type="button" id="pas_foto-remove-btn-image"
+                                        class="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1.5 text-red-500 hover:bg-opacity-100">&times;</button>
+                                </div>
+
+                                <div id="pas_foto-file-preview"
+                                    class="hidden flex items-center justify-between w-full h-48 border border-gray-300 rounded-lg p-4 bg-slate-50">
+                                    <div class="flex items-center gap-4 truncate">
+                                        <svg class="w-12 h-12 text-gray-500 shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                        <div class="truncate">
+                                            <p id="pas_foto-preview-filename"
+                                                class="font-semibold text-slate-700 truncate">
+                                            </p>
+                                            <p id="pas_foto-preview-filesize" class="text-sm text-slate-500"></p>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="pas_foto-remove-btn-file"
+                                        class="p-1.5 text-red-500 shrink-0">&times;</button>
+                                </div>
+                            </div>
+
+                            @error('pas_foto')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                @else
+                 {{-- Baris 2: Surat Tugas & Surat Sehat --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- =================================================== --}}
+                        {{-- Input File Surat Tugas (Struktur Baru) --}}
+                        {{-- =================================================== --}}
+                        <div>
+                            <label for="fc_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Unggah
+                                Fotocopy Surat Tugas</label>
+
+                            <div id="fc_surat_tugas-component">
+                                <input type="file" id="fc_surat_tugas" name="fc_surat_tugas" class="hidden"
+                                    accept=".jpg,.jpeg,.png">
+
+                                <div id="fc_surat_tugas-default">
+                                    <label for="fc_surat_tugas"
+                                        class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z">
+                                            </path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10 9v6m3-3H7"></path>
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk
+                                                unggah</span></p>
+                                        <p class="text-xs text-gray-500">JPG atau PNG (MAX. 2MB)</p>
+                                    </label>
+                                </div>
+
+                                <div id="fc_surat_tugas-image-preview"
+                                    class="hidden relative w-full h-48 border border-gray-200 rounded-lg p-2 bg-slate-50">
+                                    <img id="fc_surat_tugas-preview-image" src="" alt="Pratinjau Gambar"
+                                        class="w-full h-full object-contain">
+                                    <button type="button" id="fc_surat_tugas-remove-btn-image"
+                                        class="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1.5 text-red-500 hover:bg-opacity-100">&times;</button>
+                                </div>
+
+                                <div id="fc_surat_tugas-file-preview"
+                                    class="hidden flex items-center justify-between w-full h-48 border border-gray-300 rounded-lg p-4 bg-slate-50">
+                                    <div class="flex items-center gap-4 truncate">
+                                        <svg class="w-12 h-12 text-gray-500 shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                        <div class="truncate">
+                                            <p id="fc_surat_tugas-preview-filename"
+                                                class="font-semibold text-slate-700 truncate"></p>
+                                            <p id="fc_surat_tugas-preview-filesize" class="text-sm text-slate-500"></p>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="fc_surat_tugas-remove-btn-file"
+                                        class="p-1.5 text-red-500 shrink-0">&times;</button>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-slate-500 mt-1">Surat Tugas dapat dilampirkan menyusul.</p>
+                            @error('fc_surat_tugas')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- =================================================== --}}
+                        {{-- Input File Pas Foto (Struktur Baru) --}}
+                        {{-- =================================================== --}}
+                        
+                        {{-- Input Pas Foto --}}
+                        <div>
+                            <label for="pas_foto" class="block text-sm font-semibold mb-2 text-slate-700">Pas Foto</label>
+
+                            <div id="pas_foto-component">
+                                <input type="file" id="pas_foto" name="pas_foto" class="hidden"
+                                    accept=".jpg,.jpeg,.png" required>
+
+                                <div id="pas_foto-default">
+                                    <label for="pas_foto"
+                                        class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z">
+                                            </path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10 9v6m3-3H7"></path>
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk
+                                                unggah</span></p>
+                                        <p class="text-xs text-gray-500"> JPG atau PNG (MAX. 5MB)</p>
+                                    </label>
+                                </div>
+
+                                <div id="pas_foto-image-preview"
+                                    class="hidden relative w-full h-48 border border-gray-200 rounded-lg p-2 bg-slate-50">
+                                    <img id="pas_foto-preview-image" src="" alt="Pratinjau Gambar"
+                                        class="w-full h-full object-contain">
+                                    <button type="button" id="pas_foto-remove-btn-image"
+                                        class="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1.5 text-red-500 hover:bg-opacity-100">&times;</button>
+                                </div>
+
+                                <div id="pas_foto-file-preview"
+                                    class="hidden flex items-center justify-between w-full h-48 border border-gray-300 rounded-lg p-4 bg-slate-50">
+                                    <div class="flex items-center gap-4 truncate">
+                                        <svg class="w-12 h-12 text-gray-500 shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                        <div class="truncate">
+                                            <p id="pas_foto-preview-filename"
+                                                class="font-semibold text-slate-700 truncate">
+                                            </p>
+                                            <p id="pas_foto-preview-filesize" class="text-sm text-slate-500"></p>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="pas_foto-remove-btn-file"
+                                        class="p-1.5 text-red-500 shrink-0">&times;</button>
+                                </div>
+                            </div>
+
+                            @error('pas_foto')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+
+                    {{-- Baris 3: Nomor Surat & Pas Foto --}}
+                    <div class="grid grid-cols-1 gap-6">
+                        {{-- Input Nomor Surat Tugas --}}
+                        <div>
+                            <label for="no_surat_tugas" class="block text-sm font-semibold mb-2 text-slate-700">Nomor
+                                Surat
+                                Tugas</label>
+                            <div class="relative">
+                                <input type="text" id="no_surat_tugas" name="no_surat_tugas"
+                                    placeholder="Masukkan Nomor Surat" value="{{ old('no_surat_tugas') }}"
+                                    class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('no_surat_tugas') border-red-500 @enderror">
+                                <div id="no_surat_tugasError"
+                                    class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                                    <svg class="h-5 w-5 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="error-message-text"></span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Nomor Surat Tugas dapat dilampirkan menyusul.</p>
+                            @error('no_surat_tugas')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+                @endif
+
             </div>
 
             {{-- Tombol Navigasi --}}

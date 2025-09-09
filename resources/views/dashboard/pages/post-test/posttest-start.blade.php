@@ -62,7 +62,7 @@
                     @foreach($pertanyaan->opsiJawabans as $opsi)
                         @php
                             $existing = $jawabanCollection->firstWhere('pertanyaan_id', $pertanyaan->id);
-                            $checked = $existing && ($existing->opsi_jawabans_id ?? 0) == $opsi->id;
+                            $checked = $existing && ($existing->opsi_jawaban_id ?? 0) == $opsi->id;
                         @endphp
                         <label class="block p-2 border rounded hover:bg-gray-100 cursor-pointer">
                             <input

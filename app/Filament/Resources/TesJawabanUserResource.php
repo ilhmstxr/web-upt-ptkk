@@ -28,7 +28,7 @@ class TesJawabanUserResource extends Resource
                 ->relationship('pertanyaan', 'teks_pertanyaan')
                 ->required(),
 
-            Forms\Components\Select::make('opsi_jawabans_id')
+            Forms\Components\Select::make('opsi_jawaban_id')
                 ->relationship('opsiJawabans', 'teks_opsi')
                 ->nullable(),
 

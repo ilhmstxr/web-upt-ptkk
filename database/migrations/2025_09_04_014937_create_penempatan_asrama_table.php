@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pendaftaran_id')->constrained('pendaftaran_pelatihan')->cascadeOnDelete();
             $table->foreignId('kamar_id')->constrained('kamar')->cascadeOnDelete();
-            // $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
+            // $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
             $table->timestamps();
         });
     }

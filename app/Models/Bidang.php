@@ -17,7 +17,7 @@ class Bidang extends Model
         'deskripsi',
     ];
 
-    // public function pelatihans(): HasMany
+    // public function pelatihan(): HasMany
     // {
     //     return $this->hasMany(Pelatihan::class, 'bidang_id');
     // }

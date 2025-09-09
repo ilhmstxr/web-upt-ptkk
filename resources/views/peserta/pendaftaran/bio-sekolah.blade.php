@@ -152,7 +152,7 @@
                 @enderror
             </div>
 
-            {{-- TODO: penambahan kolom kota / kabupaten --}}
+            {{-- IMPROVE: kota bisa di autosearch lalu di select, namun perlu validasi kecocokan antar kota dengan cabdin --}}
             {{-- Cabang Dinas --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -162,9 +162,15 @@
                     <div class="relative">
                         <input type="text" id="kota" name="kota"
                             class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('kota') border-red-500 @enderror"
-                            placeholder="Masukkan nama kota" required>
+                            placeholder="Ketik nama kota atau kabupaten..." required autocomplete="off">
+
+
+                        <div id="kotaSuggestions"
+                            class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
+                        </div>
+
                         <div id="kotaError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center hidden">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
                                 viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -179,23 +185,23 @@
                     @enderror
                 </div>
                 <div>
-                    <label for="cabang_dinas_wilayah" class="block text-sm font-semibold mb-2 text-slate-700">Cabang Dinas
+                    <label for="cabangDinas_id" class="block text-sm font-semibold mb-2 text-slate-700">Cabang Dinas
                         Wilayah</label>
                     <div class="relative">
-                        <select id="cabang_dinas_wilayah" name="cabang_dinas_wilayah"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabang_dinas_wilayah') border-red-500 @enderror"
+                        <select id="cabangDinas_id" name="cabangDinas_id"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabangDinas_id') border-red-500 @enderror"
                             required>
                             <option value="">Pilih Dinas Wilayah</option>
                             @foreach ($cabangDinas as $cb)
-                                {{-- <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
+                                {{-- <option value="surabaya" @if (old('cabangDinas_id') == 'surabaya') selected @endif>Cabang Dinas Wilayah
                             Surabaya</option> --}}
-                                <option value="{{ $cb->id }}" @selected(old('cabang_dinas_wilayah', $formData['cabang_dinas_wilayah'] ?? '') == $cb->id)>
+                                <option value="{{ $cb->id }}" @selected(old('cabangDinas_id', $formData['cabangDinas_id'] ?? '') == $cb->id)>
                                     {{ $cb->nama }}
                                 </option>
                             @endforeach
                             {{-- (Tambahkan opsi lain di sini) --}}
                         </select>
-                        <div id="cabang_dinas_wilayahError"
+                        <div id="cabangDinas_idError"
                             class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
                                 viewBox="0 0 20 20" fill="currentColor">
@@ -206,7 +212,7 @@
                             <span class="error-message-text"></span>
                         </div>
                     </div>
-                    @error('cabang_dinas_wilayah')
+                    @error('cabangDinas_id')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
@@ -243,22 +249,78 @@
     }
 </style>
 
+<script defer>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const kotaInput = document.getElementById("kota");
+        const suggestionsContainer = document.getElementById("kotaSuggestions");
+        let allRegencies = [];
+
+        // Ambil data dari API
+        try {
+            const res = await fetch("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/35.json");
+            if (!res.ok) throw new Error("Gagal mengambil data");
+            allRegencies = await res.json();
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+
+        // Saat user mengetik
+        kotaInput.addEventListener("input", () => {
+            const q = kotaInput.value.toLowerCase().trim();
+            suggestionsContainer.innerHTML = "";
+
+            if (!q) {
+                suggestionsContainer.classList.add("hidden");
+                return;
+            }
+
+            const filtered = allRegencies.filter(r => r.name.toLowerCase().includes(q));
+
+            if (filtered.length === 0) {
+                suggestionsContainer.classList.add("hidden");
+                return;
+            }
+
+            filtered.forEach(item => {
+                const div = document.createElement("div");
+                div.textContent = item.name;
+                div.className = "p-2 cursor-pointer hover:bg-gray-100";
+                div.addEventListener("mousedown", () => {
+                    kotaInput.value = item.name;
+                    suggestionsContainer.classList.add("hidden");
+                });
+                suggestionsContainer.appendChild(div);
+            });
+
+            suggestionsContainer.classList.remove("hidden");
+        });
+
+        // Klik di luar → sembunyikan dropdown
+        document.addEventListener("click", (e) => {
+            if (!kotaInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                suggestionsContainer.classList.add("hidden");
+            }
+        });
+    });
+</script>
+
 <script>
     // KABUPATEN / KOTA
     fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/35.json`)
         .then(response => response.json())
         .then(regencies => console.log(regencies));
 
-    // KECAMATAN
+    // KECAMATAN JATIM
     fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/3503.json`)
         .then(response => response.json())
         .then(districts => console.log(districts));
 
-    // KELURAHAN
+    // KELURAHAN JATIM
     fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/3503110.json`)
         .then(response => response.json())
         .then(villages => console.log(villages));
-        
+
     document.addEventListener("DOMContentLoaded", function() {
         const form = document.getElementById('biodataSekolahForm');
 
@@ -319,7 +381,7 @@
                         case 'kelas':
                             message = 'Anda harus memilih kelas.';
                             break;
-                        case 'cabang_dinas_wilayah':
+                        case 'cabangDinas_id':
                             message = 'Mohon pilih cabang dinas wilayah.';
                             break;
                     }

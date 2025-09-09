@@ -116,9 +116,9 @@ class PesertaResource extends Resource
                 Action::make('atur_kamar')
                     ->label('Atur Jumlah Kamar & Bed')
                     ->form(function () {
-                        $kamars = session('kamars') ?? config('kamar');
+                        $kamar = session('kamar') ?? config('kamar');
                         return [
-                            Forms\Components\Repeater::make('kamars')
+                            Forms\Components\Repeater::make('kamar')
                                 ->label('Daftar Asrama & Kamar')
                                 ->schema([
                                     Forms\Components\TextInput::make('blok')
@@ -132,7 +132,7 @@ class PesertaResource extends Resource
                                         ->label('Jumlah Bed'),
                                 ])
                                 ->default(
-                                    collect($kamars)->flatMap(function ($rooms, $blok) {
+                                    collect($kamar)->flatMap(function ($rooms, $blok) {
                                         return collect($rooms)->map(function ($room) use ($blok) {
                                             return [
                                                 'blok' => $blok,
@@ -147,7 +147,7 @@ class PesertaResource extends Resource
                     })
                     ->action(function (array $data) {
                         session([
-                            'kamars' => collect($data['kamars'])
+                            'kamar' => collect($data['kamar'])
                                 ->groupBy('blok')
                                 ->map(fn ($rooms) => $rooms->map(fn ($r) => [
                                     'no' => $r['no'],
@@ -241,14 +241,14 @@ class PesertaResource extends Resource
     /** ==================== FUNGSI KAMAR ==================== */
     protected static function assignKamar($record)
     {
-        $kamars = session('kamars') ?? config('kamar');
+        $kamar = session('kamar') ?? config('kamar');
         $gender = $record->jenis_kelamin;
 
         $blokDipakai = $gender === 'Laki-laki'
             ? ['Melati Bawah', 'Tulip Bawah']
             : ['Mawar', 'Melati Atas', 'Tulip Atas'];
 
-        $listKamar = collect($kamars)
+        $listKamar = collect($kamar)
             ->only($blokDipakai)
             ->map(function ($rooms, $blok) {
                 return collect($rooms)->map(function ($r) use ($blok) {
@@ -263,8 +263,8 @@ class PesertaResource extends Resource
             ->filter(fn ($k) => $k['bed'] > 0)
             ->values();
 
-        $pesertas = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
-        $index = $pesertas->search(fn ($p) => $p->id === $record->id);
+        $peserta = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
+        $index = $peserta->search(fn ($p) => $p->id === $record->id);
 
         $counter = 0;
         foreach ($listKamar as $kamar) {
@@ -280,8 +280,8 @@ class PesertaResource extends Resource
 
     protected static function assignBed($record)
     {
-        $kamars = session('kamars') ?? config('kamar');
-        $pesertas = Peserta::where('jenis_kelamin', $record->jenis_kelamin)
+        $kamar = session('kamar') ?? config('kamar');
+        $peserta = Peserta::where('jenis_kelamin', $record->jenis_kelamin)
             ->orderBy('id')
             ->get();
 
@@ -295,11 +295,11 @@ class PesertaResource extends Resource
         $no = (int) $noText;
 
         // Ambil kapasitas kamar
-        $capacity = collect($kamars[$blok] ?? [])
+        $capacity = collect($kamar[$blok] ?? [])
             ->firstWhere('no', $no)['bed'] ?? 0;
 
         // Peserta yang berada di kamar itu saja
-        $pesertaInRoom = $pesertas->filter(function ($p) use ($blok, $no) {
+        $pesertaInRoom = $peserta->filter(function ($p) use ($blok, $no) {
             return self::assignKamar($p) === $blok . ' - No.' . $no;
         })->values();
 

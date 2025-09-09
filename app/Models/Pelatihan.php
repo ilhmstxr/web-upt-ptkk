@@ -35,7 +35,7 @@ class Pelatihan extends Model
     }
 
     // Relasi ke peserta
-    public function pesertas(): HasMany
+    public function peserta(): HasMany
     {
         return $this->hasMany(Peserta::class, 'pelatihan_id');
     }

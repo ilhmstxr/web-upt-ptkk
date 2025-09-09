@@ -27,7 +27,7 @@
     </style>
 </head>
 <body>
-    @foreach ($pesertas as $peserta)
+    @foreach ($peserta as $peserta)
         <div class="peserta">
             <h2>{{ $peserta->nama }}</h2>
             <p><strong>Email:</strong> {{ $peserta->email }}</p>

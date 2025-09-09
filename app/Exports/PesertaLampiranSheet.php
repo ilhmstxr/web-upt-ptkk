@@ -12,17 +12,17 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 class PesertaLampiranSheet implements FromCollection, WithHeadings, WithDrawings
 {
     protected $ids;
-    protected $pesertas;
+    protected $peserta;
 
     public function __construct(array $ids)
     {
         $this->ids = $ids;
-        $this->pesertas = Peserta::with('lampiran')->whereIn('id', $ids)->get();
+        $this->peserta = Peserta::with('lampiran')->whereIn('id', $ids)->get();
     }
 
     public function collection()
     {
-        return $this->pesertas->map(function ($p) {
+        return $this->peserta->map(function ($p) {
             return [
                 'ID'       => $p->id,
                 'Nama'     => $p->nama,
@@ -63,7 +63,7 @@ class PesertaLampiranSheet implements FromCollection, WithHeadings, WithDrawings
         ];
 
         // Loop untuk setiap peserta
-        foreach ($this->pesertas as $index => $peserta) {
+        foreach ($this->peserta as $index => $peserta) {
             if (!$peserta->lampiran) {
                 continue; // Lanjut ke peserta berikutnya jika tidak ada data lampiran
             }

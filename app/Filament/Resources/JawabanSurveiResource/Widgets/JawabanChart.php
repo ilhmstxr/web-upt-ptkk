@@ -32,7 +32,7 @@ class JawabanChart extends ChartWidget
         ];
 
         // 3. Query utama untuk mengagregasi data
-        $rankedOpsiSubquery = DB::table('opsi_jawabans')
+        $rankedOpsiSubquery = DB::table('opsi_jawaban')
             ->select(
                 'id',
                 DB::raw('ROW_NUMBER() OVER (PARTITION BY pertanyaan_id ORDER BY id ASC) as level_opsi')
@@ -41,11 +41,11 @@ class JawabanChart extends ChartWidget
 
         $aggregatedData = JawabanUser::query()
             ->joinSub($rankedOpsiSubquery, 'ranked_opsi', function ($join) {
-                $join->on('jawaban_users.opsi_jawabans_id', '=', 'ranked_opsi.id');
+                $join->on('jawaban_user.opsi_jawaban_id', '=', 'ranked_opsi.id');
             })
-            ->join('percobaans', 'jawaban_users.percobaan_id', '=', 'percobaans.id')
-            ->join('peserta_surveis', 'percobaans.pesertaSurvei_id', '=', 'peserta_surveis.id')
-            ->where('peserta_surveis.pelatihan_id', $this->pelatihan->id)
+            ->join('percobaan', 'jawaban_user.percobaan_id', '=', 'percobaan.id')
+            ->join('peserta_survei', 'percobaan.pesertaSurvei_id', '=', 'peserta_survei.id')
+            ->where('peserta_survei.pelatihan_id', $this->pelatihan->id)
             ->selectRaw('ranked_opsi.level_opsi, count(*) as total')
             ->groupBy('ranked_opsi.level_opsi')
             ->orderBy('ranked_opsi.level_opsi')

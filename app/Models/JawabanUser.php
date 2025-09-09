@@ -12,7 +12,7 @@ class JawabanUser extends Model
     protected $table = 'jawaban_user';
 
     protected $fillable = [
-        'opsi_jawabans_id', // untuk jawaban pilihan ganda
+        'opsi_jawaban_id', // untuk jawaban pilihan ganda
         'pertanyaan_id',    // pertanyaan terkait
         'percobaan_id',     // percobaan terkait (pre/post test)
         'nilai_jawaban',    // untuk skala likert 1-5
@@ -40,7 +40,7 @@ class JawabanUser extends Model
      */
     public function opsiJawabans()
     {
-        return $this->belongsTo(OpsiJawabans::class, 'opsi_jawabans_id');
+        return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id');
     }
 
     public function pesertaSurvei(){

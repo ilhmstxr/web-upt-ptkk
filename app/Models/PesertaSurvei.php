@@ -27,7 +27,7 @@ class PesertaSurvei extends Model
         return $this->hasMany(JawabanUser::class, 'pesertaSurvei_id');
     }
 
-    public function percobaans()
+    public function percobaan()
     {
         return $this->hasMany(Percobaan::class, 'pesertaSurvei_id');
     }

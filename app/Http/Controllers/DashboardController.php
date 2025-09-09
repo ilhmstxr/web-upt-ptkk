@@ -56,14 +56,14 @@ class DashboardController extends Controller
 
     public function pretestStart(Tes $tes)
     {
-        $pesertas = Peserta::all();
-        return view('dashboard.pages.pre-test.pretest-start-form', compact('tes', 'pesertas'));
+        $peserta = Peserta::all();
+        return view('dashboard.pages.pre-test.pretest-start-form', compact('tes', 'peserta'));
     }
 
     public function pretestBegin(Request $request, $tesId)
     {
         $request->validate([
-            'peserta_id' => 'required|exists:pesertas,id',
+            'peserta_id' => 'required|exists:peserta,id',
         ]);
 
         $percobaan = Percobaan::create([
@@ -90,7 +90,7 @@ class DashboardController extends Controller
         $percobaan = Percobaan::findOrFail($percobaanId);
         if ($percobaan->tes_id !== $tes->id) abort(404);
 
-        $pertanyaanList = $tes->pertanyaans()->with('opsiJawabans')->get();
+        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
         $currentQuestionIndex = max(0, (int) $request->query('q', 0));
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
@@ -129,12 +129,12 @@ class DashboardController extends Controller
                     'percobaan_id' => $percobaan->id,
                     'pertanyaan_id' => $pertanyaanId,
                 ],
-                ['opsi_jawabans_id' => $opsiId]
+                ['opsi_jawaban_id' => $opsiId]
             );
         }
 
         $currentIndex = (int) $request->query('q', 0) + 1;
-        $totalQuestions = $percobaan->tes->pertanyaans()->count();
+        $totalQuestions = $percobaan->tes->pertanyaan()->count();
 
         if ($currentIndex >= $totalQuestions) {
             $percobaan->waktu_selesai = now();
@@ -169,14 +169,14 @@ class DashboardController extends Controller
 
     public function posttestStart(Tes $tes)
     {
-        $pesertas = Peserta::all();
-        return view('dashboard.pages.post-test.posttest-start-form', compact('tes', 'pesertas'));
+        $peserta = Peserta::all();
+        return view('dashboard.pages.post-test.posttest-start-form', compact('tes', 'peserta'));
     }
 
     public function posttestBegin(Request $request, $tesId)
     {
         $request->validate([
-            'peserta_id' => 'required|exists:pesertas,id',
+            'peserta_id' => 'required|exists:peserta,id',
         ]);
 
         $percobaan = Percobaan::create([
@@ -203,7 +203,7 @@ class DashboardController extends Controller
         $percobaan = Percobaan::findOrFail($percobaanId);
         if ($percobaan->tes_id !== $tes->id) abort(404);
 
-        $pertanyaanList = $tes->pertanyaans()->with('opsiJawabans')->get();
+        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
         $currentQuestionIndex = (int) $request->query('q', 0);
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
@@ -242,12 +242,12 @@ class DashboardController extends Controller
                     'percobaan_id' => $percobaan->id,
                     'pertanyaan_id' => $pertanyaanId,
                 ],
-                ['opsi_jawabans_id' => $opsiId]
+                ['opsi_jawaban_id' => $opsiId]
             );
         }
 
         $currentIndex = (int) $request->query('q', 0) + 1;
-        $totalQuestions = $percobaan->tes->pertanyaans()->count();
+        $totalQuestions = $percobaan->tes->pertanyaan()->count();
 
         if ($currentIndex >= $totalQuestions) {
             $percobaan->waktu_selesai = now();

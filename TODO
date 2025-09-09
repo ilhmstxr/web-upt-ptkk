@@ -5,14 +5,13 @@ https://docs.google.com/spreadsheets/d/1oKDqVlw_SW45XlMvwPmfXuM6YPUdxoLV1csuP6fZ
 - DONE nambain export monev buat diagram & data biasa.
 - TODO buat form pendaftaran buat instruktur. 
 - TODO soal pretest posttest di opsi jawabannya bisa pake gambar
-- TODO admin e yang rata rata penilaian monev rata2/max, cth: 3.8/4.0
+- TODO ADMIN e yang rata rata penilaian monev rata2/max, cth: 3.8/4.0
 
  pendaftaran controller
 - DONE validasi email
 - CHECK TAMBAHIN KOLOM KABUPATEN SEBELUM CABANG DINAS. 
-- PROGRESS Di form MTU ada perbedaan dengan aksel dan reguler yaitu ga ada surat sehat (segera bedakan data masuk jika buat pendaftaran mtu ya masuk mtu dan reguler masuk reguler dst)
+- CHECK Di form MTU ada perbedaan dengan aksel dan reguler yaitu ga ada surat sehat (segera bedakan data masuk jika buat pendaftaran mtu ya masuk mtu dan reguler masuk reguler dst)
 
-- TODO admin buat chart monev
-- TODO
-
-- TODO benerin nama tabel
+ADMIN 
+- TODO buat chart monev
+- TODO export monev ke excel

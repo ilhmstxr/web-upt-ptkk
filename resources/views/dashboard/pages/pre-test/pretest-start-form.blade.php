@@ -19,7 +19,7 @@
             <label class="block text-sm font-medium mb-1">Nama Peserta</label>
             <select name="peserta_id" required class="w-full p-2 border rounded">
                 <option value="">-- Pilih Peserta --</option>
-                @foreach($pesertas as $peserta)
+                @foreach($peserta as $peserta)
                     <option value="{{ $peserta->id }}" {{ old('peserta_id') == $peserta->id ? 'selected' : '' }}>
                         {{ $peserta->nama }} - {{ $peserta->instansi->nama ?? '' }}
                     </option>
