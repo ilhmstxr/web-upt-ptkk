@@ -4,6 +4,7 @@ INSERT INTO
     `id`,
     `nama_bidang`,
     `deskripsi`,
+    `kode`,
     `created_at`,
     `updated_at`
   )
@@ -12,6 +13,7 @@ VALUES
     1,
     'Tata Boga',
     'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.',
+    'TTBG',
     NULL,
     NULL
   ),
@@ -19,6 +21,7 @@ VALUES
     2,
     'Tata Busana',
     'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.',
+    'TTBS',
     NULL,
     NULL
   ),
@@ -26,6 +29,7 @@ VALUES
     3,
     'Kecantikan',
     'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.',
+    'KCAN',
     NULL,
     NULL
   ),
@@ -33,6 +37,7 @@ VALUES
     4,
     'Teknik Pendingin dan Tata Udara',
     'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.',
+    'TPTU',
     NULL,
     NULL
   ),
@@ -40,6 +45,7 @@ VALUES
     5,
     'Web Desain',
     'Bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.',
+    'WBDS',
     NULL,
     NULL
   ),
@@ -47,6 +53,7 @@ VALUES
     6,
     'Desain Grafis',
     'Bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.',
+    'DSGF',
     NULL,
     NULL
   ),
@@ -54,6 +61,7 @@ VALUES
     7,
     'Animasi',
     'Bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.',
+    'ANMS',
     NULL,
     NULL
   ),
@@ -61,6 +69,7 @@ VALUES
     8,
     'Fotografi',
     'Bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.',
+    'FTGR',
     NULL,
     NULL
   ),
@@ -68,6 +77,15 @@ VALUES
     9,
     'Videografi',
     'Bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.',
+    'VDGR',
+    NULL,
+    NULL
+  ),
+  (
+    10,
+    'PLC',
+    'Bidang keahlian yang mengajarkan programming logic controller',
+    'PLC',
     NULL,
     NULL
   );
@@ -996,6 +1014,7 @@ INSERT INTO
     `tanggal_mulai`,
     `tanggal_selesai`,
     `deskripsi`,
+    `status`,
     `created_at`,
     `updated_at`
   )
@@ -1006,8 +1025,22 @@ VALUES
     'Kegiatan Pengembangan dan Pelatihan Kompetensi Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 (Kelas Keterampilan) Angkatan II Tahun 2025',
     NULL,
     NULL,
+    '2025-08-25',
+    '2025-08-30',
+    NULL,
+    'selesai',
+    NULL,
+    NULL
+  ),
+  (
+    2,
+    NULL,
+    'Kegiatan Pelatihan Kompetensi Vokasi bagi Siswa SMK / SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan II  Tahun 2025',
+    NULL,
+    NULL,
     '2025-09-01',
     '2025-09-06',
+    NULL,
     NULL,
     NULL,
     NULL
@@ -5145,601 +5178,601 @@ VALUES
     2,
     'Sepni Amzah',
     'sepniamzah5@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     3,
     'Firdaussy Nurliza Ramadhani',
     'firdanurliza9@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     4,
     'MOCH ADAM ASSADDIL RAIZ',
     'adamassaddil@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     5,
     'NAYSILLA NOVI NUR KHUMAIRA',
     'naysillanovi11@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     6,
     'OKY RIYANTO',
     'okyriyanto369@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     7,
     'Prajwalita Zulfa Fatika Chusna',
     'prajwalitacusna@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     8,
     'RALVIO OCZA ZEBIAN',
     'ralvioocza30@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     9,
     'RYNDI MEGA HERAWATI',
     'rindi121299@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     10,
     'RANGGA EKA PUTRA ELYANTO',
     'ranggaproject63@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     11,
     'Dewi Safira Febriana',
     'dewisafira973@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     12,
     'Amelta Aulia Subarko',
     'meltacialia@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     13,
     'LUTFI HIDAYATUR ROHIM',
     'lutfiturrohim@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     14,
     'RADITHYA FAUSTA ARIEF',
     'faustaatifradithya@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     15,
     'Alifia Ziqna Faradiba',
     'alifiafaradiba043@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     16,
     'Muhammad Nazar Qoirun Nazmi',
     'mnazar.qn18@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     17,
     'HALIMATUS PUTRI DEWI',
     'nurulalaina86@guru.smk.belajar.id',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     18,
     'Naila Aurellia',
     'nailaay123@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     19,
     'Masyifa Azzahra',
     'masyifaazzahra23@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     20,
     'SILVIA RAMADANI',
     'silviaramadani665@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     21,
     'ARDHIANSYAH PUTRA RISQI SATRIAGUNG',
     'ardhiansyahsatriagung@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     22,
     'XTWOLITA ELFREDA ARDININGRUM',
     'xtwolitae@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     23,
     'Ahmad Khoiruddin',
     'ahmadkhoiruddin2025@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     24,
     'Zahra Farrisa Gitya Putri',
     'zahrafarrisaputri@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     25,
     'SABRINA WAFA AQILLAH',
     's6951820@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     26,
     'Anggrea Revalda Pratiwi Putri',
     'revaldaanggrea@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     27,
     'MUHAMAD RIKI FEBRIANTO',
     'muhamadriki9206@smk.blajar.id',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     28,
     'Binti Lailatul Ilmi',
     'bintilailatulilmi@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     29,
     'ZYIKA AYUDIA MUTIA SARI',
     'huddyiswanto@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     30,
     'YOHANA DIAN MAHARANI',
     'hanayana302@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     31,
     'Diaz Ayunda Kirana',
     'diazayundakirana@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     32,
     'Margareta Pasharina Swastika',
     'swastikamargareta3@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     33,
     'Nayla Qolbina Muttaqiyah',
     'naylataqiyyah30@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     34,
     'Arum Mawarni Dwi Puspita',
     'arummawarni6pbm@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     35,
     'DIAH WAHYU SOFANA',
     'diahsofana752@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     36,
     'Salsabila Nur rochim',
     'salsabila33pbmnew@gamail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     37,
     'Marisa Ulfi Nur\'aini',
     'marisaulfinuraini@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     38,
     'AISYAH NADYA FITRI',
     'duoaisyah124@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     39,
     'NAYZILA NISRINA SALSABILA',
     'naysilaa1210@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     40,
     'CALLULA SALWA ZAKIAH',
     'calulasalwa20@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     41,
     'NAJWA AZZAHRA RAMADHANI',
     'najwazzahra126@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     42,
     'MUHAMMAD ALVIN ABIANSYAH',
     'muhammad.alvin6412@smk.belajar.id',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     43,
     'Rahmadina Nuraini',
     'rahmadinanuraini7@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     44,
     'HILMAN PUTRA AL RIZKI',
     'hlmnsii856@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     45,
     'Muhammad Bisri Abdillah',
     'muhammadbisriabdillah6@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     46,
     'rizki fajar aditya putra',
     'rizkifajaraditiyaputra@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     47,
     'Alexca Evelina Avrilla Putri',
     'acaalexca@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     48,
     'Brillian Dwi Rahmadani',
     'rahamadani52@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     49,
     'Puri Bondan Ningtyas',
     'onyourmarkiam@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     50,
     'SAIFUL BAHRI',
     'bahri123baik@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     51,
     'MUCHAMMAD ASKAEV ANSORI',
     'www4ab@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     52,
     'Baitha Hayyunisa',
     'baitha.hayyunisa@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     53,
     'Andi Dixie Aurellia Neysa',
     'dixieaurellianey@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     54,
     'Rahma pujianti',
     'rahmapuji288@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     55,
     'DAYINTA SURYANING SEKAR DHATU',
     'dayintadhtu@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     56,
     'CRISSANDA REBECCA ANGELA CHILL',
     'rbcsaa@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     57,
     'ANNA ALTHAFUNNISA',
     'annaalthafunnisa467@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     58,
     'ESA NUR WAHYUDI',
     'esanurwahyudisoto@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     59,
     'ZEFRIZAL RAHMADANI',
     'makmupikun@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     60,
     'MERCY ALVINA PUTRI SILOLO',
     'mercyalvinaa@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     61,
     'Firda Aulia Zahra',
     'firdaaulya@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   );
 
 -- tabel peserta
@@ -30223,8 +30256,8 @@ VALUES
     5,
     1,
     30,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     7,
@@ -30235,8 +30268,8 @@ VALUES
     6,
     1,
     30,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     8,
@@ -30247,8 +30280,8 @@ VALUES
     7,
     1,
     30,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     9,
@@ -30259,8 +30292,8 @@ VALUES
     1,
     1,
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   );
 
 -- PERTANYAAN
@@ -31444,3 +31477,66 @@ VALUES
   (201, 177),
   -- Pertanyaan yang menggunakan opsi dari master ID 190 (Skala Perlu)
   (191, 190);
+
+  INSERT INTO `pendaftaran_pelatihan` (`id`, `peserta_id`, `pelatihan_id`, `nomor_registrasi`, `tanggal_pendaftaran`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '1-TPTU-001', '2025-08-20 09:28:17', '2025-08-20 09:28:17', '2025-08-20 09:28:17'),
+(2, 2, 1, '1-KCAN-001', '2025-08-20 10:06:36', '2025-08-20 10:06:36', '2025-08-20 10:06:36'),
+(3, 3, 1, '1-TPTU-002', '2025-08-20 11:23:32', '2025-08-20 11:23:32', '2025-08-20 11:23:32'),
+(4, 4, 1, '1-TBOG-001', '2025-08-20 11:58:13', '2025-08-20 11:58:13', '2025-08-20 11:58:13'),
+(5, 5, 1, '1-TPTU-003', '2025-08-20 12:13:59', '2025-08-20 12:13:59', '2025-08-20 12:13:59'),
+(6, 6, 1, '1-TBUS-001', '2025-08-20 12:19:16', '2025-08-20 12:19:16', '2025-08-20 12:19:16'),
+(7, 7, 1, '1-TBOG-002', '2025-08-20 12:25:07', '2025-08-20 12:25:07', '2025-08-20 12:25:07'),
+(8, 8, 1, '1-TBUS-002', '2025-08-20 12:30:28', '2025-08-20 12:30:28', '2025-08-20 12:30:28'),
+(9, 9, 1, '1-TPTU-004', '2025-08-20 13:04:04', '2025-08-20 13:04:04', '2025-08-20 13:04:04'),
+(10, 10, 1, '1-TBUS-003', '2025-08-20 13:10:17', '2025-08-20 13:10:17', '2025-08-20 13:10:17'),
+(11, 11, 1, '1-TBUS-004', '2025-08-20 13:57:25', '2025-08-20 13:57:25', '2025-08-20 13:57:25'),
+(12, 12, 1, '1-KCAN-002', '2025-08-20 14:09:41', '2025-08-20 14:09:41', '2025-08-20 14:09:41'),
+(13, 13, 1, '1-TPTU-005', '2025-08-20 14:12:20', '2025-08-20 14:12:20', '2025-08-20 14:12:20'),
+(14, 14, 1, '1-KCAN-003', '2025-08-20 14:28:22', '2025-08-20 14:28:22', '2025-08-20 14:28:22'),
+(15, 15, 1, '1-TPTU-006', '2025-08-20 14:44:46', '2025-08-20 14:44:46', '2025-08-20 14:44:46'),
+(16, 16, 1, '1-TBUS-005', '2025-08-20 15:12:10', '2025-08-20 15:12:10', '2025-08-20 15:12:10'),
+(17, 17, 1, '1-KCAN-004', '2025-08-20 20:24:24', '2025-08-20 20:24:24', '2025-08-20 20:24:24'),
+(18, 18, 1, '1-TBUS-006', '2025-08-21 01:58:09', '2025-08-21 01:58:09', '2025-08-21 01:58:09'),
+(19, 19, 1, '1-TBUS-007', '2025-08-21 02:29:10', '2025-08-21 02:29:10', '2025-08-21 02:29:10'),
+(20, 20, 1, '1-TPTU-007', '2025-08-21 02:48:09', '2025-08-21 02:48:09', '2025-08-21 02:48:09'),
+(21, 21, 1, '1-TBUS-008', '2025-08-21 02:49:15', '2025-08-21 02:49:15', '2025-08-21 02:49:15'),
+(22, 22, 1, '1-TPTU-008', '2025-08-21 03:14:17', '2025-08-21 03:14:17', '2025-08-21 03:14:17'),
+(23, 23, 1, '1-KCAN-005', '2025-08-21 03:33:49', '2025-08-21 03:33:49', '2025-08-21 03:33:49'),
+(24, 24, 1, '1-TBUS-009', '2025-08-21 03:40:57', '2025-08-21 03:40:57', '2025-08-21 03:40:57'),
+(25, 25, 1, '1-TBUS-010', '2025-08-21 03:54:31', '2025-08-21 03:54:31', '2025-08-21 03:54:31'),
+(26, 26, 1, '1-TPTU-009', '2025-08-21 05:02:39', '2025-08-21 05:02:39', '2025-08-21 05:02:39'),
+(27, 27, 1, '1-TBOG-003', '2025-08-21 07:07:23', '2025-08-21 07:07:23', '2025-08-21 07:07:23'),
+(28, 28, 1, '1-TBOG-004', '2025-08-21 09:06:51', '2025-08-21 09:06:51', '2025-08-21 09:06:51'),
+(29, 29, 1, '1-TBOG-005', '2025-08-21 12:12:02', '2025-08-21 12:12:02', '2025-08-21 12:12:02'),
+(30, 30, 1, '1-TBOG-006', '2025-08-21 12:17:34', '2025-08-21 12:17:34', '2025-08-21 12:17:34'),
+(31, 31, 1, '1-KCAN-006', '2025-08-21 13:56:56', '2025-08-21 13:56:56', '2025-08-21 13:56:56'),
+(32, 32, 1, '1-KCAN-007', '2025-08-21 14:23:25', '2025-08-21 14:23:25', '2025-08-21 14:23:25'),
+(33, 33, 1, '1-TBUS-011', '2025-08-22 02:54:10', '2025-08-22 02:54:10', '2025-08-22 02:54:10'),
+(34, 34, 1, '1-TBOG-007', '2025-08-22 03:04:40', '2025-08-22 03:04:40', '2025-08-22 03:04:40'),
+(35, 35, 1, '1-TBUS-012', '2025-08-22 03:13:06', '2025-08-22 03:13:06', '2025-08-22 03:13:06'),
+(36, 36, 1, '1-TBOG-008', '2025-08-22 03:50:52', '2025-08-22 03:50:52', '2025-08-22 03:50:52'),
+(37, 37, 1, '1-KCAN-008', '2025-08-22 04:13:21', '2025-08-22 04:13:21', '2025-08-22 11:30:51'),
+(38, 38, 1, '1-KCAN-009', '2025-08-22 04:18:43', '2025-08-22 04:18:43', '2025-08-22 04:18:43'),
+(39, 39, 1, '1-TBOG-009', '2025-08-22 05:14:42', '2025-08-22 05:14:42', '2025-08-22 05:14:42'),
+(40, 40, 1, '1-TBOG-010', '2025-08-22 05:19:47', '2025-08-22 05:19:47', '2025-08-22 05:19:47'),
+(41, 41, 1, '1-TPTU-010', '2025-08-22 06:11:46', '2025-08-22 06:11:46', '2025-08-22 06:11:46'),
+(42, 42, 1, '1-TBOG-011', '2025-08-22 06:50:04', '2025-08-22 06:50:04', '2025-08-22 06:50:04'),
+(43, 43, 1, '1-TBOG-012', '2025-08-22 07:00:55', '2025-08-22 07:00:55', '2025-08-22 07:00:55'),
+(44, 44, 1, '1-TPTU-011', '2025-08-22 07:03:44', '2025-08-22 07:03:44', '2025-08-22 07:03:44'),
+(45, 45, 1, '1-TBUS-013', '2025-08-22 07:40:52', '2025-08-22 07:40:52', '2025-08-22 07:40:52'),
+(46, 46, 1, '1-TBUS-014', '2025-08-22 07:53:55', '2025-08-22 07:53:55', '2025-08-22 07:53:55'),
+(47, 47, 1, '1-TBOG-013', '2025-08-22 07:58:16', '2025-08-22 07:58:16', '2025-08-22 07:58:16'),
+(48, 48, 1, '1-TBOG-014', '2025-08-22 09:32:46', '2025-08-22 09:32:46', '2025-08-22 09:32:46'),
+(49, 49, 1, '1-TPTU-012', '2025-08-22 11:13:03', '2025-08-22 11:13:03', '2025-08-22 11:13:03'),
+(50, 50, 1, '1-TPTU-013', '2025-08-22 11:45:00', '2025-08-22 11:45:00', '2025-08-22 11:45:00'),
+(51, 51, 1, '1-KCAN-010', '2025-08-22 12:16:46', '2025-08-22 12:16:46', '2025-08-22 12:16:46'),
+(52, 52, 1, '1-KCAN-011', '2025-08-22 12:22:18', '2025-08-22 12:22:18', '2025-08-22 12:22:18'),
+(53, 53, 1, '1-KCAN-012', '2025-08-22 13:14:10', '2025-08-22 13:14:10', '2025-08-22 13:14:10'),
+(54, 54, 1, '1-KCAN-013', '2025-08-22 13:34:42', '2025-08-22 13:34:42', '2025-08-22 13:34:42'),
+(55, 55, 1, '1-KCAN-014', '2025-08-22 13:39:15', '2025-08-22 13:39:15', '2025-08-22 13:39:15'),
+(56, 56, 1, '1-TBUS-015', '2025-08-22 13:41:46', '2025-08-22 13:41:46', '2025-08-22 13:41:46'),
+(57, 57, 1, '1-TPTU-014', '2025-08-22 13:42:27', '2025-08-22 13:42:27', '2025-08-22 13:42:27'),
+(58, 58, 1, '1-TPTU-015', '2025-08-23 09:23:46', '2025-08-23 09:23:46', '2025-08-23 09:23:46'),
+(59, 59, 1, '1-TBOG-015', '2025-08-23 14:19:14', '2025-08-23 14:19:14', '2025-08-23 14:19:14'),
+(60, 60, 1, '1-KCAN-015', '2025-08-29 11:40:45', '2025-08-29 11:40:45', '2025-08-29 11:40:45');
+
