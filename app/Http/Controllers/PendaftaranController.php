@@ -43,6 +43,8 @@ class PendaftaranController extends Controller
         switch ($currentStep) {
             case 1:
                 $cabangDinas = CabangDinas::all();
+                $pelatihan = Pelatihan::all();
+                return $pelatihan;
                 return view('peserta.pendaftaran.bio-peserta', compact('currentStep', 'allowedStep', 'formData', 'cabangDinas'));
             case 2:
                 $pelatihan = Pelatihan::all();
@@ -59,6 +61,8 @@ class PendaftaranController extends Controller
         $currentStep = $request->input('current_step');
         $formData = $request->session()->get('pendaftaran_data', []);
 
+
+        //  TODO:  benerin error, karena emailnya sudah di user
         if ($currentStep == 1) {
             $validatedData = $request->validate([
                 'nama' => 'required|string|max:255',

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete()->nullable();
-                
+
             // Jika nanti ada tabel cabang_dinas, bisa diaktifkan:
             // $table->foreignId('cabang_dinas_id')
             //       ->constrained('cabang_dinas')

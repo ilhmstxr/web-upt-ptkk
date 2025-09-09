@@ -217,11 +217,14 @@
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-
+                    {{-- TODO: if else kalau semisal jenis_program MTU, surat sehat gapake --}}
                     {{-- =================================================== --}}
                     {{-- Input File Surat Sehat (Struktur Baru) --}}
                     {{-- =================================================== --}}
                     <div>
+                        @if ()
+
+                        @endif
                         <label for="fc_surat_sehat" class="block text-sm font-semibold mb-2 text-slate-700">Unggah Surat
                             Sehat</label>
 
