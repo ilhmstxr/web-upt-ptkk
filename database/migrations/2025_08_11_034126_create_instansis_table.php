@@ -21,14 +21,10 @@ return new class extends Migration
                 ->constrained('cabang_dinas')
                 ->cascadeOnDelete();
             $table->foreignId('user_id')
+                ->nullable()->unique()
                 ->constrained('users')
-                ->cascadeOnDelete()->nullable();
-                
-            // Jika nanti ada tabel cabang_dinas, bisa diaktifkan:
-            // $table->foreignId('cabang_dinas_id')
-            //       ->constrained('cabang_dinas')
-            //       ->onUpdate('cascade')
-            //       ->onDelete('cascade');
+                ->onDelete('set null');
+
             $table->timestamps();
         });
     }
