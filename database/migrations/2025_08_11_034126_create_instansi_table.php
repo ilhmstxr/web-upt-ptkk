@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('asal_instansi');
             $table->text('alamat_instansi');
+            $table->string('kota_id');
             $table->string('kota');
             $table->string('bidang_keahlian');
             $table->string('kelas');

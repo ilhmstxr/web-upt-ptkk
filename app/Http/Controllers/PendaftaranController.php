@@ -122,6 +122,7 @@ class PendaftaranController extends Controller
                     'asal_instansi'     => $allData['asal_instansi'],
                     'alamat_instansi'   => $allData['alamat_instansi'],
                     'kota'   => $allData['kota'],
+                    'kota_id'   => $allData['kota_id'],
                 ],
                 [
                     'bidang_keahlian'       => $allData['bidang_keahlian'],
