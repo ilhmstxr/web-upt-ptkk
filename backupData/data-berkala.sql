@@ -301,6 +301,7 @@ INSERT INTO
     `id`,
     `asal_instansi`,
     `alamat_instansi`,
+    `kota`,
     `bidang_keahlian`,
     `kelas`,
     `cabangDinas_id`,

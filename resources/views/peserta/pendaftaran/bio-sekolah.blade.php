@@ -169,6 +169,7 @@
                             class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
                         </div>
 
+                        <input type="hidden" name="kota_id" id="kota_id">
                         <div id="kotaError"
                             class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center hidden">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
@@ -248,62 +249,213 @@
         transform: translateY(0);
     }
 </style>
-
 <script defer>
     document.addEventListener("DOMContentLoaded", async () => {
+        // ====== Elemen dasar ======
         const kotaInput = document.getElementById("kota");
         const suggestionsContainer = document.getElementById("kotaSuggestions");
-        let allRegencies = [];
+        const errorPopup = document.getElementById("kotaError");
+        const errorText = errorPopup?.querySelector(".error-message-text");
 
-        // Ambil data dari API
-        try {
-            const res = await fetch("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/35.json");
-            if (!res.ok) throw new Error("Gagal mengambil data");
-            allRegencies = await res.json();
-        } catch (err) {
-            console.error(err);
-            return;
+        // Buat hidden input kota_id jika belum ada
+        let kotaIdHidden = document.getElementById("kota_id");
+        if (!kotaIdHidden) {
+            kotaIdHidden = document.createElement("input");
+            kotaIdHidden.type = "hidden";
+            kotaIdHidden.id = "kota_id";
+            kotaIdHidden.name = "kota_id";
+            kotaInput.parentElement.appendChild(kotaIdHidden);
         }
 
-        // Saat user mengetik
-        kotaInput.addEventListener("input", () => {
-            const q = kotaInput.value.toLowerCase().trim();
+        // Dapatkan elemen form (untuk validasi submit)
+        const form = kotaInput.closest("form");
+
+        // ====== State ======
+        let allRegencies = [];
+        let filtered = [];
+        let activeIndex = -1; // untuk navigasi keyboard
+        let selectedItem = null; // { id, name } terakhir yang dipilih dari daftar
+
+        // ====== Util ======
+        const normalize = (s) => (s || "").toString().trim().toLowerCase().replace(/\s+/g, " ");
+
+        const showSuggestions = () => {
+            suggestionsContainer.classList.remove("hidden");
+        };
+        const hideSuggestions = () => {
+            suggestionsContainer.classList.add("hidden");
+            activeIndex = -1;
+        };
+
+        const clearSuggestions = () => {
             suggestionsContainer.innerHTML = "";
+            activeIndex = -1;
+        };
 
-            if (!q) {
-                suggestionsContainer.classList.add("hidden");
-                return;
-            }
-
-            const filtered = allRegencies.filter(r => r.name.toLowerCase().includes(q));
-
-            if (filtered.length === 0) {
-                suggestionsContainer.classList.add("hidden");
-                return;
-            }
-
-            filtered.forEach(item => {
+        const renderSuggestions = (items) => {
+            clearSuggestions();
+            items.forEach((item, idx) => {
                 const div = document.createElement("div");
                 div.textContent = item.name;
-                div.className = "p-2 cursor-pointer hover:bg-gray-100";
-                div.addEventListener("mousedown", () => {
-                    kotaInput.value = item.name;
-                    suggestionsContainer.classList.add("hidden");
+                div.className =
+                    "p-2 cursor-pointer hover:bg-gray-100 select-none " +
+                    (idx === activeIndex ? "bg-gray-100" : "");
+                // mousedown agar tidak kalah oleh event blur pada input
+                div.addEventListener("mousedown", (e) => {
+                    e.preventDefault();
+                    chooseItem(item);
                 });
                 suggestionsContainer.appendChild(div);
             });
+            if (items.length > 0) showSuggestions();
+            else hideSuggestions();
+        };
 
-            suggestionsContainer.classList.remove("hidden");
-        });
+        const chooseItem = (item) => {
+            kotaInput.value = item.name;
+            kotaIdHidden.value = item.id;
+            selectedItem = {
+                id: item.id,
+                name: item.name
+            };
+            hideSuggestions();
+            hideError();
+        };
 
-        // Klik di luar → sembunyikan dropdown
-        document.addEventListener("click", (e) => {
-            if (!kotaInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
-                suggestionsContainer.classList.add("hidden");
+        const showError = (msg) => {
+            if (!errorPopup) return;
+            errorText.textContent = msg || "Harus pilih kota/kabupaten dari daftar.";
+            errorPopup.classList.remove("hidden");
+        };
+        const hideError = () => {
+            if (!errorPopup) return;
+            errorPopup.classList.add("hidden");
+        };
+
+        const debounce = (fn, delay = 150) => {
+            let t;
+            return (...args) => {
+                clearTimeout(t);
+                t = setTimeout(() => fn(...args), delay);
+            };
+        };
+
+        // ====== Ambil data API (contoh: provinsi 35 / Jawa Timur) ======
+        try {
+            const res = await fetch(
+                "https://www.emsifa.com/api-wilayah-indonesia/api/regencies/35.json", {
+                    cache: "no-store"
+                }
+            );
+            if (!res.ok) throw new Error("Gagal mengambil data kota/kabupaten.");
+            allRegencies = await res.json();
+        } catch (err) {
+            console.error(err);
+            showError("Gagal memuat daftar kota/kabupaten. Coba muat ulang halaman.");
+            return;
+        }
+
+        // ====== Event: user mengetik ======
+        const onInput = () => {
+            hideError();
+            // reset pilihan jika user mulai ketik lagi
+            kotaIdHidden.value = "";
+            selectedItem = null;
+
+            const q = normalize(kotaInput.value);
+            if (!q) {
+                clearSuggestions();
+                hideSuggestions();
+                return;
+            }
+
+            filtered = allRegencies.filter((r) => normalize(r.name).includes(q));
+            renderSuggestions(filtered);
+        };
+
+        kotaInput.addEventListener("input", debounce(onInput, 120));
+
+        // ====== Event: keyboard navigation ======
+        kotaInput.addEventListener("keydown", (e) => {
+            const visible = !suggestionsContainer.classList.contains("hidden");
+            if (!visible && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+                // buka ulang jika ada hasil filter
+                if ((filtered?.length || 0) > 0) showSuggestions();
+            }
+
+            switch (e.key) {
+                case "ArrowDown":
+                    if (filtered.length === 0) return;
+                    e.preventDefault();
+                    activeIndex = (activeIndex + 1) % filtered.length;
+                    renderSuggestions(filtered);
+                    ensureActiveVisible();
+                    break;
+                case "ArrowUp":
+                    if (filtered.length === 0) return;
+                    e.preventDefault();
+                    activeIndex = (activeIndex - 1 + filtered.length) % filtered.length;
+                    renderSuggestions(filtered);
+                    ensureActiveVisible();
+                    break;
+                case "Enter":
+                    if (visible && activeIndex >= 0 && filtered[activeIndex]) {
+                        e.preventDefault();
+                        chooseItem(filtered[activeIndex]);
+                    }
+                    break;
+                case "Escape":
+                    hideSuggestions();
+                    break;
             }
         });
+
+        const ensureActiveVisible = () => {
+            const children = suggestionsContainer.children;
+            if (activeIndex < 0 || activeIndex >= children.length) return;
+            const el = children[activeIndex];
+            const cTop = suggestionsContainer.scrollTop;
+            const cBottom = cTop + suggestionsContainer.clientHeight;
+            const eTop = el.offsetTop;
+            const eBottom = eTop + el.offsetHeight;
+            if (eTop < cTop) suggestionsContainer.scrollTop = eTop;
+            else if (eBottom > cBottom)
+                suggestionsContainer.scrollTop = eBottom - suggestionsContainer.clientHeight;
+        };
+
+        // ====== Klik di luar → sembunyikan dropdown ======
+        document.addEventListener("click", (e) => {
+            if (!kotaInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                hideSuggestions();
+            }
+        });
+
+        // ====== Validasi saat submit ======
+        if (form) {
+            form.addEventListener("submit", (e) => {
+                // 1) Harus ada kota_id (berasal dari pilih suggestion)
+                if (!kotaIdHidden.value) {
+                    e.preventDefault();
+                    showError("Harus pilih kota/kabupaten dari daftar.");
+                    // bantu fokuskan user
+                    kotaInput.focus();
+                    return;
+                }
+
+                // 2) Nama input harus match dengan nama item terpilih (anti ganti manual setelah pilih)
+                if (!selectedItem || normalize(kotaInput.value) !== normalize(selectedItem.name)) {
+                    e.preventDefault();
+                    showError("Nama kota/kabupaten tidak valid. Pilih dari daftar.");
+                    kotaInput.focus();
+                    return;
+                }
+
+                hideError();
+            });
+        }
     });
 </script>
+
 
 <script>
     // KABUPATEN / KOTA

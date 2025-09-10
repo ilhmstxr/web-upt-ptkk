@@ -89,6 +89,8 @@ class PendaftaranController extends Controller
             $validatedData = $request->validate([
                 'asal_instansi' => 'required|string|max:255',
                 'alamat_instansi' => 'required|string',
+                'kota' => 'required|string|max:100',
+                'kota_id' => 'required|integer',
                 'bidang_keahlian' => 'required|string|max:255',
                 'kelas' => 'required|string|max:100',
                 'cabangDinas_id' => 'required|string|max:255',
@@ -119,6 +121,7 @@ class PendaftaranController extends Controller
                 [
                     'asal_instansi'     => $allData['asal_instansi'],
                     'alamat_instansi'   => $allData['alamat_instansi'],
+                    'kota'   => $allData['kota'],
                 ],
                 [
                     'bidang_keahlian'       => $allData['bidang_keahlian'],
