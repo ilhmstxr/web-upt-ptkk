@@ -13,10 +13,21 @@ return new class extends Migration
     {
         Schema::create('pelatihans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('instansi_id')
+                  ->nullable()
+                  ->constrained('instansis')
+                  ->onUpdate('cascade')
+                  ->onDelete('set null'); // Relasi ke tabel instansis
+
             $table->string('nama_pelatihan');
+            $table->enum('jenis_program',['akselerasi','reguler','mtu']);
+            $table->string('slug')->nullable()->unique();
+            $table->string('gambar')->nullable();
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
+            $table->text('deskripsi')->nullable();
             $table->timestamps();
+            $table->string('status')->nullable()->default('belum dimulai');
         });
     }
 

@@ -17,8 +17,13 @@ class Instansi extends Model
         'alamat_instansi',
         'bidang_keahlian',
         'kelas',
-        'cabang_dinas_wilayah',
+        'cabang_dinas_wilayah', 
     ];
+
+    public function cabangDinas()
+{
+    return $this->belongsTo(CabangDinas::class, 'cabang_dinas_wilayah');
+}
 
     public function pesertas(): HasMany
     {

@@ -16,11 +16,14 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call([
-            AdminUserSeeder::class,
-            PelatihanSeeder::class,
-            CabangDinasSeeder::class,
+            // AdminUserSeeder::class,
             // PelatihanSeeder::class,
-            BidangSeeder::class,
+            // CabangDinasSeeder::class,
+            // PelatihanSeeder::class,
+            // BidangSeeder::class,
+            // PesertaSeeder::class,
+            // SurveySeeder::class,
+            // ProductionSeeder::class,
         ]);
 
         User::create([
@@ -29,10 +32,5 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin'),
         ]);
 
-        user::create([
-            'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('admin')
-        ]);
     }
 }

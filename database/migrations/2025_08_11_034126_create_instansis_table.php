@@ -13,12 +13,22 @@ return new class extends Migration
     {
         Schema::create('instansis', function (Blueprint $table) {
             $table->id();
-            // --- Data Instansi ---
             $table->string('asal_instansi');
             $table->text('alamat_instansi');
             $table->string('bidang_keahlian');
             $table->string('kelas');
-            $table->string('cabang_dinas_wilayah');
+            $table->foreignId('cabangDinas_id')
+                ->constrained('cabang_dinas')
+                ->cascadeOnDelete();
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete()->nullable();
+
+            // Jika nanti ada tabel cabang_dinas, bisa diaktifkan:
+            // $table->foreignId('cabang_dinas_id')
+            //       ->constrained('cabang_dinas')
+            //       ->onUpdate('cascade')
+            //       ->onDelete('cascade');
             $table->timestamps();
         });
     }

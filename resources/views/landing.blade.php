@@ -1,57 +1,47 @@
+{{-- resources/views/landing.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UPT PTKK Dinas Pendidikan Jawa Timur</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-upt-ptkk.png') }} " class="w-4">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            /* bg-gray-100 */
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 1s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card-hover-effect:hover {
-            transform: scale(1.05);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .animate-pulse-once {
-            animation: pulse-once 1.5s ease-in-out;
-        }
-
-        @keyframes pulse-once {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-        }
+        /* ====== CSS dari desain kamu ====== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1e6091 0%, #4a9eff 100%); min-height: 100vh; }
+        .header { background: white; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 15px; }
+        .logo { width: 60px; height: 60px; border-radius: 100px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+        .logo img { width: 100%; height: 100%; object-fit: contain; }
+        .logo-fallback { width: 100%; height: 100%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; text-align: center; line-height: 1.2; }
+        .header-title { color: #333; font-size: 20px; font-weight: 600; }
+        .main-container { padding: 40px 20px; max-width: 1400px; margin: 0 auto; }
+        .hero-section { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; margin-bottom: 60px; }
+        .hero-content { color: white; }
+        .hero-title { font-size: 48px; font-weight: 700; margin-bottom: 20px; line-height: 1.2; }
+        .hero-description { font-size: 16px; line-height: 1.6; opacity: 0.95; }
+        .hero-image-container { position: relative; display: flex; justify-content: center; align-items: center; }
+        .hero-image { width: 350px; height: 350px; border-radius: 50%; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); border: 5px solid rgba(255, 255, 255, 0.2); }
+        .hero-image img { width: 100%; height: 100%; object-fit: cover; }
+        .programs-section { display: flex; justify-content: center; gap: 30px; margin-top: 40px; flex-wrap: nowrap; overflow-x: auto; padding: 0 10px; }
+        .program-card { background: white; border-radius: 25px; padding: 25px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; cursor: pointer; text-decoration: none; color: inherit; display: block; border: 3px solid #e6f3ff; width: 280px; height: 320px; position: relative; flex-shrink: 0; }
+        .program-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); border-color: #4a9eff; }
+        .program-card:hover .arrow-icon { transform: translateX(5px); }
+        .program-image { width: 100%; height: 180px; border-radius: 15px; margin: 0 0 20px 0; overflow: hidden; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+        .program-image img { width: 100%; height: 100%; object-fit: cover; }
+        .program-content { display: flex; flex-direction: column; align-items: flex-start; text-align: left; height: calc(100% - 200px); justify-content: space-between; }
+        .program-title { font-size: 24px; font-weight: 700; color: #333; margin-bottom: 10px; line-height: 1.2; text-align: left; }
+        .program-date { color: #666; font-size: 14px; font-weight: 500; text-align: left; }
+        .arrow-icon { position: absolute; bottom: 25px; right: 25px; width: 24px; height: 24px; background: #4a9eff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; transition: transform 0.3s ease; }
+        .floating-elements { position: absolute; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+        .floating-circle { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.1); animation: float 6s ease-in-out infinite; }
+        .circle-1 { width: 100px; height: 100px; top: 10%; left: 10%; animation-delay: 0s; }
+        .circle-2 { width: 60px; height: 60px; top: 60%; right: 20%; animation-delay: 2s; }
+        .circle-3 { width: 80px; height: 80px; bottom: 20%; left: 20%; animation-delay: 4s; }
+        @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(180deg); } }
+        @media (max-width: 768px) { .hero-section { grid-template-columns: 1fr; text-align: center; } .hero-title { font-size: 36px; } .programs-section { flex-wrap: wrap; justify-content: center; } .main-container { padding: 20px 15px; } }
+        @media (max-width: 1200px) { .programs-section { gap: 20px; } .program-card { width: 260px; } }
     </style>
 </head>
 
@@ -65,23 +55,16 @@
                 <h1 class="text-xl font-bold text-gray-800">UPT PTKK Dinas Pendidikan Jawa Timur</h1>
             </div>
         </div>
+        <h1 class="header-title">UPT PTKK Dinas Pendidikan Jawa Timur</h1>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto p-4 md:p-8">
-        <!-- Hero Section -->
-        <section class="flex flex-col lg:flex-row items-center lg:space-x-12 mt-8 md:mt-12 fade-in-up">
-            <div class="lg:w-1/2">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-800">UPT PTKK</h2>
-                <p class="mt-4 text-gray-600 leading-relaxed text-lg">
-                    UPT Pengembangan Teknis Dan Keterampilan Kejuruan sebagai salah satu Unit Pelaksana Teknis dari
-                    Dinas Pendidikan Propinsi Jawa Timur UPT PTKK bertugas dalam kegiatan dan pengembangan teknis dan
-                    keterampilan kejuruan, ketatausahaan, dan pelayanan masyarakat.
+    <main class="main-container">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2 class="hero-title">UPT PTKK</h2>
+                <p class="hero-description">
+                    UPT Pengembangan Teknis Dan Keterampilan Kejuruan sebagai salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur, bertugas dalam kegiatan dan pengembangan teknis dan keterampilan kejuruan, ketatausahaan, dan pelayanan masyarakat.
                 </p>
-                <a href="/pendaftaran"
-                    class="mt-6 inline-block px-8 py-3 bg-[#5c76c1] text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105 animate-pulse-once">
-                    Daftar Sekarang
-                </a>
             </div>
             <div class="lg:w-1/2 mt-8 lg:mt-0 flex justify-center">
                 <img src="{{ asset('images/pelatihan.jpg') }}" 
@@ -162,7 +145,5 @@
             </a>
         </section>
     </main>
-
 </body>
-
 </html>
