@@ -13,7 +13,9 @@ USER
 - DONE validasi email
 - CHECK TAMBAHIN KOLOM KABUPATEN SEBELUM CABANG DINAS. 
 - CHECK Di form MTU ada perbedaan dengan aksel dan reguler yaitu ga ada surat sehat (segera bedakan data masuk jika buat pendaftaran mtu ya masuk mtu dan reguler masuk reguler dst)
+- TODO Pretest Postest
 
 ADMIN 
 - TODO buat chart monev
 - TODO export monev ke excel
+- TODO bedain postest, pretest, monev per container, nanti ada pelatihan & MTU, pelatihan ada akselerasi dan reguler 

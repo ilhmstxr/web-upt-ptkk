@@ -190,6 +190,8 @@ class PendaftaranController extends Controller
 
             Lampiran::create($lampiranData);
 
+            // TODO: buat token otomatis di tabel pendaftaran pelatihan
+            
             // return true;
             // });
 
