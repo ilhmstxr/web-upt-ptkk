@@ -36,7 +36,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             // --- Data Diri Peserta ---
-            $table->string('token')->unique();
+            // $table->string('token')->nullable()->unique(); // token udah dirubah di tabel pendaftaran_pelatihan
             $table->string('nama', 150);
             $table->string('nik', 20)->unique();
             $table->string('tempat_lahir', 100);

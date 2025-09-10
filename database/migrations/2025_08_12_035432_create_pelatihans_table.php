@@ -23,11 +23,11 @@ return new class extends Migration
             $table->enum('jenis_program',['akselerasi','reguler','mtu']);
             $table->string('slug')->nullable()->unique();
             $table->string('gambar')->nullable();
+            $table->string('status')->nullable()->default('belum dimulai');
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->text('deskripsi')->nullable();
             $table->timestamps();
-            $table->string('status')->nullable()->default('belum dimulai');
         });
     }
 

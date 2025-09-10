@@ -1,82 +1,78 @@
-
 -- data bidang
 INSERT INTO
-    `bidangs` (
-        `id`,
-        `nama_bidang`,
-        `deskripsi`,
-        `created_at`,
-        `updated_at`
-    )
+  `bidangs` (
+    `id`,
+    `nama_bidang`,
+    `deskripsi`,
+    `created_at`,
+    `updated_at`
+  )
 VALUES
-    (
-        1,
-        'Tata Boga',
-        'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.',
-        NULL,
-        NULL
-    ),
-    (
-        2,
-        'Tata Busana',
-        'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.',
-        NULL,
-        NULL
-    ),
-    (
-        3,
-        'Kecantikan',
-        'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.',
-        NULL,
-        NULL
-    ),
-    (
-        4,
-        'Teknik Pendingin dan Tata Udara',
-        'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.',
-        NULL,
-        NULL
-    ),
-    (
-        5,
-        'Web Desain',
-        'Bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.',
-        NULL,
-        NULL
-    ),
-    (
-        6,
-        'Desain Grafis',
-        'Bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.',
-        NULL,
-        NULL
-    ),
-    (
-        7,
-        'Animasi',
-        'Bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.',
-        NULL,
-        NULL
-    ),
-    (
-        8,
-        'Fotografi',
-        'Bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.',
-        NULL,
-        NULL
-    ),
-    (
-        9,
-        'Videografi',
-        'Bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.',
-        NULL,
-        NULL
-    );
+  (
+    1,
+    'Tata Boga',
+    'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.',
+    NULL,
+    NULL
+  ),
+  (
+    2,
+    'Tata Busana',
+    'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.',
+    NULL,
+    NULL
+  ),
+  (
+    3,
+    'Kecantikan',
+    'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.',
+    NULL,
+    NULL
+  ),
+  (
+    4,
+    'Teknik Pendingin dan Tata Udara',
+    'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.',
+    NULL,
+    NULL
+  ),
+  (
+    5,
+    'Web Desain',
+    'Bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.',
+    NULL,
+    NULL
+  ),
+  (
+    6,
+    'Desain Grafis',
+    'Bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.',
+    NULL,
+    NULL
+  ),
+  (
+    7,
+    'Animasi',
+    'Bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.',
+    NULL,
+    NULL
+  ),
+  (
+    8,
+    'Fotografi',
+    'Bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.',
+    NULL,
+    NULL
+  ),
+  (
+    9,
+    'Videografi',
+    'Bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.',
+    NULL,
+    NULL
+  );
 
-
-    -- cabang dinas
-
-
+-- cabang dinas
 -- cabang dinas
 INSERT INTO
   `cabang_dinas` (
@@ -281,7 +277,6 @@ VALUES
     '2025-08-29 06:02:59'
   );
 
-
 -- instansi
 INSERT INTO
   `instansis` (
@@ -302,7 +297,8 @@ VALUES
     'JL.patimura NO.3',
     '4',
     'XI',
-    '15',null,
+    '15',
+    null,
     '2025-08-20 08:29:27',
     '2025-08-20 08:29:27'
   ),
@@ -312,7 +308,8 @@ VALUES
     'Jl. Mastrip No. 153 Kota Probolinggo',
     '4',
     'XI',
-    '2',null,
+    '2',
+    null,
     '2025-08-20 09:28:17',
     '2025-08-20 09:28:17'
   ),
@@ -322,7 +319,8 @@ VALUES
     'Jl. Pahlawan No. 26A, Kota Probolinggo.',
     '3',
     'XI',
-    '2',null,
+    '2',
+    null,
     '2025-08-20 10:06:36',
     '2025-08-20 10:06:36'
   ),
@@ -332,7 +330,8 @@ VALUES
     'Jln. Sumengko Jatirejoo',
     '4',
     'XI',
-    '20',null,
+    '20',
+    null,
     '2025-08-20 11:23:32',
     '2025-08-20 11:23:32'
   ),
@@ -342,7 +341,8 @@ VALUES
     'Jl. Totok Kerot Ds. Sumberejo Kabupaten Kediri',
     '1',
     'XI',
-    '10',null,
+    '10',
+    null,
     '2025-08-20 11:58:13',
     '2025-08-20 11:58:13'
   ),
@@ -352,7 +352,8 @@ VALUES
     'Jl. Mastrip No.2, Sidorejo, Kec. Tuban, Kabupaten Tuban, Jawa Timur 62315',
     '4',
     'XI',
-    '15',null,
+    '15',
+    null,
     '2025-08-20 12:13:59',
     '2025-08-20 12:13:59'
   ),
@@ -362,7 +363,8 @@ VALUES
     'Jl. Raya Kediri - Blitar, Pakunden, Kec. Sukorejo, Kota Blitar, Jawa Timur 66122',
     '2',
     'XI',
-    '8',null,
+    '8',
+    null,
     '2025-08-20 12:19:16',
     '2025-08-20 12:19:16'
   ),
@@ -372,7 +374,8 @@ VALUES
     'Jl Raya Sumberejo Kecamatan Gedangan Kabupaten Malang',
     '1',
     'XI',
-    '6',null,
+    '6',
+    null,
     '2025-08-20 12:25:07',
     '2025-08-20 12:25:07'
   ),
@@ -382,7 +385,8 @@ VALUES
     'Jl. Veteran no. 7A Lamongan',
     '2',
     'XI',
-    '16',null,
+    '16',
+    null,
     '2025-08-20 12:30:28',
     '2025-08-20 12:30:28'
   ),
@@ -392,7 +396,8 @@ VALUES
     'Dsn. Lebaksono Ds. Lebaksono Kec. pungging Kab. Mojokerto',
     '4',
     'XI',
-    '20',null,
+    '20',
+    null,
     '2025-08-20 13:04:04',
     '2025-08-20 13:04:04'
   ),
@@ -402,7 +407,8 @@ VALUES
     'JL. Tongkol No.3 Sukalipuro, Dermo, Bangil, Pasuruan, Jawa Timur 67153',
     '2',
     'XI',
-    '1',null,
+    '1',
+    null,
     '2025-08-20 13:10:17',
     '2025-08-20 13:10:17'
   ),
@@ -412,7 +418,8 @@ VALUES
     'Jl. Langsep 24 Kertosono nganjuk',
     '2',
     'XI',
-    '11',null,
+    '11',
+    null,
     '2025-08-20 13:57:25',
     '2025-08-20 13:57:25'
   ),
@@ -422,7 +429,8 @@ VALUES
     'Jl Lawu No.3, Kab. Nganjuk',
     '3',
     'XI',
-    '11',null,
+    '11',
+    null,
     '2025-08-20 14:09:41',
     '2025-08-20 14:09:41'
   ),
@@ -432,7 +440,8 @@ VALUES
     'Jl. Jurit, Cerme Kidul, Kec. Cerme, Kabupaten Gresik, Jawa Timur 61171',
     '4',
     'XI',
-    '17',null,
+    '17',
+    null,
     '2025-08-20 14:12:20',
     '2025-08-20 14:12:20'
   ),
@@ -442,7 +451,8 @@ VALUES
     'Jl. a yani 48 Bondowoso',
     '3',
     'XI',
-    '3',null,
+    '3',
+    null,
     '2025-08-20 14:28:22',
     '2025-08-20 14:28:22'
   ),
@@ -452,7 +462,8 @@ VALUES
     'Ds. Mranggen Kec. Purwoasri, Kab.Kediri',
     '4',
     'XI',
-    '10',null,
+    '10',
+    null,
     '2025-08-20 14:44:46',
     '2025-08-20 14:44:46'
   ),
@@ -462,7 +473,8 @@ VALUES
     'Jl. KH Ahmad Zaini Dahlan, Bindung, Sumberanyar, Kec. Banyuputih, Kabupaten Situbondo, Jawa Timur',
     '2',
     'XI',
-    '3',null,
+    '3',
+    null,
     '2025-08-20 15:12:10',
     '2025-08-20 15:12:10'
   ),
@@ -472,7 +484,8 @@ VALUES
     'jl. panglima sudirmam no 84 lamongan',
     '3',
     'XI',
-    '16',null,
+    '16',
+    null,
     '2025-08-20 20:24:24',
     '2025-08-20 20:24:24'
   ),
@@ -482,7 +495,8 @@ VALUES
     'Jalan Raya Cerme, Dusun Glatik, Desa Cerme, Kecamatan Grogol, Kabupaten Kediri',
     '2',
     'XI',
-    '10',null,
+    '10',
+    null,
     '2025-08-21 01:58:09',
     '2025-08-21 01:58:09'
   ),
@@ -492,7 +506,8 @@ VALUES
     'Jl. Maesan No, - Tamanan Bondowoso',
     '2',
     'XI',
-    '3',null,
+    '3',
+    null,
     '2025-08-21 02:29:10',
     '2025-08-21 02:29:10'
   ),
@@ -502,7 +517,8 @@ VALUES
     'Jalan Mirah Delima Kota Baru Driyorejo (KBD) Kabupaten Gresik',
     '4',
     'XI',
-    '17',null,
+    '17',
+    null,
     '2025-08-21 02:48:09',
     '2025-08-21 02:48:09'
   ),
@@ -512,7 +528,8 @@ VALUES
     'Jalan Raya Pasarlegi 01 Sambeng - Lamongan',
     '2',
     'XI',
-    '16',null,
+    '16',
+    null,
     '2025-08-21 02:49:15',
     '2025-08-21 02:49:15'
   ),
@@ -522,7 +539,8 @@ VALUES
     'Jl. Brawijaya N0 78 Lemah Kembar Sumberasih Kabupaten Probolinggo',
     '4',
     'XI',
-    '2',null,
+    '2',
+    null,
     '2025-08-21 03:14:17',
     '2025-08-21 03:14:17'
   ),
@@ -532,7 +550,8 @@ VALUES
     'Jalan RA. Basuni, Nomor 5, Sooko, Mojokerto',
     '3',
     'XI',
-    '20',null,
+    '20',
+    null,
     '2025-08-21 03:33:49',
     '2025-08-21 03:33:49'
   ),
@@ -542,7 +561,8 @@ VALUES
     'JL. Raya Brondong Ds. Tlogoretno Kec. Brondong Kab. Lamongan',
     '2',
     'XI',
-    '16',null,
+    '16',
+    null,
     '2025-08-21 03:40:57',
     '2025-08-21 03:40:57'
   ),
@@ -552,7 +572,8 @@ VALUES
     'Jl. Panglima Sudirman No. 41 Turen',
     '2',
     'XI',
-    '6',null,
+    '6',
+    null,
     '2025-08-21 03:54:31',
     '2025-08-21 03:54:31'
   ),
@@ -562,7 +583,8 @@ VALUES
     'Jl. Patimura No. 3',
     '4',
     'XI',
-    '15',null,
+    '15',
+    null,
     '2025-08-21 05:02:39',
     '2025-08-21 05:02:39'
   ),
@@ -572,7 +594,8 @@ VALUES
     'Dusun Demangan Desa Setonorejo Kec. Kras Kabupaten Kediri',
     '1',
     'XI',
-    '10',null,
+    '10',
+    null,
     '2025-08-21 07:07:23',
     '2025-08-21 07:07:23'
   ),
@@ -582,7 +605,8 @@ VALUES
     'Jl. Jend. A.Yani 1 Ds.Pohkecik Kec. Dlanggu Kab.Mojokerto',
     '1',
     'XI',
-    '20',null,
+    '20',
+    null,
     '2025-08-21 09:06:51',
     '2025-08-21 09:06:51'
   ),
@@ -592,7 +616,8 @@ VALUES
     'Jalan Raya Solo No. 146, Selorejo, Kecamatan Bagor, Kabupaten Nganjuk, Jawa Timur, 64461',
     '1',
     'XI',
-    '11',null,
+    '11',
+    null,
     '2025-08-21 12:12:02',
     '2025-08-21 12:12:02'
   ),
@@ -602,7 +627,8 @@ VALUES
     'Jl. Raya Pulorejo, Mergelo, Pulorejo, Kec. Prajurit Kulon, Kota Mojokerto, Jawa Timur 61325',
     '1',
     'XI',
-    '20',null,
+    '20',
+    null,
     '2025-08-21 12:17:34',
     '2025-08-21 12:17:34'
   ),
@@ -612,7 +638,8 @@ VALUES
     'Jl. Soedanco Supriadi No. 24C, Bendogerit, Kec. Sananwetan, Kota Blitar, Jawa Timur 66133',
     '3',
     'XI',
-    '8',null,
+    '8',
+    null,
     '2025-08-21 13:56:56',
     '2025-08-21 13:56:56'
   ),
@@ -622,7 +649,8 @@ VALUES
     'Jl. Gunung Arjuno 17, Mimbaan, Situbondo 68322',
     '3',
     'XI',
-    '3',null,
+    '3',
+    null,
     '2025-08-21 14:23:25',
     '2025-08-21 14:23:25'
   ),
@@ -632,7 +660,8 @@ VALUES
     'Jl. Surabaya no.1 gading kasri kec.klojen',
     '2',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 02:54:10',
     '2025-08-22 02:54:10'
   ),
@@ -642,7 +671,8 @@ VALUES
     'Jalan Route PB Jend. Soedirman No 02 Sawoo, Ponorogo',
     '1',
     'XI',
-    '13',null,
+    '13',
+    null,
     '2025-08-22 03:04:40',
     '2025-08-22 03:04:40'
   ),
@@ -652,7 +682,8 @@ VALUES
     'Jl.surabaya no.1.gading kasri kec.klojen',
     '2',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 03:13:06',
     '2025-08-22 03:13:06'
   ),
@@ -662,7 +693,8 @@ VALUES
     'Jl. Surabaya no. 1 kelurahan gading kadri kec. Klojen',
     '2',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 03:29:58',
     '2025-08-22 03:29:58'
   ),
@@ -672,7 +704,8 @@ VALUES
     'jl Suyudono no. 1 Badegan Kab. Ponorogo',
     '1',
     'XI',
-    '13',null,
+    '13',
+    null,
     '2025-08-22 03:50:52',
     '2025-08-22 03:50:52'
   ),
@@ -682,7 +715,8 @@ VALUES
     'JL BROMO 11 KOTA BATU',
     '1',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 04:13:21',
     '2025-08-22 04:13:21'
   ),
@@ -692,7 +726,8 @@ VALUES
     'JL BROMO 11 KOTA BATU',
     '3',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 04:18:43',
     '2025-08-22 04:18:43'
   ),
@@ -702,7 +737,8 @@ VALUES
     'JL BROMO 11 KOTA BATU',
     '1',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 05:14:42',
     '2025-08-22 05:14:42'
   ),
@@ -712,7 +748,8 @@ VALUES
     'JL BROMO 11 KOTA BATU',
     '1',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 05:19:47',
     '2025-08-22 05:19:47'
   ),
@@ -722,7 +759,8 @@ VALUES
     'Jl.Pecalukan-Ledug',
     '1',
     'XI',
-    '1',null,
+    '1',
+    null,
     '2025-08-22 05:39:12',
     '2025-08-22 05:39:12'
   ),
@@ -732,7 +770,8 @@ VALUES
     'Jl. Veteran 9 Mojoroto, Kota Kediri',
     '4',
     'XI',
-    '10',null,
+    '10',
+    null,
     '2025-08-22 06:11:46',
     '2025-08-22 06:11:46'
   ),
@@ -742,7 +781,8 @@ VALUES
     'Jl Surabaya no, 1 , Gading kasri, Kota MalangKec. Klojen',
     '1',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 06:50:04',
     '2025-08-22 06:50:04'
   ),
@@ -752,7 +792,8 @@ VALUES
     'Jl. Penataran No. 1 Nglegok',
     '1',
     'XI',
-    '8',null,
+    '8',
+    null,
     '2025-08-22 07:00:55',
     '2025-08-22 07:00:55'
   ),
@@ -762,7 +803,8 @@ VALUES
     'Jln. Raya Blimbing no. 12 Desa Klabang Kec. Klabang Kab. Bondowoso',
     '4',
     'XI',
-    '3',null,
+    '3',
+    null,
     '2025-08-22 07:03:44',
     '2025-08-22 07:03:44'
   ),
@@ -772,7 +814,8 @@ VALUES
     'Jalan Bromo no 11 Sisir, Batu',
     '2',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 07:40:52',
     '2025-08-22 07:40:52'
   ),
@@ -782,7 +825,8 @@ VALUES
     'Jalan Bromo no 11 sisir, batu',
     '2',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 07:53:55',
     '2025-08-22 07:53:55'
   ),
@@ -792,7 +836,8 @@ VALUES
     'jln Macan Tutul, Galak, Kec Slahung, Kab Ponorogo',
     '1',
     'XI',
-    '13',null,
+    '13',
+    null,
     '2025-08-22 07:58:16',
     '2025-08-22 07:58:16'
   ),
@@ -802,7 +847,8 @@ VALUES
     'Jl. Veteran no.17',
     '1',
     'XI',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 09:32:46',
     '2025-08-22 09:32:46'
   ),
@@ -812,7 +858,8 @@ VALUES
     'Jl. Halim Perdana Kusuma (Ring road) Bangkalan',
     '4',
     'XI',
-    '21',null,
+    '21',
+    null,
     '2025-08-22 11:13:03',
     '2025-08-22 11:13:03'
   ),
@@ -822,7 +869,8 @@ VALUES
     'Jl. Wicaksana No. 22b, Gununggangsir, Beji, Pasuruan, Jawa Timur, 67154.',
     '4',
     'XI',
-    '1',null,
+    '1',
+    null,
     '2025-08-22 11:45:00',
     '2025-08-22 11:45:00'
   ),
@@ -832,7 +880,8 @@ VALUES
     'Jl. Surabaya No. 1',
     '3',
     'XII',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 12:16:46',
     '2025-08-22 12:16:46'
   ),
@@ -842,7 +891,8 @@ VALUES
     'JL. Surabaya No 1, Klojen, Malang',
     '3',
     'XII',
-    '7',null,
+    '7',
+    null,
     '2025-08-22 12:22:18',
     '2025-08-22 12:22:18'
   ),
@@ -852,7 +902,8 @@ VALUES
     'jl. panglima sudirmam no 84 lamongan',
     '3',
     'XI',
-    '16',null,
+    '16',
+    null,
     '2025-08-22 13:14:10',
     '2025-08-22 13:14:10'
   ),
@@ -862,7 +913,8 @@ VALUES
     'JL KEMASAN NO 13 MAGETAN',
     '3',
     'XI',
-    '13',null,
+    '13',
+    null,
     '2025-08-22 13:34:42',
     '2025-08-22 13:34:42'
   ),
@@ -872,7 +924,8 @@ VALUES
     'Jl Laksamana Yos Sudarso No. 21a, Kelurahan Kepatihan, Kecamatan Ponorogo, Kabupaten Ponorogo, Jawa Timur',
     '3',
     'XI',
-    '13',null,
+    '13',
+    null,
     '2025-08-22 13:39:15',
     '2025-08-22 13:39:15'
   ),
@@ -882,7 +935,8 @@ VALUES
     'Jl. Kenanga N0.04,Mlajah - Bangkalan, 69116',
     '2',
     'XI',
-    '21',null,
+    '21',
+    null,
     '2025-08-22 13:41:46',
     '2025-08-22 13:41:46'
   ),
@@ -892,7 +946,8 @@ VALUES
     'SMKN 1 SINGOSARI',
     '4',
     'XI',
-    '6',null,
+    '6',
+    null,
     '2025-08-22 13:42:27',
     '2025-08-22 13:42:27'
   ),
@@ -902,7 +957,8 @@ VALUES
     'Jl. Ronggo Warsito Gg. Sidomukti No. 1, Kec. Trenggalek, Kab. Trenggalek',
     '4',
     'XI',
-    '9',null,
+    '9',
+    null,
     '2025-08-23 09:23:46',
     '2025-08-23 09:23:46'
   ),
@@ -912,7 +968,8 @@ VALUES
     'Jl. Surabaya No.1, Gading Kasri, Kec. Klojen, Kota Malang',
     '1',
     'XII',
-    '7',null,
+    '7',
+    null,
     '2025-08-23 14:19:14',
     '2025-08-23 14:19:14'
   ),
@@ -922,12 +979,11 @@ VALUES
     'Jl. Pagerwojo Ds. Mulyosari Pagerwojo',
     '3',
     'XI',
-    '9',null,
+    '9',
+    null,
     '2025-08-29 11:40:45',
     '2025-08-29 11:40:45'
   );
-
-
 
 -- pelatihan
 INSERT INTO
@@ -956,7 +1012,6 @@ VALUES
     NULL,
     NULL
   );
-
 
 -- tes
 INSERT INTO
@@ -1033,7 +1088,6 @@ VALUES
     '2025-08-29 06:03:02',
     '2025-08-29 06:03:02'
   );
-
 
 -- pertanyaan
 INSERT INTO
@@ -2208,7 +2262,6 @@ VALUES
     NULL,
     NULL
   );
-
 
 -- opsi jawaban
 INSERT INTO
@@ -3699,7 +3752,6 @@ VALUES
   (371, 113, 'baik', NULL, 0, NULL, NULL),
   (372, 113, 'Sangat baik', NULL, 0, NULL, NULL);
 
-
 INSERT INTO
   `pivot_jawaban` (`pertanyaan_id`, `template_pertanyaan_id`)
 VALUES
@@ -3729,9 +3781,7 @@ VALUES
   (115, 81),
   (105, 104);
 
-
 -- tabel peserta survei
-
 -- tabel peserta_survei
 INSERT INTO
   `peserta_surveis` (
@@ -4305,8 +4355,6 @@ VALUES
     '2025-09-01 05:16:54',
     '2025-09-01 05:16:54'
   );
-
-
 
 -- percobaan
 INSERT INTO
@@ -5080,71 +5128,619 @@ VALUES
     '2025-09-01 05:08:53'
   );
 
-
 -- tabel user
-
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(2, 'Sepni Amzah', 'sepniamzah5@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(3, 'Firdaussy Nurliza Ramadhani', 'firdanurliza9@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(4, 'MOCH ADAM ASSADDIL RAIZ', 'adamassaddil@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(5, 'NAYSILLA NOVI NUR KHUMAIRA', 'naysillanovi11@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(6, 'OKY RIYANTO', 'okyriyanto369@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(7, 'Prajwalita Zulfa Fatika Chusna', 'prajwalitacusna@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(8, 'RALVIO OCZA ZEBIAN', 'ralvioocza30@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(9, 'RYNDI MEGA HERAWATI', 'rindi121299@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(10, 'RANGGA EKA PUTRA ELYANTO', 'ranggaproject63@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(11, 'Dewi Safira Febriana', 'dewisafira973@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(12, 'Amelta Aulia Subarko', 'meltacialia@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(13, 'LUTFI HIDAYATUR ROHIM', 'lutfiturrohim@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(14, 'RADITHYA FAUSTA ARIEF', 'faustaatifradithya@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(15, 'Alifia Ziqna Faradiba', 'alifiafaradiba043@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(16, 'Muhammad Nazar Qoirun Nazmi', 'mnazar.qn18@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(17, 'HALIMATUS PUTRI DEWI', 'nurulalaina86@guru.smk.belajar.id', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(18, 'Naila Aurellia', 'nailaay123@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(19, 'Masyifa Azzahra', 'masyifaazzahra23@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(20, 'SILVIA RAMADANI', 'silviaramadani665@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(21, 'ARDHIANSYAH PUTRA RISQI SATRIAGUNG', 'ardhiansyahsatriagung@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(22, 'XTWOLITA ELFREDA ARDININGRUM', 'xtwolitae@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(23, 'Ahmad Khoiruddin', 'ahmadkhoiruddin2025@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(24, 'Zahra Farrisa Gitya Putri', 'zahrafarrisaputri@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(25, 'SABRINA WAFA AQILLAH', 's6951820@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(26, 'Anggrea Revalda Pratiwi Putri', 'revaldaanggrea@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(27, 'MUHAMAD RIKI FEBRIANTO', 'muhamadriki9206@smk.blajar.id', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(28, 'Binti Lailatul Ilmi', 'bintilailatulilmi@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(29, 'ZYIKA AYUDIA MUTIA SARI', 'huddyiswanto@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(30, 'YOHANA DIAN MAHARANI', 'hanayana302@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(31, 'Diaz Ayunda Kirana', 'diazayundakirana@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(32, 'Margareta Pasharina Swastika', 'swastikamargareta3@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(33, 'Nayla Qolbina Muttaqiyah', 'naylataqiyyah30@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(34, 'Arum Mawarni Dwi Puspita', 'arummawarni6pbm@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(35, 'DIAH WAHYU SOFANA', 'diahsofana752@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(36, 'Salsabila Nur rochim', 'salsabila33pbmnew@gamail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(37, 'Marisa Ulfi Nur\'aini', 'marisaulfinuraini@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(38, 'AISYAH NADYA FITRI', 'duoaisyah124@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(39, 'NAYZILA NISRINA SALSABILA', 'naysilaa1210@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(40, 'CALLULA SALWA ZAKIAH', 'calulasalwa20@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(41, 'NAJWA AZZAHRA RAMADHANI', 'najwazzahra126@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(42, 'MUHAMMAD ALVIN ABIANSYAH', 'muhammad.alvin6412@smk.belajar.id', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(43, 'Rahmadina Nuraini', 'rahmadinanuraini7@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(44, 'HILMAN PUTRA AL RIZKI', 'hlmnsii856@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(45, 'Muhammad Bisri Abdillah', 'muhammadbisriabdillah6@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(46, 'rizki fajar aditya putra', 'rizkifajaraditiyaputra@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(47, 'Alexca Evelina Avrilla Putri', 'acaalexca@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(48, 'Brillian Dwi Rahmadani', 'rahamadani52@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(49, 'Puri Bondan Ningtyas', 'onyourmarkiam@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(50, 'SAIFUL BAHRI', 'bahri123baik@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(51, 'MUCHAMMAD ASKAEV ANSORI', 'www4ab@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(52, 'Baitha Hayyunisa', 'baitha.hayyunisa@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(53, 'Andi Dixie Aurellia Neysa', 'dixieaurellianey@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(54, 'Rahma pujianti', 'rahmapuji288@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(55, 'DAYINTA SURYANING SEKAR DHATU', 'dayintadhtu@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(56, 'CRISSANDA REBECCA ANGELA CHILL', 'rbcsaa@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(57, 'ANNA ALTHAFUNNISA', 'annaalthafunnisa467@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(58, 'ESA NUR WAHYUDI', 'esanurwahyudisoto@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(59, 'ZEFRIZAL RAHMADANI', 'makmupikun@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(60, 'MERCY ALVINA PUTRI SILOLO', 'mercyalvinaa@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW()),
-(61, 'Firda Aulia Zahra', 'firdaaulya@gmail.com', NOW(), '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NOW(), NOW());
-
+INSERT INTO
+  `users` (
+    `id`,
+    `name`,
+    `email`,
+    `email_verified_at`,
+    `password`,
+    `remember_token`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
+  (
+    2,
+    'Sepni Amzah',
+    'sepniamzah5@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    3,
+    'Firdaussy Nurliza Ramadhani',
+    'firdanurliza9@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    4,
+    'MOCH ADAM ASSADDIL RAIZ',
+    'adamassaddil@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    5,
+    'NAYSILLA NOVI NUR KHUMAIRA',
+    'naysillanovi11@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    6,
+    'OKY RIYANTO',
+    'okyriyanto369@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    7,
+    'Prajwalita Zulfa Fatika Chusna',
+    'prajwalitacusna@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    8,
+    'RALVIO OCZA ZEBIAN',
+    'ralvioocza30@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    9,
+    'RYNDI MEGA HERAWATI',
+    'rindi121299@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    10,
+    'RANGGA EKA PUTRA ELYANTO',
+    'ranggaproject63@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    11,
+    'Dewi Safira Febriana',
+    'dewisafira973@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    12,
+    'Amelta Aulia Subarko',
+    'meltacialia@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    13,
+    'LUTFI HIDAYATUR ROHIM',
+    'lutfiturrohim@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    14,
+    'RADITHYA FAUSTA ARIEF',
+    'faustaatifradithya@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    15,
+    'Alifia Ziqna Faradiba',
+    'alifiafaradiba043@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    16,
+    'Muhammad Nazar Qoirun Nazmi',
+    'mnazar.qn18@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    17,
+    'HALIMATUS PUTRI DEWI',
+    'nurulalaina86@guru.smk.belajar.id',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    18,
+    'Naila Aurellia',
+    'nailaay123@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    19,
+    'Masyifa Azzahra',
+    'masyifaazzahra23@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    20,
+    'SILVIA RAMADANI',
+    'silviaramadani665@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    21,
+    'ARDHIANSYAH PUTRA RISQI SATRIAGUNG',
+    'ardhiansyahsatriagung@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    22,
+    'XTWOLITA ELFREDA ARDININGRUM',
+    'xtwolitae@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    23,
+    'Ahmad Khoiruddin',
+    'ahmadkhoiruddin2025@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    24,
+    'Zahra Farrisa Gitya Putri',
+    'zahrafarrisaputri@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    25,
+    'SABRINA WAFA AQILLAH',
+    's6951820@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    26,
+    'Anggrea Revalda Pratiwi Putri',
+    'revaldaanggrea@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    27,
+    'MUHAMAD RIKI FEBRIANTO',
+    'muhamadriki9206@smk.blajar.id',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    28,
+    'Binti Lailatul Ilmi',
+    'bintilailatulilmi@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    29,
+    'ZYIKA AYUDIA MUTIA SARI',
+    'huddyiswanto@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    30,
+    'YOHANA DIAN MAHARANI',
+    'hanayana302@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    31,
+    'Diaz Ayunda Kirana',
+    'diazayundakirana@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    32,
+    'Margareta Pasharina Swastika',
+    'swastikamargareta3@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    33,
+    'Nayla Qolbina Muttaqiyah',
+    'naylataqiyyah30@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    34,
+    'Arum Mawarni Dwi Puspita',
+    'arummawarni6pbm@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    35,
+    'DIAH WAHYU SOFANA',
+    'diahsofana752@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    36,
+    'Salsabila Nur rochim',
+    'salsabila33pbmnew@gamail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    37,
+    'Marisa Ulfi Nur\'aini',
+    'marisaulfinuraini@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    38,
+    'AISYAH NADYA FITRI',
+    'duoaisyah124@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    39,
+    'NAYZILA NISRINA SALSABILA',
+    'naysilaa1210@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    40,
+    'CALLULA SALWA ZAKIAH',
+    'calulasalwa20@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    41,
+    'NAJWA AZZAHRA RAMADHANI',
+    'najwazzahra126@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    42,
+    'MUHAMMAD ALVIN ABIANSYAH',
+    'muhammad.alvin6412@smk.belajar.id',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    43,
+    'Rahmadina Nuraini',
+    'rahmadinanuraini7@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    44,
+    'HILMAN PUTRA AL RIZKI',
+    'hlmnsii856@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    45,
+    'Muhammad Bisri Abdillah',
+    'muhammadbisriabdillah6@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    46,
+    'rizki fajar aditya putra',
+    'rizkifajaraditiyaputra@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    47,
+    'Alexca Evelina Avrilla Putri',
+    'acaalexca@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    48,
+    'Brillian Dwi Rahmadani',
+    'rahamadani52@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    49,
+    'Puri Bondan Ningtyas',
+    'onyourmarkiam@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    50,
+    'SAIFUL BAHRI',
+    'bahri123baik@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    51,
+    'MUCHAMMAD ASKAEV ANSORI',
+    'www4ab@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    52,
+    'Baitha Hayyunisa',
+    'baitha.hayyunisa@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    53,
+    'Andi Dixie Aurellia Neysa',
+    'dixieaurellianey@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    54,
+    'Rahma pujianti',
+    'rahmapuji288@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    55,
+    'DAYINTA SURYANING SEKAR DHATU',
+    'dayintadhtu@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    56,
+    'CRISSANDA REBECCA ANGELA CHILL',
+    'rbcsaa@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    57,
+    'ANNA ALTHAFUNNISA',
+    'annaalthafunnisa467@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    58,
+    'ESA NUR WAHYUDI',
+    'esanurwahyudisoto@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    59,
+    'ZEFRIZAL RAHMADANI',
+    'makmupikun@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    60,
+    'MERCY ALVINA PUTRI SILOLO',
+    'mercyalvinaa@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  ),
+  (
+    61,
+    'Firda Aulia Zahra',
+    'firdaaulya@gmail.com',
+    NOW (),
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    NOW (),
+    NOW ()
+  );
 
 -- tabel peserta
 -- PERHATIAN:
@@ -5152,72 +5748,1045 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 --    Pastikan Anda mengganti nilai '1' ini dengan ID yang ada di tabel 'users' Anda.
 -- 2. Kolom 'token' telah ditambahkan dengan nilai unik yang dibuat secara acak.
 -- 3. Kolom 'email' dan nilainya telah dihapus agar sesuai dengan skema tabel.
-
-INSERT INTO `pesertas` (
-    `id`, `pelatihan_id`, `bidang_id`, `instansi_id`, `user_id`, `token`,
-    `nama`, `nik`, `tempat_lahir`, `tanggal_lahir`, `jenis_kelamin`,
-    `agama`, `alamat`, `no_hp`, `created_at`, `updated_at`
-) VALUES
-(1, 1, 4, 3, 1, 'a8c3d2f1b0e9g4h5i7j6k2l3m1n0o9p8', 'Sepni Amzah', '3574041406080003', 'Probolinggo', '2008-06-14', 'Laki-laki', 'Islam', 'Jalan Slamet Riyadi S Rokan Blok Klompang N0 42', '082331020465', '2025-08-20 09:28:17', '2025-08-20 09:28:17'),
-(2, 1, 3, 4, 1, 'b2e1f0c9d8g7h6i5j4k3l2m1n0o9p8', 'Firdaussy Nurliza Ramadhani', '3513056109070001', 'Probolinggo', '2007-09-21', 'Perempuan', 'Islam', 'Jl. Pahlawan 1, RT 004/RW 005, Sumberkedawung, Leces, Probolinggo', '085815776656', '2025-08-20 10:06:36', '2025-08-20 10:06:36'),
-(3, 1, 4, 5, 1, 'c6d5e4f3g2h1i0j9k8l7m6n5o4p3', 'MOCH ADAM ASSADDIL RAIZ', '3517062106090001', 'JOMBANG', '2009-06-21', 'Laki-laki', 'Islam', 'JAMBUWOK, DUSUN JAMBUWOK\r\nRT 07 RW 02', '085755193621', '2025-08-20 11:23:32', '2025-08-20 11:23:32'),
-(4, 1, 1, 6, 1, 'd0f9e8g7h6i5j4k3l2m1n0o9p8q7', 'NAYSILLA NOVI NUR KHUMAIRA', '3506114111080002', 'KEDIRI', '2008-11-01', 'Perempuan', 'Islam', 'Desa Tengger Kidul RT.04. RW.03 Kec. Pagu Kab. Kediri', '082143214002', '2025-08-20 11:58:13', '2025-08-20 11:58:13'),
-(5, 1, 4, 7, 1, 'e4f3g2h1i0j9k8l7m6n5o4p3q2r1', 'OKY RIYANTO', '3523152210080002', 'TUBAN', '2008-10-22', 'Laki-laki', 'Islam', 'Lingkungan Dondong Rt.03 Rw.09 Kelurahan Gedongombo Kecamatan Semanding Kabupaten Tuban', '628899179062', '2025-08-20 12:13:59', '2025-08-20 12:13:59'),
-(6, 1, 2, 8, 1, 'f8g7h6i5j4k3l2m1n0o9p8q7r6s5', 'Prajwalita Zulfa Fatika Chusna', '3505034903080001', 'BLITAR', '2008-03-09', 'Perempuan', 'Islam', 'Dsn Karanggayam\r\nKec Srengat\r\nKabupaten Blitar', '081252283167', '2025-08-20 12:19:16', '2025-08-20 12:19:16'),
-(7, 1, 1, 9, 1, 'g2h1i0j9k8l7m6n5o4p3q2r1s0t9', 'RALVIO OCZA ZEBIAN', '3507291207080001', 'Malang', '2008-08-12', 'Laki-laki', 'Islam', 'JJln. Raya Desa Segaran Rt.07 Rw.03 kec. Gedangan Kab. Malang', '082142773469', '2025-08-20 12:25:07', '2025-08-20 12:25:07'),
-(8, 1, 2, 10, 1, 'h6i5j4k3l2m1n0o9p8q7r6s5t4u3', 'RYNDI MEGA HERAWATI', '3524166002090001', 'Lamongan', '2009-02-20', 'Perempuan', 'Islam', 'Dusun Maijo, Desa Kedungsoko, Kecamatan Mantup, Kabupaten Lamongan', '085704309810', '2025-08-20 12:30:28', '2025-08-20 12:30:28'),
-(9, 1, 4, 13, 1, 'i0j9k8l7m6n5o4p3q2r1s0t9u8v7', 'RANGGA EKA PUTRA ELYANTO', '3516032105080001', 'Mojokerto', '2008-05-21', 'Laki-laki', 'Islam', 'Dsn. Kandangan Ds. kuripansari Kec. pacet', '085749308942', '2025-08-20 13:04:04', '2025-08-20 13:04:04'),
-(10, 1, 2, 14, 1, 'j4k3l2m1n0o9p8q7r6s5t4u3v2w1', 'Dewi Safira Febriana', '3514114502090001', 'Pasuruan', '2009-02-05', 'Perempuan', 'Islam', 'satak kepoh RT.007 / RW.003 - Manaruwi - Bangil', '085850100186', '2025-08-20 13:10:17', '2025-08-20 13:10:17'),
-(11, 1, 2, 15, 1, 'k8l7m6n5o4p3q2r1s0t9u8v7w6x5', 'Amelta Aulia Subarko', '3518074107070003', 'Nganjuk', '2029-03-09', 'Perempuan', 'Islam', 'Dsn. Sumberkepuh, Ds. Klurahan, Kec. Ngronggot, Kab. Nganjuk', '081805792203', '2025-08-20 13:57:25', '2025-08-20 13:57:25'),
-(12, 1, 3, 16, 1, 'l2m1n0o9p8q7r6s5t4u3v2w1x0y9', 'LUTFI HIDAYATUR ROHIM', '0000000000000000', 'Nganjuk', '2008-04-18', 'Perempuan', 'Islam', 'Ds. Jatirejo, Kec. Nganjuk, Kab. Nganjuk', '085707361280', '2025-08-20 14:09:41', '2025-08-20 14:09:41'),
-(13, 1, 4, 17, 1, 'm6n5o4p3q2r1s0t9u8v7w6x5y4z3', 'RADITHYA FAUSTA ARIEF', '3578191911080001', 'Surabaya', '2008-11-19', 'Laki-laki', 'Islam', 'SEMEMIJAYA GG 5 C BLOK 1 NO 4\r\nRT2, RW1', '085704018360', '2025-08-20 14:12:20', '2025-08-20 14:12:20'),
-(14, 1, 3, 18, 1, 'n0o9p8q7r6s5t4u3v2w1x0y9z8a7', 'Alifia Ziqna Faradiba', '3511174411080001', 'Bondowoso', '2008-11-04', 'Perempuan', 'Islam', 'Jl. Diponegoro no 214, Kotakulon Bondowoso Jawa timur', '083817525825', '2025-08-20 14:28:22', '2025-08-20 14:28:22'),
-(15, 1, 4, 19, 1, 'o4p3q2r1s0t9u8v7w6x5y4z3a2b1', 'Muhammad Nazar Qoirun Nazmi', '3506151812080001', 'Kediri', '2008-12-18', 'Laki-laki', 'Islam', 'RT/RW 1/1 Dsn. Jantok Ds. Jantok, Kec. Purwoasri, Kab. Kediri', '085806406008', '2025-08-20 14:44:46', '2025-08-20 14:44:46'),
-(16, 1, 2, 22, 1, 'p8q7r6s5t4u3v2w1x0y9z8a7b6c5', 'HALIMATUS PUTRI DEWI', '3511076601090001', 'BONDOWOSO', '2009-01-26', 'Perempuan', 'Islam', 'PONDOK PESANTREN ASSALAM\r\nJl. KH Ahmad Zaini Dahlan, Bindung, Sumberanyar, Kec. Banyuputih, Kabupaten Situbondo, Jawa Timur', '085258549996', '2025-08-20 15:12:10', '2025-08-20 15:12:10'),
-(17, 1, 3, 23, 1, 'q2r1s0t9u8v7w6x5y4z3a2b1c0d9', 'Naila Aurellia', '3515186412080002', 'Sidoarjo', '2008-12-24', 'Perempuan', 'Islam', 'ds.beru,kec.sarirejo,kab.lamongan', '087847526234', '2025-08-20 20:24:24', '2025-08-20 20:24:24'),
-(18, 1, 2, 24, 1, 'r6s5t4u3v2w1x0y9z8a7b6c5d4e3', 'Masyifa Azzahra', '3506224107030016', 'Kediri', '2008-06-12', 'Perempuan', 'Islam', 'Jalan Raya Desa Parang, Dusun Jati, Desa Parang RT.02 RW.01, Banyakan - Kabupaten Kediri', '082228280566', '2025-08-21 01:58:09', '2025-08-21 01:58:09'),
-(19, 1, 2, 25, 1, 's0t9u8v7w6x5y4z3a2b1c0d9e8f7', 'SILVIA RAMADANI', '3509296109080001', 'Jember', '2008-09-21', 'Perempuan', 'Islam', 'DUSUN RAGANG BARAT RT 03 RW 04 DESA SUKOWONO KEC. SUKOWONO KAB. JEMBER', '081553625425', '2025-08-21 02:29:10', '2025-08-21 02:29:10'),
-(20, 1, 4, 26, 1, 't4u3v2w1x0y9z8a7b6c5d4e3f2g1', 'ARDHIANSYAH PUTRA RISQI SATRIAGUNG', '3578131108080004', 'surabaya', '2008-08-11', 'Laki-laki', 'Islam', 'JL. BATU SAFIR HIJAU IB NO. 23 DRIYOREJO GRESIK', '081259196119', '2025-08-21 02:48:09', '2025-08-21 02:48:09'),
-(21, 1, 2, 27, 1, 'u8v7w6x5y4z3a2b1c0d9e8f7g6h5', 'XTWOLITA ELFREDA ARDININGRUM', '3524116008090001', 'LAMONGAN', '2009-08-20', 'Perempuan', 'Islam', 'DSN. PERESAN DS. GARUNG RT 02 RW 05 KEC.SAMBENG KAB.LAMONGAN 62284', '085812481417', '2025-08-21 02:49:15', '2025-08-21 02:49:15'),
-(22, 1, 4, 28, 1, 'v2w1x0y9z8a7b6c5d4e3f2g1h0i9', 'Ahmad Khoiruddin', '3513222801080001', 'Probolinggo', '2008-01-28', 'Laki-laki', 'Islam', 'Dusun Gedangan RT 06 Rw 02 Desa Sumberkare Kec. Wonomerto Kab. Probolinggo', '088289692356', '2025-08-21 03:14:17', '2025-08-21 03:14:17'),
-(23, 1, 3, 29, 1, 'w6x5y4z3a2b1c0d9e8f7g6h5i4j3', 'Zahra Farrisa Gitya Putri', '3516166408080002', 'Mojokerto', '2008-08-24', 'Perempuan', 'Islam', 'RT.03, RW.02, Dusun Sukodono, Desa Canggu, Kecamatan Jetis, Kabupaten Mojokerto', '081515273353', '2025-08-21 03:33:49', '2025-08-21 03:33:49'),
-(24, 1, 2, 30, 1, 'x0y9z8a7b6c5d4e3f2g1h0i9j8k7', 'SABRINA WAFA AQILLAH', '3524077107090002', 'LAMONGAN', '2009-07-31', 'Perempuan', 'Islam', 'Labuhan RT 024/ RW 005, Labuhan Kec. Brondong Kab. Lamongan', '0895320245861', '2025-08-21 03:40:57', '2025-08-21 03:40:57'),
-(25, 1, 2, 31, 1, 'y4z3a2b1c0d9e8f7g6h5i4j3k2l1', 'Anggrea Revalda Pratiwi Putri', '3507056311080001', 'Malang', '2008-11-23', 'Perempuan', 'Islam', 'Dusun Sumbersari RT 23 RW 5 Sumbersari Desa Jambangan Kecamatan Dampit Kabupaten Malang', '085236641625', '2025-08-21 03:54:31', '2025-08-21 03:54:31'),
-(26, 1, 4, 32, 1, 'z8a7b6c5d4e3f2g1h0i9j8k7l6m5', 'MUHAMAD RIKI FEBRIANTO', '1111111111111111', 'Bojonegoro', '2009-02-20', 'Laki-laki', 'Islam', 'Ds. Leran Kc. kalitidu Kb. Bojonegoro', '085815350339', '2025-08-21 05:02:39', '2025-08-21 05:02:39'),
-(27, 1, 1, 33, 1, 'a2b1c0d9e8f7g6h5i4j3k2l1m0n9', 'Binti Lailatul Ilmi', '3506036606080001', 'Kediri', '2008-06-26', 'Perempuan', 'Islam', 'Ds. Jambean Dsn. Ngrombeh RT03/RW03 Kec. Kras Kab. Kediri', '082331331605', '2025-08-21 07:07:23', '2025-08-21 07:07:23'),
-(28, 1, 1, 34, 1, 'b6c5d4e3f2g1h0i9j8k7l6m5n4o3', 'ZYIKA AYUDIA MUTIA SARI', '3515097107080002', 'Sidoarjo', '2008-07-31', 'Perempuan', 'Islam', 'Dsn. urung-urung Ds.Kebonagung Kec.Puri Kab. Mojokerto', '083833180370', '2025-08-21 09:06:51', '2025-08-21 09:06:51'),
-(29, 1, 1, 35, 1, 'c0d9e8f7g6h5i4j3k2l1m0n9o8p7', 'YOHANA DIAN MAHARANI', '3518014803100002', 'Nganjuk', '2010-03-08', 'Perempuan', 'Islam', 'kecamatan sawahan desa duren dusun sugihan RT02 RW03', '087861047291', '2025-08-21 12:12:02', '2025-08-21 12:12:02'),
-(30, 1, 1, 36, 1, 'd4e3f2g1h0i9j8k7l6m5n4o3p2q1', 'Diaz Ayunda Kirana', '3576026106080001', 'Mojokerto', '2008-06-21', 'Perempuan', 'Islam', 'Miji gg 5 no 15, Kec. kranggan, Kel. miji, MOJOKERTO', '089513685473', '2025-08-21 12:17:34', '2025-08-21 12:17:34'),
-(31, 1, 3, 37, 1, 'e8f7g6h5i4j3k2l1m0n9o8p7q6r5', 'Margareta Pasharina Swastika', '3505036803080003', 'Blitar', '2008-03-28', 'Perempuan', 'Katolik', 'Jl Kawi No.19, RT 01 RW 02, Lingk. Kauman, Kel. Kauman, Kec. Srengat, Kab. Blitar', '082233312984', '2025-08-21 13:56:56', '2025-08-21 13:56:56'),
-(32, 1, 3, 38, 1, 'f2g1h0i9j8k7l6m5n4o3p2q1r0s9', 'Nayla Qolbina Muttaqiyah', '3512087007080002', 'Situbondo', '2008-07-30', 'Perempuan', 'Islam', 'Jl. Basuki Rahmat RT 03 RW 12, Mimbaan, Kecamatan Panji, Situbondo 68322', '081392782093', '2025-08-21 14:23:25', '2025-08-21 14:23:25'),
-(33, 1, 2, 39, 1, 'g6h5i4j3k2l1m0n9o8p7q6r5s4t3', 'Arum Mawarni Dwi Puspita', '3573046107080001', 'Malang', '2008-07-21', 'Perempuan', 'Islam', 'Jl.s.supriadi VI RT.7 RW.6 No.2339 Sukun Malang', '081330911552', '2025-08-22 02:54:10', '2025-08-22 02:54:10'),
-(34, 1, 1, 40, 1, 'h0i9j8k7l6m5n4o3p2q1r0s9t8u7', 'DIAH WAHYU SOFANA', '3502056706080002', 'PONOROGO', '2008-06-27', 'Perempuan', 'Islam', 'RT.02/RW.02 Dukuh Gondang,Desa Tugurejo, Kec Sawoo, Kab Ponorogo', '085135330451', '2025-08-22 03:04:40', '2025-08-22 03:04:40'),
-(35, 1, 2, 41, 1, 'i4j3k2l1m0n9o8p7q6r5s4t3u2v1', 'Salsabila Nur rochim', '3507086304090002', 'Malang', '2009-04-23', 'Perempuan', 'Islam', 'JL.semeru rt.01/rw.12 wajak kab.malang', '085231570358', '2025-08-22 03:13:06', '2025-08-22 03:13:06'),
-(36, 1, 1, 43, 1, 'j8k7l6m5n4o3p2q1r0s9t8u7v6w5', 'Marisa Ulfi Nur\'aini', '3502146007090002', 'Ponorogo', '2009-07-20', 'Perempuan', 'Islam', 'Gelang Kulon, Sampung Ponorogo', '082231651789', '2025-08-22 03:50:52', '2025-08-22 03:50:52'),
-(37, 1, 3, 44, 1, 'k2l1m0n9o8p7q6r5s4t3u2v1w0x9', 'AISYAH NADYA FITRI', '3579014110080001', 'BATU', '2008-10-01', 'Perempuan', 'Islam', 'Jl. Bulu Tangkis no.28 RT/RW : 004/003 Kel. Sisir Kec. Batu - Kota Batu Jawa Timur 65314', '08976231930', '2025-08-22 04:13:21', '2025-08-22 11:30:51'),
-(38, 1, 3, 45, 1, 'l6m5n4o3p2q1r0s9t8u7v6w5x4y3', 'NAYZILA NISRINA SALSABILA', '3507235210080001', 'MALANG', '2008-10-12', 'Perempuan', 'Islam', 'JARAAN,RT/RW:022/006,Kel.Donowarih,Kec.Karangploso,Kota Malang Jawa Timur 65152', '0895639083040', '2025-08-22 04:18:43', '2025-08-22 04:18:43'),
-(39, 1, 1, 46, 1, 'm0n9o8p7q6r5s4t3u2v1w0x9y8z7', 'CALLULA SALWA ZAKIAH', '3579026012080001', 'BATU', '2008-12-20', 'Perempuan', 'Islam', 'Jl nurhadi no 15 RT/RW:02/01 kel. Bulukerto kec. Bumiaji - kota batu jawa timur 65334', '081249792711', '2025-08-22 05:14:42', '2025-08-22 05:14:42'),
-(40, 1, 1, 47, 1, 'n4o3p2q1r0s9t8u7v6w5x4y3z2a1', 'NAJWA AZZAHRA RAMADHANI', '3579015209080001', 'BATU', '2008-09-12', 'Perempuan', 'Islam', 'Jl.Darsono No.64 RT.03 RW.10 Kel.Ngaglik Kec.Batu-Kota Batu Jawa Timur 65311', '082135402667', '2025-08-22 05:19:47', '2025-08-22 05:19:47'),
-(41, 1, 4, 49, 1, 'o8p7q6r5s4t3u2v1w0x9y8z7a6b5', 'MUHAMMAD ALVIN ABIANSYAH', '3506230105080002', 'KEDIRI', '2008-05-01', 'Laki-laki', 'Islam', 'DSN. TAMANAN RT.003 RW.002 DS. NAMBAKAN KEC. RINGINREJO KAB. KEDIRI', '085854734036', '2025-08-22 06:11:46', '2025-08-22 06:11:46'),
-(42, 1, 1, 50, 1, 'p2q1r0s9t8u7v6w5x4y3z2a1b0c9', 'Rahmadina Nuraini', '3507186810080004', 'Malang', '2008-10-28', 'Perempuan', 'Islam', 'Perum Graha Puntadewa blok D3 no 9', '082257485831', '2025-08-22 06:50:04', '2025-08-22 06:50:04'),
-(43, 1, 1, 51, 1, 'q6r5s4t3u2v1w0x9y8z7a6b5c4d3', 'HILMAN PUTRA AL RIZKI', '3505061808080003', 'Blitar', '2008-08-18', 'Laki-laki', 'Islam', 'Desa Sidorejo Dusun pancir rt.01 rw.08 kecamatan ponggok kabupaten Blitar', '085855376197', '2025-08-22 07:00:55', '2025-08-22 07:00:55'),
-(44, 1, 4, 52, 1, 'r0s9t8u7v6w5x4y3z2a1b0c9d8e7', 'Muhammad Bisri Abdillah', '3511232407070001', 'Bondowoso', '2007-02-07', 'Laki-laki', 'Islam', 'Dusun Lumutan rt. 017 rw. 005 Desa Lumutan Kecamatan Prajekan Kabupaten Bondowoso', '085850823315', '2025-08-22 07:03:44', '2025-08-22 07:03:44'),
-(45, 1, 2, 53, 1, 's4t3u2v1w0x9y8z7a6b5c4d3e2f1', 'rizki fajar aditya putra', '3507230903090004', 'malang', '2009-03-09', 'Laki-laki', 'Islam', 'RT 22 RW 06,leban, tawangarggo, Karangploso, kabupaten malang, Jawa Timur Indonesia', '088231724197', '2025-08-22 07:40:52', '2025-08-22 07:40:52'),
-(46, 1, 2, 54, 1, 't8u7v6w5x4y3z2a1b0c9d8e7f6g5', 'Alexca Evelina Avrilla Putri', '3579016304090002', 'Kota Batu', '2009-04-23', 'Perempuan', 'Islam', 'Jawa Timur Kota Batu. sumberejo dusun santrean jl indra giri rt1 rw 1', '089516275566', '2025-08-22 07:53:55', '2025-08-22 07:53:55'),
-(47, 1, 1, 55, 1, 'u2v1w0x9y8z7a6b5c4d3e2f1g0h9', 'Brillian Dwi Rahmadani', '3502016404080002', 'Ponorogo', '2008-04-24', 'Perempuan', 'Islam', 'jln. Raya Ponorogo Pacitan RT/RW 04/01 Dusun Tengger, Desa Slahung, Kec Slahung, Kab Ponorogo', '085231359622', '2025-08-22 07:58:16', '2025-08-22 07:58:16'),
-(48, 1, 1, 56, 1, 'v6w5x4y3z2a1b0c9d8e7f6g5h4i3', 'Puri Bondan Ningtyas', '3573015003090003', 'Malang', '2009-03-10', 'Perempuan', 'Kristen', 'jl.lesti 1c / 13', '089528420787', '2025-08-22 09:32:46', '2025-08-22 09:32:46'),
-(49, 1, 4, 57, 1, 'w0x9y8z7a6b5c4d3e2f1g0h9i8j7', 'SAIFUL BAHRI', '3527120711080001', 'Sampang', '2008-11-07', 'Laki-laki', 'Islam', 'Dsn. Masaran, Desa Banyusokah, Kecamatan Ketapang, Kab. Sampang, Jawa Timur', '087770359929', '2025-08-22 11:13:03', '2025-08-22 11:13:03'),
-(50, 1, 4, 58, 1, 'x4y3z2a1b0c9d8e7f6g5h4i3j2k1', 'MUCHAMMAD ASKAEV ANSORI', '3514120804090004', 'Pasuruan', '2009-04-08', 'Laki-laki', 'Islam', 'ARJOSARI RT 03 RW 18 KEL KEJAPANAN KEC GEMPOL KAB PASURUAN', '085736667180', '2025-08-22 11:45:00', '2025-08-22 11:45:00'),
-(51, 1, 3, 59, 1, 'y8z7a6b5c4d3e2f1g0h9i8j7k6l5', 'Baitha Hayyunisa', '3573046108070001', 'Malang', '2007-08-21', 'Perempuan', 'Islam', 'Jl. Taman Agung No. 14', '087753357870', '2025-08-22 12:16:46', '2025-08-22 12:16:46'),
-(52, 1, 3, 60, 1, 'z2a1b0c9d8e7f6g5h4i3j2k1l0m9', 'Andi Dixie Aurellia Neysa', '3573047107070007', 'Malang', '2007-07-31', 'Perempuan', 'Islam', 'JL. Gamalama 56, Pisang Candi, Sukun, Malang', '0881026128055', '2025-08-22 12:22:18', '2025-08-22 12:22:18'),
-(53, 1, 3, 61, 1, 'a6b5c4d3e2f1g0h9i8j7k6l5m4n3', 'Rahma pujianti', '3524236904090001', 'Lamongan', '2009-04-29', 'Perempuan', 'Islam', 'Perumahan Tikung Kota Baru blok m12A\r\nKecamatan Tikung Kabupaten Lamongan', '085746029424', '2025-08-22 13:14:10', '2025-08-22 13:14:10'),
-(54, 1, 3, 62, 1, 'b0c9d8e7f6g5h4i3j2k1l0m9n8o7', 'DAYINTA  SURYANING SEKAR DHATU', '3519096401090001', 'MADIUN', '2009-01-24', 'Perempuan', 'Islam', 'Jl.Muria no.03 Magetan,Kec.Magetan,Kab.Magetan', '08985952237', '2025-08-22 13:34:42', '2025-08-22 13:34:42'),
-(55, 1, 3, 63, 1, 'c4d3e2f1g0h9i8j7k6l5m4n3o2p1', 'CRISSANDA REBECCA ANGELA CHILL', '3502114611090003', 'PONOROGO', '2009-11-06', 'Perempuan', 'Islam', 'Desa Karangan, Kec Balong Kab Ponorogo', '081553552667', '2025-08-22 13:39:15', '2025-08-22 13:39:15'),
-(56, 1, 2, 64, 1, 'd8e7f6g5h4i3j2k1l0m9n8o7p6q5', 'ANNA ALTHAFUNNISA', '3526014207080002', 'Bangkalan', '2008-07-02', 'Perempuan', 'Islam', 'PERUM LAGUNA INDAH BLOK L-23 , BANGKALAN', '088989073588', '2025-08-22 13:41:46', '2025-08-22 13:41:46'),
-(57, 1, 4, 65, 1, 'e2f1g0h9i8j7k6l5m4n3o2p1q0r9', 'ESA NUR WAHYUDI', '3505203006080001', 'Blitar', '2008-06-30', 'Laki-laki', 'Islam', 'JL. DIPONEGORO DSN SONGSONG, ARDIMULYO, SINGOSARI, KAB.MALANG, JAWA TIMUR', '085708259219', '2025-08-22 13:42:27', '2025-08-22 13:42:27'),
-(58, 1, 4, 66, 1, 'f6g5h4i3j2k1l0m9n8o7p6q5r4s3', 'ZEFRIZAL RAHMADANI', '3503052505090002', 'TRENGGALEK', '2009-05-25', 'Laki-laki', 'Islam', 'Ds. Prambon RT 20 RW 04, Kalongan, Kec. Tugu, Kab. Trenggalek', '083848718032', '2025-08-23 09:23:46', '2025-08-23 09:23:46'),
-(59, 1, 1, 67, 1, 'g0h9i8j7k6l5m4n3o2p1q0r9s8t7', 'MERCY ALVINA PUTRI SILOLO', '3507186301080002', 'MALANG', '2008-01-23', 'Perempuan', 'Islam', 'JL. KAPI SRABA 2, 10E NO. 27', '087777629778', '2025-08-23 14:19:14', '2025-08-23 14:19:14'),
-(60, 1, 3, 68, 1, 'h4i3j2k1l0m9n8o7p6q5r4s3t2u1', 'Firda Aulia Zahra', '3504093010170001', 'Tulungagung', '2009-01-28', 'Perempuan', 'Islam', 'Dsn. Plenggrong, Tiudan Kec. Gondang', '085815379434', '2025-08-29 11:40:45', '2025-08-29 11:40:45');
+INSERT INTO
+  `pesertas` (
+    `id`,
+    `pelatihan_id`,
+    `bidang_id`,
+    `instansi_id`,
+    `user_id`,
+    `nama`,
+    `nik`,
+    `tempat_lahir`,
+    `tanggal_lahir`,
+    `jenis_kelamin`,
+    `agama`,
+    `alamat`,
+    `no_hp`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
+  (
+    1,
+    1,
+    4,
+    3,
+    2,
+    'Sepni Amzah',
+    '3574041406080003',
+    'Probolinggo',
+    '2008-06-14',
+    'Laki-laki',
+    'Islam',
+    'Jalan Slamet Riyadi S Rokan Blok Klompang N0 42',
+    '082331020465',
+    '2025-08-20 09:28:17',
+    '2025-08-20 09:28:17'
+  ),
+  (
+    2,
+    1,
+    3,
+    4,
+    3,
+    'Firdaussy Nurliza Ramadhani',
+    '3513056109070001',
+    'Probolinggo',
+    '2007-09-21',
+    'Perempuan',
+    'Islam',
+    'Jl. Pahlawan 1, RT 004/RW 005, Sumberkedawung, Leces, Probolinggo',
+    '085815776656',
+    '2025-08-20 10:06:36',
+    '2025-08-20 10:06:36'
+  ),
+  (
+    3,
+    1,
+    4,
+    5,
+    4,
+    'MOCH ADAM ASSADDIL RAIZ',
+    '3517062106090001',
+    'JOMBANG',
+    '2009-06-21',
+    'Laki-laki',
+    'Islam',
+    'JAMBUWOK, DUSUN JAMBUWOK\r\nRT 07 RW 02',
+    '085755193621',
+    '2025-08-20 11:23:32',
+    '2025-08-20 11:23:32'
+  ),
+  (
+    4,
+    1,
+    1,
+    6,
+    5,
+    'NAYSILLA NOVI NUR KHUMAIRA',
+    '3506114111080002',
+    'KEDIRI',
+    '2008-11-01',
+    'Perempuan',
+    'Islam',
+    'Desa Tengger Kidul RT.04. RW.03 Kec. Pagu Kab. Kediri',
+    '082143214002',
+    '2025-08-20 11:58:13',
+    '2025-08-20 11:58:13'
+  ),
+  (
+    5,
+    1,
+    4,
+    7,
+    6,
+    'OKY RIYANTO',
+    '3523152210080002',
+    'TUBAN',
+    '2008-10-22',
+    'Laki-laki',
+    'Islam',
+    'Lingkungan Dondong Rt.03 Rw.09 Kelurahan Gedongombo Kecamatan Semanding Kabupaten Tuban',
+    '628899179062',
+    '2025-08-20 12:13:59',
+    '2025-08-20 12:13:59'
+  ),
+  (
+    6,
+    1,
+    2,
+    8,
+    7,
+    'Prajwalita Zulfa Fatika Chusna',
+    '3505034903080001',
+    'BLITAR',
+    '2008-03-09',
+    'Perempuan',
+    'Islam',
+    'Dsn Karanggayam\r\nKec Srengat\r\nKabupaten Blitar',
+    '081252283167',
+    '2025-08-20 12:19:16',
+    '2025-08-20 12:19:16'
+  ),
+  (
+    7,
+    1,
+    1,
+    9,
+    8,
+    'RALVIO OCZA ZEBIAN',
+    '3507291207080001',
+    'Malang',
+    '2008-08-12',
+    'Laki-laki',
+    'Islam',
+    'JJln. Raya Desa Segaran Rt.07 Rw.03 kec. Gedangan Kab. Malang',
+    '082142773469',
+    '2025-08-20 12:25:07',
+    '2025-08-20 12:25:07'
+  ),
+  (
+    8,
+    1,
+    2,
+    10,
+    9,
+    'RYNDI MEGA HERAWATI',
+    '3524166002090001',
+    'Lamongan',
+    '2009-02-20',
+    'Perempuan',
+    'Islam',
+    'Dusun Maijo, Desa Kedungsoko, Kecamatan Mantup, Kabupaten Lamongan',
+    '085704309810',
+    '2025-08-20 12:30:28',
+    '2025-08-20 12:30:28'
+  ),
+  (
+    9,
+    1,
+    4,
+    13,
+    10,
+    'RANGGA EKA PUTRA ELYANTO',
+    '3516032105080001',
+    'Mojokerto',
+    '2008-05-21',
+    'Laki-laki',
+    'Islam',
+    'Dsn. Kandangan Ds. kuripansari Kec. pacet',
+    '085749308942',
+    '2025-08-20 13:04:04',
+    '2025-08-20 13:04:04'
+  ),
+  (
+    10,
+    1,
+    2,
+    14,
+    11,
+    'Dewi Safira Febriana',
+    '3514114502090001',
+    'Pasuruan',
+    '2009-02-05',
+    'Perempuan',
+    'Islam',
+    'satak kepoh RT.007 / RW.003 - Manaruwi - Bangil',
+    '085850100186',
+    '2025-08-20 13:10:17',
+    '2025-08-20 13:10:17'
+  ),
+  (
+    11,
+    1,
+    2,
+    15,
+    12,
+    'Amelta Aulia Subarko',
+    '3518074107070003',
+    'Nganjuk',
+    '2029-03-09',
+    'Perempuan',
+    'Islam',
+    'Dsn. Sumberkepuh, Ds. Klurahan, Kec. Ngronggot, Kab. Nganjuk',
+    '081805792203',
+    '2025-08-20 13:57:25',
+    '2025-08-20 13:57:25'
+  ),
+  (
+    12,
+    1,
+    3,
+    16,
+    13,
+    'LUTFI HIDAYATUR ROHIM',
+    '0000000000000000',
+    'Nganjuk',
+    '2008-04-18',
+    'Perempuan',
+    'Islam',
+    'Ds. Jatirejo, Kec. Nganjuk, Kab. Nganjuk',
+    '085707361280',
+    '2025-08-20 14:09:41',
+    '2025-08-20 14:09:41'
+  ),
+  (
+    13,
+    1,
+    4,
+    17,
+    14,
+    'RADITHYA FAUSTA ARIEF',
+    '3578191911080001',
+    'Surabaya',
+    '2008-11-19',
+    'Laki-laki',
+    'Islam',
+    'SEMEMIJAYA GG 5 C BLOK 1 NO 4\r\nRT2, RW1',
+    '085704018360',
+    '2025-08-20 14:12:20',
+    '2025-08-20 14:12:20'
+  ),
+  (
+    14,
+    1,
+    3,
+    18,
+    15,
+    'Alifia Ziqna Faradiba',
+    '3511174411080001',
+    'Bondowoso',
+    '2008-11-04',
+    'Perempuan',
+    'Islam',
+    'Jl. Diponegoro no 214, Kotakulon Bondowoso Jawa timur',
+    '083817525825',
+    '2025-08-20 14:28:22',
+    '2025-08-20 14:28:22'
+  ),
+  (
+    15,
+    1,
+    4,
+    19,
+    16,
+    'Muhammad Nazar Qoirun Nazmi',
+    '3506151812080001',
+    'Kediri',
+    '2008-12-18',
+    'Laki-laki',
+    'Islam',
+    'RT/RW 1/1 Dsn. Jantok Ds. Jantok, Kec. Purwoasri, Kab. Kediri',
+    '085806406008',
+    '2025-08-20 14:44:46',
+    '2025-08-20 14:44:46'
+  ),
+  (
+    16,
+    1,
+    2,
+    22,
+    17,
+    'HALIMATUS PUTRI DEWI',
+    '3511076601090001',
+    'BONDOWOSO',
+    '2009-01-26',
+    'Perempuan',
+    'Islam',
+    'PONDOK PESANTREN ASSALAM\r\nJl. KH Ahmad Zaini Dahlan, Bindung, Sumberanyar, Kec. Banyuputih, Kabupaten Situbondo, Jawa Timur',
+    '085258549996',
+    '2025-08-20 15:12:10',
+    '2025-08-20 15:12:10'
+  ),
+  (
+    17,
+    1,
+    3,
+    23,
+    18,
+    'Naila Aurellia',
+    '3515186412080002',
+    'Sidoarjo',
+    '2008-12-24',
+    'Perempuan',
+    'Islam',
+    'ds.beru,kec.sarirejo,kab.lamongan',
+    '087847526234',
+    '2025-08-20 20:24:24',
+    '2025-08-20 20:24:24'
+  ),
+  (
+    18,
+    1,
+    2,
+    24,
+    19,
+    'Masyifa Azzahra',
+    '3506224107030016',
+    'Kediri',
+    '2008-06-12',
+    'Perempuan',
+    'Islam',
+    'Jalan Raya Desa Parang, Dusun Jati, Desa Parang RT.02 RW.01, Banyakan - Kabupaten Kediri',
+    '082228280566',
+    '2025-08-21 01:58:09',
+    '2025-08-21 01:58:09'
+  ),
+  (
+    19,
+    1,
+    2,
+    25,
+    20,
+    'SILVIA RAMADANI',
+    '3509296109080001',
+    'Jember',
+    '2008-09-21',
+    'Perempuan',
+    'Islam',
+    'DUSUN RAGANG BARAT RT 03 RW 04 DESA SUKOWONO KEC. SUKOWONO KAB. JEMBER',
+    '081553625425',
+    '2025-08-21 02:29:10',
+    '2025-08-21 02:29:10'
+  ),
+  (
+    20,
+    1,
+    4,
+    26,
+    21,
+    'ARDHIANSYAH PUTRA RISQI SATRIAGUNG',
+    '3578131108080004',
+    'surabaya',
+    '2008-08-11',
+    'Laki-laki',
+    'Islam',
+    'JL. BATU SAFIR HIJAU IB NO. 23 DRIYOREJO GRESIK',
+    '081259196119',
+    '2025-08-21 02:48:09',
+    '2025-08-21 02:48:09'
+  ),
+  (
+    21,
+    1,
+    2,
+    27,
+    22,
+    'XTWOLITA ELFREDA ARDININGRUM',
+    '3524116008090001',
+    'LAMONGAN',
+    '2009-08-20',
+    'Perempuan',
+    'Islam',
+    'DSN. PERESAN DS. GARUNG RT 02 RW 05 KEC.SAMBENG KAB.LAMONGAN 62284',
+    '085812481417',
+    '2025-08-21 02:49:15',
+    '2025-08-21 02:49:15'
+  ),
+  (
+    22,
+    1,
+    4,
+    28,
+    23,
+    'Ahmad Khoiruddin',
+    '3513222801080001',
+    'Probolinggo',
+    '2008-01-28',
+    'Laki-laki',
+    'Islam',
+    'Dusun Gedangan RT 06 Rw 02 Desa Sumberkare Kec. Wonomerto Kab. Probolinggo',
+    '088289692356',
+    '2025-08-21 03:14:17',
+    '2025-08-21 03:14:17'
+  ),
+  (
+    23,
+    1,
+    3,
+    29,
+    24,
+    'Zahra Farrisa Gitya Putri',
+    '3516166408080002',
+    'Mojokerto',
+    '2008-08-24',
+    'Perempuan',
+    'Islam',
+    'RT.03, RW.02, Dusun Sukodono, Desa Canggu, Kecamatan Jetis, Kabupaten Mojokerto',
+    '081515273353',
+    '2025-08-21 03:33:49',
+    '2025-08-21 03:33:49'
+  ),
+  (
+    24,
+    1,
+    2,
+    30,
+    25,
+    'SABRINA WAFA AQILLAH',
+    '3524077107090002',
+    'LAMONGAN',
+    '2009-07-31',
+    'Perempuan',
+    'Islam',
+    'Labuhan RT 024/ RW 005, Labuhan Kec. Brondong Kab. Lamongan',
+    '0895320245861',
+    '2025-08-21 03:40:57',
+    '2025-08-21 03:40:57'
+  ),
+  (
+    25,
+    1,
+    2,
+    31,
+    26,
+    'Anggrea Revalda Pratiwi Putri',
+    '3507056311080001',
+    'Malang',
+    '2008-11-23',
+    'Perempuan',
+    'Islam',
+    'Dusun Sumbersari RT 23 RW 5 Sumbersari Desa Jambangan Kecamatan Dampit Kabupaten Malang',
+    '085236641625',
+    '2025-08-21 03:54:31',
+    '2025-08-21 03:54:31'
+  ),
+  (
+    26,
+    1,
+    4,
+    32,
+    27,
+    'MUHAMAD RIKI FEBRIANTO',
+    '1111111111111111',
+    'Bojonegoro',
+    '2009-02-20',
+    'Laki-laki',
+    'Islam',
+    'Ds. Leran Kc. kalitidu Kb. Bojonegoro',
+    '085815350339',
+    '2025-08-21 05:02:39',
+    '2025-08-21 05:02:39'
+  ),
+  (
+    27,
+    1,
+    1,
+    33,
+    28,
+    'Binti Lailatul Ilmi',
+    '3506036606080001',
+    'Kediri',
+    '2008-06-26',
+    'Perempuan',
+    'Islam',
+    'Ds. Jambean Dsn. Ngrombeh RT03/RW03 Kec. Kras Kab. Kediri',
+    '082331331605',
+    '2025-08-21 07:07:23',
+    '2025-08-21 07:07:23'
+  ),
+  (
+    28,
+    1,
+    1,
+    34,
+    29,
+    'ZYIKA AYUDIA MUTIA SARI',
+    '3515097107080002',
+    'Sidoarjo',
+    '2008-07-31',
+    'Perempuan',
+    'Islam',
+    'Dsn. urung-urung Ds.Kebonagung Kec.Puri Kab. Mojokerto',
+    '083833180370',
+    '2025-08-21 09:06:51',
+    '2025-08-21 09:06:51'
+  ),
+  (
+    29,
+    1,
+    1,
+    35,
+    30,
+    'YOHANA DIAN MAHARANI',
+    '3518014803100002',
+    'Nganjuk',
+    '2010-03-08',
+    'Perempuan',
+    'Islam',
+    'kecamatan sawahan desa duren dusun sugihan RT02 RW03',
+    '087861047291',
+    '2025-08-21 12:12:02',
+    '2025-08-21 12:12:02'
+  ),
+  (
+    30,
+    1,
+    1,
+    36,
+    31,
+    'Diaz Ayunda Kirana',
+    '3576026106080001',
+    'Mojokerto',
+    '2008-06-21',
+    'Perempuan',
+    'Islam',
+    'Miji gg 5 no 15, Kec. kranggan, Kel. miji, MOJOKERTO',
+    '089513685473',
+    '2025-08-21 12:17:34',
+    '2025-08-21 12:17:34'
+  ),
+  (
+    31,
+    1,
+    3,
+    37,
+    32,
+    'Margareta Pasharina Swastika',
+    '3505036803080003',
+    'Blitar',
+    '2008-03-28',
+    'Perempuan',
+    'Katolik',
+    'Jl Kawi No.19, RT 01 RW 02, Lingk. Kauman, Kel. Kauman, Kec. Srengat, Kab. Blitar',
+    '082233312984',
+    '2025-08-21 13:56:56',
+    '2025-08-21 13:56:56'
+  ),
+  (
+    32,
+    1,
+    3,
+    38,
+    33,
+    'Nayla Qolbina Muttaqiyah',
+    '3512087007080002',
+    'Situbondo',
+    '2008-07-30',
+    'Perempuan',
+    'Islam',
+    'Jl. Basuki Rahmat RT 03 RW 12, Mimbaan, Kecamatan Panji, Situbondo 68322',
+    '081392782093',
+    '2025-08-21 14:23:25',
+    '2025-08-21 14:23:25'
+  ),
+  (
+    33,
+    1,
+    2,
+    39,
+    34,
+    'Arum Mawarni Dwi Puspita',
+    '3573046107080001',
+    'Malang',
+    '2008-07-21',
+    'Perempuan',
+    'Islam',
+    'Jl.s.supriadi VI RT.7 RW.6 No.2339 Sukun Malang',
+    '081330911552',
+    '2025-08-22 02:54:10',
+    '2025-08-22 02:54:10'
+  ),
+  (
+    34,
+    1,
+    1,
+    40,
+    35,
+    'DIAH WAHYU SOFANA',
+    '3502056706080002',
+    'PONOROGO',
+    '2008-06-27',
+    'Perempuan',
+    'Islam',
+    'RT.02/RW.02 Dukuh Gondang,Desa Tugurejo, Kec Sawoo, Kab Ponorogo',
+    '085135330451',
+    '2025-08-22 03:04:40',
+    '2025-08-22 03:04:40'
+  ),
+  (
+    35,
+    1,
+    2,
+    41,
+    36,
+    'Salsabila Nur rochim',
+    '3507086304090002',
+    'Malang',
+    '2009-04-23',
+    'Perempuan',
+    'Islam',
+    'JL.semeru rt.01/rw.12 wajak kab.malang',
+    '085231570358',
+    '2025-08-22 03:13:06',
+    '2025-08-22 03:13:06'
+  ),
+  (
+    36,
+    1,
+    1,
+    43,
+    37,
+    'Marisa Ulfi Nur\'aini',
+    '3502146007090002',
+    'Ponorogo',
+    '2009-07-20',
+    'Perempuan',
+    'Islam',
+    'Gelang Kulon, Sampung Ponorogo',
+    '082231651789',
+    '2025-08-22 03:50:52',
+    '2025-08-22 03:50:52'
+  ),
+  (
+    37,
+    1,
+    3,
+    44,
+    38,
+    'AISYAH NADYA FITRI',
+    '3579014110080001',
+    'BATU',
+    '2008-10-01',
+    'Perempuan',
+    'Islam',
+    'Jl. Bulu Tangkis no.28 RT/RW : 004/003 Kel. Sisir Kec. Batu - Kota Batu Jawa Timur 65314',
+    '08976231930',
+    '2025-08-22 04:13:21',
+    '2025-08-22 11:30:51'
+  ),
+  (
+    38,
+    1,
+    3,
+    45,
+    39,
+    'NAYZILA NISRINA SALSABILA',
+    '3507235210080001',
+    'MALANG',
+    '2008-10-12',
+    'Perempuan',
+    'Islam',
+    'JARAAN,RT/RW:022/006,Kel.Donowarih,Kec.Karangploso,Kota Malang Jawa Timur 65152',
+    '0895639083040',
+    '2025-08-22 04:18:43',
+    '2025-08-22 04:18:43'
+  ),
+  (
+    39,
+    1,
+    1,
+    46,
+    40,
+    'CALLULA SALWA ZAKIAH',
+    '3579026012080001',
+    'BATU',
+    '2008-12-20',
+    'Perempuan',
+    'Islam',
+    'Jl nurhadi no 15 RT/RW:02/01 kel. Bulukerto kec. Bumiaji - kota batu jawa timur 65334',
+    '081249792711',
+    '2025-08-22 05:14:42',
+    '2025-08-22 05:14:42'
+  ),
+  (
+    40,
+    1,
+    1,
+    47,
+    41,
+    'NAJWA AZZAHRA RAMADHANI',
+    '3579015209080001',
+    'BATU',
+    '2008-09-12',
+    'Perempuan',
+    'Islam',
+    'Jl.Darsono No.64 RT.03 RW.10 Kel.Ngaglik Kec.Batu-Kota Batu Jawa Timur 65311',
+    '082135402667',
+    '2025-08-22 05:19:47',
+    '2025-08-22 05:19:47'
+  ),
+  (
+    41,
+    1,
+    4,
+    49,
+    42,
+    'MUHAMMAD ALVIN ABIANSYAH',
+    '3506230105080002',
+    'KEDIRI',
+    '2008-05-01',
+    'Laki-laki',
+    'Islam',
+    'DSN. TAMANAN RT.003 RW.002 DS. NAMBAKAN KEC. RINGINREJO KAB. KEDIRI',
+    '085854734036',
+    '2025-08-22 06:11:46',
+    '2025-08-22 06:11:46'
+  ),
+  (
+    42,
+    1,
+    1,
+    50,
+    43,
+    'Rahmadina Nuraini',
+    '3507186810080004',
+    'Malang',
+    '2008-10-28',
+    'Perempuan',
+    'Islam',
+    'Perum Graha Puntadewa blok D3 no 9',
+    '082257485831',
+    '2025-08-22 06:50:04',
+    '2025-08-22 06:50:04'
+  ),
+  (
+    43,
+    1,
+    1,
+    51,
+    44,
+    'HILMAN PUTRA AL RIZKI',
+    '3505061808080003',
+    'Blitar',
+    '2008-08-18',
+    'Laki-laki',
+    'Islam',
+    'Desa Sidorejo Dusun pancir rt.01 rw.08 kecamatan ponggok kabupaten Blitar',
+    '085855376197',
+    '2025-08-22 07:00:55',
+    '2025-08-22 07:00:55'
+  ),
+  (
+    44,
+    1,
+    4,
+    52,
+    45,
+    'Muhammad Bisri Abdillah',
+    '3511232407070001',
+    'Bondowoso',
+    '2007-02-07',
+    'Laki-laki',
+    'Islam',
+    'Dusun Lumutan rt. 017 rw. 005 Desa Lumutan Kecamatan Prajekan Kabupaten Bondowoso',
+    '085850823315',
+    '2025-08-22 07:03:44',
+    '2025-08-22 07:03:44'
+  ),
+  (
+    45,
+    1,
+    2,
+    53,
+    46,
+    'rizki fajar aditya putra',
+    '3507230903090004',
+    'malang',
+    '2009-03-09',
+    'Laki-laki',
+    'Islam',
+    'RT 22 RW 06,leban, tawangarggo, Karangploso, kabupaten malang, Jawa Timur Indonesia',
+    '088231724197',
+    '2025-08-22 07:40:52',
+    '2025-08-22 07:40:52'
+  ),
+  (
+    46,
+    1,
+    2,
+    54,
+    47,
+    'Alexca Evelina Avrilla Putri',
+    '3579016304090002',
+    'Kota Batu',
+    '2009-04-23',
+    'Perempuan',
+    'Islam',
+    'Jawa Timur Kota Batu. sumberejo dusun santrean jl indra giri rt1 rw 1',
+    '089516275566',
+    '2025-08-22 07:53:55',
+    '2025-08-22 07:53:55'
+  ),
+  (
+    47,
+    1,
+    1,
+    55,
+    48,
+    'Brillian Dwi Rahmadani',
+    '3502016404080002',
+    'Ponorogo',
+    '2008-04-24',
+    'Perempuan',
+    'Islam',
+    'jln. Raya Ponorogo Pacitan RT/RW 04/01 Dusun Tengger, Desa Slahung, Kec Slahung, Kab Ponorogo',
+    '085231359622',
+    '2025-08-22 07:58:16',
+    '2025-08-22 07:58:16'
+  ),
+  (
+    48,
+    1,
+    1,
+    56,
+    49,
+    'Puri Bondan Ningtyas',
+    '3573015003090003',
+    'Malang',
+    '2009-03-10',
+    'Perempuan',
+    'Kristen',
+    'jl.lesti 1c / 13',
+    '089528420787',
+    '2025-08-22 09:32:46',
+    '2025-08-22 09:32:46'
+  ),
+  (
+    49,
+    1,
+    4,
+    57,
+    50,
+    'SAIFUL BAHRI',
+    '3527120711080001',
+    'Sampang',
+    '2008-11-07',
+    'Laki-laki',
+    'Islam',
+    'Dsn. Masaran, Desa Banyusokah, Kecamatan Ketapang, Kab. Sampang, Jawa Timur',
+    '087770359929',
+    '2025-08-22 11:13:03',
+    '2025-08-22 11:13:03'
+  ),
+  (
+    50,
+    1,
+    4,
+    58,
+    51,
+    'MUCHAMMAD ASKAEV ANSORI',
+    '3514120804090004',
+    'Pasuruan',
+    '2009-04-08',
+    'Laki-laki',
+    'Islam',
+    'ARJOSARI RT 03 RW 18 KEL KEJAPANAN KEC GEMPOL KAB PASURUAN',
+    '085736667180',
+    '2025-08-22 11:45:00',
+    '2025-08-22 11:45:00'
+  ),
+  (
+    51,
+    1,
+    3,
+    59,
+    52,
+    'Baitha Hayyunisa',
+    '3573046108070001',
+    'Malang',
+    '2007-08-21',
+    'Perempuan',
+    'Islam',
+    'Jl. Taman Agung No. 14',
+    '087753357870',
+    '2025-08-22 12:16:46',
+    '2025-08-22 12:16:46'
+  ),
+  (
+    52,
+    1,
+    3,
+    60,
+    53,
+    'Andi Dixie Aurellia Neysa',
+    '3573047107070007',
+    'Malang',
+    '2007-07-31',
+    'Perempuan',
+    'Islam',
+    'JL. Gamalama 56, Pisang Candi, Sukun, Malang',
+    '0881026128055',
+    '2025-08-22 12:22:18',
+    '2025-08-22 12:22:18'
+  ),
+  (
+    53,
+    1,
+    3,
+    61,
+    54,
+    'Rahma pujianti',
+    '3524236904090001',
+    'Lamongan',
+    '2009-04-29',
+    'Perempuan',
+    'Islam',
+    'Perumahan Tikung Kota Baru blok m12A\r\nKecamatan Tikung Kabupaten Lamongan',
+    '085746029424',
+    '2025-08-22 13:14:10',
+    '2025-08-22 13:14:10'
+  ),
+  (
+    54,
+    1,
+    3,
+    62,
+    55,
+    'DAYINTA  SURYANING SEKAR DHATU',
+    '3519096401090001',
+    'MADIUN',
+    '2009-01-24',
+    'Perempuan',
+    'Islam',
+    'Jl.Muria no.03 Magetan,Kec.Magetan,Kab.Magetan',
+    '08985952237',
+    '2025-08-22 13:34:42',
+    '2025-08-22 13:34:42'
+  ),
+  (
+    55,
+    1,
+    3,
+    63,
+    56,
+    'CRISSANDA REBECCA ANGELA CHILL',
+    '3502114611090003',
+    'PONOROGO',
+    '2009-11-06',
+    'Perempuan',
+    'Islam',
+    'Desa Karangan, Kec Balong Kab Ponorogo',
+    '081553552667',
+    '2025-08-22 13:39:15',
+    '2025-08-22 13:39:15'
+  ),
+  (
+    56,
+    1,
+    2,
+    64,
+    57,
+    'ANNA ALTHAFUNNISA',
+    '3526014207080002',
+    'Bangkalan',
+    '2008-07-02',
+    'Perempuan',
+    'Islam',
+    'PERUM LAGUNA INDAH BLOK L-23 , BANGKALAN',
+    '088989073588',
+    '2025-08-22 13:41:46',
+    '2025-08-22 13:41:46'
+  ),
+  (
+    57,
+    1,
+    4,
+    65,
+    58,
+    'ESA NUR WAHYUDI',
+    '3505203006080001',
+    'Blitar',
+    '2008-06-30',
+    'Laki-laki',
+    'Islam',
+    'JL. DIPONEGORO DSN SONGSONG, ARDIMULYO, SINGOSARI, KAB.MALANG, JAWA TIMUR',
+    '085708259219',
+    '2025-08-22 13:42:27',
+    '2025-08-22 13:42:27'
+  ),
+  (
+    58,
+    1,
+    4,
+    66,
+    59,
+    'ZEFRIZAL RAHMADANI',
+    '3503052505090002',
+    'TRENGGALEK',
+    '2009-05-25',
+    'Laki-laki',
+    'Islam',
+    'Ds. Prambon RT 20 RW 04, Kalongan, Kec. Tugu, Kab. Trenggalek',
+    '083848718032',
+    '2025-08-23 09:23:46',
+    '2025-08-23 09:23:46'
+  ),
+  (
+    59,
+    1,
+    1,
+    67,
+    60,
+    'MERCY ALVINA PUTRI SILOLO',
+    '3507186301080002',
+    'MALANG',
+    '2008-01-23',
+    'Perempuan',
+    'Islam',
+    'JL. KAPI SRABA 2, 10E NO. 27',
+    '087777629778',
+    '2025-08-23 14:19:14',
+    '2025-08-23 14:19:14'
+  ),
+  (
+    60,
+    1,
+    3,
+    68,
+    61,
+    'Firda Aulia Zahra',
+    '3504093010170001',
+    'Tulungagung',
+    '2009-01-28',
+    'Perempuan',
+    'Islam',
+    'Dsn. Plenggrong, Tiudan Kec. Gondang',
+    '085815379434',
+    '2025-08-29 11:40:45',
+    '2025-08-29 11:40:45'
+  );
 
 -- lampiran
 INSERT INTO
@@ -5954,8 +7523,6 @@ VALUES
     '2025-08-29 11:40:45',
     '2025-08-29 11:40:45'
   );
-
-
 
 -- jawaban user
 INSERT INTO
@@ -28630,4 +30197,1250 @@ VALUES
     '2025-09-01 05:08:53'
   );
 
+-- ===================================================================
+-- KUNCI JAWABAN BARU 09/09/2025
+-- ===================================================================
+INSERT INTO
+  `tes` (
+    `id`,
+    `judul`,
+    `deskripsi`,
+    `tipe`,
+    `sub_tipe`,
+    `bidang_id`,
+    `pelatihan_id`,
+    `durasi_menit`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
+  (
+    6,
+    'Post-Test Videografi',
+    'Tes akhir untuk mengukur pemahaman materi Videografi.',
+    'tes',
+    'post-test',
+    5,
+    1,
+    30,
+    NOW (),
+    NOW ()
+  ),
+  (
+    7,
+    'Post-Test PLC',
+    'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).',
+    'tes',
+    'post-test',
+    6,
+    1,
+    30,
+    NOW (),
+    NOW ()
+  ),
+  (
+    8,
+    'Post-Test Fotografi',
+    'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.',
+    'tes',
+    'post-test',
+    7,
+    1,
+    30,
+    NOW (),
+    NOW ()
+  ),
+  (
+    9,
+    'Survei Kepuasan Pelatihan - MTU',
+    'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.',
+    'survei',
+    NULL,
+    1,
+    1,
+    NULL,
+    NOW (),
+    NOW ()
+  );
 
+-- PERTANYAAN
+-- Videografi
+INSERT INTO
+  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+VALUES
+  (
+    6,
+    117,
+    'Mengapa videografi menjadi semakin penting dalam pendidikan modern ?',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    118,
+    'Berikut ini adalah manfaat penggunaan video dalam pembelajaran, kecuali...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    119,
+    'Istilah yang merujuk pada jumlah gambar diam yang ditampilkan per detik dalam video adalah...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    120,
+    'Rasio aspek video widescreen standar yang paling umum digunakan saat ini adalah...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    121,
+    'Jenis shot yang menampilkan objek secara keseluruhan dengan latar belakang yang luas, sering digunakan untuk membuka video adalah…',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    122,
+    'Sudut pengambilan gambar dari bawah objek, yang membuat objek terlihat lebih besar dan dominan disebut...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    123,
+    'Pergerakan kamera secara horizontal dari kiri ke kanan atau sebaliknya disebut...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    124,
+    'Aturan komposisi visual yang membagi bingkai gambar menjadi sembilan bagian sama besar untuk menempatkan objek penting adalah...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    125,
+    'Jenis pencahayaan yang paling baik dan mudah dimanfaatkan untuk videografi adalah...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    126,
+    'Istilah untuk cahaya utama dalam three-point lighting yang berfungsi sebagai sumber cahaya terkuat dan membentuk bayangan adalah...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    127,
+    'Mikrofon kecil yang biasanya dijepitkan pada pakaian dan ideal untuk merekam suara pembicara adalah...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    128,
+    'Mengapa kualitas audio yang baik sangat penting dalam video?',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    129,
+    'Dalam penyuntingan video dasar, timeline berfungsi untuk...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    130,
+    'Teknik penyuntingan video dasar yang paling umum untuk menggabungkan dua klip video secara langsung tanpa transisi adalah...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    131,
+    'Langkah awal yang paling penting dalam membuat video pembelajaran yang efektif adalah…',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    132,
+    'Durasi video pembelajaran yang ideal sebaiknya...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    133,
+    'Platform berbagi video online yang paling populer dan banyak digunakan untuk video pembelajaran adalah…',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    134,
+    'Format file video yang paling umum dan direkomendasikan untuk diunggah secara online adalah...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    135,
+    'Etika penting yang harus diperhatikan dalam produksi video pendidikan kecuali...',
+    'pilihan_ganda'
+  ),
+  (
+    6,
+    136,
+    'Dalam teknik pencahayaan tiga titik (three-point lighting), lampu yang berfungsi untuk mengurangi bayangan keras yang dihasilkan oleh lampu utama (key light) dan memberikan detail pada area gelap adalah...',
+    'pilihan_ganda'
+  );
+
+-- PLC
+INSERT INTO
+  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+VALUES
+  (
+    7,
+    137,
+    'Programmable Logic Controllers (PLC) adalah',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    138,
+    'Berdasarkan namanya konsep PLC adalah sebagai berikut :Penjelasan di atas digambarkan. Pada gambar dibawah ini :',
+    'pilihan_ganda'
+  ),
+  (7, 139, 'Kode 1a dan 1b adalah', 'pilihan_ganda'),
+  (
+    7,
+    140,
+    'Input dan Output pada PLC dengan Type CP1E :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    141,
+    'Bentuk / Macam Program Kontrol adalah',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    142,
+    'Sebuah motor listrik di kontrol oleh tombol ……. dan ………',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    143,
+    'Ledder Diagram yang sudah dibuat dan disimpan disebuah file harus ditransfer (download) kedalam memori PLC untuk bisa di jalankan pada PLC. Syarat dan ketentuan transfer program ke PLCadalah :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    144,
+    'Tampilan di bawah ini adalah proses :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    145,
+    'Proses mentransfer program ada 2 macam salah satunya adalah : Mentransfer dari PC/Laptop ke PLC tujuannya untuk mengirim program kontrol yang telah dibuat untuk dioprasikan pada PLC. Caranya klik PLC pilih Transfer dan pilih to PLC atau tekan Ctrl + T pada keyboard seperti gambar berikut. Gambar dibawah adalah Proses :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    146,
+    'Gambar di bawah ini adalah proses :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    147,
+    'TIMER adalah salah satu fasilitas yang ada pada sebuah PLC. Iya identik dan punya fungsi yang sama seperti :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    148,
+    'COUNTER (CNT) Counter adalah salah satu fasilitas yang da pada sebuah PLC yang mempunyai 2 masukan yakni :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    149,
+    'Counter berfungsi sebagai penghitung dalam program kontrol Counter mempunyai keluaran Output yang berupa :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    150,
+    'Gambar di bawah ini adalah :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    151,
+    'DIFU (Differentiate Up) dan DIFD (Differentiate Down) adalah salah satu bagian dari Bit Control Instructions.:',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    152,
+    'Perbedaan DIFU dan DIFD Pada Keluaran (Kontak NO dan Ncnya)',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    153,
+    'Keterangan gambar di bawah ini adalah :',
+    'pilihan_ganda'
+  ),
+  (7, 154, 'Clock Pulse Bit :', 'pilihan_ganda'),
+  (
+    7,
+    155,
+    'Clock Pulse Bit identik dengan kontak NO/NC yang bekerja terus menerus memberi masukan 1 dan 0 (bekerja ON dan OFF) secara otomatis :',
+    'pilihan_ganda'
+  ),
+  (
+    7,
+    156,
+    'Untuk menggambarkan penjelasan diatas maka buatlah program kontrol yang menggunakan Clock Puls Bit dengan satuan detik seperti gambar berikut ini',
+    'pilihan_ganda'
+  );
+
+-- FOTOGRAFI
+INSERT INTO
+  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+VALUES
+  (
+    8,
+    157,
+    'Proses pra produksi dalam fotografi produk adalah ketika …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    158,
+    'Salah satu pengaruh foto produk terhadap kegiatan branding adalah …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    159,
+    'Rafathar ditunjuk sebagai fotografer di kelasnya, namun Ketika foto di dalam kelas, foto yang dihasilkan kamera mirrorless nya tampak gelap, yang harus dilakukan Rafathar adalah …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    160,
+    'Di bawah ini yang bukan termasuk konsep fotografi produk adalah :',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    161,
+    'Yang bukan termasuk komposisi fotografi adalah …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    162,
+    'Dimanakah letak lampu yang digunakan pada foto dibawah ini …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    163,
+    'Renatta adalah fotografer professional. Dia selalu mengedit foto produk setelah dia melakukan proses foto. Proses pengeditan dalam fotografi masuk ke dalam proses …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    164,
+    'Berikut adalah hal hal yang harus dihindari saat foto produk, salah satunya adalah …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    165,
+    'Apperture pada settingan kamera digunakan untuk mengatur …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    166,
+    'Erick ditunjuk PSSI sebagai fotografer tim nasional sepakbola, yang perlu Erick setting di kameranya agar Ketika pemain berlari kencang dia bisa membuat foto tersebut menjadi freeze adalah ....',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    167,
+    'Apa yang diperlukan fotografer agar memiliki banyak klien …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    168,
+    'Manakah settingan Apperture kamera yang benar ketika kita menginginkan foto dengan latar belakang yang blur / bokeh …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    169,
+    'Mana di bawah ini yang merupakan aplikasi untuk mengedit foto yang sering digunakan oleh fotografer …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    170,
+    'Manakah yang bukan kegunaan lighting pada fotografi produk …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    171,
+    'Yang tidak termasuk dalam workflow fotografer produk adalah …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    172,
+    'Jika ingin membuat foto tampak bokeh/blur, apa yang perlu kita setting …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    173,
+    'Saya ingin memotret objek yang bergerak menjadi tampak freeze/beku, apa yang perlu saya setting di kamera …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    174,
+    'Proses menaikan warna pada aplikasi photoshop adalah …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    175,
+    'ISO memiliki kegunaan untuk mengatur …',
+    'pilihan_ganda'
+  ),
+  (
+    8,
+    176,
+    'Dibawah ini yang bukan termasuk proses produksi pada fotografi produk adalah …',
+    'pilihan_ganda'
+  );
+
+-- ===================================================================
+-- OPSI JAWABAN 
+-- ===================================================================
+-- Videografi
+INSERT INTO
+  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+VALUES
+  (
+    117,
+    'Karena buku teks sudah tidak relevan lagi',
+    false
+  ),
+  (
+    117,
+    'Karena siswa hanya suka belajar dengan video',
+    false
+  ),
+  (
+    117,
+    'Karena video lebih menarik dan efektif untuk menyampaikan informasi visual dan kompleks',
+    true
+  ),
+  (
+    117,
+    'Karena membuat video lebih murah daripada membuat materi cetak',
+    false
+  ),
+  (
+    117,
+    'Karena semua guru harus menjadi YouTuber',
+    false
+  ),
+  (
+    118,
+    'Meningkatkan pemahaman dan daya ingat siswa',
+    false
+  ),
+  (
+    118,
+    'Membuat materi abstrak menjadi lebih konkret dan mudah dipahami',
+    false
+  ),
+  (
+    118,
+    'Menyajikan pengalaman belajar yang otentik dan menarik',
+    false
+  ),
+  (
+    118,
+    'Menggantikan peran guru sepenuhnya di dalam kelas',
+    true
+  ),
+  (
+    118,
+    'Mengakomodasi gaya belajar siswa yang beragam',
+    false
+  ),
+  (119, 'Resolusi', false),
+  (119, 'Aspect Ratio', false),
+  (119, 'Frame Rate', true),
+  (119, 'Bit Rate', false),
+  (119, 'White Balance', false),
+  (120, '4:3', false),
+  (120, '3:4', false),
+  (120, '1:1', false),
+  (120, '9 :16', false),
+  (120, '16:9', true),
+  (121, 'Close-Up (CU)', false),
+  (121, 'Medium Shot (MS)', false),
+  (121, 'Long Shot (LS)', false),
+  (121, 'Extreme Long Shot (ELS)', true),
+  (121, 'Over-the-Shoulder Shot (OTS)', false),
+  (122, 'Eye-Level Angle', false),
+  (122, 'High Angle', false),
+  (122, 'Low Angle', true),
+  (122, 'Dutch Angle', false),
+  (122, 'Bird''s-Eye View', false),
+  (123, 'Tilt', false),
+  (123, 'Pan', true),
+  (123, 'Zoom', false),
+  (123, 'Dolly', false),
+  (123, 'Crane', false),
+  (124, 'Leading Lines', false),
+  (124, 'Frame within a Frame', false),
+  (124, 'Rule of Thirds', true),
+  (124, 'Negative Space', false),
+  (124, 'Simetri', false),
+  (125, 'Lampu neon', false),
+  (125, 'Lampu pijar', false),
+  (125, 'Cahaya lilin', false),
+  (125, 'Cahaya alami (matahari)', true),
+  (125, 'Lampu flash kamera', false),
+  (126, 'Fill Light', false),
+  (126, 'Back Light', false),
+  (126, 'Key Light', true),
+  (126, 'Rim Light', false),
+  (126, 'Hair Light', false),
+  (127, 'Mikrofon shotgun', false),
+  (127, 'Mikrofon handheld', false),
+  (127, 'Mikrofon bawaan kamera', false),
+  (127, 'Mikrofon lavalier', true),
+  (127, 'Mikrofon boom', false),
+  (
+    128,
+    'Karena video tanpa audio tidak bisa diputar',
+    false
+  ),
+  (
+    128,
+    'Karena audio yang bagus lebih penting dari visual yang bagus',
+    false
+  ),
+  (
+    128,
+    'Karena audio yang jelas membantu penonton memahami pesan video',
+    true
+  ),
+  (
+    128,
+    'Karena audio yang bagus membuat video terlihat lebih profesional',
+    false
+  ),
+  (128, 'Karena semua jawaban benar', false),
+  (129, 'Menambahkan efek transisi', false),
+  (129, 'Mengimpor footage video dan audio', false),
+  (
+    129,
+    'Menyusun dan memotong klip video secara berurutan',
+    true
+  ),
+  (129, 'Memberikan koreksi warna pada video', false),
+  (129, 'Menambahkan teks dan grafis', false),
+  (130, 'Fade', false),
+  (130, 'Dissolve', false),
+  (130, 'Wipe', false),
+  (130, 'Cut', true),
+  (130, 'Zoom', false),
+  (131, 'Memilih musik latar yang menarik', false),
+  (
+    131,
+    'Membuat storyboard dan perencanaan video',
+    true
+  ),
+  (
+    131,
+    'Membeli peralatan videografi yang mahal',
+    false
+  ),
+  (
+    131,
+    'Langsung merekam video tanpa persiapan',
+    false
+  ),
+  (
+    131,
+    'Menggunakan efek transisi yang rumit',
+    false
+  ),
+  (132, 'Lebih dari 60 menit', false),
+  (132, 'Antara 30-60 menit', false),
+  (132, 'Antara 15-30 menit', false),
+  (
+    132,
+    'Kurang dari 10 menit dan fokus pada poin utama',
+    true
+  ),
+  (
+    132,
+    'Tidak ada batasan durasi, yang penting materinya lengkap',
+    false
+  ),
+  (133, 'Vimeo', false),
+  (133, 'Dailymotion', false),
+  (133, 'Facebook Video', false),
+  (133, 'Instagram Video', false),
+  (133, 'YouTube', true),
+  (134, 'AVI', false),
+  (134, 'MOV', false),
+  (134, 'WMV', false),
+  (134, 'MP4', true),
+  (134, 'FLV', false),
+  (135, 'Menghormati privasi siswa', false),
+  (135, 'Memastikan akurasi informasi', false),
+  (
+    135,
+    'Menggunakan musik dan gambar bebas royalti',
+    false
+  ),
+  (
+    135,
+    'Membuat video yang provokatif agar viral',
+    true
+  ),
+  (
+    135,
+    'Menghindari konten yang diskriminatif',
+    false
+  ),
+  (136, 'Key Light', false),
+  (136, 'Fill Light', true),
+  (136, 'Back Light', false),
+  (136, 'Hair Light', false),
+  (136, 'Rim Light', false);
+
+-- PLC
+INSERT INTO
+  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+VALUES
+  (
+    137,
+    'Komputer elektronik yang mudah digunakan',
+    false
+  ),
+  (
+    137,
+    'Komputer elektronik yang memiliki fungsi kendali untuk berbagai tipe dan tingkat kesulitan yang beraneka ragam',
+    false
+  ),
+  (
+    137,
+    'Komputer elektronik yang mudah digunakan (user friendly) yang memiliki fungsi kendali',
+    false
+  ),
+  (
+    137,
+    'Komputer elektronik yang mudah digunakan (user friendly) yang memiliki fungsi kendali untuk berbagai tipe dan tingkat kesulitan yang beraneka ragam',
+    false
+  ),
+  (
+    137,
+    'Komputer elektronik yang mudah digunakan (user friendly) yang memiliki fungsi kendali untuk berbagai tipe dan tingkat kesulitan yang beraneka ragam',
+    true
+  ),
+  (138, 'Seperangkat  Software', false),
+  (138, 'Seperangkat Computer', false),
+  (138, 'Software', false),
+  (138, 'Seperangkat Computer Software', true),
+  (138, 'Computer Software', false),
+  (
+    139,
+    'Input PLC :  Input PLC (Push Button, sensor, Limit Swith, dll) , b. Input sumber 220 Volt AC',
+    true
+  ),
+  (
+    139,
+    'Alamat Input : a. Alamat input PLC, b. Keterangan input tegangan 220 Volt AC',
+    false
+  ),
+  (
+    139,
+    'Output PLC : a. Output PLC, b. Output sumber PLC Volt 24 DC',
+    false
+  ),
+  (
+    139,
+    'Alamat Output : a. Alamat Output PLC, b. Keterangan Output tegangan 24 Volt DC',
+    false
+  ),
+  (139, 'Baterai PLC', false),
+  (140, 'Input  : 14 Buah , Output : 8 Buah', false),
+  (140, 'Input  : 12 Buah ,  Output : 8 Buah', true),
+  (140, 'Input  : 10 Buah ,  Output : 6 Buah', false),
+  (
+    140,
+    'Input  : 10 Buah ,  Output : 10 Buah',
+    false
+  ),
+  (140, 'Semua Jawaban Salah', false),
+  (141, 'Function Blok Diagram, Flowchat', false),
+  (
+    141,
+    'Input PLC :  Input PLC (Push Button, sensor, Limit Swith, dll) , b. Input sumber 220 Volt AC',
+    false
+  ),
+  (
+    141,
+    'Ladder Diagram, Kode Mnemonic, Function Blok Diagram, Flowchat',
+    true
+  ),
+  (141, 'Ladder Mnemonic, Function Blok', false),
+  (
+    141,
+    'Ladder Function Blok Diagram, Flowchat',
+    false
+  ),
+  (142, 'PB Start', false),
+  (142, 'PB Start 1 dan PB Stop 1', true),
+  (142, 'PB Start 1 dan 2', false),
+  (142, 'PB Start 1 dan PB Stop 1 dan 2', false),
+  (142, 'Semua jawaban salah', false),
+  (
+    143,
+    '• Setting File program kontrol harus sama dengan type PLC , • kabel USB yang menghubungkan laptop/CPU dengan PLC sudah terhubung dengan baik, • PLC sudah dalam keadaan ON (menyala), • Komputer dan PLC sudah Online caranya : Klik simbol   pada bar CX Programmer atau tekan Ctrl + W secara bersamaan pada keyboard.',
+    true
+  ),
+  (
+    143,
+    '• Kabel USB yang menghubungkan laptop/CPU dengan PLC sudah terhubung dengan baik , • PLC sudah dalam keadaan ON (menyala) , • Komputer dan PLC sudah Online caranya : Klik simbol   pada bar CX Programmer atau tekan Ctrl + W secara bersamaan pada keyboard',
+    false
+  ),
+  (
+    143,
+    '• PLC sudah dalam keadaan ON (menyala), • Komputer dan PLC sudah Online caranya : Klik simbol   pada bar CX Programmer atau tekan Ctrl + W secara bersamaan pada keyboard.',
+    false
+  ),
+  (
+    143,
+    '• Setting File program kontrol harus sama dengan type PLC, • Kabel USB yang menghubungkan laptop/CPU dengan PLC sudah terhubung dengan baik',
+    false
+  ),
+  (
+    143,
+    '• Setting File program kontrol harus sama dengan type PLC, • Kabel USB yang menghubungkan laptop/CPU dengan PLC sudah terhubung dengan baik,  • PLC sudah dalam keadaan ON (menyala)',
+    false
+  ),
+  (
+    144,
+    'Tampilan belum terhubung komunikasi PLC dan PC',
+    false
+  ),
+  (
+    144,
+    'Tampilan setelah terhubung komunikasi PLC',
+    false
+  ),
+  (
+    144,
+    'Tampilan setelah terhubung komunikasi PC',
+    false
+  ),
+  (
+    144,
+    'Tampilan setelah terhubung komunikasi PLC dan PC',
+    true
+  ),
+  (
+    144,
+    'Tampilan setelah terhubung komunikasi',
+    false
+  ),
+  (145, 'Transfer From PC', false),
+  (145, 'Transfer From PLC', false),
+  (145, 'Transfer From PC to PC', false),
+  (145, 'Transfer From PLC to PLC', false),
+  (145, 'Transfer From PC to PLC', true),
+  (146, 'Transfer From PLC', false),
+  (146, 'Transfer From PLC to PC', true),
+  (146, 'Transfer From  PC', false),
+  (146, 'Transfer From PC to Sofware', false),
+  (146, 'Transfer From Hardware PLC', false),
+  (147, 'TDR (delay Relay)', false),
+  (147, 'TDR (Time delay Relay)', true),
+  (147, 'TDR (Time deferensial Relay)', false),
+  (147, 'TDR (Time delly Relay)', false),
+  (147, 'TDR (Time dely Relay)', false),
+  (148, 'Counter Input dan Reset Input', true),
+  (148, 'Counter Output dan Reset Input', false),
+  (148, 'Counter Input dan Reset Output', false),
+  (148, 'Counter Output dan Reset Out Put', false),
+  (148, 'Counter Input', false),
+  (
+    149,
+    'Kontak 2 NO (Normally Open) dan NC (Normally Clouse)',
+    false
+  ),
+  (149, 'Kontak 2 NC (Normally Clouse)', false),
+  (149, 'Kontak NC (Normally Clouse)', false),
+  (149, 'Kontak NO (Normally Open)', false),
+  (
+    149,
+    'Kontak NO (Normally Open) dan NC (Normally Clouse)',
+    true
+  ),
+  (150, 'Relay 1 sebagai Relay Bantu', false),
+  (150, 'Relay 2 sebagai Relay Bantu', false),
+  (150, 'Relay 3 sebagai Relay Bantu', false),
+  (150, 'Relay Dalam sebagai Relay Bantu', true),
+  (150, 'Relay Dalam sebagai Relay Utama', false),
+  (
+    151,
+    'Keduanya mempunyai cara kerja tidak sama',
+    false
+  ),
+  (151, 'Mempunyai cara kerja hampir sama', false),
+  (151, 'Keduanya mempunyai cara khusus', false),
+  (151, 'Kerjanya hampir sama', false),
+  (
+    151,
+    'Keduanya mempunyai cara kerja hampir sama',
+    true
+  ),
+  (
+    152,
+    'DIFU Pada Saat Masukan (ON) maka kontak NO terhubung sesaat dan Kontak NC terputus sesaat',
+    false
+  ),
+  (
+    152,
+    'DIFD Pada saat masukan (ON) maka kontak NO belum terhubung sesaat dan  kontak NC nya belum terputus sesaat, baru pada saat masukan (OFF) maka kontak NO terhubung sesaat dan kontak NC terputus sesaat',
+    false
+  ),
+  (
+    152,
+    'DIFU Pada Saat Masukan (ON) maka kontak NO terhubung sesaat dan Kontak NC',
+    false
+  ),
+  (
+    152,
+    'DIFD Pada saat masukan (ON) maka kontak NO belum terhubung sesaat dan  kontak NC nya belum terputus sesaat',
+    false
+  ),
+  (
+    152,
+    'DIFU Pada Saat Masukan (ON) maka kontak NO terhubung sesaat dan Kontak NC terputus sesaat dan DIFD Pada saat masukan (ON) maka kontak NO belum terhubung sesaat dan  kontak NC nya belum terputus sesaat, baru pada saat masukan (OFF) maka kontak NO terhubung sesaat dan kontak NC terputus sesaat',
+    true
+  ),
+  (153, 'Output DIFU', true),
+  (153, 'Output DIFU dan DIFD', false),
+  (153, 'Output DIFD', false),
+  (153, 'Output DIFD dan DIF UP', false),
+  (153, 'Output DIFU dan DIF DOWN', false),
+  (
+    154,
+    'Adalah salah satu fasilitas yang dapat mengontrol sebuah keluaran Input',
+    false
+  ),
+  (
+    154,
+    'Adalah salah satu fasilitas yang dapat mengontrol sebuah keluaran Input, Output',
+    false
+  ),
+  (
+    154,
+    'Adalah salah satu fasilitas yang mengakses Output',
+    false
+  ),
+  (154, 'Mengontrol sebuah keluaran DIFU', false),
+  (
+    154,
+    'Adalah salah satu fasilitas yang dapat mengontrol sebuah keluaran Output',
+    true
+  ),
+  (155, 'Dalam satuan  Minute (menit).', false),
+  (155, 'Dalam satuan Secon(detik)', false),
+  (155, 'Dalam satuan Jam', false),
+  (
+    155,
+    'Dalam satuan Secon(detik) atau Minute (menit)',
+    true
+  ),
+  (155, 'Dalam hitungan Minute (menit)', false),
+  (
+    156,
+    '• Buatlah File simpan dengan nama Clock Puls, • Selesai membuat program kontrol diatas, simpanlah dengan memiih save,  • Transfer ke PLC dan operasikan, • Amati Outputnya dan coba jelaskan secara singkat',
+    true
+  ),
+  (
+    156,
+    '• Selesai membuat program kontrol diatas, simpanlah dengan memiih save, • Transfer ke PLC dan operasikan, • Amati Outputnya dan coba jelaskan secara singkat',
+    false
+  ),
+  (
+    156,
+    'Transfer ke PLC dan operasikan  dan Amati Outputnya dan coba jelaskan secara singkat.',
+    false
+  ),
+  (
+    156,
+    'Transfer ke PLC dan Amati Outputnya dan coba jelaskan secara singkat',
+    false
+  ),
+  (156, 'Semua Jawaban Salah', false);
+
+-- FOTOGRAFI
+INSERT INTO
+  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+VALUES
+  (157, 'Mulai proses foto', false),
+  (157, 'Mengobrol sambil minum kopi', false),
+  (157, 'Saat pengeditan foto', false),
+  (157, 'Proses membuat konsep foto', true),
+  (157, 'Membersihkan lensa kamera', false),
+  (158, 'Membuat fotografer lebih terkenal', false),
+  (
+    158,
+    'Membuat rasa produk yang difoto lebih enak',
+    false
+  ),
+  (
+    158,
+    'Membuat produk yang difoto memiliki nilai jual lebih',
+    true
+  ),
+  (
+    158,
+    'Membuat fotografer jadi lebih pintar memasak',
+    false
+  ),
+  (158, 'Semua jawaban benar', false),
+  (159, 'Merubah settingan ISO', true),
+  (159, 'Membeli kamera baru', false),
+  (159, 'Membayar fotografer profesional', false),
+  (159, 'Merubah settingan shutter speed', false),
+  (
+    159,
+    'Menyuruh teman temannya foto di luar kelas',
+    false
+  ),
+  (160, 'Bright Mood Concept', false),
+  (160, 'Havana Havana Concept', true),
+  (160, 'Levitation Concept', false),
+  (160, 'Flatlay Concept', false),
+  (160, 'Semua jawaban benar', false),
+  (161, 'Carbonara Mashed Potato', true),
+  (161, 'Golden Triangle', false),
+  (161, 'Rule of Third', false),
+  (161, 'Fibonacci Spiral', false),
+  (161, 'Phi Grid', false),
+  (162, 'Depan kanan produk', false),
+  (162, 'Samping kiri produk', false),
+  (162, 'Atas produk', false),
+  (162, 'Depan kiri produk', false),
+  (162, 'Belakang kiri produk', true),
+  (163, 'Pra produksi', false),
+  (163, 'Post Pone', false),
+  (163, 'Reimbush', false),
+  (163, 'Post produksi', true),
+  (163, 'Produksi', false),
+  (164, 'Konsep yang jelas', false),
+  (164, 'Menggunakan flash internal di kamera', true),
+  (164, 'Menyiapkan properti', false),
+  (164, 'Membersihkan lensa', false),
+  (164, 'Menyiapkan alas foto', false),
+  (165, 'Bukaan pada lensa', true),
+  (165, 'Suhu kamera', false),
+  (165, 'Kecepatan', false),
+  (165, 'Tingkat keterangan pada hasil foto', false),
+  (165, 'Hati seseorang', false),
+  (166, 'Shutter Speed', true),
+  (166, 'Apperture', false),
+  (166, 'Posisi', false),
+  (166, 'ISO', false),
+  (166, 'Flash', false),
+  (167, 'Good looking', false),
+  (167, 'Kamera bagus', false),
+  (167, 'Bersikap cool', false),
+  (167, 'Komunikasi yang baik', true),
+  (167, 'Properti yang banyak', false),
+  (168, 'f 2.8', true),
+  (168, 'f 7', false),
+  (168, 'f 20', false),
+  (168, 'f 9', false),
+  (168, 'Tidak ada jawaban yang benar', false),
+  (169, 'Adobe Premiere', false),
+  (169, 'Davinci Code', false),
+  (169, 'Capcut PC', false),
+  (169, 'Adobe Photoshop', true),
+  (169, 'Corel Draw', false),
+  (170, 'Memberikan dimensi pada produk', false),
+  (170, 'Terlihat professional', true),
+  (170, 'Memberikan cahaya yang diinginkan', false),
+  (170, 'Mengatur sumber cahaya', false),
+  (
+    170,
+    'Membantu ketika foto di dalam ruangan yang minim cahaya',
+    false
+  ),
+  (171, 'Pra Produksi', false),
+  (171, 'Post Produksi', false),
+  (171, 'Pre Eliminasi', true),
+  (171, 'Produksi', false),
+  (171, 'Foto Taking', false),
+  (172, 'Lensa', false),
+  (172, 'Lighting', false),
+  (172, 'ISO', false),
+  (172, 'Apperture', true),
+  (172, 'Shutter Speed', false),
+  (173, 'Komunikasi', false),
+  (173, 'Shutter Speed', true),
+  (173, 'Objek', false),
+  (173, 'ISO', false),
+  (173, 'Apperture', false),
+  (174, 'Contrast', false),
+  (174, 'Saturation', true),
+  (174, 'Brightness', false),
+  (174, 'Crop', false),
+  (174, 'Pen Tool', false),
+  (175, 'Tingkat kecerahan', true),
+  (175, 'Tingkat kecepatan', false),
+  (175, 'Tingkat detail', false),
+  (175, 'Tingkat blur', false),
+  (175, 'Tingkat kepercayaan diri', false),
+  (176, 'Menyiapkan properti', false),
+  (176, 'Setting kamera', false),
+  (176, 'Memilih alas foto', false),
+  (176, 'Menentukan harga', true),
+  (176, 'Membersihkan lensa', false);
+
+-- monev MTU
+INSERT INTO
+  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+VALUES
+  (
+    9,
+    177,
+    'Bagaimana pendapat Saudara tentang kesesuaian jenis pelayanan dengan penyelenggaraannya.........',
+    'skala_likert'
+  ),
+  (
+    9,
+    178,
+    'Bagaimana pendapat Saudara tentang kedisiplinan  penyelenggara dalam memberikan pelayanan.........',
+    'skala_likert'
+  ),
+  (
+    9,
+    179,
+    'Bagaimana pendapat Saudara tentang kesopanan dan keramahan petugas penyelenggara dalam memberikan pelayanan..........',
+    'skala_likert'
+  ),
+  (
+    9,
+    180,
+    'Bagaimana pendapat Saudara tentang petugas pendamping kegiatan dalam memberikan pelayanan........',
+    'skala_likert'
+  ),
+  (
+    9,
+    181,
+    'Bagaimana pendapat Saudara tentang ketersediaan konsumsi dalam kegiatan pelatihan vokasi melalui Mobile Training Unit (MTU).......',
+    'skala_likert'
+  ),
+  (9, 182, 'Pesan Dan Kesan :', 'teks_bebas'),
+  (
+    9,
+    183,
+    'Bagaimana pendapat Saudara tentang waktu yang disediakan dalam penyelenggaraan pelatihan.',
+    'skala_likert'
+  ),
+  (
+    9,
+    184,
+    'Bagaimana pendapat Saudara apakah pelatihan ini bermanfaat bagi anda.',
+    'skala_likert'
+  ),
+  (
+    9,
+    185,
+    'Bagaimana pendapat Saudara tentang ketersediaan bahan-bahan praktek dalam pelaksanaan pelatihan',
+    'skala_likert'
+  ),
+  (
+    9,
+    186,
+    'Bagaimana pendapat Saudara tentang ketersediaan mesin/peralatan untuk pelatihan.',
+    'skala_likert'
+  ),
+  (
+    9,
+    187,
+    'Bagaimana pendapat Saudara tentang ketersediaan kondisi mesin/peralatan pelatihan.',
+    'skala_likert'
+  ),
+  (
+    9,
+    188,
+    'Bagaimana pendapat Saudara tentang ketersediaan materi pelatihan',
+    'skala_likert'
+  ),
+  (
+    9,
+    189,
+    'Berapa persen materi yang anda serap',
+    'skala_likert'
+  ),
+  (
+    9,
+    190,
+    'Bagaimana menurut anda apakah perlu penambahan materi pelatihan',
+    'skala_likert'
+  ),
+  (
+    9,
+    191,
+    'Bagaimana menurut anda apakah perlu pengurangan materi pelatihan',
+    'skala_likert'
+  ),
+  (
+    9,
+    192,
+    'Apakah materi-materi pelatihan sangat mendukung kompetensi anda',
+    'skala_likert'
+  ),
+  (9, 193, 'Pesan Dan Kesan :', 'teks_bebas'),
+  (
+    9,
+    194,
+    'Bagaimana pendapat saudara tentang penguasaan materi/ kompetensi pada proses pembelajaran',
+    'skala_likert'
+  ),
+  (
+    9,
+    195,
+    'Bagaimana pendapat saudara tentang kedisiplinan/ketepatan waktu Instruktur pada saat pelatihan',
+    'skala_likert'
+  ),
+  (
+    9,
+    196,
+    'Bagaimana pendapat saudara tentang metode mengajar Instruktur',
+    'skala_likert'
+  ),
+  (
+    9,
+    197,
+    'bagaimana pendapat saudara tentang sikap dan prilaku instruktur pada saat memberikan pengajaran',
+    'skala_likert'
+  ),
+  (
+    9,
+    198,
+    'bagaimana pendapat saudara tentang kerapian dalam berpakaian instruktur',
+    'skala_likert'
+  ),
+  (
+    9,
+    199,
+    'Bagaimana pendapat saudara tentang penggunaan bahasa yang digunakan Instruktur',
+    'skala_likert'
+  ),
+  (
+    9,
+    200,
+    'bagaimana pendapat saudara tentang instruktur dalam memberikan motivasi pada peserta pelatihan',
+    'skala_likert'
+  ),
+  (
+    9,
+    201,
+    'Bagaimana pendapat saudara cara instruktur menjawab pertanyaan dari peserta pelatihan',
+    'skala_likert'
+  ),
+  (9, 202, 'Intruktur terfavorit', 'teks_bebas'),
+  (9, 203, 'Pesan dan Kesan', 'teks_bebas');
+
+-- ===================================================================
+-- LANGKAH 1 (SURVEI MTU): ISI OPSI JAWABAN MASTER
+-- ===================================================================
+INSERT INTO
+  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+VALUES
+  -- Set Opsi 1: Skala "Memuaskan" (Master Pertanyaan ID: 177)
+  (177, 'Tidak Memuaskan', 0),
+  (177, 'Kurang Memuaskan', 0),
+  (177, 'Memuaskan', 0),
+  (177, 'Sangat Memuaskan', 0),
+  -- Set Opsi 2: Skala "Bermanfaat" (Master Pertanyaan ID: 184)
+  (184, 'Tidak Bermanfaat', 0),
+  (184, 'Kurang Bermanfaat', 0),
+  (184, 'Bermanfaat', 0),
+  (184, 'Sangat Bermanfaat', 0),
+  -- Set Opsi 3: Skala "Persentase" (Master Pertanyaan ID: 189)
+  (189, '25%', 0),
+  (189, '50%', 0),
+  (189, '75%', 0),
+  (189, '100%', 0),
+  -- Set Opsi 4: Skala "Perlu" (Master Pertanyaan ID: 190)
+  (190, 'Tidak Perlu', 0),
+  (190, 'Kurang Perlu', 0),
+  (190, 'Perlu', 0),
+  (190, 'Sangat Perlu', 0),
+  -- Set Opsi 5: Skala "Mendukung" (Master Pertanyaan ID: 192)
+  (192, 'Tidak Mendukung', 0),
+  (192, 'Kurang Mendukung', 0),
+  (192, 'Mendukung', 0),
+  (192, 'Sangat Mendukung', 0),
+  -- Set Opsi 6: Skala "Disiplin" (Master Pertanyaan ID: 195)
+  (195, 'Tidak Disiplin', 0),
+  (195, 'Kurang Disiplin', 0),
+  (195, 'Disiplin', 0),
+  (195, 'Sangat Disiplin', 0),
+  -- Set Opsi 7: Skala "Rapi" (Master Pertanyaan ID: 198)
+  (198, 'Tidak Rapi', 0),
+  (198, 'Kurang Rapi', 0),
+  (198, 'Rapi', 0),
+  (198, 'Sangat Rapi', 0),
+  -- Set Opsi 8: Skala "Baik" (Master Pertanyaan ID: 199)
+  (199, 'Tidak Baik', 0),
+  (199, 'Kurang Baik', 0),
+  (199, 'Baik', 0),
+  (199, 'Sangat Baik', 0);
+
+-- ===================================================================
+-- LANGKAH 2 (SURVEI MTU): ISI TABEL PIVOT pivot_jawaban
+-- ===================================================================
+INSERT INTO
+  pivot_jawaban (pertanyaan_id, template_pertanyaan_id)
+VALUES
+  -- Pertanyaan yang menggunakan opsi dari master ID 177 (Skala Memuaskan)
+  (178, 177),
+  (179, 177),
+  (180, 177),
+  (181, 177),
+  (183, 177),
+  (185, 177),
+  (186, 177),
+  (187, 177),
+  (188, 177),
+  (194, 177),
+  (196, 177),
+  (197, 177),
+  (200, 177),
+  (201, 177),
+  -- Pertanyaan yang menggunakan opsi dari master ID 190 (Skala Perlu)
+  (191, 190);
