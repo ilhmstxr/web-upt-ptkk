@@ -10,7 +10,7 @@ class instruktur extends Model
     /** @use HasFactory<\Database\Factories\InstrukturFactory> */
     use HasFactory;
 
-    protected $table = 'instrukturs';
+    protected $table = 'instruktur';
 
     protected $fillable = [
         'bidang_id',

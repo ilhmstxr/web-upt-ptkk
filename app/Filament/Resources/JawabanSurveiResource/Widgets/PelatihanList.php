@@ -9,10 +9,10 @@ class PelatihanList extends Widget
 {
     protected static string $view = 'filament.resources.jawaban-survei-resource.widgets.pelatihan-list';
 
-    public $pelatihans;
+    public $pelatihan;
 
     public function mount()
     {
-        $this->pelatihans = Pelatihan::all();
+        $this->pelatihan = Pelatihan::all();
     }
 }

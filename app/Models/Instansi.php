@@ -11,7 +11,7 @@ class Instansi extends Model
 {
     use HasFactory;
 
-    protected $table = 'instansis';
+    protected $table = 'instansi';
 
     protected $fillable = [
         'asal_instansi',
@@ -26,7 +26,7 @@ class Instansi extends Model
         return $this->belongsTo(CabangDinas::class, 'cabangDinas_id');
     }
 
-    public function pesertas(): HasMany
+    public function peserta(): HasMany
     {
         return $this->hasMany(Peserta::class, 'instansi_id');
     }

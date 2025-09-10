@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('percobaans', function (Blueprint $table) {
+        Schema::create('percobaan', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
-            $table->foreignId('pesertaSurvei_id')->constrained('peserta_surveis')->cascadeOnDelete();
+            // $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
+            $table->foreignId('pesertaSurvei_id')->constrained('peserta_survei')->cascadeOnDelete();
             $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
             $table->timestamp('waktu_mulai');
             $table->timestamp('waktu_selesai')->nullable();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('percobaans');
+        Schema::dropIfExists('percobaan');
     }
 };

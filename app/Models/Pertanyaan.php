@@ -9,7 +9,7 @@ class Pertanyaan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pertanyaans';
+    protected $table = 'pertanyaan';
 
     protected $fillable = [
         'tes_id',
@@ -28,7 +28,7 @@ class Pertanyaan extends Model
     // Relasi ke Opsi Jawaban (plural karena hasMany)
     public function opsiJawabans()
     {
-        return $this->hasMany(OpsiJawabans::class, 'pertanyaan_id');
+        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id');
     }
 
     // Relasi ke Jawaban User

@@ -52,10 +52,10 @@ CREATE TABLE `asramas` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bidangs`
+-- Table structure for table `bidang`
 --
 
-CREATE TABLE `bidangs` (
+CREATE TABLE `bidang` (
   `id` bigint UNSIGNED NOT NULL,
   `nama` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `deskripsi` text COLLATE utf8mb4_unicode_ci,
@@ -64,10 +64,10 @@ CREATE TABLE `bidangs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `bidangs`
+-- Dumping data for table `bidang`
 --
 
-INSERT INTO `bidangs` (`id`, `nama`, `deskripsi`, `created_at`, `updated_at`) VALUES
+INSERT INTO `bidang` (`id`, `nama`, `deskripsi`, `created_at`, `updated_at`) VALUES
 (1, 'Tata Boga', 'Kompetensi Tata Boga', '2025-09-03 03:49:41', '2025-09-03 03:49:41'),
 (2, 'Tata Busana', 'Kompetensi Tata Busana', '2025-09-03 03:49:41', '2025-09-03 03:49:41'),
 (3, 'Teknik Pendingin', 'Kompetensi Refrigeration', '2025-09-03 03:49:41', '2025-09-03 03:49:41');
@@ -103,10 +103,10 @@ CREATE TABLE `dokumentasis` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `instansis`
+-- Table structure for table `instansi`
 --
 
-CREATE TABLE `instansis` (
+CREATE TABLE `instansi` (
   `id` bigint UNSIGNED NOT NULL,
   `nama` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alamat` text COLLATE utf8mb4_unicode_ci,
@@ -118,10 +118,10 @@ CREATE TABLE `instansis` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `instrukturs`
+-- Table structure for table `instruktur`
 --
 
-CREATE TABLE `instrukturs` (
+CREATE TABLE `instruktur` (
   `id` bigint UNSIGNED NOT NULL,
   `bidang_id` bigint UNSIGNED DEFAULT NULL,
   `pelatihan_id` bigint UNSIGNED DEFAULT NULL,
@@ -146,10 +146,10 @@ CREATE TABLE `instrukturs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `jawaban_users`
+-- Table structure for table `jawaban_user`
 --
 
-CREATE TABLE `jawaban_users` (
+CREATE TABLE `jawaban_user` (
   `id` bigint UNSIGNED NOT NULL,
   `peserta_id` bigint UNSIGNED NOT NULL,
   `pertanyaan_id` bigint UNSIGNED NOT NULL,
@@ -162,10 +162,10 @@ CREATE TABLE `jawaban_users` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `kamars`
+-- Table structure for table `kamar`
 --
 
-CREATE TABLE `kamars` (
+CREATE TABLE `kamar` (
   `id` bigint UNSIGNED NOT NULL,
   `asrama_id` bigint UNSIGNED NOT NULL,
   `nama_kamar` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -190,10 +190,10 @@ CREATE TABLE `kamar_peserta` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `lampirans`
+-- Table structure for table `lampiran`
 --
 
-CREATE TABLE `lampirans` (
+CREATE TABLE `lampiran` (
   `id` bigint UNSIGNED NOT NULL,
   `pendaftaran_id` bigint UNSIGNED NOT NULL,
   `jenis_file` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -219,10 +219,10 @@ CREATE TABLE `login_activity` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `opsi_jawabans`
+-- Table structure for table `opsi_jawaban`
 --
 
-CREATE TABLE `opsi_jawabans` (
+CREATE TABLE `opsi_jawaban` (
   `id` bigint UNSIGNED NOT NULL,
   `pertanyaan_id` bigint UNSIGNED NOT NULL,
   `teks_opsi` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -246,10 +246,10 @@ CREATE TABLE `password_resets` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pelatihans`
+-- Table structure for table `pelatihan`
 --
 
-CREATE TABLE `pelatihans` (
+CREATE TABLE `pelatihan` (
   `id` bigint UNSIGNED NOT NULL,
   `nama` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tipe` enum('reguler','akselerasi','mtu') COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -262,10 +262,10 @@ CREATE TABLE `pelatihans` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `pelatihans`
+-- Dumping data for table `pelatihan`
 --
 
-INSERT INTO `pelatihans` (`id`, `nama`, `tipe`, `ada_asrama`, `tanggal_mulai`, `tanggal_selesai`, `deskripsi`, `created_at`, `updated_at`) VALUES
+INSERT INTO `pelatihan` (`id`, `nama`, `tipe`, `ada_asrama`, `tanggal_mulai`, `tanggal_selesai`, `deskripsi`, `created_at`, `updated_at`) VALUES
 (1, 'Pelatihan Reguler Contoh', 'reguler', 1, NULL, NULL, NULL, '2025-09-03 03:49:41', '2025-09-03 03:49:41'),
 (2, 'Pelatihan Akselerasi Contoh', 'akselerasi', 1, NULL, NULL, NULL, '2025-09-03 03:49:41', '2025-09-03 03:49:41'),
 (3, 'Pelatihan MTU Contoh (tanpa asrama)', 'mtu', 0, NULL, NULL, NULL, '2025-09-03 03:49:41', '2025-09-03 03:49:41');
@@ -273,10 +273,10 @@ INSERT INTO `pelatihans` (`id`, `nama`, `tipe`, `ada_asrama`, `tanggal_mulai`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `percobaans`
+-- Table structure for table `percobaan`
 --
 
-CREATE TABLE `percobaans` (
+CREATE TABLE `percobaan` (
   `id` bigint UNSIGNED NOT NULL,
   `peserta_id` bigint UNSIGNED NOT NULL,
   `tes_id` bigint UNSIGNED NOT NULL,
@@ -292,10 +292,10 @@ CREATE TABLE `percobaans` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pertanyaans`
+-- Table structure for table `pertanyaan`
 --
 
-CREATE TABLE `pertanyaans` (
+CREATE TABLE `pertanyaan` (
   `id` bigint UNSIGNED NOT NULL,
   `tes_id` bigint UNSIGNED NOT NULL,
   `pelatihan_id` bigint UNSIGNED NOT NULL,
@@ -308,10 +308,10 @@ CREATE TABLE `pertanyaans` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pesertas`
+-- Table structure for table `peserta`
 --
 
-CREATE TABLE `pesertas` (
+CREATE TABLE `peserta` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
   `pelatihan_id` bigint UNSIGNED NOT NULL,
@@ -426,9 +426,9 @@ ALTER TABLE `asramas`
   ADD KEY `fk_asrama_instruktur` (`instruktur_id`);
 
 --
--- Indexes for table `bidangs`
+-- Indexes for table `bidang`
 --
-ALTER TABLE `bidangs`
+ALTER TABLE `bidang`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -445,35 +445,35 @@ ALTER TABLE `dokumentasis`
   ADD KEY `fk_dokumentasis_pelatihan` (`pelatihan_id`);
 
 --
--- Indexes for table `instansis`
+-- Indexes for table `instansi`
 --
-ALTER TABLE `instansis`
+ALTER TABLE `instansi`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_instansi_cabang` (`cabang_dinas_id`);
 
 --
--- Indexes for table `instrukturs`
+-- Indexes for table `instruktur`
 --
-ALTER TABLE `instrukturs`
+ALTER TABLE `instruktur`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `instrukturs_bidang_idx` (`bidang_id`),
-  ADD KEY `instrukturs_pelatihan_idx` (`pelatihan_id`);
+  ADD KEY `instruktur_bidang_idx` (`bidang_id`),
+  ADD KEY `instruktur_pelatihan_idx` (`pelatihan_id`);
 
 --
--- Indexes for table `jawaban_users`
+-- Indexes for table `jawaban_user`
 --
-ALTER TABLE `jawaban_users`
+ALTER TABLE `jawaban_user`
   ADD PRIMARY KEY (`id`),
   ADD KEY `jawaban_pendaftaran_idx` (`pertanyaan_id`),
   ADD KEY `fk_jawaban_opsi` (`opsi_jawaban_id`),
   ADD KEY `fk_jawaban_peserta` (`peserta_id`);
 
 --
--- Indexes for table `kamars`
+-- Indexes for table `kamar`
 --
-ALTER TABLE `kamars`
+ALTER TABLE `kamar`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `kamars_asrama_idx` (`asrama_id`);
+  ADD KEY `kamar_asrama_idx` (`asrama_id`);
 
 --
 -- Indexes for table `kamar_peserta`
@@ -484,12 +484,12 @@ ALTER TABLE `kamar_peserta`
   ADD KEY `fk_kamar_peserta_pendaftaran` (`pendaftaran_id`);
 
 --
--- Indexes for table `lampirans`
+-- Indexes for table `lampiran`
 --
-ALTER TABLE `lampirans`
+ALTER TABLE `lampiran`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `lampirans_pendaftaran_idx` (`pendaftaran_id`,`jenis_file`),
-  ADD KEY `fk_lampirans_user` (`uploaded_by`);
+  ADD KEY `lampiran_pendaftaran_idx` (`pendaftaran_id`,`jenis_file`),
+  ADD KEY `fk_lampiran_user` (`uploaded_by`);
 
 --
 -- Indexes for table `login_activity`
@@ -499,9 +499,9 @@ ALTER TABLE `login_activity`
   ADD KEY `login_activity_user_idx` (`user_id`);
 
 --
--- Indexes for table `opsi_jawabans`
+-- Indexes for table `opsi_jawaban`
 --
-ALTER TABLE `opsi_jawabans`
+ALTER TABLE `opsi_jawaban`
   ADD PRIMARY KEY (`id`),
   ADD KEY `opsi_pertanyaan_idx` (`pertanyaan_id`,`benar`);
 
@@ -512,33 +512,33 @@ ALTER TABLE `password_resets`
   ADD PRIMARY KEY (`email`);
 
 --
--- Indexes for table `pelatihans`
+-- Indexes for table `pelatihan`
 --
-ALTER TABLE `pelatihans`
+ALTER TABLE `pelatihan`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `pelatihans_tipe_idx` (`tipe`);
+  ADD KEY `pelatihan_tipe_idx` (`tipe`);
 
 --
--- Indexes for table `percobaans`
+-- Indexes for table `percobaan`
 --
-ALTER TABLE `percobaans`
+ALTER TABLE `percobaan`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_percobaans_pelatihan` (`pelatihan_id`),
+  ADD KEY `fk_percobaan_pelatihan` (`pelatihan_id`),
   ADD KEY `fk_percobaan_peserta` (`peserta_id`),
   ADD KEY `fk_percobaan_tes` (`tes_id`);
 
 --
--- Indexes for table `pertanyaans`
+-- Indexes for table `pertanyaan`
 --
-ALTER TABLE `pertanyaans`
+ALTER TABLE `pertanyaan`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `pertanyaans_pelatihan_tipe_idx` (`pelatihan_id`),
+  ADD KEY `pertanyaan_pelatihan_tipe_idx` (`pelatihan_id`),
   ADD KEY `fk_pertanyaan_tes` (`tes_id`);
 
 --
--- Indexes for table `pesertas`
+-- Indexes for table `peserta`
 --
-ALTER TABLE `pesertas`
+ALTER TABLE `peserta`
   ADD PRIMARY KEY (`id`),
   ADD KEY `peserta_user_idx` (`user_id`),
   ADD KEY `fk_peserta_pelatihan` (`pelatihan_id`),
@@ -600,9 +600,9 @@ ALTER TABLE `asramas`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `bidangs`
+-- AUTO_INCREMENT for table `bidang`
 --
-ALTER TABLE `bidangs`
+ALTER TABLE `bidang`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
@@ -618,27 +618,27 @@ ALTER TABLE `dokumentasis`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `instansis`
+-- AUTO_INCREMENT for table `instansi`
 --
-ALTER TABLE `instansis`
+ALTER TABLE `instansi`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `instrukturs`
+-- AUTO_INCREMENT for table `instruktur`
 --
-ALTER TABLE `instrukturs`
+ALTER TABLE `instruktur`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `jawaban_users`
+-- AUTO_INCREMENT for table `jawaban_user`
 --
-ALTER TABLE `jawaban_users`
+ALTER TABLE `jawaban_user`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `kamars`
+-- AUTO_INCREMENT for table `kamar`
 --
-ALTER TABLE `kamars`
+ALTER TABLE `kamar`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -648,9 +648,9 @@ ALTER TABLE `kamar_peserta`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `lampirans`
+-- AUTO_INCREMENT for table `lampiran`
 --
-ALTER TABLE `lampirans`
+ALTER TABLE `lampiran`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -660,33 +660,33 @@ ALTER TABLE `login_activity`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `opsi_jawabans`
+-- AUTO_INCREMENT for table `opsi_jawaban`
 --
-ALTER TABLE `opsi_jawabans`
+ALTER TABLE `opsi_jawaban`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `pelatihans`
+-- AUTO_INCREMENT for table `pelatihan`
 --
-ALTER TABLE `pelatihans`
+ALTER TABLE `pelatihan`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `percobaans`
+-- AUTO_INCREMENT for table `percobaan`
 --
-ALTER TABLE `percobaans`
+ALTER TABLE `percobaan`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `pertanyaans`
+-- AUTO_INCREMENT for table `pertanyaan`
 --
-ALTER TABLE `pertanyaans`
+ALTER TABLE `pertanyaan`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `pesertas`
+-- AUTO_INCREMENT for table `peserta`
 --
-ALTER TABLE `pesertas`
+ALTER TABLE `peserta`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -728,54 +728,54 @@ ALTER TABLE `alumnis`
 --
 ALTER TABLE `asramas`
   ADD CONSTRAINT `fk_asrama_cabang` FOREIGN KEY (`cabang_dinas_id`) REFERENCES `cabang_dinas` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_asrama_instruktur` FOREIGN KEY (`instruktur_id`) REFERENCES `instrukturs` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_asrama_instruktur` FOREIGN KEY (`instruktur_id`) REFERENCES `instruktur` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `dokumentasis`
 --
 ALTER TABLE `dokumentasis`
-  ADD CONSTRAINT `fk_dokumentasis_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_dokumentasis_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `instansis`
+-- Constraints for table `instansi`
 --
-ALTER TABLE `instansis`
+ALTER TABLE `instansi`
   ADD CONSTRAINT `fk_instansi_cabang` FOREIGN KEY (`cabang_dinas_id`) REFERENCES `cabang_dinas` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `instrukturs`
+-- Constraints for table `instruktur`
 --
-ALTER TABLE `instrukturs`
-  ADD CONSTRAINT `fk_instrukturs_bidang` FOREIGN KEY (`bidang_id`) REFERENCES `bidangs` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_instrukturs_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihans` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `instruktur`
+  ADD CONSTRAINT `fk_instruktur_bidang` FOREIGN KEY (`bidang_id`) REFERENCES `bidang` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_instruktur_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihan` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `jawaban_users`
+-- Constraints for table `jawaban_user`
 --
-ALTER TABLE `jawaban_users`
-  ADD CONSTRAINT `fk_jawaban_opsi` FOREIGN KEY (`opsi_jawaban_id`) REFERENCES `opsi_jawabans` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_jawaban_pertanyaan` FOREIGN KEY (`pertanyaan_id`) REFERENCES `pertanyaans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_jawaban_peserta` FOREIGN KEY (`peserta_id`) REFERENCES `pesertas` (`id`) ON DELETE CASCADE;
+ALTER TABLE `jawaban_user`
+  ADD CONSTRAINT `fk_jawaban_opsi` FOREIGN KEY (`opsi_jawaban_id`) REFERENCES `opsi_jawaban` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_jawaban_pertanyaan` FOREIGN KEY (`pertanyaan_id`) REFERENCES `pertanyaan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_jawaban_peserta` FOREIGN KEY (`peserta_id`) REFERENCES `peserta` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `kamars`
+-- Constraints for table `kamar`
 --
-ALTER TABLE `kamars`
-  ADD CONSTRAINT `fk_kamars_asrama` FOREIGN KEY (`asrama_id`) REFERENCES `asramas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `kamar`
+  ADD CONSTRAINT `fk_kamar_asrama` FOREIGN KEY (`asrama_id`) REFERENCES `asramas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `kamar_peserta`
 --
 ALTER TABLE `kamar_peserta`
-  ADD CONSTRAINT `fk_kamar_peserta_kamar` FOREIGN KEY (`kamar_id`) REFERENCES `kamars` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_kamar_peserta_kamar` FOREIGN KEY (`kamar_id`) REFERENCES `kamar` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_kamar_peserta_pendaftaran` FOREIGN KEY (`pendaftaran_id`) REFERENCES `pendaftarans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `lampirans`
+-- Constraints for table `lampiran`
 --
-ALTER TABLE `lampirans`
-  ADD CONSTRAINT `fk_lampirans_pendaftaran` FOREIGN KEY (`pendaftaran_id`) REFERENCES `pendaftarans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_lampirans_user` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `lampiran`
+  ADD CONSTRAINT `fk_lampiran_pendaftaran` FOREIGN KEY (`pendaftaran_id`) REFERENCES `pendaftarans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_lampiran_user` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `login_activity`
@@ -784,34 +784,34 @@ ALTER TABLE `login_activity`
   ADD CONSTRAINT `fk_loginactivity_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `opsi_jawabans`
+-- Constraints for table `opsi_jawaban`
 --
-ALTER TABLE `opsi_jawabans`
-  ADD CONSTRAINT `fk_opsi_pertanyaan` FOREIGN KEY (`pertanyaan_id`) REFERENCES `pertanyaans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `opsi_jawaban`
+  ADD CONSTRAINT `fk_opsi_pertanyaan` FOREIGN KEY (`pertanyaan_id`) REFERENCES `pertanyaan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `percobaans`
+-- Constraints for table `percobaan`
 --
-ALTER TABLE `percobaans`
-  ADD CONSTRAINT `fk_percobaan_peserta` FOREIGN KEY (`peserta_id`) REFERENCES `pesertas` (`id`) ON DELETE CASCADE,
+ALTER TABLE `percobaan`
+  ADD CONSTRAINT `fk_percobaan_peserta` FOREIGN KEY (`peserta_id`) REFERENCES `peserta` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_percobaan_tes` FOREIGN KEY (`tes_id`) REFERENCES `tes` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_percobaans_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_percobaan_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `pertanyaans`
+-- Constraints for table `pertanyaan`
 --
-ALTER TABLE `pertanyaans`
+ALTER TABLE `pertanyaan`
   ADD CONSTRAINT `fk_pertanyaan_tes` FOREIGN KEY (`tes_id`) REFERENCES `tes` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_pertanyaans_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_pertanyaan_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `pesertas`
+-- Constraints for table `peserta`
 --
-ALTER TABLE `pesertas`
-  ADD CONSTRAINT `fk_peserta_bidang` FOREIGN KEY (`bidang_id`) REFERENCES `bidangs` (`id`) ON DELETE SET NULL,
+ALTER TABLE `peserta`
+  ADD CONSTRAINT `fk_peserta_bidang` FOREIGN KEY (`bidang_id`) REFERENCES `bidang` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_peserta_cabang` FOREIGN KEY (`cabang_dinas_id`) REFERENCES `cabang_dinas` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_peserta_instansi` FOREIGN KEY (`instansi_id`) REFERENCES `instansis` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_peserta_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihans` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_peserta_instansi` FOREIGN KEY (`instansi_id`) REFERENCES `instansi` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_peserta_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihan` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_peserta_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
@@ -836,7 +836,7 @@ ALTER TABLE `sessions`
 -- Constraints for table `tes`
 --
 ALTER TABLE `tes`
-  ADD CONSTRAINT `fk_tes_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihans` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_tes_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihan` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

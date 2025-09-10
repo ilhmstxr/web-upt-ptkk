@@ -57,7 +57,7 @@ class TesPertanyaanResource extends Resource
                                 ->image(),
 
                             // Nested Repeater untuk opsi jawaban
-                            Forms\Components\Repeater::make('opsi_jawabans')
+                            Forms\Components\Repeater::make('opsi_jawaban')
                                 ->relationship('opsiJawabans')
                                 ->schema([
                                     Forms\Components\Textarea::make('teks_opsi')->required(),

@@ -14,7 +14,7 @@
         <h1 class="text-3xl font-bold mb-6 text-center">Daftar Lampiran Peserta</h1>
         {{-- <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt=""> --}}
 
-        @forelse ($pesertas as $peserta)
+        @forelse ($peserta as $peserta)
             <div class="bg-white p-6 rounded-lg shadow-md mb-8">
                 <h2 class="text-2xl font-bold mb-4">Detail Lampiran untuk: {{ $peserta->nama }}</h2>
 

@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pelatihans', function (Blueprint $table) {
+        Schema::create('pelatihan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('instansi_id')
                   ->nullable()
-                  ->constrained('instansis')
+                  ->constrained('instansi')
                   ->onUpdate('cascade')
-                  ->onDelete('set null'); // Relasi ke tabel instansis
+                  ->onDelete('set null'); // Relasi ke tabel instansi
 
             $table->string('nama_pelatihan');
-            $table->enum('jenis_program',['akselerasi','reguler','mtu']);
+            $table->enum('jenis_program',['reguler','akselerasi','mtu'])->default('reguler');
             $table->string('slug')->nullable()->unique();
             $table->string('gambar')->nullable();
             $table->string('status')->nullable()->default('belum dimulai');
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pelatihans');
+        Schema::dropIfExists('pelatihan');
     }
 };

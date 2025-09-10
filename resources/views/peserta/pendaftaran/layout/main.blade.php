@@ -8,6 +8,9 @@
     <title>@yield('title', 'Pendaftaran') - UPT PTKK Jatim</title>
     {{-- Menggunakan Tailwind CSS via CDN untuk kemudahan --}}
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -60,71 +63,79 @@
                 ×
             </a>
         </header>
-  {{-- MAIN CONTENT GRID --}}
+        {{-- MAIN CONTENT GRID --}}
         {{-- Kondisi ini akan menampilkan layout yang berbeda untuk step 4 --}}
-        <!-- @if ($currentStep != 4) -->
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {{-- SIDEBAR --}}
-                <aside class="lg:col-span-1">
-                    <div class="bg-white border border-slate-200 p-6 rounded-xl h-fit sticky top-8">
-                        <h2 class="text-xl font-bold text-slate-900 mb-6">Langkah Pendaftaran</h2>
+        <!-- @if ($currentStep != 4)
+-->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {{-- SIDEBAR --}}
+            <aside class="lg:col-span-1">
+                <div class="bg-white border border-slate-200 p-6 rounded-xl h-fit sticky top-8">
+                    <h2 class="text-xl font-bold text-slate-900 mb-6">Langkah Pendaftaran</h2>
 
-                        {{-- Stepper Navigation --}}
-                        @php
-                            // Memberikan nilai default untuk keamanan
-                            $allowedStep = $allowedStep ?? 1;
-                            $currentStep = $currentStep ?? 1;
-                        @endphp
-                        <div class="relative space-y-4">
-                            <div class="absolute left-4 top-4 bottom-4 w-0.5 bg-sky-200"></div>
+                    {{-- Stepper Navigation --}}
+                    @php
+                        // Memberikan nilai default untuk keamanan
+                        $allowedStep = $allowedStep ?? 1;
+                        $currentStep = $currentStep ?? 1;
+                    @endphp
+                    <div class="relative space-y-4">
+                        <div class="absolute left-4 top-4 bottom-4 w-0.5 bg-sky-200"></div>
 
-                            <!-- STEP 1 -->
-                            <a href="{{ $allowedStep >= 1 ? route('pendaftaran.create', ['step' => 1]) : '#' }}" 
-                               class="flex items-center gap-4 relative {{ $allowedStep < 1 ? 'pointer-events-none' : '' }}">
-                                <div class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors {{ $currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600' }}">
-                                    {!! $allowedStep > 1 ? '&#10003;' : '1' !!}
-                                </div>
-                                <span class="font-semibold transition-colors {{ $currentStep == 1 ? 'text-blue-700' : 'text-slate-800' }}">
-                                    Biodata Diri
-                                </span>
-                            </a>
+                        <!-- STEP 1 -->
+                        <a href="{{ $allowedStep >= 1 ? route('pendaftaran.create', ['step' => 1]) : '#' }}"
+                            class="flex items-center gap-4 relative {{ $allowedStep < 1 ? 'pointer-events-none' : '' }}">
+                            <div
+                                class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors {{ $currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600' }}">
+                                {!! $allowedStep > 1 ? '&#10003;' : '1' !!}
+                            </div>
+                            <span
+                                class="font-semibold transition-colors {{ $currentStep == 1 ? 'text-blue-700' : 'text-slate-800' }}">
+                                Biodata Diri
+                            </span>
+                        </a>
 
-                            <!-- STEP 2 -->
-                            <a href="{{ $allowedStep >= 2 ? route('pendaftaran.create', ['step' => 2]) : '#' }}" 
-                               class="flex items-center gap-4 relative {{ $allowedStep < 2 ? 'pointer-events-none opacity-50' : '' }}">
-                                <div class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors {{ $currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600' }}">
-                                    {!! $allowedStep > 2 ? '&#10003;' : '2' !!}
-                                </div>
-                                <span class="font-semibold transition-colors {{ $currentStep == 2 ? 'text-blue-700' : 'text-slate-800' }}">
-                                    Biodata Sekolah
-                                </span>
-                            </a>
+                        <!-- STEP 2 -->
+                        <a href="{{ $allowedStep >= 2 ? route('pendaftaran.create', ['step' => 2]) : '#' }}"
+                            class="flex items-center gap-4 relative {{ $allowedStep < 2 ? 'pointer-events-none opacity-50' : '' }}">
+                            <div
+                                class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors {{ $currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600' }}">
+                                {!! $allowedStep > 2 ? '&#10003;' : '2' !!}
+                            </div>
+                            <span
+                                class="font-semibold transition-colors {{ $currentStep == 2 ? 'text-blue-700' : 'text-slate-800' }}">
+                                Biodata Sekolah
+                            </span>
+                        </a>
 
-                            <!-- STEP 3 -->
-                            <a href="{{ $allowedStep >= 3 ? route('pendaftaran.create', ['step' => 3]) : '#' }}" 
-                               class="flex items-center gap-4 relative {{ $allowedStep < 3 ? 'pointer-events-none opacity-50' : '' }}">
-                                <div class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors {{ $currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600' }}">
-                                    {!! $allowedStep > 3 ? '&#10003;' : '3' !!}
-                                </div>
-                                <span class="font-semibold transition-colors {{ $currentStep == 3 ? 'text-blue-700' : 'text-slate-800' }}">
-                                    Lampiran
-                                </span>
-                            </a>
-                        </div>
+                        <!-- STEP 3 -->
+                        <a href="{{ $allowedStep >= 3 ? route('pendaftaran.create', ['step' => 3]) : '#' }}"
+                            class="flex items-center gap-4 relative {{ $allowedStep < 3 ? 'pointer-events-none opacity-50' : '' }}">
+                            <div
+                                class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors {{ $currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600' }}">
+                                {!! $allowedStep > 3 ? '&#10003;' : '3' !!}
+                            </div>
+                            <span
+                                class="font-semibold transition-colors {{ $currentStep == 3 ? 'text-blue-700' : 'text-slate-800' }}">
+                                Lampiran
+                            </span>
+                        </a>
                     </div>
-                </aside>
+                </div>
+            </aside>
 
-                {{-- FORM CONTENT --}}
-                <main class="lg:col-span-3">
-                    @yield('content')
-                </main>
-            </div>
-        <!-- @else
-            {{-- Tampilan untuk step 4 (Halaman Selesai) --}}
+            {{-- FORM CONTENT --}}
+            <main class="lg:col-span-3">
+                @yield('content')
+            </main>
+        </div>
+        <!--
+@else
+{{-- Tampilan untuk step 4 (Halaman Selesai) --}}
             <main class="w-full">
                 @yield('content')
             </main>
-        @endif -->
+@endif -->
     </div>
 
 </body>

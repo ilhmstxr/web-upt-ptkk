@@ -37,7 +37,7 @@ class TesController extends Controller
             ]
         );
 
-        $pertanyaanList = $tes->pertanyaans()->with('opsiJawabans')->get();
+        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
 
         $currentQuestionIndex = (int) $request->query('q', 0);
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
@@ -65,20 +65,20 @@ class TesController extends Controller
 
         $jawaban = $request->input('jawaban', []);
 
-        foreach ($jawaban as $pertanyaan_id => $opsi_jawabans_id) {
+        foreach ($jawaban as $pertanyaan_id => $opsi_jawaban_id) {
             JawabanUser::updateOrCreate(
                 [
                     'percobaan_id' => $percobaan->id,
                     'pertanyaan_id' => $pertanyaan_id,
                 ],
                 [
-                    'opsi_jawabans_id' => $opsi_jawabans_id,
+                    'opsi_jawaban_id' => $opsi_jawaban_id,
                 ]
             );
         }
 
         // Ambil semua pertanyaan
-        $pertanyaanList = $percobaan->tes->pertanyaans()->get();
+        $pertanyaanList = $percobaan->tes->pertanyaan()->get();
         $total = $pertanyaanList->count();
 
         $currentQuestionIndex = (int) $request->query('q', 0);

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('email_templates', function (Blueprint $table) {
+        Schema::create('email_template', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique()->comment('Pengenal unik untuk template');
             $table->string('subject')->comment('Subjek email (bisa mengandung placeholder)');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('email_templates');
+        Schema::dropIfExists('email_template');
     }
 };

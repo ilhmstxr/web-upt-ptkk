@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('peserta_surveis', function (Blueprint $table) {
+        Schema::create('peserta_survei', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
             $table->string('email');
             $table->string('angkatan')->nullable();
-            $table->foreignId('bidang_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('pelatihan_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('bidang_id')->constrained('bidang')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('pelatihan_id')->constrained('pelatihan')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('peserta_surveis');
+        Schema::dropIfExists('peserta_survei');
     }
 };

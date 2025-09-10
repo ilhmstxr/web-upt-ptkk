@@ -159,9 +159,9 @@ Selamat mengerjakan, semoga sukses!',
             ['teks' => 'Part outdoor no 2 dan 3 adalah :', 'opsi' => ['A. Fan dan Cabinet','B. Cabinet','C. Propeller Fan','D. Propeller Fan dan Cabinet outdoor','E. Propeller  dan Cabinet outbow'], 'benar' => 'D'],
         ];
 
-        // 3. Insert pertanyaans & opsi_jawabans
+        // 3. Insert pertanyaan & opsi_jawaban
         foreach ($soals as $i => $soal) {
-            $pertanyaanId = DB::table('pertanyaans')->insertGetId([
+            $pertanyaanId = DB::table('pertanyaan')->insertGetId([
                 'tes_id' => $tesId,
                 'nomor' => $i + 1,
                 'teks_pertanyaan' => $soal['teks'],
@@ -172,7 +172,7 @@ Selamat mengerjakan, semoga sukses!',
 
             foreach ($soal['opsi'] as $opsi) {
                 $kode = substr($opsi, 0, 1); // ambil huruf A/B/C/D/E
-                DB::table('opsi_jawabans')->insert([
+                DB::table('opsi_jawaban')->insert([
                     'pertanyaan_id' => $pertanyaanId,
                     'teks_opsi' => $opsi,
                     'apakah_benar' => $kode === $soal['benar'],

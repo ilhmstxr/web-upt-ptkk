@@ -11,7 +11,7 @@ class PesertaSurvei extends Model
     /** @use HasFactory<\Database\Factories\PesertaSurveiFactory> */
     use HasFactory;
 
-    // protected $table = 'peserta_survei';
+    protected $table = 'peserta_survei';
     protected $fillable = [
         'email',
         'nama',
@@ -27,7 +27,7 @@ class PesertaSurvei extends Model
         return $this->hasMany(JawabanUser::class, 'pesertaSurvei_id');
     }
 
-    public function percobaans()
+    public function percobaan()
     {
         return $this->hasMany(Percobaan::class, 'pesertaSurvei_id');
     }

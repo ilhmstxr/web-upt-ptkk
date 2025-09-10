@@ -1,9 +1,10 @@
 -- data bidang
 INSERT INTO
-  `bidangs` (
+  `bidang` (
     `id`,
     `nama_bidang`,
     `deskripsi`,
+    `kode`,
     `created_at`,
     `updated_at`
   )
@@ -12,6 +13,7 @@ VALUES
     1,
     'Tata Boga',
     'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.',
+    'TTBG',
     NULL,
     NULL
   ),
@@ -19,6 +21,7 @@ VALUES
     2,
     'Tata Busana',
     'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.',
+    'TTBS',
     NULL,
     NULL
   ),
@@ -26,6 +29,7 @@ VALUES
     3,
     'Kecantikan',
     'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.',
+    'KCAN',
     NULL,
     NULL
   ),
@@ -33,6 +37,7 @@ VALUES
     4,
     'Teknik Pendingin dan Tata Udara',
     'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.',
+    'TPTU',
     NULL,
     NULL
   ),
@@ -40,6 +45,7 @@ VALUES
     5,
     'Web Desain',
     'Bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.',
+    'WBDS',
     NULL,
     NULL
   ),
@@ -47,6 +53,7 @@ VALUES
     6,
     'Desain Grafis',
     'Bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.',
+    'DSGF',
     NULL,
     NULL
   ),
@@ -54,6 +61,7 @@ VALUES
     7,
     'Animasi',
     'Bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.',
+    'ANMS',
     NULL,
     NULL
   ),
@@ -61,6 +69,7 @@ VALUES
     8,
     'Fotografi',
     'Bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.',
+    'FTGR',
     NULL,
     NULL
   ),
@@ -68,6 +77,15 @@ VALUES
     9,
     'Videografi',
     'Bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.',
+    'VDGR',
+    NULL,
+    NULL
+  ),
+  (
+    10,
+    'PLC',
+    'Bidang keahlian yang mengajarkan programming logic controller',
+    'PLC',
     NULL,
     NULL
   );
@@ -277,725 +295,88 @@ VALUES
     '2025-08-29 06:02:59'
   );
 
--- instansi
 INSERT INTO
-  `instansis` (
-    `id`,
-    `asal_instansi`,
-    `alamat_instansi`,
-    `bidang_keahlian`,
-    `kelas`,
-    `cabangDinas_id`,
-    `user_id`,
-    `created_at`,
-    `updated_at`
+  `instansi` (
+    `id`, `asal_instansi`, `alamat_instansi`, `kota_id`, `kota`, `bidang_keahlian`, `kelas`, `cabangDinas_id`, `user_id`, `created_at`, `updated_at`
   )
 VALUES
-  (
-    2,
-    'SMK NEGRI 2 BOJONEGORO',
-    'JL.patimura NO.3',
-    '4',
-    'XI',
-    '15',
-    null,
-    '2025-08-20 08:29:27',
-    '2025-08-20 08:29:27'
-  ),
-  (
-    3,
-    'SMKN 2 KOTA PROBOLINGGO',
-    'Jl. Mastrip No. 153 Kota Probolinggo',
-    '4',
-    'XI',
-    '2',
-    null,
-    '2025-08-20 09:28:17',
-    '2025-08-20 09:28:17'
-  ),
-  (
-    4,
-    'SMKN 3 Probolinggo',
-    'Jl. Pahlawan No. 26A, Kota Probolinggo.',
-    '3',
-    'XI',
-    '2',
-    null,
-    '2025-08-20 10:06:36',
-    '2025-08-20 10:06:36'
-  ),
-  (
-    5,
-    'SMKN 1 JATIREJO',
-    'Jln. Sumengko Jatirejoo',
-    '4',
-    'XI',
-    '20',
-    null,
-    '2025-08-20 11:23:32',
-    '2025-08-20 11:23:32'
-  ),
-  (
-    6,
-    'SMK NEGERI 1 NGASEM',
-    'Jl. Totok Kerot Ds. Sumberejo Kabupaten Kediri',
-    '1',
-    'XI',
-    '10',
-    null,
-    '2025-08-20 11:58:13',
-    '2025-08-20 11:58:13'
-  ),
-  (
-    7,
-    'SMKN 1TUBAN',
-    'Jl. Mastrip No.2, Sidorejo, Kec. Tuban, Kabupaten Tuban, Jawa Timur 62315',
-    '4',
-    'XI',
-    '15',
-    null,
-    '2025-08-20 12:13:59',
-    '2025-08-20 12:13:59'
-  ),
-  (
-    8,
-    'SMK Negri 2 Blitar',
-    'Jl. Raya Kediri - Blitar, Pakunden, Kec. Sukorejo, Kota Blitar, Jawa Timur 66122',
-    '2',
-    'XI',
-    '8',
-    null,
-    '2025-08-20 12:19:16',
-    '2025-08-20 12:19:16'
-  ),
-  (
-    9,
-    'SMKN 1 Gedangan',
-    'Jl Raya Sumberejo Kecamatan Gedangan Kabupaten Malang',
-    '1',
-    'XI',
-    '6',
-    null,
-    '2025-08-20 12:25:07',
-    '2025-08-20 12:25:07'
-  ),
-  (
-    10,
-    'SMK NEGERI 2 LAMONGAN',
-    'Jl. Veteran no. 7A Lamongan',
-    '2',
-    'XI',
-    '16',
-    null,
-    '2025-08-20 12:30:28',
-    '2025-08-20 12:30:28'
-  ),
-  (
-    13,
-    'SMKN 1 Pungging',
-    'Dsn. Lebaksono Ds. Lebaksono Kec. pungging Kab. Mojokerto',
-    '4',
-    'XI',
-    '20',
-    null,
-    '2025-08-20 13:04:04',
-    '2025-08-20 13:04:04'
-  ),
-  (
-    14,
-    'SMK NEGERI 1 BANGIL',
-    'JL. Tongkol No.3 Sukalipuro, Dermo, Bangil, Pasuruan, Jawa Timur 67153',
-    '2',
-    'XI',
-    '1',
-    null,
-    '2025-08-20 13:10:17',
-    '2025-08-20 13:10:17'
-  ),
-  (
-    15,
-    'SMKN 1 Kertosono',
-    'Jl. Langsep 24 Kertosono nganjuk',
-    '2',
-    'XI',
-    '11',
-    null,
-    '2025-08-20 13:57:25',
-    '2025-08-20 13:57:25'
-  ),
-  (
-    16,
-    'SMK Negeri 2 Nganjuk',
-    'Jl Lawu No.3, Kab. Nganjuk',
-    '3',
-    'XI',
-    '11',
-    null,
-    '2025-08-20 14:09:41',
-    '2025-08-20 14:09:41'
-  ),
-  (
-    17,
-    'SMKN 1 CERME GRESIK',
-    'Jl. Jurit, Cerme Kidul, Kec. Cerme, Kabupaten Gresik, Jawa Timur 61171',
-    '4',
-    'XI',
-    '17',
-    null,
-    '2025-08-20 14:12:20',
-    '2025-08-20 14:12:20'
-  ),
-  (
-    18,
-    'SMKN 2 BONDOWOSO',
-    'Jl. a yani 48 Bondowoso',
-    '3',
-    'XI',
-    '3',
-    null,
-    '2025-08-20 14:28:22',
-    '2025-08-20 14:28:22'
-  ),
-  (
-    19,
-    'SMK Negeri 1 Purwoasri',
-    'Ds. Mranggen Kec. Purwoasri, Kab.Kediri',
-    '4',
-    'XI',
-    '10',
-    null,
-    '2025-08-20 14:44:46',
-    '2025-08-20 14:44:46'
-  ),
-  (
-    22,
-    'SMKN 1 BANYUPUTIH',
-    'Jl. KH Ahmad Zaini Dahlan, Bindung, Sumberanyar, Kec. Banyuputih, Kabupaten Situbondo, Jawa Timur',
-    '2',
-    'XI',
-    '3',
-    null,
-    '2025-08-20 15:12:10',
-    '2025-08-20 15:12:10'
-  ),
-  (
-    23,
-    'smkn1 Lamongan',
-    'jl. panglima sudirmam no 84 lamongan',
-    '3',
-    'XI',
-    '16',
-    null,
-    '2025-08-20 20:24:24',
-    '2025-08-20 20:24:24'
-  ),
-  (
-    24,
-    'SMK Negeri 1 Grogol',
-    'Jalan Raya Cerme, Dusun Glatik, Desa Cerme, Kecamatan Grogol, Kabupaten Kediri',
-    '2',
-    'XI',
-    '10',
-    null,
-    '2025-08-21 01:58:09',
-    '2025-08-21 01:58:09'
-  ),
-  (
-    25,
-    'SMKN 1 Tamanan',
-    'Jl. Maesan No, - Tamanan Bondowoso',
-    '2',
-    'XI',
-    '3',
-    null,
-    '2025-08-21 02:29:10',
-    '2025-08-21 02:29:10'
-  ),
-  (
-    26,
-    'SMK NEGERI 1 DRIYOREJO',
-    'Jalan Mirah Delima Kota Baru Driyorejo (KBD) Kabupaten Gresik',
-    '4',
-    'XI',
-    '17',
-    null,
-    '2025-08-21 02:48:09',
-    '2025-08-21 02:48:09'
-  ),
-  (
-    27,
-    'SMKN 1 SAMBENG - LAMONGAN',
-    'Jalan Raya Pasarlegi 01 Sambeng - Lamongan',
-    '2',
-    'XI',
-    '16',
-    null,
-    '2025-08-21 02:49:15',
-    '2025-08-21 02:49:15'
-  ),
-  (
-    28,
-    'SMKN 1 Sumberasih',
-    'Jl. Brawijaya N0 78 Lemah Kembar Sumberasih Kabupaten Probolinggo',
-    '4',
-    'XI',
-    '2',
-    null,
-    '2025-08-21 03:14:17',
-    '2025-08-21 03:14:17'
-  ),
-  (
-    29,
-    'SMK Negeri 1 Sooko Mojokerto',
-    'Jalan RA. Basuni, Nomor 5, Sooko, Mojokerto',
-    '3',
-    'XI',
-    '20',
-    null,
-    '2025-08-21 03:33:49',
-    '2025-08-21 03:33:49'
-  ),
-  (
-    30,
-    'SMK NEGERI 1 BRONDONG',
-    'JL. Raya Brondong Ds. Tlogoretno Kec. Brondong Kab. Lamongan',
-    '2',
-    'XI',
-    '16',
-    null,
-    '2025-08-21 03:40:57',
-    '2025-08-21 03:40:57'
-  ),
-  (
-    31,
-    'SMK Negri 1 turen',
-    'Jl. Panglima Sudirman No. 41 Turen',
-    '2',
-    'XI',
-    '6',
-    null,
-    '2025-08-21 03:54:31',
-    '2025-08-21 03:54:31'
-  ),
-  (
-    32,
-    'SMK NEGRI 2 BOJONEGORO',
-    'Jl. Patimura No. 3',
-    '4',
-    'XI',
-    '15',
-    null,
-    '2025-08-21 05:02:39',
-    '2025-08-21 05:02:39'
-  ),
-  (
-    33,
-    'SMK Negeri 1 Kras',
-    'Dusun Demangan Desa Setonorejo Kec. Kras Kabupaten Kediri',
-    '1',
-    'XI',
-    '10',
-    null,
-    '2025-08-21 07:07:23',
-    '2025-08-21 07:07:23'
-  ),
-  (
-    34,
-    'SMK Negeri 1 Dlanggu',
-    'Jl. Jend. A.Yani 1 Ds.Pohkecik Kec. Dlanggu Kab.Mojokerto',
-    '1',
-    'XI',
-    '20',
-    null,
-    '2025-08-21 09:06:51',
-    '2025-08-21 09:06:51'
-  ),
-  (
-    35,
-    'SMKN 2 BAGOR',
-    'Jalan Raya Solo No. 146, Selorejo, Kecamatan Bagor, Kabupaten Nganjuk, Jawa Timur, 64461',
-    '1',
-    'XI',
-    '11',
-    null,
-    '2025-08-21 12:12:02',
-    '2025-08-21 12:12:02'
-  ),
-  (
-    36,
-    'SMK Negeri 2 Mojokerto',
-    'Jl. Raya Pulorejo, Mergelo, Pulorejo, Kec. Prajurit Kulon, Kota Mojokerto, Jawa Timur 61325',
-    '1',
-    'XI',
-    '20',
-    null,
-    '2025-08-21 12:17:34',
-    '2025-08-21 12:17:34'
-  ),
-  (
-    37,
-    'SMK Negeri 3 Blitar',
-    'Jl. Soedanco Supriadi No. 24C, Bendogerit, Kec. Sananwetan, Kota Blitar, Jawa Timur 66133',
-    '3',
-    'XI',
-    '8',
-    null,
-    '2025-08-21 13:56:56',
-    '2025-08-21 13:56:56'
-  ),
-  (
-    38,
-    'SMKN 1 Panji Situbondo',
-    'Jl. Gunung Arjuno 17, Mimbaan, Situbondo 68322',
-    '3',
-    'XI',
-    '3',
-    null,
-    '2025-08-21 14:23:25',
-    '2025-08-21 14:23:25'
-  ),
-  (
-    39,
-    'SMKN 3 Malang',
-    'Jl. Surabaya no.1 gading kasri kec.klojen',
-    '2',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 02:54:10',
-    '2025-08-22 02:54:10'
-  ),
-  (
-    40,
-    'SMK Negeri 1 Sawoo',
-    'Jalan Route PB Jend. Soedirman No 02 Sawoo, Ponorogo',
-    '1',
-    'XI',
-    '13',
-    null,
-    '2025-08-22 03:04:40',
-    '2025-08-22 03:04:40'
-  ),
-  (
-    41,
-    'SMKN 3 MALANG',
-    'Jl.surabaya no.1.gading kasri kec.klojen',
-    '2',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 03:13:06',
-    '2025-08-22 03:13:06'
-  ),
-  (
-    42,
-    'SMKN 3 Malang',
-    'Jl. Surabaya no. 1 kelurahan gading kadri kec. Klojen',
-    '2',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 03:29:58',
-    '2025-08-22 03:29:58'
-  ),
-  (
-    43,
-    'SMKN 1 Badegan',
-    'jl Suyudono no. 1 Badegan Kab. Ponorogo',
-    '1',
-    'XI',
-    '13',
-    null,
-    '2025-08-22 03:50:52',
-    '2025-08-22 03:50:52'
-  ),
-  (
-    44,
-    'SMKN 1 BATU',
-    'JL BROMO 11 KOTA BATU',
-    '1',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 04:13:21',
-    '2025-08-22 04:13:21'
-  ),
-  (
-    45,
-    'SMKN 1 BATU',
-    'JL BROMO 11 KOTA BATU',
-    '3',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 04:18:43',
-    '2025-08-22 04:18:43'
-  ),
-  (
-    46,
-    'SMKN 1 BATU',
-    'JL BROMO 11 KOTA BATU',
-    '1',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 05:14:42',
-    '2025-08-22 05:14:42'
-  ),
-  (
-    47,
-    'SMKN 1 BATU',
-    'JL BROMO 11 KOTA BATU',
-    '1',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 05:19:47',
-    '2025-08-22 05:19:47'
-  ),
-  (
-    48,
-    'SMK Negeri Prigen',
-    'Jl.Pecalukan-Ledug',
-    '1',
-    'XI',
-    '1',
-    null,
-    '2025-08-22 05:39:12',
-    '2025-08-22 05:39:12'
-  ),
-  (
-    49,
-    'SMK Negeri 1 Kota Kediri',
-    'Jl. Veteran 9 Mojoroto, Kota Kediri',
-    '4',
-    'XI',
-    '10',
-    null,
-    '2025-08-22 06:11:46',
-    '2025-08-22 06:11:46'
-  ),
-  (
-    50,
-    'SMKN 3 Malang',
-    'Jl Surabaya no, 1 , Gading kasri, Kota MalangKec. Klojen',
-    '1',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 06:50:04',
-    '2025-08-22 06:50:04'
-  ),
-  (
-    51,
-    'SMKN 1 Nglegok',
-    'Jl. Penataran No. 1 Nglegok',
-    '1',
-    'XI',
-    '8',
-    null,
-    '2025-08-22 07:00:55',
-    '2025-08-22 07:00:55'
-  ),
-  (
-    52,
-    'SMK Negeri 1 Klabang',
-    'Jln. Raya Blimbing no. 12 Desa Klabang Kec. Klabang Kab. Bondowoso',
-    '4',
-    'XI',
-    '3',
-    null,
-    '2025-08-22 07:03:44',
-    '2025-08-22 07:03:44'
-  ),
-  (
-    53,
-    'SMK Negeri 1 Batu',
-    'Jalan Bromo no 11 Sisir, Batu',
-    '2',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 07:40:52',
-    '2025-08-22 07:40:52'
-  ),
-  (
-    54,
-    'SMKN 1 Batu',
-    'Jalan Bromo no 11 sisir, batu',
-    '2',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 07:53:55',
-    '2025-08-22 07:53:55'
-  ),
-  (
-    55,
-    'SMKN 1 Slahung Ponorogo',
-    'jln Macan Tutul, Galak, Kec Slahung, Kab Ponorogo',
-    '1',
-    'XI',
-    '13',
-    null,
-    '2025-08-22 07:58:16',
-    '2025-08-22 07:58:16'
-  ),
-  (
-    56,
-    'SMKN 2 MALANG',
-    'Jl. Veteran no.17',
-    '1',
-    'XI',
-    '7',
-    null,
-    '2025-08-22 09:32:46',
-    '2025-08-22 09:32:46'
-  ),
-  (
-    57,
-    'SMK Negeri 2 Bangkalan',
-    'Jl. Halim Perdana Kusuma (Ring road) Bangkalan',
-    '4',
-    'XI',
-    '21',
-    null,
-    '2025-08-22 11:13:03',
-    '2025-08-22 11:13:03'
-  ),
-  (
-    58,
-    'SMK NEGERI 1 BEJI',
-    'Jl. Wicaksana No. 22b, Gununggangsir, Beji, Pasuruan, Jawa Timur, 67154.',
-    '4',
-    'XI',
-    '1',
-    null,
-    '2025-08-22 11:45:00',
-    '2025-08-22 11:45:00'
-  ),
-  (
-    59,
-    'SMK Negeri 3 Malang',
-    'Jl. Surabaya No. 1',
-    '3',
-    'XII',
-    '7',
-    null,
-    '2025-08-22 12:16:46',
-    '2025-08-22 12:16:46'
-  ),
-  (
-    60,
-    'SMK NEGERI 3 MALANG',
-    'JL. Surabaya No 1, Klojen, Malang',
-    '3',
-    'XII',
-    '7',
-    null,
-    '2025-08-22 12:22:18',
-    '2025-08-22 12:22:18'
-  ),
-  (
-    61,
-    'SMKN 1 LAMONGAN',
-    'jl. panglima sudirmam no 84 lamongan',
-    '3',
-    'XI',
-    '16',
-    null,
-    '2025-08-22 13:14:10',
-    '2025-08-22 13:14:10'
-  ),
-  (
-    62,
-    'SMK NEGERI 2 MAGETAN',
-    'JL KEMASAN NO 13 MAGETAN',
-    '3',
-    'XI',
-    '13',
-    null,
-    '2025-08-22 13:34:42',
-    '2025-08-22 13:34:42'
-  ),
-  (
-    63,
-    'SMK NEGERI 2 PONOROGO',
-    'Jl Laksamana Yos Sudarso No. 21a, Kelurahan Kepatihan, Kecamatan Ponorogo, Kabupaten Ponorogo, Jawa Timur',
-    '3',
-    'XI',
-    '13',
-    null,
-    '2025-08-22 13:39:15',
-    '2025-08-22 13:39:15'
-  ),
-  (
-    64,
-    'SMKN 1 BANGKALAN',
-    'Jl. Kenanga N0.04,Mlajah - Bangkalan, 69116',
-    '2',
-    'XI',
-    '21',
-    null,
-    '2025-08-22 13:41:46',
-    '2025-08-22 13:41:46'
-  ),
-  (
-    65,
-    'TEKNIK INSTALASITENAGA LISTRIK',
-    'SMKN 1 SINGOSARI',
-    '4',
-    'XI',
-    '6',
-    null,
-    '2025-08-22 13:42:27',
-    '2025-08-22 13:42:27'
-  ),
-  (
-    66,
-    'SMK NEGERI 2 TRENGGALEK',
-    'Jl. Ronggo Warsito Gg. Sidomukti No. 1, Kec. Trenggalek, Kab. Trenggalek',
-    '4',
-    'XI',
-    '9',
-    null,
-    '2025-08-23 09:23:46',
-    '2025-08-23 09:23:46'
-  ),
-  (
-    67,
-    'SMKN 3 MALANG',
-    'Jl. Surabaya No.1, Gading Kasri, Kec. Klojen, Kota Malang',
-    '1',
-    'XII',
-    '7',
-    null,
-    '2025-08-23 14:19:14',
-    '2025-08-23 14:19:14'
-  ),
-  (
-    68,
-    'SMKN 1 PAGERGOJO',
-    'Jl. Pagerwojo Ds. Mulyosari Pagerwojo',
-    '3',
-    'XI',
-    '9',
-    null,
-    '2025-08-29 11:40:45',
-    '2025-08-29 11:40:45'
-  );
+  (2, 'SMK NEGRI 2 BOJONEGORO', 'JL.patimura NO.3', '3522', 'KABUPATEN BOJONEGORO', '4', 'XI', 15, null, '2025-08-20 08:29:27', '2025-08-20 08:29:27'),
+  (3, 'SMKN 2 KOTA PROBOLINGGO', 'Jl. Mastrip No. 153 Kota Probolinggo', '3574', 'KOTA PROBOLINGGO', '4', 'XI', 2, null, '2025-08-20 09:28:17', '2025-08-20 09:28:17'),
+  (4, 'SMKN 3 Probolinggo', 'Jl. Pahlawan No. 26A, Kota Probolinggo.', '3574', 'KOTA PROBOLINGGO', '3', 'XI', 2, null, '2025-08-20 10:06:36', '2025-08-20 10:06:36'),
+  (5, 'SMKN 1 JATIREJO', 'Jln. Sumengko Jatirejoo', '3516', 'KABUPATEN MOJOKERTO', '4', 'XI', 20, null, '2025-08-20 11:23:32', '2025-08-20 11:23:32'),
+  (6, 'SMK NEGERI 1 NGASEM', 'Jl. Totok Kerot Ds. Sumberejo Kabupaten Kediri', '3506', 'KABUPATEN KEDIRI', '1', 'XI', 10, null, '2025-08-20 11:58:13', '2025-08-20 11:58:13'),
+  (7, 'SMKN 1TUBAN', 'Jl. Mastrip No.2, Sidorejo, Kec. Tuban, Kabupaten Tuban', '3523', 'KABUPATEN TUBAN', '4', 'XI', 15, null, '2025-08-20 12:13:59', '2025-08-20 12:13:59'),
+  (8, 'SMK Negri 2 Blitar', 'Jl. Raya Kediri - Blitar, Pakunden, Kec. Sukorejo, Kota Blitar', '3572', 'KOTA BLITAR', '2', 'XI', 8, null, '2025-08-20 12:19:16', '2025-08-20 12:19:16'),
+  (9, 'SMKN 1 Gedangan', 'Jl Raya Sumberejo Kecamatan Gedangan Kabupaten Malang', '3507', 'KABUPATEN MALANG', '1', 'XI', 6, null, '2025-08-20 12:25:07', '2025-08-20 12:25:07'),
+  (10, 'SMK NEGERI 2 LAMONGAN', 'Jl. Veteran no. 7A Lamongan', '3524', 'KABUPATEN LAMONGAN', '2', 'XI', 16, null, '2025-08-20 12:30:28', '2025-08-20 12:30:28'),
+  (13, 'SMKN 1 Pungging', 'Dsn. Lebaksono Ds. Lebaksono Kec. pungging Kab. Mojokerto', '3516', 'KABUPATEN MOJOKERTO', '4', 'XI', 20, null, '2025-08-20 13:04:04', '2025-08-20 13:04:04'),
+  (14, 'SMK NEGERI 1 BANGIL', 'JL. Tongkol No.3 Sukalipuro, Dermo, Bangil, Pasuruan', '3514', 'KABUPATEN PASURUAN', '2', 'XI', 1, null, '2025-08-20 13:10:17', '2025-08-20 13:10:17'),
+  (15, 'SMKN 1 Kertosono', 'Jl. Langsep 24 Kertosono nganjuk', '3518', 'KABUPATEN NGANJUK', '2', 'XI', 11, null, '2025-08-20 13:57:25', '2025-08-20 13:57:25'),
+  (16, 'SMK Negeri 2 Nganjuk', 'Jl Lawu No.3, Kab. Nganjuk', '3518', 'KABUPATEN NGANJUK', '3', 'XI', 11, null, '2025-08-20 14:09:41', '2025-08-20 14:09:41'),
+  (17, 'SMKN 1 CERME GRESIK', 'Jl. Jurit, Cerme Kidul, Kec. Cerme, Kabupaten Gresik', '3525', 'KABUPATEN GRESIK', '4', 'XI', 17, null, '2025-08-20 14:12:20', '2025-08-20 14:12:20'),
+  (18, 'SMKN 2 BONDOWOSO', 'Jl. a yani 48 Bondowoso', '3511', 'KABUPATEN BONDOWOSO', '3', 'XI', 3, null, '2025-08-20 14:28:22', '2025-08-20 14:28:22'),
+  (19, 'SMK Negeri 1 Purwoasri', 'Ds. Mranggen Kec. Purwoasri, Kab.Kediri', '3506', 'KABUPATEN KEDIRI', '4', 'XI', 10, null, '2025-08-20 14:44:46', '2025-08-20 14:44:46'),
+  (22, 'SMKN 1 BANYUPUTIH', 'Jl. KH Ahmad Zaini Dahlan, Kec. Banyuputih, Kabupaten Situbondo', '3512', 'KABUPATEN SITUBONDO', '2', 'XI', 3, null, '2025-08-20 15:12:10', '2025-08-20 15:12:10'),
+  (23, 'smkn1 Lamongan', 'jl. panglima sudirmam no 84 lamongan', '3524', 'KABUPATEN LAMONGAN', '3', 'XI', 16, null, '2025-08-20 20:24:24', '2025-08-20 20:24:24'),
+  (24, 'SMK Negeri 1 Grogol', 'Jalan Raya Cerme, Kecamatan Grogol, Kabupaten Kediri', '3506', 'KABUPATEN KEDIRI', '2', 'XI', 10, null, '2025-08-21 01:58:09', '2025-08-21 01:58:09'),
+  (25, 'SMKN 1 Tamanan', 'Jl. Maesan No, - Tamanan Bondowoso', '3511', 'KABUPATEN BONDOWOSO', '2', 'XI', 3, null, '2025-08-21 02:29:10', '2025-08-21 02:29:10'),
+  (26, 'SMK NEGERI 1 DRIYOREJO', 'Jalan Mirah Delima Kota Baru Driyorejo (KBD) Kabupaten Gresik', '3525', 'KABUPATEN GRESIK', '4', 'XI', 17, null, '2025-08-21 02:48:09', '2025-08-21 02:48:09'),
+  (27, 'SMKN 1 SAMBENG - LAMONGAN', 'Jalan Raya Pasarlegi 01 Sambeng - Lamongan', '3524', 'KABUPATEN LAMONGAN', '2', 'XI', 16, null, '2025-08-21 02:49:15', '2025-08-21 02:49:15'),
+  (28, 'SMKN 1 Sumberasih', 'Jl. Brawijaya N0 78 Lemah Kembar Sumberasih Kabupaten Probolinggo', '3513', 'KABUPATEN PROBOLINGGO', '4', 'XI', 2, null, '2025-08-21 03:14:17', '2025-08-21 03:14:17'),
+  (29, 'SMK Negeri 1 Sooko Mojokerto', 'Jalan RA. Basuni, Nomor 5, Sooko, Mojokerto', '3516', 'KABUPATEN MOJOKERTO', '3', 'XI', 20, null, '2025-08-21 03:33:49', '2025-08-21 03:33:49'),
+  (30, 'SMK NEGERI 1 BRONDONG', 'JL. Raya Brondong Ds. Tlogoretno Kec. Brondong Kab. Lamongan', '3524', 'KABUPATEN LAMONGAN', '2', 'XI', 16, null, '2025-08-21 03:40:57', '2025-08-21 03:40:57'),
+  (31, 'SMK Negri 1 turen', 'Jl. Panglima Sudirman No. 41 Turen', '3507', 'KABUPATEN MALANG', '2', 'XI', 6, null, '2025-08-21 03:54:31', '2025-08-21 03:54:31'),
+  (32, 'SMK NEGRI 2 BOJONEGORO', 'Jl. Patimura No. 3', '3522', 'KABUPATEN BOJONEGORO', '4', 'XI', 15, null, '2025-08-21 05:02:39', '2025-08-21 05:02:39'),
+  (33, 'SMK Negeri 1 Kras', 'Dusun Demangan Desa Setonorejo Kec. Kras Kabupaten Kediri', '3506', 'KABUPATEN KEDIRI', '1', 'XI', 10, null, '2025-08-21 07:07:23', '2025-08-21 07:07:23'),
+  (34, 'SMK Negeri 1 Dlanggu', 'Jl. Jend. A.Yani 1 Ds.Pohkecik Kec. Dlanggu Kab.Mojokerto', '3516', 'KABUPATEN MOJOKERTO', '1', 'XI', 20, null, '2025-08-21 09:06:51', '2025-08-21 09:06:51'),
+  (35, 'SMKN 2 BAGOR', 'Jalan Raya Solo No. 146, Selorejo, Kecamatan Bagor, Kabupaten Nganjuk', '3518', 'KABUPATEN NGANJUK', '1', 'XI', 11, null, '2025-08-21 12:12:02', '2025-08-21 12:12:02'),
+  (36, 'SMK Negeri 2 Mojokerto', 'Jl. Raya Pulorejo, Kec. Prajurit Kulon, Kota Mojokerto', '3576', 'KOTA MOJOKERTO', '1', 'XI', 20, null, '2025-08-21 12:17:34', '2025-08-21 12:17:34'),
+  (37, 'SMK Negeri 3 Blitar', 'Jl. Soedanco Supriadi No. 24C, Kec. Sananwetan, Kota Blitar', '3572', 'KOTA BLITAR', '3', 'XI', 8, null, '2025-08-21 13:56:56', '2025-08-21 13:56:56'),
+  (38, 'SMKN 1 Panji Situbondo', 'Jl. Gunung Arjuno 17, Mimbaan, Situbondo', '3512', 'KABUPATEN SITUBONDO', '3', 'XI', 3, null, '2025-08-21 14:23:25', '2025-08-21 14:23:25'),
+  (39, 'SMKN 3 Malang', 'Jl. Surabaya no.1 gading kasri kec.klojen', '3573', 'KOTA MALANG', '2', 'XI', 7, null, '2025-08-22 02:54:10', '2025-08-22 02:54:10'),
+  (40, 'SMK Negeri 1 Sawoo', 'Jalan Route PB Jend. Soedirman No 02 Sawoo, Ponorogo', '3502', 'KABUPATEN PONOROGO', '1', 'XI', 13, null, '2025-08-22 03:04:40', '2025-08-22 03:04:40'),
+  (41, 'SMKN 3 MALANG', 'Jl.surabaya no.1.gading kasri kec.klojen', '3573', 'KOTA MALANG', '2', 'XI', 7, null, '2025-08-22 03:13:06', '2025-08-22 03:13:06'),
+  (42, 'SMKN 3 Malang', 'Jl. Surabaya no. 1 kelurahan gading kadri kec. Klojen', '3573', 'KOTA MALANG', '2', 'XI', 7, null, '2025-08-22 03:29:58', '2025-08-22 03:29:58'),
+  (43, 'SMKN 1 Badegan', 'jl Suyudono no. 1 Badegan Kab. Ponorogo', '3502', 'KABUPATEN PONOROGO', '1', 'XI', 13, null, '2025-08-22 03:50:52', '2025-08-22 03:50:52'),
+  (44, 'SMKN 1 BATU', 'JL BROMO 11 KOTA BATU', '3579', 'KOTA BATU', '1', 'XI', 7, null, '2025-08-22 04:13:21', '2025-08-22 04:13:21'),
+  (45, 'SMKN 1 BATU', 'JL BROMO 11 KOTA BATU', '3579', 'KOTA BATU', '3', 'XI', 7, null, '2025-08-22 04:18:43', '2025-08-22 04:18:43'),
+  (46, 'SMKN 1 BATU', 'JL BROMO 11 KOTA BATU', '3579', 'KOTA BATU', '1', 'XI', 7, null, '2025-08-22 05:14:42', '2025-08-22 05:14:42'),
+  (47, 'SMKN 1 BATU', 'JL BROMO 11 KOTA BATU', '3579', 'KOTA BATU', '1', 'XI', 7, null, '2025-08-22 05:19:47', '2025-08-22 05:19:47'),
+  (48, 'SMK Negeri Prigen', 'Jl.Pecalukan-Ledug', '3514', 'KABUPATEN PASURUAN', '1', 'XI', 1, null, '2025-08-22 05:39:12', '2025-08-22 05:39:12'),
+  (49, 'SMK Negeri 1 Kota Kediri', 'Jl. Veteran 9 Mojoroto, Kota Kediri', '3571', 'KOTA KEDIRI', '4', 'XI', 10, null, '2025-08-22 06:11:46', '2025-08-22 06:11:46'),
+  (50, 'SMKN 3 Malang', 'Jl Surabaya no, 1 , Gading kasri, Kota MalangKec. Klojen', '3573', 'KOTA MALANG', '1', 'XI', 7, null, '2025-08-22 06:50:04', '2025-08-22 06:50:04'),
+  (51, 'SMKN 1 Nglegok', 'Jl. Penataran No. 1 Nglegok', '3505', 'KABUPATEN BLITAR', '1', 'XI', 8, null, '2025-08-22 07:00:55', '2025-08-22 07:00:55'),
+  (52, 'SMK Negeri 1 Klabang', 'Jln. Raya Blimbing no. 12 Desa Klabang Kab. Bondowoso', '3511', 'KABUPATEN BONDOWOSO', '4', 'XI', 3, null, '2025-08-22 07:03:44', '2025-08-22 07:03:44'),
+  (53, 'SMK Negeri 1 Batu', 'Jalan Bromo no 11 Sisir, Batu', '3579', 'KOTA BATU', '2', 'XI', 7, null, '2025-08-22 07:40:52', '2025-08-22 07:40:52'),
+  (54, 'SMKN 1 Batu', 'Jalan Bromo no 11 sisir, batu', '3579', 'KOTA BATU', '2', 'XI', 7, null, '2025-08-22 07:53:55', '2025-08-22 07:53:55'),
+  (55, 'SMKN 1 Slahung Ponorogo', 'jln Macan Tutul, Galak, Kec Slahung, Kab Ponorogo', '3502', 'KABUPATEN PONOROGO', '1', 'XI', 13, null, '2025-08-22 07:58:16', '2025-08-22 07:58:16'),
+  (56, 'SMKN 2 MALANG', 'Jl. Veteran no.17', '3573', 'KOTA MALANG', '1', 'XI', 7, null, '2025-08-22 09:32:46', '2025-08-22 09:32:46'),
+  (57, 'SMK Negeri 2 Bangkalan', 'Jl. Halim Perdana Kusuma (Ring road) Bangkalan', '3526', 'KABUPATEN BANGKALAN', '4', 'XI', 21, null, '2025-08-22 11:13:03', '2025-08-22 11:13:03'),
+  (58, 'SMK NEGERI 1 BEJI', 'Jl. Wicaksana No. 22b, Gununggangsir, Beji, Pasuruan', '3514', 'KABUPATEN PASURUAN', '4', 'XI', 1, null, '2025-08-22 11:45:00', '2025-08-22 11:45:00'),
+  (59, 'SMK Negeri 3 Malang', 'Jl. Surabaya No. 1', '3573', 'KOTA MALANG', '3', 'XII', 7, null, '2025-08-22 12:16:46', '2025-08-22 12:16:46'),
+  (60, 'SMK NEGERI 3 MALANG', 'JL. Surabaya No 1, Klojen, Malang', '3573', 'KOTA MALANG', '3', 'XII', 7, null, '2025-08-22 12:22:18', '2025-08-22 12:22:18'),
+  (61, 'SMKN 1 LAMONGAN', 'jl. panglima sudirmam no 84 lamongan', '3524', 'KABUPATEN LAMONGAN', '3', 'XI', 16, null, '2025-08-22 13:14:10', '2025-08-22 13:14:10'),
+  (62, 'SMK NEGERI 2 MAGETAN', 'JL KEMASAN NO 13 MAGETAN', '3520', 'KABUPATEN MAGETAN', '3', 'XI', 13, null, '2025-08-22 13:34:42', '2025-08-22 13:34:42'),
+  (63, 'SMK NEGERI 2 PONOROGO', 'Jl Laksamana Yos Sudarso No. 21a, Kab Ponorogo', '3502', 'KABUPATEN PONOROGO', '3', 'XI', 13, null, '2025-08-22 13:39:15', '2025-08-22 13:39:15'),
+  (64, 'SMKN 1 BANGKALAN', 'Jl. Kenanga N0.04,Mlajah - Bangkalan, 69116', '3526', 'KABUPATEN BANGKALAN', '2', 'XI', 21, null, '2025-08-22 13:41:46', '2025-08-22 13:41:46'),
+  (65, 'SMKN 1 SINGOSARI', 'Jl. Raya Mondoroko No.3, Singosari', '3507', 'KABUPATEN MALANG', 'TEKNIK INSTALASI TENAGA LISTRIK', 'XI', 6, null, '2025-08-22 13:42:27', '2025-08-22 13:42:27'),
+  (66, 'SMK NEGERI 2 TRENGGALEK', 'Jl. Ronggo Warsito Gg. Sidomukti No. 1, Kab. Trenggalek', '3503', 'KABUPATEN TRENGGALEK', '4', 'XI', 9, null, '2025-08-23 09:23:46', '2025-08-23 09:23:46'),
+  (67, 'SMKN 3 MALANG', 'Jl. Surabaya No.1, Gading Kasri, Kec. Klojen, Kota Malang', '3573', 'KOTA MALANG', '1', 'XII', 7, null, '2025-08-23 14:19:14', '2025-08-23 14:19:14'),
+  (68, 'SMKN 1 PAGERGOJO', 'Jl. Pagerwojo Ds. Mulyosari Pagerwojo', '3504', 'KABUPATEN TULUNGAGUNG', '3', 'XI', 9, null, '2025-08-29 11:40:45', '2025-08-29 11:40:45');
 
 -- pelatihan
 INSERT INTO
-  `pelatihans` (
+  `pelatihan` (
     `id`,
     `instansi_id`,
     `nama_pelatihan`,
+    `jenis_program`,
     `slug`,
     `gambar`,
     `tanggal_mulai`,
     `tanggal_selesai`,
     `deskripsi`,
+    `status`,
     `created_at`,
     `updated_at`
   )
@@ -1004,11 +385,27 @@ VALUES
     1,
     NULL,
     'Kegiatan Pengembangan dan Pelatihan Kompetensi Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 (Kelas Keterampilan) Angkatan II Tahun 2025',
+    'reguler',
+    NULL,
+    NULL,
+    '2025-08-25',
+    '2025-08-30',
+    NULL,
+    'selesai',
+    NULL,
+    NULL
+  ),
+  (
+    2,
+    NULL,
+    'Kegiatan Pelatihan Kompetensi Vokasi bagi Siswa SMK / SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan II  Tahun 2025',
+    'mtu',
     NULL,
     NULL,
     '2025-09-01',
     '2025-09-06',
     NULL,
+    'aktif',
     NULL,
     NULL
   );
@@ -1091,7 +488,7 @@ VALUES
 
 -- pertanyaan
 INSERT INTO
-  `pertanyaans` (
+  `pertanyaan` (
     `id`,
     `tes_id`,
     `nomor`,
@@ -2265,7 +1662,7 @@ VALUES
 
 -- opsi jawaban
 INSERT INTO
-  `opsi_jawabans` (
+  `opsi_jawaban` (
     `id`,
     `pertanyaan_id`,
     `teks_opsi`,
@@ -3784,7 +3181,7 @@ VALUES
 -- tabel peserta survei
 -- tabel peserta_survei
 INSERT INTO
-  `peserta_surveis` (
+  `peserta_survei` (
     `id`,
     `nama`,
     `email`,
@@ -4358,7 +3755,7 @@ VALUES
 
 -- percobaan
 INSERT INTO
-  `percobaans` (
+  `percobaan` (
     `id`,
     `pesertaSurvei_id`,
     `tes_id`,
@@ -5145,601 +4542,601 @@ VALUES
     2,
     'Sepni Amzah',
     'sepniamzah5@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     3,
     'Firdaussy Nurliza Ramadhani',
     'firdanurliza9@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     4,
     'MOCH ADAM ASSADDIL RAIZ',
     'adamassaddil@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     5,
     'NAYSILLA NOVI NUR KHUMAIRA',
     'naysillanovi11@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     6,
     'OKY RIYANTO',
     'okyriyanto369@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     7,
     'Prajwalita Zulfa Fatika Chusna',
     'prajwalitacusna@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     8,
     'RALVIO OCZA ZEBIAN',
     'ralvioocza30@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     9,
     'RYNDI MEGA HERAWATI',
     'rindi121299@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     10,
     'RANGGA EKA PUTRA ELYANTO',
     'ranggaproject63@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     11,
     'Dewi Safira Febriana',
     'dewisafira973@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     12,
     'Amelta Aulia Subarko',
     'meltacialia@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     13,
     'LUTFI HIDAYATUR ROHIM',
     'lutfiturrohim@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     14,
     'RADITHYA FAUSTA ARIEF',
     'faustaatifradithya@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     15,
     'Alifia Ziqna Faradiba',
     'alifiafaradiba043@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     16,
     'Muhammad Nazar Qoirun Nazmi',
     'mnazar.qn18@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     17,
     'HALIMATUS PUTRI DEWI',
     'nurulalaina86@guru.smk.belajar.id',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     18,
     'Naila Aurellia',
     'nailaay123@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     19,
     'Masyifa Azzahra',
     'masyifaazzahra23@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     20,
     'SILVIA RAMADANI',
     'silviaramadani665@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     21,
     'ARDHIANSYAH PUTRA RISQI SATRIAGUNG',
     'ardhiansyahsatriagung@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     22,
     'XTWOLITA ELFREDA ARDININGRUM',
     'xtwolitae@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     23,
     'Ahmad Khoiruddin',
     'ahmadkhoiruddin2025@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     24,
     'Zahra Farrisa Gitya Putri',
     'zahrafarrisaputri@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     25,
     'SABRINA WAFA AQILLAH',
     's6951820@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     26,
     'Anggrea Revalda Pratiwi Putri',
     'revaldaanggrea@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     27,
     'MUHAMAD RIKI FEBRIANTO',
     'muhamadriki9206@smk.blajar.id',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     28,
     'Binti Lailatul Ilmi',
     'bintilailatulilmi@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     29,
     'ZYIKA AYUDIA MUTIA SARI',
     'huddyiswanto@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     30,
     'YOHANA DIAN MAHARANI',
     'hanayana302@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     31,
     'Diaz Ayunda Kirana',
     'diazayundakirana@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     32,
     'Margareta Pasharina Swastika',
     'swastikamargareta3@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     33,
     'Nayla Qolbina Muttaqiyah',
     'naylataqiyyah30@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     34,
     'Arum Mawarni Dwi Puspita',
     'arummawarni6pbm@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     35,
     'DIAH WAHYU SOFANA',
     'diahsofana752@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     36,
     'Salsabila Nur rochim',
     'salsabila33pbmnew@gamail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     37,
     'Marisa Ulfi Nur\'aini',
     'marisaulfinuraini@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     38,
     'AISYAH NADYA FITRI',
     'duoaisyah124@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     39,
     'NAYZILA NISRINA SALSABILA',
     'naysilaa1210@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     40,
     'CALLULA SALWA ZAKIAH',
     'calulasalwa20@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     41,
     'NAJWA AZZAHRA RAMADHANI',
     'najwazzahra126@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     42,
     'MUHAMMAD ALVIN ABIANSYAH',
     'muhammad.alvin6412@smk.belajar.id',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     43,
     'Rahmadina Nuraini',
     'rahmadinanuraini7@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     44,
     'HILMAN PUTRA AL RIZKI',
     'hlmnsii856@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     45,
     'Muhammad Bisri Abdillah',
     'muhammadbisriabdillah6@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     46,
     'rizki fajar aditya putra',
     'rizkifajaraditiyaputra@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     47,
     'Alexca Evelina Avrilla Putri',
     'acaalexca@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     48,
     'Brillian Dwi Rahmadani',
     'rahamadani52@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     49,
     'Puri Bondan Ningtyas',
     'onyourmarkiam@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     50,
     'SAIFUL BAHRI',
     'bahri123baik@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     51,
     'MUCHAMMAD ASKAEV ANSORI',
     'www4ab@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     52,
     'Baitha Hayyunisa',
     'baitha.hayyunisa@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     53,
     'Andi Dixie Aurellia Neysa',
     'dixieaurellianey@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     54,
     'Rahma pujianti',
     'rahmapuji288@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     55,
     'DAYINTA SURYANING SEKAR DHATU',
     'dayintadhtu@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     56,
     'CRISSANDA REBECCA ANGELA CHILL',
     'rbcsaa@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     57,
     'ANNA ALTHAFUNNISA',
     'annaalthafunnisa467@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     58,
     'ESA NUR WAHYUDI',
     'esanurwahyudisoto@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     59,
     'ZEFRIZAL RAHMADANI',
     'makmupikun@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     60,
     'MERCY ALVINA PUTRI SILOLO',
     'mercyalvinaa@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     61,
     'Firda Aulia Zahra',
     'firdaaulya@gmail.com',
-    NOW (),
+    NOW(),
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   );
 
 -- tabel peserta
@@ -5749,7 +5146,7 @@ VALUES
 -- 2. Kolom 'token' telah ditambahkan dengan nilai unik yang dibuat secara acak.
 -- 3. Kolom 'email' dan nilainya telah dihapus agar sesuai dengan skema tabel.
 INSERT INTO
-  `pesertas` (
+  `peserta` (
     `id`,
     `pelatihan_id`,
     `bidang_id`,
@@ -6790,7 +6187,7 @@ VALUES
 
 -- lampiran
 INSERT INTO
-  `lampirans` (
+  `lampiran` (
     `id`,
     `peserta_id`,
     `no_surat_tugas`,
@@ -7526,9 +6923,9 @@ VALUES
 
 -- jawaban user
 INSERT INTO
-  `jawaban_users` (
+  `jawaban_user` (
     `id`,
-    `opsi_jawabans_id`,
+    `opsi_jawaban_id`,
     `pertanyaan_id`,
     `percobaan_id`,
     `nilai_jawaban`,
@@ -13639,9 +13036,9 @@ VALUES
   );
 
 INSERT INTO
-  `jawaban_users` (
+  `jawaban_user` (
     `id`,
-    `opsi_jawabans_id`,
+    `opsi_jawaban_id`,
     `pertanyaan_id`,
     `percobaan_id`,
     `nilai_jawaban`,
@@ -19002,9 +18399,9 @@ VALUES
   );
 
 INSERT INTO
-  `jawaban_users` (
+  `jawaban_user` (
     `id`,
-    `opsi_jawabans_id`,
+    `opsi_jawaban_id`,
     `pertanyaan_id`,
     `percobaan_id`,
     `nilai_jawaban`,
@@ -24945,9 +24342,9 @@ VALUES
   );
 
 INSERT INTO
-  `jawaban_users` (
+  `jawaban_user` (
     `id`,
-    `opsi_jawabans_id`,
+    `opsi_jawaban_id`,
     `pertanyaan_id`,
     `percobaan_id`,
     `nilai_jawaban`,
@@ -30223,8 +29620,8 @@ VALUES
     5,
     1,
     30,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     7,
@@ -30235,8 +29632,8 @@ VALUES
     6,
     1,
     30,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     8,
@@ -30247,8 +29644,8 @@ VALUES
     7,
     1,
     30,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   ),
   (
     9,
@@ -30259,14 +29656,14 @@ VALUES
     1,
     1,
     NULL,
-    NOW (),
-    NOW ()
+    NOW(),
+    NOW()
   );
 
 -- PERTANYAAN
 -- Videografi
 INSERT INTO
-  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+  `pertanyaan` (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
 VALUES
   (
     6,
@@ -30391,7 +29788,7 @@ VALUES
 
 -- PLC
 INSERT INTO
-  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+  `pertanyaan` (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
 VALUES
   (
     7,
@@ -30506,7 +29903,7 @@ VALUES
 
 -- FOTOGRAFI
 INSERT INTO
-  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+  `pertanyaan` (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
 VALUES
   (
     8,
@@ -30634,7 +30031,7 @@ VALUES
 -- ===================================================================
 -- Videografi
 INSERT INTO
-  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+  `opsi_jawaban` (pertanyaan_id, teks_opsi, apakah_benar)
 VALUES
   (
     117,
@@ -30835,7 +30232,7 @@ VALUES
 
 -- PLC
 INSERT INTO
-  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+  `opsi_jawaban` (pertanyaan_id, teks_opsi, apakah_benar)
 VALUES
   (
     137,
@@ -31104,7 +30501,7 @@ VALUES
 
 -- FOTOGRAFI
 INSERT INTO
-  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+  `opsi_jawaban` (pertanyaan_id, teks_opsi, apakah_benar)
 VALUES
   (157, 'Mulai proses foto', false),
   (157, 'Mengobrol sambil minum kopi', false),
@@ -31229,7 +30626,7 @@ VALUES
 
 -- monev MTU
 INSERT INTO
-  pertanyaans (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
+  `pertanyaan` (tes_id, nomor, teks_pertanyaan, tipe_jawaban)
 VALUES
   (
     9,
@@ -31378,7 +30775,7 @@ VALUES
 -- LANGKAH 1 (SURVEI MTU): ISI OPSI JAWABAN MASTER
 -- ===================================================================
 INSERT INTO
-  opsi_jawabans (pertanyaan_id, teks_opsi, apakah_benar)
+  `opsi_jawaban` (pertanyaan_id, teks_opsi, apakah_benar)
 VALUES
   -- Set Opsi 1: Skala "Memuaskan" (Master Pertanyaan ID: 177)
   (177, 'Tidak Memuaskan', 0),
@@ -31425,7 +30822,7 @@ VALUES
 -- LANGKAH 2 (SURVEI MTU): ISI TABEL PIVOT pivot_jawaban
 -- ===================================================================
 INSERT INTO
-  pivot_jawaban (pertanyaan_id, template_pertanyaan_id)
+  `pivot_jawaban` (pertanyaan_id, template_pertanyaan_id)
 VALUES
   -- Pertanyaan yang menggunakan opsi dari master ID 177 (Skala Memuaskan)
   (178, 177),
@@ -31444,3 +30841,66 @@ VALUES
   (201, 177),
   -- Pertanyaan yang menggunakan opsi dari master ID 190 (Skala Perlu)
   (191, 190);
+
+  INSERT INTO `pendaftaran_pelatihan` (`id`, `peserta_id`, `pelatihan_id`, `nomor_registrasi`, `tanggal_pendaftaran`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '1-TPTU-001', '2025-08-20 09:28:17', '2025-08-20 09:28:17', '2025-08-20 09:28:17'),
+(2, 2, 1, '1-KCAN-001', '2025-08-20 10:06:36', '2025-08-20 10:06:36', '2025-08-20 10:06:36'),
+(3, 3, 1, '1-TPTU-002', '2025-08-20 11:23:32', '2025-08-20 11:23:32', '2025-08-20 11:23:32'),
+(4, 4, 1, '1-TBOG-001', '2025-08-20 11:58:13', '2025-08-20 11:58:13', '2025-08-20 11:58:13'),
+(5, 5, 1, '1-TPTU-003', '2025-08-20 12:13:59', '2025-08-20 12:13:59', '2025-08-20 12:13:59'),
+(6, 6, 1, '1-TBUS-001', '2025-08-20 12:19:16', '2025-08-20 12:19:16', '2025-08-20 12:19:16'),
+(7, 7, 1, '1-TBOG-002', '2025-08-20 12:25:07', '2025-08-20 12:25:07', '2025-08-20 12:25:07'),
+(8, 8, 1, '1-TBUS-002', '2025-08-20 12:30:28', '2025-08-20 12:30:28', '2025-08-20 12:30:28'),
+(9, 9, 1, '1-TPTU-004', '2025-08-20 13:04:04', '2025-08-20 13:04:04', '2025-08-20 13:04:04'),
+(10, 10, 1, '1-TBUS-003', '2025-08-20 13:10:17', '2025-08-20 13:10:17', '2025-08-20 13:10:17'),
+(11, 11, 1, '1-TBUS-004', '2025-08-20 13:57:25', '2025-08-20 13:57:25', '2025-08-20 13:57:25'),
+(12, 12, 1, '1-KCAN-002', '2025-08-20 14:09:41', '2025-08-20 14:09:41', '2025-08-20 14:09:41'),
+(13, 13, 1, '1-TPTU-005', '2025-08-20 14:12:20', '2025-08-20 14:12:20', '2025-08-20 14:12:20'),
+(14, 14, 1, '1-KCAN-003', '2025-08-20 14:28:22', '2025-08-20 14:28:22', '2025-08-20 14:28:22'),
+(15, 15, 1, '1-TPTU-006', '2025-08-20 14:44:46', '2025-08-20 14:44:46', '2025-08-20 14:44:46'),
+(16, 16, 1, '1-TBUS-005', '2025-08-20 15:12:10', '2025-08-20 15:12:10', '2025-08-20 15:12:10'),
+(17, 17, 1, '1-KCAN-004', '2025-08-20 20:24:24', '2025-08-20 20:24:24', '2025-08-20 20:24:24'),
+(18, 18, 1, '1-TBUS-006', '2025-08-21 01:58:09', '2025-08-21 01:58:09', '2025-08-21 01:58:09'),
+(19, 19, 1, '1-TBUS-007', '2025-08-21 02:29:10', '2025-08-21 02:29:10', '2025-08-21 02:29:10'),
+(20, 20, 1, '1-TPTU-007', '2025-08-21 02:48:09', '2025-08-21 02:48:09', '2025-08-21 02:48:09'),
+(21, 21, 1, '1-TBUS-008', '2025-08-21 02:49:15', '2025-08-21 02:49:15', '2025-08-21 02:49:15'),
+(22, 22, 1, '1-TPTU-008', '2025-08-21 03:14:17', '2025-08-21 03:14:17', '2025-08-21 03:14:17'),
+(23, 23, 1, '1-KCAN-005', '2025-08-21 03:33:49', '2025-08-21 03:33:49', '2025-08-21 03:33:49'),
+(24, 24, 1, '1-TBUS-009', '2025-08-21 03:40:57', '2025-08-21 03:40:57', '2025-08-21 03:40:57'),
+(25, 25, 1, '1-TBUS-010', '2025-08-21 03:54:31', '2025-08-21 03:54:31', '2025-08-21 03:54:31'),
+(26, 26, 1, '1-TPTU-009', '2025-08-21 05:02:39', '2025-08-21 05:02:39', '2025-08-21 05:02:39'),
+(27, 27, 1, '1-TBOG-003', '2025-08-21 07:07:23', '2025-08-21 07:07:23', '2025-08-21 07:07:23'),
+(28, 28, 1, '1-TBOG-004', '2025-08-21 09:06:51', '2025-08-21 09:06:51', '2025-08-21 09:06:51'),
+(29, 29, 1, '1-TBOG-005', '2025-08-21 12:12:02', '2025-08-21 12:12:02', '2025-08-21 12:12:02'),
+(30, 30, 1, '1-TBOG-006', '2025-08-21 12:17:34', '2025-08-21 12:17:34', '2025-08-21 12:17:34'),
+(31, 31, 1, '1-KCAN-006', '2025-08-21 13:56:56', '2025-08-21 13:56:56', '2025-08-21 13:56:56'),
+(32, 32, 1, '1-KCAN-007', '2025-08-21 14:23:25', '2025-08-21 14:23:25', '2025-08-21 14:23:25'),
+(33, 33, 1, '1-TBUS-011', '2025-08-22 02:54:10', '2025-08-22 02:54:10', '2025-08-22 02:54:10'),
+(34, 34, 1, '1-TBOG-007', '2025-08-22 03:04:40', '2025-08-22 03:04:40', '2025-08-22 03:04:40'),
+(35, 35, 1, '1-TBUS-012', '2025-08-22 03:13:06', '2025-08-22 03:13:06', '2025-08-22 03:13:06'),
+(36, 36, 1, '1-TBOG-008', '2025-08-22 03:50:52', '2025-08-22 03:50:52', '2025-08-22 03:50:52'),
+(37, 37, 1, '1-KCAN-008', '2025-08-22 04:13:21', '2025-08-22 04:13:21', '2025-08-22 11:30:51'),
+(38, 38, 1, '1-KCAN-009', '2025-08-22 04:18:43', '2025-08-22 04:18:43', '2025-08-22 04:18:43'),
+(39, 39, 1, '1-TBOG-009', '2025-08-22 05:14:42', '2025-08-22 05:14:42', '2025-08-22 05:14:42'),
+(40, 40, 1, '1-TBOG-010', '2025-08-22 05:19:47', '2025-08-22 05:19:47', '2025-08-22 05:19:47'),
+(41, 41, 1, '1-TPTU-010', '2025-08-22 06:11:46', '2025-08-22 06:11:46', '2025-08-22 06:11:46'),
+(42, 42, 1, '1-TBOG-011', '2025-08-22 06:50:04', '2025-08-22 06:50:04', '2025-08-22 06:50:04'),
+(43, 43, 1, '1-TBOG-012', '2025-08-22 07:00:55', '2025-08-22 07:00:55', '2025-08-22 07:00:55'),
+(44, 44, 1, '1-TPTU-011', '2025-08-22 07:03:44', '2025-08-22 07:03:44', '2025-08-22 07:03:44'),
+(45, 45, 1, '1-TBUS-013', '2025-08-22 07:40:52', '2025-08-22 07:40:52', '2025-08-22 07:40:52'),
+(46, 46, 1, '1-TBUS-014', '2025-08-22 07:53:55', '2025-08-22 07:53:55', '2025-08-22 07:53:55'),
+(47, 47, 1, '1-TBOG-013', '2025-08-22 07:58:16', '2025-08-22 07:58:16', '2025-08-22 07:58:16'),
+(48, 48, 1, '1-TBOG-014', '2025-08-22 09:32:46', '2025-08-22 09:32:46', '2025-08-22 09:32:46'),
+(49, 49, 1, '1-TPTU-012', '2025-08-22 11:13:03', '2025-08-22 11:13:03', '2025-08-22 11:13:03'),
+(50, 50, 1, '1-TPTU-013', '2025-08-22 11:45:00', '2025-08-22 11:45:00', '2025-08-22 11:45:00'),
+(51, 51, 1, '1-KCAN-010', '2025-08-22 12:16:46', '2025-08-22 12:16:46', '2025-08-22 12:16:46'),
+(52, 52, 1, '1-KCAN-011', '2025-08-22 12:22:18', '2025-08-22 12:22:18', '2025-08-22 12:22:18'),
+(53, 53, 1, '1-KCAN-012', '2025-08-22 13:14:10', '2025-08-22 13:14:10', '2025-08-22 13:14:10'),
+(54, 54, 1, '1-KCAN-013', '2025-08-22 13:34:42', '2025-08-22 13:34:42', '2025-08-22 13:34:42'),
+(55, 55, 1, '1-KCAN-014', '2025-08-22 13:39:15', '2025-08-22 13:39:15', '2025-08-22 13:39:15'),
+(56, 56, 1, '1-TBUS-015', '2025-08-22 13:41:46', '2025-08-22 13:41:46', '2025-08-22 13:41:46'),
+(57, 57, 1, '1-TPTU-014', '2025-08-22 13:42:27', '2025-08-22 13:42:27', '2025-08-22 13:42:27'),
+(58, 58, 1, '1-TPTU-015', '2025-08-23 09:23:46', '2025-08-23 09:23:46', '2025-08-23 09:23:46'),
+(59, 59, 1, '1-TBOG-015', '2025-08-23 14:19:14', '2025-08-23 14:19:14', '2025-08-23 14:19:14'),
+(60, 60, 1, '1-KCAN-015', '2025-08-29 11:40:45', '2025-08-29 11:40:45', '2025-08-29 11:40:45');
+

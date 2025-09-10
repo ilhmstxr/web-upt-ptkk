@@ -59,10 +59,10 @@ class PembagianKamarPage extends Page implements Tables\Contracts\HasTable
                             ])
                             ->default(function () {
                                 // ubah config bawaan jadi array repeater
-                                return collect(config('kamar'))->map(function ($kamars, $blok) {
+                                return collect(config('kamar'))->map(function ($kamar, $blok) {
                                     return [
                                         'nama' => $blok,
-                                        'kamar' => collect($kamars)->map(fn ($k) => [
+                                        'kamar' => collect($kamar)->map(fn ($k) => [
                                             'no' => $k['no'],
                                             'bed' => is_numeric($k['bed']) ? $k['bed'] : null,
                                         ])->toArray(),
@@ -90,14 +90,14 @@ class PembagianKamarPage extends Page implements Tables\Contracts\HasTable
                     ->label('Export PDF')
                     ->icon('heroicon-o-printer')
                     ->action(function () {
-                        $pesertas = Peserta::orderBy('id')->get()->map(function ($p) {
+                        $peserta = Peserta::orderBy('id')->get()->map(function ($p) {
                             $p->kamar = $this->assignKamar($p);
                             $p->bed = $this->assignBed($p);
                             return $p;
                         });
 
                         $pdf = Pdf::loadView('exports.room-pdf', [
-                            'pesertas' => $pesertas,
+                            'peserta' => $peserta,
                             'konfigurasiKamar' => $this->konfigurasiKamar,
                         ]);
 
@@ -128,8 +128,8 @@ class PembagianKamarPage extends Page implements Tables\Contracts\HasTable
             ->filter(fn ($k) => is_numeric($k['bed']) && $k['bed'] > 0)
             ->values();
 
-        $pesertas = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
-        $index = $pesertas->search(fn ($p) => $p->id === $record->id);
+        $peserta = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
+        $index = $peserta->search(fn ($p) => $p->id === $record->id);
 
         $counter = 0;
         foreach ($listKamar as $kamar) {
@@ -162,8 +162,8 @@ class PembagianKamarPage extends Page implements Tables\Contracts\HasTable
             ->filter(fn ($k) => is_numeric($k['bed']) && $k['bed'] > 0)
             ->values();
 
-        $pesertas = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
-        $index = $pesertas->search(fn ($p) => $p->id === $record->id);
+        $peserta = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
+        $index = $peserta->search(fn ($p) => $p->id === $record->id);
 
         $counter = 0;
         foreach ($listKamar as $kamar) {

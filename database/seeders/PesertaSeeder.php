@@ -15,7 +15,7 @@ class PesertaSeeder extends Seeder
      */
     public function run(): void
     {
-        $lampirans = [
+        $lampiran = [
             [
                 'id' => 3,
                 'peserta_id' => 3,
@@ -1900,6 +1900,6 @@ class PesertaSeeder extends Seeder
 
         Instansi::insert($instansi);
         Peserta::insert($peserta);
-        Lampiran::insert($lampirans);
+        Lampiran::insert($lampiran);
     }
 }

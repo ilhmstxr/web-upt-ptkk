@@ -10,7 +10,8 @@
             <input type="hidden" name="current_step" value="{{ $currentStep }}">
             {{-- Asal Lembaga --}}
             <div>
-                <label for="asal_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Asal Lembaga Instansi</label>
+                <label for="asal_instansi" class="block text-sm font-semibold mb-2 text-slate-700">Asal Lembaga
+                    Instansi</label>
                 <div class="relative">
                     <input type="text" id="asal_instansi" name="asal_instansi" placeholder="Masukkan Asal Lembaga"
                         value="{{ old('asal_instansi', $formData['asal_instansi'] ?? '') }}"
@@ -151,38 +152,71 @@
                 @enderror
             </div>
 
+            {{-- IMPROVE: kota bisa di autosearch lalu di select, namun perlu validasi kecocokan antar kota dengan cabdin --}}
             {{-- Cabang Dinas --}}
-            <div>
-                <label for="cabang_dinas_wilayah" class="block text-sm font-semibold mb-2 text-slate-700">Cabang Dinas
-                    Wilayah</label>
-                <div class="relative">
-                    <select id="cabang_dinas_wilayah" name="cabang_dinas_wilayah"
-                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabang_dinas_wilayah') border-red-500 @enderror"
-                        required>
-                        <option value="">Pilih Dinas Wilayah</option>
-                        @foreach ($cabangDinas as $cb)
-                            {{-- <option value="surabaya" @if (old('cabang_dinas_wilayah') == 'surabaya') selected @endif>Cabang Dinas Wilayah
-                            Surabaya</option> --}}
-                            <option value="{{ $cb->id }}" @selected(old('cabang_dinas_wilayah', $formData['cabang_dinas_wilayah'] ?? '') == $cb->id)>
-                                {{ $cb->nama }}
-                            </option>
-                        @endforeach
-                        {{-- (Tambahkan opsi lain di sini) --}}
-                    </select>
-                    <div id="cabang_dinas_wilayahError"
-                        class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="error-message-text"></span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div>
+                    <label for="kota" class="block text-sm font-semibold mb-2 text-slate-700">Kota /
+                        Kabupaten</label>
+                    <div class="relative">
+                        <input type="text" id="kota" name="kota"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('kota') border-red-500 @enderror"
+                            placeholder="Ketik nama kota atau kabupaten..." required autocomplete="off">
+
+
+                        <div id="kotaSuggestions"
+                            class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
+                        </div>
+
+                        <input type="hidden" name="kota_id" id="kota_id">
+                        <div id="kotaError"
+                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
                     </div>
+                    @error('kota')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-                @error('cabang_dinas_wilayah')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <div>
+                    <label for="cabangDinas_id" class="block text-sm font-semibold mb-2 text-slate-700">Cabang Dinas
+                        Wilayah</label>
+                    <div class="relative">
+                        <select id="cabangDinas_id" name="cabangDinas_id"
+                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('cabangDinas_id') border-red-500 @enderror"
+                            required>
+                            <option value="">Pilih Dinas Wilayah</option>
+                            @foreach ($cabangDinas as $cb)
+                                {{-- <option value="surabaya" @if (old('cabangDinas_id') == 'surabaya') selected @endif>Cabang Dinas Wilayah
+                            Surabaya</option> --}}
+                                <option value="{{ $cb->id }}" @selected(old('cabangDinas_id', $formData['cabangDinas_id'] ?? '') == $cb->id)>
+                                    {{ $cb->nama }}
+                                </option>
+                            @endforeach
+                            {{-- (Tambahkan opsi lain di sini) --}}
+                        </select>
+                        <div id="cabangDinas_idError"
+                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('cabangDinas_id')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             {{-- Tombol Navigasi --}}
@@ -200,105 +234,327 @@
     </div>
 @endsection
 
-    <style>
-        .error-popup {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-            transform: translateY(10px);
-            z-index: 10;
+<style>
+    .error-popup {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        transform: translateY(10px);
+        z-index: 10;
+    }
+
+    .error-popup.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+</style>
+<script defer>
+    document.addEventListener("DOMContentLoaded", async () => {
+        // ====== Elemen dasar ======
+        const kotaInput = document.getElementById("kota");
+        const suggestionsContainer = document.getElementById("kotaSuggestions");
+        const errorPopup = document.getElementById("kotaError");
+        const errorText = errorPopup?.querySelector(".error-message-text");
+
+        // Buat hidden input kota_id jika belum ada
+        let kotaIdHidden = document.getElementById("kota_id");
+        if (!kotaIdHidden) {
+            kotaIdHidden = document.createElement("input");
+            kotaIdHidden.type = "hidden";
+            kotaIdHidden.id = "kota_id";
+            kotaIdHidden.name = "kota_id";
+            kotaInput.parentElement.appendChild(kotaIdHidden);
         }
 
-        .error-popup.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-    </style>
+        // Dapatkan elemen form (untuk validasi submit)
+        const form = kotaInput.closest("form");
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.getElementById('biodataSekolahForm');
+        // ====== State ======
+        let allRegencies = [];
+        let filtered = [];
+        let activeIndex = -1; // untuk navigasi keyboard
+        let selectedItem = null; // { id, name } terakhir yang dipilih dari daftar
 
-            // Fungsi untuk menampilkan pop-up error
-            const showError = (element, message) => {
-                const errorPopup = document.getElementById(element.id + 'Error');
-                if (errorPopup) {
-                    errorPopup.querySelector('.error-message-text').textContent = message;
-                    errorPopup.classList.add('visible');
-                    element.classList.add('border-red-500', 'focus:ring-red-500');
-                }
-            };
+        // ====== Util ======
+        const normalize = (s) => (s || "").toString().trim().toLowerCase().replace(/\s+/g, " ");
 
-            // Fungsi untuk menyembunyikan pop-up error
-            const hideError = (element) => {
-                const errorPopup = document.getElementById(element.id + 'Error');
-                if (errorPopup) {
-                    errorPopup.classList.remove('visible');
-                    element.classList.remove('border-red-500', 'focus:ring-red-500');
-                }
-            };
+        const showSuggestions = () => {
+            suggestionsContainer.classList.remove("hidden");
+        };
+        const hideSuggestions = () => {
+            suggestionsContainer.classList.add("hidden");
+            activeIndex = -1;
+        };
 
-            // Sembunyikan semua error saat form di-reset atau dimuat ulang
-            const hideAllErrors = () => {
-                form.querySelectorAll('input[required], select[required]').forEach(hideError);
-            };
+        const clearSuggestions = () => {
+            suggestionsContainer.innerHTML = "";
+            activeIndex = -1;
+        };
 
-            // Tambahkan event listener untuk menyembunyikan error saat input/select diubah
-            form.querySelectorAll('input[required], select[required]').forEach(element => {
-                element.addEventListener('input', () => hideError(element));
-                element.addEventListener('change', () => hideError(element));
+        const renderSuggestions = (items) => {
+            clearSuggestions();
+            items.forEach((item, idx) => {
+                const div = document.createElement("div");
+                div.textContent = item.name;
+                div.className =
+                    "p-2 cursor-pointer hover:bg-gray-100 select-none " +
+                    (idx === activeIndex ? "bg-gray-100" : "");
+                // mousedown agar tidak kalah oleh event blur pada input
+                div.addEventListener("mousedown", (e) => {
+                    e.preventDefault();
+                    chooseItem(item);
+                });
+                suggestionsContainer.appendChild(div);
             });
+            if (items.length > 0) showSuggestions();
+            else hideSuggestions();
+        };
 
-            form.addEventListener('submit', function(event) {
-                hideAllErrors();
-                let firstErrorElement = null;
+        const chooseItem = (item) => {
+            kotaInput.value = item.name;
+            kotaIdHidden.value = item.id;
+            selectedItem = {
+                id: item.id,
+                name: item.name
+            };
+            hideSuggestions();
+            hideError();
+        };
 
-                for (const element of form.elements) {
-                    if (element.hasAttribute('required') && !element.validity.valid) {
-                        event.preventDefault();
+        const showError = (msg) => {
+            if (!errorPopup) return;
+            errorText.textContent = msg || "Harus pilih kota/kabupaten dari daftar.";
+            errorPopup.classList.remove("hidden");
+        };
+        const hideError = () => {
+            if (!errorPopup) return;
+            errorPopup.classList.add("hidden");
+        };
 
-                        let message = 'Kolom ini wajib diisi.'; // Pesan default
+        const debounce = (fn, delay = 150) => {
+            let t;
+            return (...args) => {
+                clearTimeout(t);
+                t = setTimeout(() => fn(...args), delay);
+            };
+        };
 
-                        // Pesan kustom berdasarkan ID elemen
-                        switch (element.id) {
-                            case 'asal_instansi':
-                                message = 'Asal instansi sekolah wajib diisi.';
-                                break;
-                            case 'alamat_instansi':
-                                message = 'Alamat instansi tidak boleh kosong.';
-                                break;
-                            case 'bidang_keahlian':
-                                message = 'Silakan pilih kompetensi keahlian Anda.';
-                                break;
-                            case 'pelatihan_id':
-                                message = 'Silakan pilih pelatihan yang ingin diikuti.';
-                                break;
-                            case 'kelas':
-                                message = 'Anda harus memilih kelas.';
-                                break;
-                            case 'cabang_dinas_wilayah':
-                                message = 'Mohon pilih cabang dinas wilayah.';
-                                break;
-                        }
+        // ====== Ambil data API (contoh: provinsi 35 / Jawa Timur) ======
+        try {
+            const res = await fetch(
+                "https://www.emsifa.com/api-wilayah-indonesia/api/regencies/35.json", {
+                    cache: "no-store"
+                }
+            );
+            if (!res.ok) throw new Error("Gagal mengambil data kota/kabupaten.");
+            allRegencies = await res.json();
+        } catch (err) {
+            console.error(err);
+            showError("Gagal memuat daftar kota/kabupaten. Coba muat ulang halaman.");
+            return;
+        }
 
-                        showError(element, message);
+        // ====== Event: user mengetik ======
+        const onInput = () => {
+            hideError();
+            // reset pilihan jika user mulai ketik lagi
+            kotaIdHidden.value = "";
+            selectedItem = null;
 
-                        if (!firstErrorElement) {
-                            firstErrorElement = element;
-                        }
+            const q = normalize(kotaInput.value);
+            if (!q) {
+                clearSuggestions();
+                hideSuggestions();
+                return;
+            }
+
+            filtered = allRegencies.filter((r) => normalize(r.name).includes(q));
+            renderSuggestions(filtered);
+        };
+
+        kotaInput.addEventListener("input", debounce(onInput, 120));
+
+        // ====== Event: keyboard navigation ======
+        kotaInput.addEventListener("keydown", (e) => {
+            const visible = !suggestionsContainer.classList.contains("hidden");
+            if (!visible && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+                // buka ulang jika ada hasil filter
+                if ((filtered?.length || 0) > 0) showSuggestions();
+            }
+
+            switch (e.key) {
+                case "ArrowDown":
+                    if (filtered.length === 0) return;
+                    e.preventDefault();
+                    activeIndex = (activeIndex + 1) % filtered.length;
+                    renderSuggestions(filtered);
+                    ensureActiveVisible();
+                    break;
+                case "ArrowUp":
+                    if (filtered.length === 0) return;
+                    e.preventDefault();
+                    activeIndex = (activeIndex - 1 + filtered.length) % filtered.length;
+                    renderSuggestions(filtered);
+                    ensureActiveVisible();
+                    break;
+                case "Enter":
+                    if (visible && activeIndex >= 0 && filtered[activeIndex]) {
+                        e.preventDefault();
+                        chooseItem(filtered[activeIndex]);
+                    }
+                    break;
+                case "Escape":
+                    hideSuggestions();
+                    break;
+            }
+        });
+
+        const ensureActiveVisible = () => {
+            const children = suggestionsContainer.children;
+            if (activeIndex < 0 || activeIndex >= children.length) return;
+            const el = children[activeIndex];
+            const cTop = suggestionsContainer.scrollTop;
+            const cBottom = cTop + suggestionsContainer.clientHeight;
+            const eTop = el.offsetTop;
+            const eBottom = eTop + el.offsetHeight;
+            if (eTop < cTop) suggestionsContainer.scrollTop = eTop;
+            else if (eBottom > cBottom)
+                suggestionsContainer.scrollTop = eBottom - suggestionsContainer.clientHeight;
+        };
+
+        // ====== Klik di luar → sembunyikan dropdown ======
+        document.addEventListener("click", (e) => {
+            if (!kotaInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                hideSuggestions();
+            }
+        });
+
+        // ====== Validasi saat submit ======
+        if (form) {
+            form.addEventListener("submit", (e) => {
+                // 1) Harus ada kota_id (berasal dari pilih suggestion)
+                if (!kotaIdHidden.value) {
+                    e.preventDefault();
+                    showError("Harus pilih kota/kabupaten dari daftar.");
+                    // bantu fokuskan user
+                    kotaInput.focus();
+                    return;
+                }
+
+                // 2) Nama input harus match dengan nama item terpilih (anti ganti manual setelah pilih)
+                if (!selectedItem || normalize(kotaInput.value) !== normalize(selectedItem.name)) {
+                    e.preventDefault();
+                    showError("Nama kota/kabupaten tidak valid. Pilih dari daftar.");
+                    kotaInput.focus();
+                    return;
+                }
+
+                hideError();
+            });
+        }
+    });
+</script>
+
+
+<script>
+    // KABUPATEN / KOTA
+    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/35.json`)
+        .then(response => response.json())
+        .then(regencies => console.log(regencies));
+
+    // KECAMATAN JATIM
+    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/3503.json`)
+        .then(response => response.json())
+        .then(districts => console.log(districts));
+
+    // KELURAHAN JATIM
+    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/3503110.json`)
+        .then(response => response.json())
+        .then(villages => console.log(villages));
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById('biodataSekolahForm');
+
+        // Fungsi untuk menampilkan pop-up error
+        const showError = (element, message) => {
+            const errorPopup = document.getElementById(element.id + 'Error');
+            if (errorPopup) {
+                errorPopup.querySelector('.error-message-text').textContent = message;
+                errorPopup.classList.add('visible');
+                element.classList.add('border-red-500', 'focus:ring-red-500');
+            }
+        };
+
+        // Fungsi untuk menyembunyikan pop-up error
+        const hideError = (element) => {
+            const errorPopup = document.getElementById(element.id + 'Error');
+            if (errorPopup) {
+                errorPopup.classList.remove('visible');
+                element.classList.remove('border-red-500', 'focus:ring-red-500');
+            }
+        };
+
+        // Sembunyikan semua error saat form di-reset atau dimuat ulang
+        const hideAllErrors = () => {
+            form.querySelectorAll('input[required], select[required]').forEach(hideError);
+        };
+
+        // Tambahkan event listener untuk menyembunyikan error saat input/select diubah
+        form.querySelectorAll('input[required], select[required]').forEach(element => {
+            element.addEventListener('input', () => hideError(element));
+            element.addEventListener('change', () => hideError(element));
+        });
+
+        form.addEventListener('submit', function(event) {
+            hideAllErrors();
+            let firstErrorElement = null;
+
+            for (const element of form.elements) {
+                if (element.hasAttribute('required') && !element.validity.valid) {
+                    event.preventDefault();
+
+                    let message = 'Kolom ini wajib diisi.'; // Pesan default
+
+                    // Pesan kustom berdasarkan ID elemen
+                    switch (element.id) {
+                        case 'asal_instansi':
+                            message = 'Asal instansi sekolah wajib diisi.';
+                            break;
+                        case 'alamat_instansi':
+                            message = 'Alamat instansi tidak boleh kosong.';
+                            break;
+                        case 'bidang_keahlian':
+                            message = 'Silakan pilih kompetensi keahlian Anda.';
+                            break;
+                        case 'pelatihan_id':
+                            message = 'Silakan pilih pelatihan yang ingin diikuti.';
+                            break;
+                        case 'kelas':
+                            message = 'Anda harus memilih kelas.';
+                            break;
+                        case 'cabangDinas_id':
+                            message = 'Mohon pilih cabang dinas wilayah.';
+                            break;
+                    }
+
+                    showError(element, message);
+
+                    if (!firstErrorElement) {
+                        firstErrorElement = element;
                     }
                 }
+            }
 
-                if (firstErrorElement) {
-                    firstErrorElement.focus();
-                }
-            });
+            if (firstErrorElement) {
+                firstErrorElement.focus();
+            }
+        });
 
-            
+
         // Pilih semua radio button yang memiliki nama 'pelatihan_id'
         const radioButtons = document.querySelectorAll('input[type="radio"][name="pelatihan_id"]');
-        
+
         // Variabel untuk melacak radio button yang terakhir dicentang
         let lastChecked = null;
 
@@ -317,6 +573,5 @@
                 }
             });
         });
-        });
-
-    </script>
+    });
+</script>

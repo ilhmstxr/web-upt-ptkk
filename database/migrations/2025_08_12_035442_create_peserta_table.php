@@ -11,24 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pesertas', function (Blueprint $table) {
+        Schema::create('peserta', function (Blueprint $table) {
             $table->id();
 
             // --- Relasi ke tabel lain ---
             $table->foreignId('pelatihan_id')
-                ->constrained('pelatihans')
+                ->constrained('pelatihan')
                 ->cascadeOnDelete();
 
             $table->foreignId('bidang_id')
-                ->constrained('bidangs')
+                ->constrained('bidang')
                 ->cascadeOnDelete();
 
             $table->foreignId('instansi_id')
-                ->constrained('instansis')
+                ->constrained('instansi')
                 ->cascadeOnDelete();
 
             // $table->foreignId('kamar_id')
-            //     ->constrained('kamars')
+            //     ->constrained('kamar')
             //     ->cascadeOnDelete()->nullable();
 
             $table->foreignId('user_id')
@@ -55,6 +55,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pesertas');
+        Schema::dropIfExists('peserta');
     }
 };

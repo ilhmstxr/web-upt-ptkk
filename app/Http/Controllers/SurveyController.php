@@ -132,12 +132,13 @@ class SurveyController extends Controller
             'email'        => 'required|email',
             'nama'         => 'required|string',
             'angkatan'         => 'required|string',
-            'pelatihan_id' => 'required|integer|exists:pelatihans,id', // Sebaiknya integer & exists
-            'bidang_id' => 'required|integer|exists:bidangs,id',   // Ganti nama & validasi
+            'pelatihan_id' => 'required|integer|exists:pelatihan,id', // Sebaiknya integer & exists
+            'bidang_id' => 'required|integer|exists:bidang,id',   // Ganti nama & validasi
             'tes_id'       => 'required|integer|exists:tes,id'
         ]);
 
         // REVISI DI SINI
+        // IMPROVE: untuk menyimpan datanya di  
         $peserta = PesertaSurvei::updateOrCreate(
             // Array 1: Kunci unik untuk mencari data
             [
@@ -269,7 +270,7 @@ class SurveyController extends Controller
         // return $request;
         // 1. Validasi semua data yang masuk
         $validatedData = $request->validate([
-            'peserta_id' => 'required|integer|exists:pesertas,id',
+            'peserta_id' => 'required|integer|exists:peserta,id',
             'tes_id'     => 'required|integer|exists:tes,id', // Sesuai dengan nama field Anda
             'answers'    => 'required|array',
             'answers.*'  => 'required',
@@ -312,7 +313,7 @@ class SurveyController extends Controller
 
             // REVISI: Mengganti 'teks_opsi' menjadi 'opsi_jawaban_id'
             $dataJawaban = [
-                'opsi_jawabans_id' => null, // INI YANG DIUBAH
+                'opsi_jawaban_id' => null, // INI YANG DIUBAH
                 'percobaan_id'    => $percobaan->id,
                 'pertanyaan_id'   => $pertanyaanId,
                 'nilai_jawaban'   => null,
@@ -327,7 +328,7 @@ class SurveyController extends Controller
                 $selectedOption = $allOptions->get($jawabanValue);
                 if ($selectedOption) {
                     // REVISI: Menyesuaikan kunci array dengan nama kolom yang benar
-                    $dataJawaban['opsi_jawabans_id'] = $selectedOption->id; // INI YANG DIUBAH
+                    $dataJawaban['opsi_jawaban_id'] = $selectedOption->id; // INI YANG DIUBAH
                     $dataJawaban['nilai_jawaban']   = $selectedOption->nilai;
                 }
             }
@@ -338,7 +339,7 @@ class SurveyController extends Controller
 
         // return $jawabanUntukDisimpan;
         //      protected $fillable = [
-        //     'opsi_jawabans_id', // untuk jawaban pilihan ganda
+        //     'opsi_jawaban_id', // untuk jawaban pilihan ganda
         //     'pertanyaan_id',    // pertanyaan terkait
         //     'percobaan_id',     // percobaan terkait (pre/post test)
         //     'nilai_jawaban',    // untuk skala likert 1-5

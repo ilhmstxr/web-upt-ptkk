@@ -49,7 +49,7 @@
 <body>
 
     {{-- Loop untuk setiap instruktur yang datanya dikirim dari controller --}}
-    @foreach ($instrukturs as $instruktur)
+    @foreach ($instruktur as $instruktur)
         <div class="container">
             <div class="header">
                 <h3>BIODATA INSTRUKTUR</h3>

@@ -11,7 +11,7 @@ class Pelatihan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pelatihans';
+    protected $table = 'pelatihan';
 
     protected $fillable = [
         'instansi_id', // diganti dari bidang_id agar sesuai migration
@@ -35,7 +35,7 @@ class Pelatihan extends Model
     }
 
     // Relasi ke peserta
-    public function pesertas(): HasMany
+    public function peserta(): HasMany
     {
         return $this->hasMany(Peserta::class, 'pelatihan_id');
     }

@@ -10,14 +10,14 @@ class Bidang extends Model
 {
     use HasFactory;
 
-    protected $table = 'bidangs';
+    protected $table = 'bidang';
 
     protected $fillable = [
         'nama_bidang', 
         'deskripsi',
     ];
 
-    // public function pelatihans(): HasMany
+    // public function pelatihan(): HasMany
     // {
     //     return $this->hasMany(Pelatihan::class, 'bidang_id');
     // }
