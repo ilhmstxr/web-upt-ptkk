@@ -21,6 +21,8 @@ class RegistrationResource extends Resource
     protected static ?string $model = Registration::class;
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Manajemen Pendaftaran';
+    protected static ?string $navigationLabel   = 'Registration';
+
 
     public static function form(Form $form): Form
     {
@@ -51,7 +53,7 @@ class RegistrationResource extends Resource
                                 Forms\Components\TextInput::make('phone')->label('Nomor Handphone')->required()->tel()->maxLength(15),
                                 Forms\Components\TextInput::make('email')->label('Email')->email()->required()->maxLength(255),
                             ])->columns(2),
-                        
+
                         Section::make('Biodata Sekolah')
                             ->description('Data lembaga asal dari pendaftar.')
                             ->schema([
@@ -72,7 +74,7 @@ class RegistrationResource extends Resource
                                     'Wilayah V' => 'Wilayah V',
                                 ])->required(),
                             ])->columns(2),
-                        
+
                         // Menambahkan Section untuk Lampiran Dokumen
                         Section::make('Lampiran Dokumen')
                             ->description('Dokumen-dokumen pendukung yang diunggah oleh pendaftar.')
@@ -87,7 +89,7 @@ class RegistrationResource extends Resource
                     ]),
             ]);
     }
-    
+
     public static function table(Table $table): Table
     {
         return $table

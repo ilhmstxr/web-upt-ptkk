@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pertanyaan', function (Blueprint $table) {
             $table->id();
+            // IMPROVE: tes_id seharusnya tidak perlu, karena sudah ada di tabel pivot tes_pertanyaan
             $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
             $table->integer('nomor');
             $table->text('teks_pertanyaan');

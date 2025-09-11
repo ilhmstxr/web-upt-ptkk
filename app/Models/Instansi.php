@@ -18,6 +18,8 @@ class Instansi extends Model
         'alamat_instansi',
         'bidang_keahlian',
         'kelas',
+        'kota',
+        'kota_id',
         'cabangDinas_id',
     ];
 

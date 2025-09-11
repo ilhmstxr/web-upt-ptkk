@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PelatihanResource extends Resource
 {
     protected static ?string $model = Pelatihan::class;
+    protected static ?string $navigationLabel   = 'Pelatihan';
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
     protected static ?string $navigationGroup = 'Pendaftaran';

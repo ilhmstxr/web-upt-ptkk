@@ -17,3 +17,7 @@ USER
 ADMIN 
 - TODO buat chart monev
 - TODO export monev ke excel
+- TODO benerin peserta downloadnya jadi zip
+
+- TODO bikin template email buat token 
+- TODO nanti nyampaikan token ke peserta via email

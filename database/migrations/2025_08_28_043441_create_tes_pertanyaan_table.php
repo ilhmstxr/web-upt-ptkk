@@ -13,6 +13,10 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
                 $table->foreignId('pertanyaan_id')->constrained('pertanyaan')->onDelete('cascade');
+                // IMPROVE: 
+                // $table->integer('nomor')->nullable()->after('pertanyaan_id');
+                // $table->unique(['tes_id', 'pertanyaan_id'], 'uq_tes_pertanyaan');
+                // $table->index(['tes_id', 'nomor']);
                 $table->timestamps();
             });
         }
