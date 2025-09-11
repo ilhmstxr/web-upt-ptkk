@@ -16,28 +16,30 @@
 
         {{-- Pilih nama peserta --}}
         <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Nama Peserta</label>
-            <select name="peserta_id" required class="w-full p-2 border rounded">
+            <label for="peserta_id" class="block text-sm font-medium mb-1">Nama Peserta</label>
+            <select name="peserta_id" id="peserta_id" required class="w-full p-2 border rounded">
                 <option value="">-- Pilih Peserta --</option>
-                @foreach($peserta as $peserta)
-                    <option value="{{ $peserta->id }}" {{ old('peserta_id') == $peserta->id ? 'selected' : '' }}>
-                        {{ $peserta->nama }} - {{ $peserta->instansi ?? '' }}
+                @foreach($peserta as $p)
+                    <option value="{{ $p->id }}" {{ old('peserta_id') == $p->id ? 'selected' : '' }}>
+                        {{ $p->nama }} {{ $p->instansi->nama ?? '' }}
                     </option>
                 @endforeach
             </select>
-            @error('peserta_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+            @error('peserta_id')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
 
-        {{-- Instansi (opsional) --}}
+        {{-- Instansi (opsional, jika mau input manual) --}}
         <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Instansi (opsional)</label>
-            <input type="text" name="instansi" value="{{ old('instansi') }}"
-                   class="w-full p-2 border rounded" />
+            <label for="instansi" class="block text-sm font-medium mb-1">Instansi (opsional)</label>
+            <input type="text" name="instansi" id="instansi" value="{{ old('instansi') }}"
+                        class="w-full p-2 border rounded" />
         </div>
 
         <div class="flex justify-end gap-2">
             <a href="{{ route('dashboard.posttest.index') }}" class="px-3 py-2 bg-gray-200 rounded">Batal</a>
-            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Mulai Post-Test</button>
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300 ease-in-out">Mulai Post-Test</button>
         </div>
     </form>
 </div>

@@ -180,10 +180,10 @@ class DashboardController extends Controller
         ]);
 
         $percobaan = Percobaan::create([
-            'peserta_id'  => $request->peserta_id,
-            'tes_id'      => $tesId,
-            'tipe'        => 'posttest',
-            'waktu_mulai' => now(),
+            'pesertaSurvei_id' => $request->peserta_id,
+            'tes_id'           => $tesId,
+            'tipe'             => 'posttest',
+            'waktu_mulai'      => now(),
         ]);
 
         return redirect()->route('dashboard.posttest.show', [
