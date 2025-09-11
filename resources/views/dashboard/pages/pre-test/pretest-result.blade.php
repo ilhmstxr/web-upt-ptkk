@@ -12,7 +12,7 @@
         <div class="mb-4">
             <h3 class="font-semibold text-lg">Nama Peserta</h3>
             <p class="text-gray-700 text-lg font-bold">
-                {{ $percobaan->peserta->nama ?? 'Tidak ada nama' }}
+                {{ $percobaan->pesertaSurvei->nama ?? 'Tidak ada nama' }}
             </p>
         </div>
 

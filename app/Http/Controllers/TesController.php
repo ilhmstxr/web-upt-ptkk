@@ -59,7 +59,7 @@ class TesController extends Controller
         $userId = Auth::id();
 
         // Pastikan percobaan milik user
-        if ($percobaan->peserta_id != $userId) {
+        if ($percobaan->pesertaSurvei_id != $userId) {
             abort(403, 'Unauthorized');
         }
 
@@ -103,7 +103,7 @@ class TesController extends Controller
     public function result(Percobaan $percobaan)
     {
         // Pastikan percobaan milik user
-        if ($percobaan->peserta_id != Auth::id()) {
+        if ($percobaan->pesertaSurvei_id != Auth::id()) {
             abort(403, 'Unauthorized');
         }
 

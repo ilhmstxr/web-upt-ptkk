@@ -15,20 +15,76 @@ class DashboardController extends Controller
     // DASHBOARD INDEX
     // ======================
     public function index()
-    {
-        $user = Auth::user();
-        $surveyStatus = $user && $user->survey ? 'done' : 'pending';
+{
+    $user = Auth::user();
 
-        return view('dashboard.index', compact('surveyStatus'));
-    }
+    // Status survey
+    $surveyStatus = $user && $user->survey ? 'done' : 'pending';
 
-    // ======================
-    // HOME & PROFILE
-    // ======================
-    public function home()
-    {
-        return view('dashboard.pages.home');
-    }
+    // Hitung percobaan pre-test (tes_id=1)
+    $preTestAttempts = \App\Models\Percobaan::where('tes_id', 1)
+        ->where('pesertaSurvei_id', $user->id ?? null)
+        ->count();
+
+    $preTestMax = 1;
+    $postTestMax = 1;
+    $monevMax    = 1;
+
+    // Cek post-test & monev
+    $postTestDone = \App\Models\Percobaan::where('tes_id', 2)
+        ->where('pesertaSurvei_id', $user->id ?? null)
+        ->exists();
+
+    $monevDone = \App\Models\Percobaan::where('tes_id', 3)
+        ->where('pesertaSurvei_id', $user->id ?? null)
+        ->exists();
+
+    return view('dashboard.index', compact(
+        'surveyStatus',
+        'preTestAttempts',
+        'preTestMax',
+        'postTestMax',
+        'monevMax',
+        'postTestDone',
+        'monevDone'
+    ));
+}
+
+// ======================
+// HOME & PROFILE
+// ======================
+public function home()
+{
+    $user = Auth::user();
+
+    // Hitung percobaan pre-test (tes_id=1)
+    $preTestAttempts = \App\Models\Percobaan::where('tes_id', 1)
+        ->where('pesertaSurvei_id', $user->id ?? null)
+        ->count();
+
+    $preTestMax = 1;
+    $postTestMax = 1;
+    $monevMax    = 1;
+
+    // Cek post-test & monev
+    $postTestDone = \App\Models\Percobaan::where('tes_id', 2)
+        ->where('pesertaSurvei_id', $user->id ?? null)
+        ->exists();
+
+    $monevDone = \App\Models\Percobaan::where('tes_id', 3)
+        ->where('pesertaSurvei_id', $user->id ?? null)
+        ->exists();
+
+    return view('dashboard.pages.home', compact(
+        'preTestAttempts',
+        'preTestMax',
+        'postTestMax',
+        'monevMax',
+        'postTestDone',
+        'monevDone'
+    ));
+}
+
 
     public function profile()
     {
@@ -80,81 +136,92 @@ class DashboardController extends Controller
     }
 
     public function pretestShow(Tes $tes, Request $request)
-    {
-        $percobaanId = (int) $request->query('percobaan');
-        if (!$percobaanId) {
-            return redirect()->route('dashboard.pretest.start', $tes->id)
-                ->with('error', 'Pilih peserta terlebih dahulu untuk memulai pre-test.');
-        }
-
-        $percobaan = Percobaan::findOrFail($percobaanId);
-        if ($percobaan->tes_id !== $tes->id) abort(404);
-
-        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
-        $currentQuestionIndex = max(0, (int) $request->query('q', 0));
-        $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
-
-        if (!$pertanyaan) {
-            return redirect()->route('dashboard.pretest.result', ['percobaan' => $percobaan->id]);
-        }
-
-        $elapsedSeconds = $percobaan->waktu_mulai
-            ? now()->diffInSeconds($percobaan->waktu_mulai)
-            : 0;
-
-        return view('dashboard.pages.pre-test.pretest-start', compact(
-            'tes',
-            'pertanyaan',
-            'percobaan',
-            'pertanyaanList',
-            'currentQuestionIndex',
-            'elapsedSeconds'
-        ));
+{
+    $percobaanId = (int) $request->query('percobaan');
+    if (!$percobaanId) {
+        return redirect()->route('dashboard.pretest.start', $tes->id)
+            ->with('error', 'Pilih peserta terlebih dahulu untuk memulai pre-test.');
     }
 
-    public function pretestSubmit(Request $request, ?Percobaan $percobaan = null)
-    {
-        if (!$percobaan) {
-            $percobaanId = $request->input('percobaan_id')
-                ?? $request->route('percobaan')
-                ?? $request->query('percobaan');
-            $percobaan = Percobaan::find($percobaanId);
-            if (!$percobaan) abort(404, 'Percobaan tidak ditemukan.');
-        }
+    $percobaan = Percobaan::findOrFail($percobaanId);
+    if ($percobaan->tes_id !== $tes->id) abort(404);
 
-        $jawabanData = $request->input('jawaban', []);
-        foreach ($jawabanData as $pertanyaanId => $opsiId) {
-            JawabanUser::updateOrCreate(
-                [
-                    'percobaan_id' => $percobaan->id,
-                    'pertanyaan_id' => $pertanyaanId,
-                ],
-                ['opsi_jawaban_id' => $opsiId]
-            );
-        }
+    // hitung waktu
+    $duration = $tes->durasi_menit * 60; // total detik
+    $elapsed = $percobaan->waktu_mulai ? now()->diffInSeconds($percobaan->waktu_mulai) : 0;
+    $remaining = max($duration - $elapsed, 0);
 
-        $currentIndex = (int) $request->query('q', 0) + 1;
-        $totalQuestions = $percobaan->tes->pertanyaan()->count();
+    // kalau sudah habis
+    if ($remaining <= 0) {
+        $percobaan->waktu_selesai = $percobaan->waktu_selesai ?? now();
+        $percobaan->skor = $percobaan->skor ?? $this->hitungSkor($percobaan);
+        $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
+        $percobaan->save();
 
-        if ($currentIndex >= $totalQuestions) {
-            $percobaan->waktu_selesai = now();
-            $percobaan->skor = $this->hitungSkor($percobaan);
-            $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
-            $percobaan->save();
+        return redirect()->route('dashboard.pretest.result', ['percobaan' => $percobaan->id])
+            ->with('error', 'Waktu tes sudah habis.');
+    }
 
-            return redirect()->route('dashboard.pretest.result', ['percobaan' => $percobaan->id]);
-        }
+    $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
+    $currentQuestionIndex = (int) $request->query('q', 0);
+    $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
+    if (!$pertanyaan) {
+        return redirect()->route('dashboard.pretest.result', ['percobaan' => $percobaan->id]);
+    }
+
+    return view('dashboard.pages.pre-test.pretest-start', compact(
+        'tes',
+        'pertanyaan',
+        'percobaan',
+        'pertanyaanList',
+        'currentQuestionIndex',
+        'remaining'
+    ));
+}
+
+
+    public function pretestSubmit(Request $request, Percobaan $percobaan)
+{
+    // Simpan jawaban
+    $data = $request->input('jawaban', []);
+    foreach ($data as $pertanyaanId => $opsiId) {
+        JawabanUser::updateOrCreate(
+            [
+                'percobaan_id' => $percobaan->id,
+                'pertanyaan_id' => $pertanyaanId,
+            ],
+            [
+                'opsi_jawaban_id' => $opsiId,
+            ]
+        );
+    }
+
+    // Ambil soal berikutnya
+    $nextQ = $request->input('next_q');
+    $totalQuestions = $percobaan->tes->pertanyaan()->count();
+
+    // Kalau tombol nomor / prev / next ditekan
+    if ($nextQ !== null && $nextQ < $totalQuestions) {
         return redirect()->route('dashboard.pretest.show', [
             'tes' => $percobaan->tes_id,
-            'q' => $currentIndex,
             'percobaan' => $percobaan->id,
+            'q' => $nextQ
         ]);
     }
 
+    // Kalau sudah soal terakhir atau "Selesai" ditekan
+    $percobaan->waktu_selesai = $percobaan->waktu_selesai ?? now();
+    $percobaan->skor = $percobaan->skor ?? $this->hitungSkor($percobaan);
+    $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
+    $percobaan->save();
+
+    return redirect()->route('dashboard.pretest.result', ['percobaan' => $percobaan->id]);
+}
+
     public function pretestResult(Percobaan $percobaan)
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawabans', 'tes', 'peserta']);
+        $percobaan->loadMissing(['jawabanUser.opsiJawabans', 'tes', 'pesertaSurvei']);
         return view('dashboard.pages.pre-test.pretest-result', compact('percobaan'));
     }
 
@@ -193,81 +260,93 @@ class DashboardController extends Controller
     }
 
     public function posttestShow(Tes $tes, Request $request)
-    {
-        $percobaanId = (int) $request->query('percobaan');
-        if (!$percobaanId) {
-            return redirect()->route('dashboard.posttest.start', $tes->id)
-                ->with('error', 'Pilih peserta terlebih dahulu untuk memulai post-test.');
-        }
-
-        $percobaan = Percobaan::findOrFail($percobaanId);
-        if ($percobaan->tes_id !== $tes->id) abort(404);
-
-        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
-        $currentQuestionIndex = (int) $request->query('q', 0);
-        $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
-
-        if (!$pertanyaan) {
-            return redirect()->route('dashboard.posttest.result', ['percobaan' => $percobaan->id]);
-        }
-
-        $elapsedSeconds = $percobaan->waktu_mulai
-            ? now()->diffInSeconds($percobaan->waktu_mulai)
-            : 0;
-
-        return view('dashboard.pages.post-test.posttest-start', compact(
-            'tes',
-            'pertanyaan',
-            'percobaan',
-            'pertanyaanList',
-            'currentQuestionIndex',
-            'elapsedSeconds'
-        ));
+{
+    $percobaanId = (int) $request->query('percobaan');
+    if (!$percobaanId) {
+        return redirect()->route('dashboard.posttest.start', $tes->id)
+            ->with('error', 'Pilih peserta terlebih dahulu untuk memulai post-test.');
     }
 
-    public function posttestSubmit(Request $request, ?Percobaan $percobaan = null)
-    {
-        if (!$percobaan) {
-            $percobaanId = $request->input('percobaan_id')
-                ?? $request->route('percobaan')
-                ?? $request->query('percobaan');
-            $percobaan = Percobaan::find($percobaanId);
-            if (!$percobaan) abort(404, 'Percobaan tidak ditemukan.');
-        }
+    $percobaan = Percobaan::findOrFail($percobaanId);
+    if ($percobaan->tes_id !== $tes->id) abort(404);
 
-        $jawabanData = $request->input('jawaban', []);
-        foreach ($jawabanData as $pertanyaanId => $opsiId) {
-            JawabanUser::updateOrCreate(
-                [
-                    'percobaan_id' => $percobaan->id,
-                    'pertanyaan_id' => $pertanyaanId,
-                ],
-                ['opsi_jawaban_id' => $opsiId]
-            );
-        }
+    // hitung waktu
+    $duration = $tes->durasi_menit * 60; // total detik
+    $elapsed = $percobaan->waktu_mulai ? now()->diffInSeconds($percobaan->waktu_mulai) : 0;
+    $remaining = max($duration - $elapsed, 0);
 
-        $currentIndex = (int) $request->query('q', 0) + 1;
-        $totalQuestions = $percobaan->tes->pertanyaan()->count();
+    // kalau sudah habis
+    if ($remaining <= 0) {
+        $percobaan->waktu_selesai = $percobaan->waktu_selesai ?? now();
+        $percobaan->skor = $percobaan->skor ?? $this->hitungSkor($percobaan);
+        $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
+        $percobaan->save();
 
-        if ($currentIndex >= $totalQuestions) {
-            $percobaan->waktu_selesai = now();
-            $percobaan->skor = $this->hitungSkor($percobaan);
-            $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
-            $percobaan->save();
+        return redirect()->route('dashboard.posttest.result', ['percobaan' => $percobaan->id])
+            ->with('error', 'Waktu tes sudah habis.');
+    }
 
-            return redirect()->route('dashboard.posttest.result', ['percobaan' => $percobaan->id]);
-        }
+    $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
+    $currentQuestionIndex = (int) $request->query('q', 0);
+    $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
+    if (!$pertanyaan) {
+        return redirect()->route('dashboard.posttest.result', ['percobaan' => $percobaan->id]);
+    }
+
+    return view('dashboard.pages.post-test.posttest-start', compact(
+        'tes',
+        'pertanyaan',
+        'percobaan',
+        'pertanyaanList',
+        'currentQuestionIndex',
+        'remaining'
+    ));
+}
+
+
+    public function posttestSubmit(Request $request, Percobaan $percobaan)
+{
+    // Simpan jawaban
+    $data = $request->input('jawaban', []);
+    foreach ($data as $pertanyaanId => $opsiId) {
+        JawabanUser::updateOrCreate(
+            [
+                'percobaan_id' => $percobaan->id,
+                'pertanyaan_id' => $pertanyaanId,
+            ],
+            [
+                'opsi_jawaban_id' => $opsiId,
+            ]
+        );
+    }
+
+    // Ambil soal berikutnya
+    $nextQ = $request->input('next_q');
+    $totalQuestions = $percobaan->tes->pertanyaan()->count();
+
+    // Kalau tombol nomor / prev / next ditekan
+    if ($nextQ !== null && $nextQ < $totalQuestions) {
         return redirect()->route('dashboard.posttest.show', [
             'tes' => $percobaan->tes_id,
-            'q' => $currentIndex,
             'percobaan' => $percobaan->id,
+            'q' => $nextQ
         ]);
     }
 
+    // Kalau sudah soal terakhir atau "Selesai" ditekan
+    $percobaan->waktu_selesai = $percobaan->waktu_selesai ?? now();
+    $percobaan->skor = $percobaan->skor ?? $this->hitungSkor($percobaan);
+    $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
+    $percobaan->save();
+
+    return redirect()->route('dashboard.posttest.result', ['percobaan' => $percobaan->id]);
+}
+
+
     public function posttestResult(Percobaan $percobaan)
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawabans', 'tes', 'peserta']);
+        $percobaan->loadMissing(['jawabanUser.opsiJawabans', 'tes', 'pesertaSurvei']);
         return view('dashboard.pages.post-test.posttest-result', compact('percobaan'));
     }
 
