@@ -20,6 +20,8 @@ class Instansi extends Model
 	'kota',
 	'kota_id',
         'kelas',
+        'kota',
+        'kota_id',
         'cabangDinas_id',
     ];
 
