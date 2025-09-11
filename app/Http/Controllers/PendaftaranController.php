@@ -113,7 +113,6 @@ class PendaftaranController extends Controller
                 'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             ]);
 
-            // [x] semua array
             $allData = array_merge($formData, $validatedData);
 
             // [x] Simpan ke DB dalam transaction

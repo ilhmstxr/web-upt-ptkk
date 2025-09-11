@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Pelatihan - {{ $kompetensi ?? 'Tidak Ditemukan' }}</title>
-    <!-- Tailwind CSS CDN untuk styling yang responsif dan modern -->
+    <title>Detail Pelatihan - {{ $kompetensi }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-upt-ptkk.png') }} " class="w-4">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Mengimpor font Inter dari Google Fonts */
@@ -53,7 +53,7 @@
         <div class="container mx-auto flex items-center justify-between">
             <!-- Logo dan nama UPT PTKK -->
             <a href="/" class="flex items-center space-x-4">
-                <img src="https://placehold.co/40x40/5c76c1/ffffff?text=Logo" alt="Logo UPT PTKK" class="rounded-full">
+                <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt="Logo" class="w-8">
                 <h1 class="text-xl font-bold text-gray-800">UPT PTKK</h1>
             </a>
             <!-- Tombol untuk mendaftar -->
