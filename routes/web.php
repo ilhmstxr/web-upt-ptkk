@@ -99,9 +99,10 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('/', [DashboardController::class, 'pretest'])->name('index');
         Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
         Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
-        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
         Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
-        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
+        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
+	Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
+
     });
 
     // Post-Test (guest-friendly)
