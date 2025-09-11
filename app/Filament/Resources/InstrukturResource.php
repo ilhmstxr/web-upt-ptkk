@@ -21,6 +21,7 @@ class InstrukturResource extends Resource
 {
     protected static ?string $model = Instruktur::class;
 
+    protected static ?string $navigationLabel   = 'Instruktur';
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
     protected static ?string $navigationGroup = 'Pendaftaran';
 

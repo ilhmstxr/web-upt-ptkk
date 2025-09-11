@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
             $table->foreignId('pelatihan_id')->constrained('pelatihan')->cascadeOnDelete();
+            // IMPROVE: menambahkan bidang id 
+            // $table->foreignId('bidang_id')->constrained('bidang')->cascadeOnDelete();
             $table->String('nomor_registrasi')->unique();
             $table->timestamp('tanggal_pendaftaran');
             $table->timestamps();

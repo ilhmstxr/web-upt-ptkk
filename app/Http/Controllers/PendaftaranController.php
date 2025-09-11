@@ -9,6 +9,7 @@ use App\Models\Instansi;
 use App\Models\Instruktur;
 use App\Models\Lampiran;
 use App\Models\Pelatihan;
+use App\Models\PendaftaranPelatihan;
 use App\Models\Peserta;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -67,6 +68,7 @@ class PendaftaranController extends Controller
         $currentStep = $request->input('current_step');
         $formData = $request->session()->get('pendaftaran_data', []);
 
+        // [x] Validasi tiap langkah
         if ($currentStep == 1) {
             $validatedData = $request->validate([
                 'nama' => 'required|string|max:150',
@@ -111,14 +113,10 @@ class PendaftaranController extends Controller
                 'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             ]);
 
-            $bidang = Bidang::all();
-            $pelatihan = pelatihan::all();
-            // return $pelatihan;
-            // return $bidang;
-
-
             $allData = array_merge($formData, $validatedData);
+            // return $allData;
 
+            // [x] Simpan ke DB dalam transaction
             // DONE: registrasi sudah disesuaikan dengan db baru
             // return $allData;
             // DB::transaction(function () use ($allData, $request) {
@@ -137,9 +135,6 @@ class PendaftaranController extends Controller
                 ]
             );
 
-            // 2) Buat/temukan user berdasarkan email
-            //    - Jika user belum ada: buat dengan nama dan password default (mis: NIK atau random).
-            //    - Jika sudah ada: opsional update name agar sinkron dengan form pendaftaran.
             $user = User::firstOrCreate(
                 ['email' => $allData['email']],
                 [
@@ -172,7 +167,16 @@ class PendaftaranController extends Controller
                 'no_hp'         => $allData['no_hp'],
             ]);
 
+            ['nomor' => $nomorReg, 'urutan' => $urutBidang] = $this->generateToken($allData['pelatihan_id'], $allData['bidang_keahlian']);
 
+            PendaftaranPelatihan::create([
+                'peserta_id'            => $peserta->id,
+                'pelatihan_id'          => $allData['pelatihan_id'],
+                'bidang_id'             => $allData['bidang_keahlian'],
+                'urutan_per_bidang'     => $urutBidang,
+                'nomor_registrasi'      => $nomorReg,
+                'tanggal_pendaftaran'   => now(),
+            ]);
 
             // 4) Lampiran + upload file
             $lampiranData = [
@@ -196,17 +200,32 @@ class PendaftaranController extends Controller
 
             Lampiran::create($lampiranData);
 
-            // return true;
-            // });
+            $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
+                ->latest('id')
+                ->first();
+
+                // return $pendaftaran;
 
             $request->session()->forget('pendaftaran_data');
-            return redirect()->route('pendaftaran.selesai')->with('success', 'Pendaftaran berhasil terkirim!');
+            return redirect()
+                ->route('pendaftaran.selesai', ['id' => $pendaftaran->id])
+                ->with('pendaftaran', $pendaftaran);
         }
     }
 
-    public function selesai()
+    public function selesai(int $id)
     {
-        return view('peserta.pendaftaran.selesai');
+        // return $id;
+        $pendaftaran = session('pendaftaran');
+
+        // Kalau tidak ada (misal user reload / akses ulang lewat URL), ambil dari DB
+        if (!$pendaftaran) {
+            $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
+                ->findOrFail($id);
+        }
+
+        // return $pendaftaran;
+        return view('peserta.pendaftaran.selesai', compact('pendaftaran'));
     }
 
     public function generateMassal()
@@ -278,4 +297,40 @@ class PendaftaranController extends Controller
     public function edit(string $id) {}
     public function update(Request $request, string $id) {}
     public function destroy(string $id) {}
+
+    private function generateToken(int $pelatihanId, int $bidangId): array
+    {
+        return DB::transaction(function () use ($pelatihanId, $bidangId) {
+            $bidang     = Bidang::findOrFail($bidangId);
+            $kodeBidang = $bidang->kode ?? $this->akronim($bidang->nama);
+
+            // 1) Lock subset baris yang relevan (ambil id saja, FOR UPDATE)
+            PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
+                ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
+                ->where('peserta.bidang_id', $bidangId)
+                ->select('pendaftaran_pelatihan.id')
+                ->lockForUpdate()
+                ->get();
+
+            // 2) Baru hitung jumlah (tanpa FOR UPDATE juga sudah aman karena subset terkunci)
+            $jumlah = PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
+                ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
+                ->where('peserta.bidang_id', $bidangId)
+                ->count();
+
+            $nextUrut = $jumlah + 1;
+            $nomor    = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeBidang), $nextUrut);
+
+            return ['nomor' => $nomor, 'urutan' => $nextUrut];
+        }, 3);
+    }
+
+
+    private function akronim(string $nama): string
+    {
+        $words = preg_split('/\s+/', trim($nama));
+        $akronim = collect($words)->map(fn($w) => \Illuminate\Support\Str::substr($w, 0, 1))->implode('');
+        $akronim = preg_replace('/[^A-Za-z0-9]/', '', $akronim) ?: 'BDG';
+        return strtoupper($akronim);
+    }
 }

@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PesertaSurveiResource extends Resource
 {
     protected static ?string $model = PesertaSurvei::class;
-
+    protected static ?string $navigationLabel   = 'Peserta Survei';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
