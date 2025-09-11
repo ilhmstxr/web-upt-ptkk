@@ -114,6 +114,7 @@ class PendaftaranController extends Controller
             ]);
 
             $allData = array_merge($formData, $validatedData);
+            // return $allData;
 
             // [x] Simpan ke DB dalam transaction
             // DONE: registrasi sudah disesuaikan dengan db baru
@@ -203,6 +204,8 @@ class PendaftaranController extends Controller
                 ->latest('id')
                 ->first();
 
+                // return $pendaftaran;
+
             $request->session()->forget('pendaftaran_data');
             return redirect()
                 ->route('pendaftaran.selesai', ['id' => $pendaftaran->id])
@@ -210,8 +213,9 @@ class PendaftaranController extends Controller
         }
     }
 
-    public function selesai($id)
+    public function selesai(int $id)
     {
+        // return $id;
         $pendaftaran = session('pendaftaran');
 
         // Kalau tidak ada (misal user reload / akses ulang lewat URL), ambil dari DB
@@ -219,6 +223,8 @@ class PendaftaranController extends Controller
             $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
                 ->findOrFail($id);
         }
+
+        // return $pendaftaran;
         return view('peserta.pendaftaran.selesai', compact('pendaftaran'));
     }
 

@@ -41,8 +41,8 @@
 
             <p>Nomor Registrasi: <strong>{{ $pendaftaran->nomor_registrasi }}</strong></p>
             <p>Nama Peserta: {{ $pendaftaran->peserta->nama }}</p>
-            <p>Pelatihan: {{ $pendaftaran->pelatihan->nama }}</p>
-            <p>Bidang: {{ $pendaftaran->bidang->nama }}</p>
+            <p>Pelatihan: {{ $pendaftaran->pelatihan->nama_pelatihan }}</p>
+            {{-- <p>Bidang: {{ $pendaftaran->bidang->nama }}</p> --}}
 
             {{-- Tombol Kembali ke Beranda --}}
             <div class="mt-10">
