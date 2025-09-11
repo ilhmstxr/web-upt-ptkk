@@ -231,7 +231,7 @@ class PendaftaranController extends Controller
     public function generateMassal()
     {
         $instruktur = Instruktur::with(['bidang', 'pelatihan'])->get();
-        $pdf = Pdf::loadView('instruktur.cetak_massal', ['instruktur' => $instruktur])
+        $pdf = Pdf::loadView('Instruktur.cetak_massal', ['Instruktur' => $instruktur])
             ->setPaper('A4', 'portrait');
         $fileName = 'Biodata_Instruktur_Massal_' . Carbon::now()->format('Y-m-d') . '.pdf';
         return $pdf->stream($fileName);
