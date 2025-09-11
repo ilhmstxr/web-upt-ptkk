@@ -22,3 +22,4 @@ class Bidang extends Model
     //     return $this->hasMany(Pelatihan::class, 'bidang_id');
     // }
 }
+
