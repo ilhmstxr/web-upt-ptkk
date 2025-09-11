@@ -523,21 +523,24 @@
 
             </div>
 
-            {{-- Tombol Navigasi --}}
-          <div class="flex justify-between items-center pt-6">
-                <!-- Tombol Kembali -->
-                <a href="{{ route('pendaftaran.create', ['step' => 2]) }}"
-                    class="inline-flex items-center bg-white border-2 border-blue-600 text-blue-600 font-semibold px-6 py-2 rounded-lg shadow-sm hover:bg-blue-50 hover:border-blue-700 hover:text-blue-700 transition transform hover:-translate-y-0.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Kembali
-                </a>
-                <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:shadow-lg">
-                    Kirim Pendaftaran
-                </button>
-            </div>
+
+         {{-- Tombol Navigasi --}}
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-6">
+    <!-- Tombol Kembali -->
+    <a href="{{ route('pendaftaran.create', ['step' => 2]) }}"
+        class="inline-flex items-center justify-center bg-white border-2 border-blue-600 text-blue-600 font-semibold px-6 py-2 rounded-lg shadow-sm hover:bg-blue-50 hover:border-blue-700 hover:text-blue-700 transition transform hover:-translate-y-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Kembali
+    </a>
+
+    <!-- Tombol Kirim -->
+    <button type="submit"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:shadow-lg">
+        Kirim Pendaftaran
+    </button>
+</div>
         </form>
     </div>
 @endsection

@@ -68,10 +68,6 @@
                     UPT PTKK Dinas Pendidikan Jawa Timur
                 </h1>
             </div>
-            <a href="#" title="Tutup Pendaftaran"
-                class="w-9 h-9 flex items-center justify-center bg-red-600 rounded-full text-white font-bold text-2xl transition-transform duration-300 hover:bg-red-700 hover:rotate-90 shadow-lg select-none">
-                ×
-            </a>
         </header>
 
         {{-- MAIN CONTENT GRID --}}
@@ -91,47 +87,45 @@
                         <div class="relative space-y-4">
                             <div class="absolute left-4 top-4 bottom-4 w-0.5 bg-blue-300"></div>
 
-                            {{-- STEP 1 --}}
-                            <a href="{{ $allowedStep >= 1 ? route('pendaftaran.create', ['step' => 1]) : '#' }}"
-                                class="flex items-center gap-4 relative {{ $allowedStep < 1 ? 'pointer-events-none opacity-50' : '' }}">
-                                <div
-                                    class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors duration-300
-                                    {{ $currentStep > 1 ? 'bg-green-500 text-white' : ($currentStep == 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600') }}">
-                                    {!! $allowedStep > 1 ? '&#10003;' : '1' !!}
-                                </div>
-                                <span
-                                    class="font-semibold transition-colors duration-300 {{ $currentStep == 1 ? 'text-blue-700' : 'text-blue-900' }}">
-                                    Biodata Diri
-                                </span>
-                            </a>
+             {{-- STEP 1 --}}
+<a href="{{ $allowedStep >= 1 ? route('pendaftaran.create', ['step' => 1]) : '#' }}"
+    class="flex items-center gap-4 relative {{ $allowedStep < 1 ? 'pointer-events-none opacity-50' : '' }}">
+    <div
+        class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors duration-300
+        {{ $currentStep > 1 ? 'bg-green-500 text-white' : ($currentStep == 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600') }}">
+        {!! $currentStep > 1 ? '&#10003;' : '1' !!}
+    </div>
+    <span class="font-semibold transition-colors duration-300 {{ $currentStep == 1 ? 'text-blue-700' : 'text-blue-900' }}">
+        Biodata Diri
+    </span>
+</a>
 
-                            {{-- STEP 2 --}}
-                            <a href="{{ $allowedStep >= 2 ? route('pendaftaran.create', ['step' => 2]) : '#' }}"
-                                class="flex items-center gap-4 relative {{ $allowedStep < 2 ? 'pointer-events-none opacity-50' : '' }}">
-                                <div
-                                    class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors duration-300
-                                    {{ $currentStep > 2 ? 'bg-green-500 text-white' : ($currentStep == 2 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600') }}">
-                                    {!! $allowedStep > 2 ? '&#10003;' : '2' !!}
-                                </div>
-                                <span
-                                    class="font-semibold transition-colors duration-300 {{ $currentStep == 2 ? 'text-blue-700' : 'text-blue-900' }}">
-                                    Biodata Sekolah
-                                </span>
-                            </a>
+{{-- STEP 2 --}}
+<a href="{{ $allowedStep >= 2 ? route('pendaftaran.create', ['step' => 2]) : '#' }}"
+    class="flex items-center gap-4 relative {{ $allowedStep < 2 ? 'pointer-events-none opacity-50' : '' }}">
+    <div
+        class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors duration-300
+        {{ $currentStep > 2 ? 'bg-green-500 text-white' : ($currentStep == 2 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600') }}">
+        {!! $currentStep > 2 ? '&#10003;' : '2' !!}
+    </div>
+    <span class="font-semibold transition-colors duration-300 {{ $currentStep == 2 ? 'text-blue-700' : 'text-blue-900' }}">
+        Biodata Sekolah
+    </span>
+</a>
 
-                            {{-- STEP 3 --}}
-                            <a href="{{ $allowedStep >= 3 ? route('pendaftaran.create', ['step' => 3]) : '#' }}"
-                                class="flex items-center gap-4 relative {{ $allowedStep < 3 ? 'pointer-events-none opacity-50' : '' }}">
-                                <div
-                                    class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors duration-300
-                                    {{ $currentStep > 3 ? 'bg-green-500 text-white' : ($currentStep == 3 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600') }}">
-                                    {!! $allowedStep > 3 ? '&#10003;' : '3' !!}
-                                </div>
-                                <span
-                                    class="font-semibold transition-colors duration-300 {{ $currentStep == 3 ? 'text-blue-700' : 'text-blue-900' }}">
-                                    Lampiran
-                                </span>
-                            </a>
+{{-- STEP 3 --}}
+<a href="{{ $allowedStep >= 3 ? route('pendaftaran.create', ['step' => 3]) : '#' }}"
+    class="flex items-center gap-4 relative {{ $allowedStep < 3 ? 'pointer-events-none opacity-50' : '' }}">
+    <div
+        class="z-10 flex items-center justify-center w-8 h-8 rounded-full font-bold transition-colors duration-300
+        {{ $currentStep > 3 ? 'bg-green-500 text-white' : ($currentStep == 3 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600') }}">
+        {!! $currentStep > 3 ? '&#10003;' : '3' !!}
+    </div>
+    <span class="font-semibold transition-colors duration-300 {{ $currentStep == 3 ? 'text-blue-700' : 'text-blue-900' }}">
+        Lampiran
+    </span>
+</a>
+
                         </div>
                     </div>
                 </aside>

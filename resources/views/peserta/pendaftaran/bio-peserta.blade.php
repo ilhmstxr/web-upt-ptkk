@@ -1,120 +1,78 @@
-@extends('peserta.pendaftaran.layout.main', ['currentStep' => 1])
+@extends('peserta.pendaftaran.layout.main', [
+    'currentStep' => 1,
+    'allowedStep' => 3,
+    'steps' => [1 => 'Biodata Diri', 2 => 'Biodata Sekolah', 3 => 'Lampiran'],
+])
 
 @section('title', 'Biodata Peserta')
 
 @section('content')
-    <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-blue-200">
-        <!-- Header Section -->
-        <div class="mb-8 text-center">
-            <h2 class="text-2xl font-bold text-blue-900 mb-2">Biodata Peserta</h2>
-            <p class="text-blue-600">Lengkapi data pribadi Anda dengan benar</p>
+<div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border border-blue-200 max-w-5xl mx-auto">
+    <div class="mb-6 sm:mb-8 text-center">
+        <h2 class="text-xl sm:text-2xl font-bold text-blue-900 mb-1 sm:mb-2">Biodata Peserta</h2>
+        <p class="text-blue-600 text-sm sm:text-base">Lengkapi data pribadi Anda dengan benar</p>
+    </div>
+
+    <form id="registrationForm"
+          action="{{ route('pendaftaran.store') }}"
+          method="POST"
+          class="space-y-6 sm:space-y-8"
+          novalidate>
+        @csrf
+        <input type="hidden" name="current_step" value="{{ $currentStep }}">
+
+        {{-- Nama dan NIK --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div class="flex flex-col">
+                <label for="nama" class="text-sm font-semibold mb-1 sm:mb-2 text-blue-900">Nama Lengkap</label>
+                <input type="text" id="nama" name="nama" placeholder="Masukkan Nama Lengkap"
+                       value="{{ old('nama', $formData['nama'] ?? '') }}"
+                       class="w-full bg-white border-2 border-blue-200 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('nama') border-red-400 @enderror"
+                       required />
+                @error('nama')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            <div class="flex flex-col">
+                <label for="nik" class="text-sm font-semibold mb-1 sm:mb-2 text-blue-900">NIK (16 digit)</label>
+                <input type="text" id="nik" name="nik" maxlength="16"
+                       placeholder="Masukkan 16 digit NIK"
+                       value="{{ old('nik', $formData['nik'] ?? '') }}"
+                       oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                       class="w-full bg-white border-2 border-blue-200 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('nik') border-red-400 @enderror"
+                       required />
+                @error('nik')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
 
-        <form id="registrationForm" action="{{ route('pendaftaran.store') }}" method="POST" class="space-y-8" novalidate>
-            @csrf
-
-            <input type="hidden" name="current_step" value="{{ $currentStep }}">
-
-            {{-- Nama dan NIK --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="nama" class="block text-sm font-semibold mb-2 text-blue-900">Nama Lengkap</label>
-                    <div class="relative">
-                        <input type="text" id="nama" name="nama" placeholder="Masukkan Nama Lengkap"
-                            value="{{ old('nama', $formData['nama'] ?? '') }}"
-                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('nama') border-red-400 @enderror"
-                            required />
-                        {{-- Pop-up Error Kustom untuk Nama --}}
-                        <div id="namaError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="error-message-text"></span>
-                        </div>
-                    </div>
-                    @error('nama')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label for="nik" class="block text-sm font-semibold mb-2 text-blue-900">NIK (16 digit)</label>
-                    <div class="relative">
-                        <input type="text" id="nik" name="nik" maxlength="16"
-                            placeholder="Masukkan 16 digit NIK" value="{{ old('nik', $formData['nik'] ?? '') }}" pattern="\d{16}"
-                            title="NIK harus terdiri dari 16 digit angka."
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('nik') border-red-400 @enderror"
-                            required />
-                        {{-- Pop-up Error Kustom untuk NIK --}}
-                        <div id="nikError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="error-message-text"></span>
-                        </div>
-                    </div>
-                    @error('nik')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+        {{-- No HP & Email --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div class="flex flex-col">
+                <label for="no_hp" class="text-sm font-semibold mb-1 sm:mb-2 text-blue-900">Nomor Handphone / WhatsApp</label>
+                <input type="tel" id="no_hp" name="no_hp" maxlength="15"
+                       placeholder="Contoh: 081234567890"
+                       value="{{ old('no_hp', $formData['no_hp'] ?? '') }}"
+                       oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                       class="w-full bg-white border-2 border-blue-200 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('no_hp') border-red-400 @enderror"
+                       required />
+                @error('no_hp')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
-
-            {{-- No HP & Email --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="no_hp" class="block text-sm font-semibold mb-2 text-blue-900">Nomor Handphone / WhatsApp</label>
-                    <div class="relative">
-                        <input type="tel" id="no_hp" name="no_hp" maxlength="15"
-                            placeholder="Contoh: 081234567890" value="{{ old('no_hp', $formData['no_hp'] ?? '') }}"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('no_hp') border-red-400 @enderror"
-                            required />
-                        <div id="no_hpError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="error-message-text"></span>
-                        </div>
-                    </div>
-                    @error('no_hp')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label for="email" class="block text-sm font-semibold mb-2 text-blue-900">Email Aktif</label>
-                    <div class="relative">
-                        <input type="email" id="email" name="email" placeholder="Masukkan Email Aktif"
-                            value="{{ old('email', $formData['email'] ?? '') }}"
-                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('email') border-red-400 @enderror"
-                            required />
-                        <div id="emailError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="error-message-text"></span>
-                        </div>
-                    </div>
-                    @error('email')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+            <div class="flex flex-col">
+                <label for="email" class="text-sm font-semibold mb-1 sm:mb-2 text-blue-900">Email Aktif</label>
+                <input type="email" id="email" name="email" placeholder="Masukkan Email Aktif"
+                       value="{{ old('email', $formData['email'] ?? '') }}"
+                       class="w-full bg-white border-2 border-blue-200 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('email') border-red-400 @enderror"
+                       required />
+                @error('email')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
+        </div>
+
 
             {{-- Tempat & Tanggal Lahir --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

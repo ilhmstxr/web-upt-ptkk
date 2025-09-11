@@ -3,204 +3,203 @@
 @section('title', 'Biodata Sekolah')
 
 @section('content')
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Form Container - Full Width dengan Responsive Design -->
+<div class="w-full max-w-none">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 lg:p-8 border border-blue-200">
+        <div class="mb-6 lg:mb-8">
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-900 mb-2">Biodata Sekolah</h2>
+            <p class="text-xs sm:text-sm lg:text-base text-blue-600">Lengkapi data sekolah Anda dengan benar</p>
+        </div>
 
-    <!-- Form Utama -->
-    <div class="md:col-span-3">
-        <div class="bg-white rounded-xl shadow-lg p-8 border border-blue-200">
-            <h2 class="text-2xl font-bold text-blue-900 mb-2">Biodata Sekolah</h2>
-            <p class="text-sm text-blue-600 mb-6">Lengkapi data sekolah Anda dengan benar</p>
+        <form id="biodataSekolahForm" action="{{ route('pendaftaran.store') }}" method="POST" class="space-y-4 sm:space-y-6" novalidate>
+            @csrf
+            <input type="hidden" name="current_step" value="{{ $currentStep }}">
 
-            <form id="biodataSekolahForm" action="{{ route('pendaftaran.store') }}" method="POST" class="space-y-6" novalidate>
-                @csrf
-                <input type="hidden" name="current_step" value="{{ $currentStep }}">
-
-                <!-- Asal Instansi & Alamat -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="asal_instansi" class="block text-sm font-semibold text-blue-900 mb-2">Asal Lembaga Instansi</label>
-                        <div class="relative">
-                            <input type="text" id="asal_instansi" name="asal_instansi"
-                                placeholder="Masukkan Asal Lembaga"
-                                value="{{ old('asal_instansi', $formData['asal_instansi'] ?? '') }}"
-                                required
-                                class="w-full border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('asal_instansi') border-red-500 focus:ring-red-500 @enderror">
-                            <div id="asal_instansiError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                                <span class="error-message-text"></span>
-                            </div>
+            <!-- Asal Instansi & Alamat -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div>
+                    <label for="asal_instansi" class="block text-sm lg:text-base font-semibold text-blue-900 mb-2">Asal Lembaga Instansi</label>
+                    <div class="relative">
+                        <input type="text" id="asal_instansi" name="asal_instansi"
+                            placeholder="Masukkan Asal Lembaga"
+                            value="{{ old('asal_instansi', $formData['asal_instansi'] ?? '') }}"
+                            required
+                            class="w-full border-2 border-blue-200 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-sm lg:text-base text-blue-900 placeholder-blue-400 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('asal_instansi') border-red-500 focus:ring-red-500 @enderror">
+                        <div id="asal_instansiError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
                         </div>
-                        @error('asal_instansi')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
                     </div>
-
-                    <div>
-                        <label for="alamat_instansi" class="block text-sm font-semibold text-blue-900 mb-2">Alamat Instansi</label>
-                        <div class="relative">
-                            <input type="text" id="alamat_instansi" name="alamat_instansi"
-                                placeholder="Masukkan Alamat Instansi"
-                                value="{{ old('alamat_instansi', $formData['alamat_instansi'] ?? '') }}"
-                                required
-                                class="w-full border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('alamat_instansi') border-red-500 focus:ring-red-500 @enderror">
-                            <div id="alamat_instansiError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                                <span class="error-message-text"></span>
-                            </div>
-                        </div>
-                        @error('alamat_instansi')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <!-- Kompetensi & Kelas -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="bidang_keahlian" class="block text-sm font-semibold text-blue-900 mb-2">Kompetensi/Bidang Keahlian</label>
-                        <div class="relative">
-                            <select id="bidang_keahlian" name="bidang_keahlian" required
-                                class="w-full border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('bidang_keahlian') border-red-500 focus:ring-red-500 @enderror">
-                                <option value="">Pilih Kompetensi</option>
-                                @foreach ($bidang as $b)
-                                    <option value="{{ $b->id }}" @selected(old('bidang_keahlian', $formData['bidang_keahlian'] ?? '') == $b->id)>
-                                        {{ $b->nama_bidang }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div id="bidang_keahlianError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                                <span class="error-message-text"></span>
-                            </div>
-                        </div>
-                        @error('bidang_keahlian')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="kelas" class="block text-sm font-semibold text-blue-900 mb-2">Kelas</label>
-                        <div class="relative">
-                            <select id="kelas" name="kelas" required
-                                class="w-full border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('kelas') border-red-500 focus:ring-red-500 @enderror">
-                                <option value="">Pilih Kelas</option>
-                                <option value="X" @selected(old('kelas', $formData['kelas'] ?? '') == 'X')>Kelas X</option>
-                                <option value="XI" @selected(old('kelas', $formData['kelas'] ?? '') == 'XI')>Kelas XI</option>
-                                <option value="XII" @selected(old('kelas', $formData['kelas'] ?? '') == 'XII')>Kelas XII</option>
-                            </select>
-                            <div id="kelasError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                                <span class="error-message-text"></span>
-                            </div>
-                        </div>
-                        @error('kelas')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <!-- Pelatihan -->
-                <fieldset>
-                    <legend class="block mb-3 font-semibold text-blue-900">Pelatihan yang ingin diikuti</legend>
-                    <div class="space-y-3">
-                        @foreach ($pelatihan as $p)
-                            <label class="flex items-center gap-3 border border-blue-200 rounded-lg p-3 cursor-pointer hover:bg-blue-50 transition">
-                                <input type="radio" id="pelatihan_{{ $p->id }}" name="pelatihan_id" value="{{ $p->id }}"
-                                    required
-                                    @checked(old('pelatihan_id', $formData['pelatihan_id'] ?? '') == $p->id)
-                                    class="text-blue-600 focus:ring-blue-500">
-                                <span class="text-blue-900 font-medium">{{ $p->nama_pelatihan }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                    <div id="pelatihan_idError" class="error-popup mt-1 p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                        <span class="error-message-text"></span>
-                    </div>
-                    @error('pelatihan_id')
+                    @error('asal_instansi')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
-                </fieldset>
-
-                <!-- Kota & Cabang Dinas -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="kota" class="block text-sm font-semibold text-blue-900 mb-2">Kota / Kabupaten</label>
-                        <div class="relative">
-                            <input type="text" id="kota" name="kota" placeholder="Ketik nama kota atau kabupaten..."
-                                required autocomplete="off"
-                                class="w-full border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('kota') border-red-500 focus:ring-red-500 @enderror">
-                            <div id="kotaSuggestions" class="absolute z-10 w-full bg-white border border-blue-200 rounded-b-lg mt-1 max-h-60 overflow-y-auto shadow-lg hidden"></div>
-                            <input type="hidden" name="kota_id" id="kota_id">
-                            <div id="kotaError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                                <span class="error-message-text"></span>
-                            </div>
-                        </div>
-                        @error('kota')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="cabangDinas_id" class="block text-sm font-semibold text-blue-900 mb-2">Cabang Dinas Wilayah</label>
-                        <div class="relative">
-                            <select id="cabangDinas_id" name="cabangDinas_id" required
-                                class="w-full border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('cabangDinas_id') border-red-500 focus:ring-red-500 @enderror">
-                                <option value="">Pilih Cabang Dinas</option>
-                                @foreach ($cabangDinas as $cb)
-                                    <option value="{{ $cb->id }}" @selected(old('cabangDinas_id', $formData['cabangDinas_id'] ?? '') == $cb->id)>
-                                        {{ $cb->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div id="cabangDinas_idError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                                <span class="error-message-text"></span>
-                            </div>
-                        </div>
-                        @error('cabangDinas_id')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
                 </div>
 
-                <!-- Navigasi -->
-                <div class="flex justify-between items-center pt-6 border-t border-blue-100">
-                    <!-- Tombol Kembali -->
-                    <a href="{{ route('pendaftaran.create', ['step' => 1]) }}"
-                        class="inline-flex items-center bg-white border-2 border-blue-600 text-blue-600 font-semibold px-6 py-2 rounded-lg shadow-sm hover:bg-blue-50 hover:border-blue-700 hover:text-blue-700 transition transform hover:-translate-y-0.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Kembali
-                    </a>
-
-                    <!-- Tombol Selanjutnya -->
-                    <button type="submit"
-                        class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md transition transform hover:-translate-y-1">
-                        Selanjutnya
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
+                <div>
+                    <label for="alamat_instansi" class="block text-sm lg:text-base font-semibold text-blue-900 mb-2">Alamat Instansi</label>
+                    <div class="relative">
+                        <input type="text" id="alamat_instansi" name="alamat_instansi"
+                            placeholder="Masukkan Alamat Instansi"
+                            value="{{ old('alamat_instansi', $formData['alamat_instansi'] ?? '') }}"
+                            required
+                            class="w-full border-2 border-blue-200 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-sm lg:text-base text-blue-900 placeholder-blue-400 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('alamat_instansi') border-red-500 focus:ring-red-500 @enderror">
+                        <div id="alamat_instansiError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('alamat_instansi')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <!-- Kompetensi & Kelas -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div>
+                    <label for="bidang_keahlian" class="block text-sm lg:text-base font-semibold text-blue-900 mb-2">Kompetensi/Bidang Keahlian</label>
+                    <div class="relative">
+                        <select id="bidang_keahlian" name="bidang_keahlian" required
+                            class="w-full border-2 border-blue-200 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-sm lg:text-base text-blue-900 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('bidang_keahlian') border-red-500 focus:ring-red-500 @enderror">
+                            <option value="">Pilih Kompetensi</option>
+                            @foreach ($bidang as $b)
+                                <option value="{{ $b->id }}" @selected(old('bidang_keahlian', $formData['bidang_keahlian'] ?? '') == $b->id)>
+                                    {{ $b->nama_bidang }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div id="bidang_keahlianError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('bidang_keahlian')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="kelas" class="block text-sm lg:text-base font-semibold text-blue-900 mb-2">Kelas</label>
+                    <div class="relative">
+                        <select id="kelas" name="kelas" required
+                            class="w-full border-2 border-blue-200 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-sm lg:text-base text-blue-900 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('kelas') border-red-500 focus:ring-red-500 @enderror">
+                            <option value="">Pilih Kelas</option>
+                            <option value="X" @selected(old('kelas', $formData['kelas'] ?? '') == 'X')>Kelas X</option>
+                            <option value="XI" @selected(old('kelas', $formData['kelas'] ?? '') == 'XI')>Kelas XI</option>
+                            <option value="XII" @selected(old('kelas', $formData['kelas'] ?? '') == 'XII')>Kelas XII</option>
+                        </select>
+                        <div id="kelasError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('kelas')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <!-- Pelatihan -->
+            <fieldset>
+                <legend class="block mb-3 text-sm lg:text-base font-semibold text-blue-900">Pelatihan yang ingin diikuti</legend>
+                <div class="flex flex-wrap gap-3">
+                    @foreach ($pelatihan as $p)
+                        <label class="flex-1 min-w-[250px] max-w-[300px] flex items-center gap-3 border border-blue-200 rounded-lg p-3 cursor-pointer hover:bg-blue-50 transition">
+                            <input type="radio" id="pelatihan_{{ $p->id }}" name="pelatihan_id" value="{{ $p->id }}"
+                                required
+                                @checked(old('pelatihan_id', $formData['pelatihan_id'] ?? '') == $p->id)
+                                class="text-blue-600 focus:ring-blue-500 flex-shrink-0">
+                            <span class="text-sm lg:text-base text-blue-900 font-medium leading-relaxed">{{ $p->nama_pelatihan }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                <div id="pelatihan_idError" class="error-popup mt-1 p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="error-message-text"></span>
+                </div>
+                @error('pelatihan_id')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </fieldset>
+
+            <!-- Kota & Cabang Dinas -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div>
+                    <label for="kota" class="block text-sm lg:text-base font-semibold text-blue-900 mb-2">Kota / Kabupaten</label>
+                    <div class="relative">
+                        <input type="text" id="kota" name="kota" placeholder="Ketik nama kota atau kabupaten..."
+                            required autocomplete="off"
+                            class="w-full border-2 border-blue-200 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-sm lg:text-base text-blue-900 placeholder-blue-400 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('kota') border-red-500 focus:ring-red-500 @enderror">
+                        <div id="kotaSuggestions" class="absolute z-10 w-full bg-white border border-blue-200 rounded-b-lg mt-1 max-h-60 overflow-y-auto shadow-lg hidden"></div>
+                        <input type="hidden" name="kota_id" id="kota_id">
+                        <div id="kotaError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('kota')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="cabangDinas_id" class="block text-sm lg:text-base font-semibold text-blue-900 mb-2">Cabang Dinas Wilayah</label>
+                    <div class="relative">
+                        <select id="cabangDinas_id" name="cabangDinas_id" required
+                            class="w-full border-2 border-blue-200 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-sm lg:text-base text-blue-900 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('cabangDinas_id') border-red-500 focus:ring-red-500 @enderror">
+                            <option value="">Pilih Cabang Dinas</option>
+                            @foreach ($cabangDinas as $cb)
+                                <option value="{{ $cb->id }}" @selected(old('cabangDinas_id', $formData['cabangDinas_id'] ?? '') == $cb->id)>
+                                    {{ $cb->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div id="cabangDinas_idError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="error-message-text"></span>
+                        </div>
+                    </div>
+                    @error('cabangDinas_id')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <!-- Navigasi -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-blue-100">
+                <!-- Tombol Kembali -->
+                <a href="{{ route('pendaftaran.create', ['step' => 1]) }}"
+                    class="w-full sm:w-auto inline-flex items-center justify-center bg-white border-2 border-blue-600 text-blue-600 font-semibold px-4 py-2 sm:px-6 sm:py-2 lg:px-8 lg:py-3 rounded-lg shadow-sm hover:bg-blue-50 hover:border-blue-700 hover:text-blue-700 transition transform hover:-translate-y-0.5 text-sm lg:text-base">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Kembali
+                </a>
+
+                <!-- Tombol Selanjutnya -->
+                <button type="submit"
+                    class="w-full sm:w-auto inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 sm:px-8 sm:py-3 lg:px-10 lg:py-4 rounded-lg shadow-md transition transform hover:-translate-y-1 text-sm lg:text-base">
+                    Selanjutnya
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection
@@ -219,6 +218,21 @@
         visibility: visible;
         transform: translateY(0);
     }
+
+    /* Responsive improvements */
+    @media (max-width: 640px) {
+        .error-popup {
+            font-size: 0.75rem;
+            padding: 0.5rem;
+        }
+    }
+
+    /* Tablet specific improvements */
+    @media (min-width: 641px) and (max-width: 1023px) {
+        .grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
 </style>
 
 <script defer>
@@ -227,7 +241,7 @@
         const kotaInput = document.getElementById("kota");
         const suggestionsContainer = document.getElementById("kotaSuggestions");
         const errorPopup = document.getElementById("kotaError");
-                const errorText = errorPopup?.querySelector(".error-message-text");
+        const errorText = errorPopup?.querySelector(".error-message-text");
 
         // Buat hidden input kota_id jika belum ada (seharusnya sudah ada di HTML)
         let kotaIdHidden = document.getElementById("kota_id");
@@ -270,7 +284,7 @@
                 const div = document.createElement("div");
                 div.textContent = item.name;
                 div.className =
-                    "p-2 cursor-pointer hover:bg-gray-100 select-none " +
+                    "p-2 cursor-pointer hover:bg-gray-100 select-none text-sm lg:text-base " +
                     (idx === activeIndex ? "bg-gray-100" : "");
                 // mousedown agar tidak kalah oleh event blur pada input
                 div.addEventListener("mousedown", (e) => {
@@ -448,6 +462,7 @@
 
                 if (firstErrorElement) {
                     firstErrorElement.focus();
+                    firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             });
 
@@ -487,4 +502,3 @@
         });
     });
 </script>
-
