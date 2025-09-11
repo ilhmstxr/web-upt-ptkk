@@ -2,11 +2,15 @@
 
 @section('title', 'Biodata Peserta')
 
-
-
 @section('content')
-    <div class="bg-white rounded-xl shadow-sm p-6 sm:p-8 border border-slate-200">
-        <form id="registrationForm" action="{{ route('pendaftaran.store') }}" method="POST" class="space-y-6" novalidate>
+    <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-blue-200">
+        <!-- Header Section -->
+        <div class="mb-8 text-center">
+            <h2 class="text-2xl font-bold text-blue-900 mb-2">Biodata Peserta</h2>
+            <p class="text-blue-600">Lengkapi data pribadi Anda dengan benar</p>
+        </div>
+
+        <form id="registrationForm" action="{{ route('pendaftaran.store') }}" method="POST" class="space-y-8" novalidate>
             @csrf
 
             <input type="hidden" name="current_step" value="{{ $currentStep }}">
@@ -14,16 +18,15 @@
             {{-- Nama dan NIK --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="nama" class="block text-sm font-semibold mb-2 text-slate-700">Nama</label>
-                    {{-- Container relatif untuk pop-up --}}
+                    <label for="nama" class="block text-sm font-semibold mb-2 text-blue-900">Nama Lengkap</label>
                     <div class="relative">
                         <input type="text" id="nama" name="nama" placeholder="Masukkan Nama Lengkap"
                             value="{{ old('nama', $formData['nama'] ?? '') }}"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('nama') border-red-500 @enderror"
+                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('nama') border-red-400 @enderror"
                             required />
                         {{-- Pop-up Error Kustom untuk Nama --}}
                         <div id="namaError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -38,17 +41,17 @@
                     @enderror
                 </div>
                 <div>
-                    <label for="nik" class="block text-sm font-semibold mb-2 text-slate-700">NIK (16 digit)</label>
+                    <label for="nik" class="block text-sm font-semibold mb-2 text-blue-900">NIK (16 digit)</label>
                     <div class="relative">
                         <input type="text" id="nik" name="nik" maxlength="16"
                             placeholder="Masukkan 16 digit NIK" value="{{ old('nik', $formData['nik'] ?? '') }}" pattern="\d{16}"
                             title="NIK harus terdiri dari 16 digit angka."
                             oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('nik') border-red-500 @enderror"
+                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('nik') border-red-400 @enderror"
                             required />
                         {{-- Pop-up Error Kustom untuk NIK --}}
                         <div id="nikError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -64,18 +67,18 @@
                 </div>
             </div>
 
-            {{-- Email & no hp --}}
+            {{-- No HP & Email --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="no_hp" class="block text-sm font-semibold mb-2 text-slate-700">Nomor Handphone / Whatsapp</label>
+                    <label for="no_hp" class="block text-sm font-semibold mb-2 text-blue-900">Nomor Handphone / WhatsApp</label>
                     <div class="relative">
                         <input type="tel" id="no_hp" name="no_hp" maxlength="15"
                             placeholder="Contoh: 081234567890" value="{{ old('no_hp', $formData['no_hp'] ?? '') }}"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('no_hp') border-red-500 @enderror"
+                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('no_hp') border-red-400 @enderror"
                             required />
                         <div id="no_hpError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -90,14 +93,14 @@
                     @enderror
                 </div>
                 <div>
-                    <label for="email" class="block text-sm font-semibold mb-2 text-slate-700">Email</label>
+                    <label for="email" class="block text-sm font-semibold mb-2 text-blue-900">Email Aktif</label>
                     <div class="relative">
                         <input type="email" id="email" name="email" placeholder="Masukkan Email Aktif"
                             value="{{ old('email', $formData['email'] ?? '') }}"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-500 @enderror"
+                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('email') border-red-400 @enderror"
                             required />
                         <div id="emailError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -113,17 +116,17 @@
                 </div>
             </div>
 
-            {{-- Tempat, tanggal lahir --}}
+            {{-- Tempat & Tanggal Lahir --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="tempat_lahir" class="block text-sm font-semibold mb-2 text-slate-700">Tempat Lahir</label>
+                    <label for="tempat_lahir" class="block text-sm font-semibold mb-2 text-blue-900">Tempat Lahir</label>
                     <div class="relative">
-                        <input type="text" id="tempat_lahir" name="tempat_lahir" maxlength="15"
-                            placeholder="Surabaya" value="{{ old('tempat_lahir',$formData['tempat_lahir'] ?? '') }}"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('tempat_lahir') border-red-500 @enderror"
+                        <input type="text" id="tempat_lahir" name="tempat_lahir" maxlength="50"
+                            placeholder="Contoh: Surabaya" value="{{ old('tempat_lahir',$formData['tempat_lahir'] ?? '') }}"
+                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('tempat_lahir') border-red-400 @enderror"
                             required />
                         <div id="tempat_lahirError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
                                 viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -138,15 +141,14 @@
                     @enderror
                 </div>
                 <div>
-                    <label for="tanggal_lahir"
-                        class="block text-sm font-semibold mb-2 text-slate-700">Tanggal Lahir</label>
+                    <label for="tanggal_lahir" class="block text-sm font-semibold mb-2 text-blue-900">Tanggal Lahir</label>
                     <div class="relative">
                         <input type="date" id="tanggal_lahir" name="tanggal_lahir"
-                            placeholder="Masukkan tanggal_lahir Aktif" value="{{ old('tanggal_lahir', $formData['tanggal_lahir'] ?? '') }}"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('tanggal_lahir') border-red-500 @enderror"
+                            value="{{ old('tanggal_lahir', $formData['tanggal_lahir'] ?? '') }}"
+                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('tanggal_lahir') border-red-400 @enderror"
                             required />
                         <div id="tanggal_lahirError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
                                 viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -162,22 +164,20 @@
                 </div>
             </div>
 
-            {{-- Jenis kelamin, agama --}}
+            {{-- Jenis Kelamin & Agama --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="jenis_kelamin" class="block text-sm font-semibold mb-2 text-slate-700">Jenis Kelamin</label>
+                    <label for="jenis_kelamin" class="block text-sm font-semibold mb-2 text-blue-900">Jenis Kelamin</label>
                     <div class="relative">
                         <select id="jenis_kelamin" name="jenis_kelamin"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('jenis_kelamin') border-red-500 @enderror"
+                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('jenis_kelamin') border-red-400 @enderror"
                             required>
-                            <option value="">Pilih Jenis Kelamin</option>
-                            <option value="Laki-laki" {{ old('jenis_kelamin', $formData['jenis_kelamin'] ?? '') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki
-                            </option>
-                            <option value="Perempuan" {{ old('jenis_kelamin', $formData['jenis_kelamin'] ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan
-                            </option>
+                            <option value="" class="text-blue-400">Pilih Jenis Kelamin</option>
+                            <option value="Laki-laki" {{ old('jenis_kelamin', $formData['jenis_kelamin'] ?? '') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                            <option value="Perempuan" {{ old('jenis_kelamin', $formData['jenis_kelamin'] ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                         </select>
                         <div id="jenis_kelaminError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
                                 viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -192,12 +192,12 @@
                     @enderror
                 </div>
                 <div>
-                    <label for="agama" class="block text-sm font-semibold mb-2 text-slate-700">Agama</label>
+                    <label for="agama" class="block text-sm font-semibold mb-2 text-blue-900">Agama</label>
                     <div class="relative">
                         <select id="agama" name="agama"
-                            class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('agama') border-red-500 @enderror"
+                            class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm @error('agama') border-red-400 @enderror"
                             required>
-                            <option value="">Pilih Agama</option>
+                            <option value="" class="text-blue-400">Pilih Agama</option>
                             <option value="Islam" {{ old('agama', $formData['agama'] ?? '') == 'Islam' ? 'selected' : '' }}>Islam</option>
                             <option value="Kristen" {{ old('agama', $formData['agama'] ?? '') == 'Kristen' ? 'selected' : '' }}>Kristen</option>
                             <option value="Katolik" {{ old('agama', $formData['agama'] ?? '') == 'Katolik' ? 'selected' : '' }}>Katolik</option>
@@ -206,7 +206,7 @@
                             <option value="Konghucu" {{ old('agama', $formData['agama'] ?? '') == 'Konghucu' ? 'selected' : '' }}>Konghucu</option>
                         </select>
                         <div id="agamaError"
-                            class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                            class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0"
                                 viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -222,16 +222,15 @@
                 </div>
             </div>
 
-            {{-- alamat tinggal --}}
-            <div class="grid grid-cols-1  gap-6">
-                <label for="alamat" class="block text-sm font-semibold mb-2 text-slate-700">Alamat Tempat
-                    Tinggal</label>
+            {{-- Alamat Tinggal --}}
+            <div>
+                <label for="alamat" class="block text-sm font-semibold mb-2 text-blue-900">Alamat Tempat Tinggal</label>
                 <div class="relative">
-                    <textarea id="alamat" name="alamat" placeholder="Masukkan Alamat Tinggal" 
-                        class="w-full border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('alamat') border-red-500 @enderror"
+                    <textarea id="alamat" name="alamat" rows="4" placeholder="Masukkan alamat lengkap tempat tinggal Anda"
+                        class="w-full bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 shadow-sm resize-none @error('alamat') border-red-400 @enderror"
                         required>{{ old('alamat', $formData['alamat'] ?? '') }}</textarea>
                     <div id="alamatError"
-                        class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-sm rounded-md shadow-lg flex items-center">
+                        class="error-popup absolute bottom-full mb-2 w-full p-3 bg-red-500 text-white text-sm rounded-lg shadow-lg flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path fill-rule="evenodd"
@@ -246,14 +245,14 @@
                 @enderror
             </div>
 
-
-            {{-- (Tambahkan div.relative dan div.error-popup untuk semua field yang required) --}}
-
-            {{-- Tombol Submit --}}
-            <div class="flex justify-end pt-4">
+            {{-- Submit Button --}}
+            <div class="flex justify-end pt-6 border-t border-blue-100">
                 <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2.5 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:shadow-lg">
                     Selanjutnya
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                 </button>
             </div>
         </form>
@@ -269,7 +268,7 @@
                 if (errorPopup) {
                     errorPopup.querySelector('.error-message-text').textContent = message;
                     errorPopup.classList.add('visible');
-                    element.classList.add('border-red-500', 'focus:ring-red-500');
+                    element.classList.add('border-red-400', 'focus:ring-red-400');
                 }
             };
 
@@ -278,7 +277,7 @@
                 const errorPopup = document.getElementById(element.id + 'Error');
                 if (errorPopup) {
                     errorPopup.classList.remove('visible');
-                    element.classList.remove('border-red-500', 'focus:ring-red-500');
+                    element.classList.remove('border-red-400', 'focus:ring-red-400');
                 }
             };
 
@@ -293,6 +292,7 @@
             // Tambahkan event listener ke setiap input untuk menyembunyikan error saat diketik
             form.querySelectorAll('input[required], select[required], textarea[required]').forEach(element => {
                 element.addEventListener('input', () => hideError(element));
+                element.addEventListener('change', () => hideError(element));
             });
 
             form.addEventListener('submit', function(event) {
@@ -310,7 +310,7 @@
                         // Pesan kustom berdasarkan ID elemen
                         switch (element.id) {
                             case 'nama':
-                                message = 'Kolom nama tidak boleh kosong, ya.';
+                                message = 'Kolom nama tidak boleh kosong.';
                                 break;
                             case 'nik':
                                 if (element.value.length > 0 && element.value.length < 16) {
@@ -321,13 +321,28 @@
                                 break;
                             case 'email':
                                 if (element.validity.typeMismatch) {
-                                    message = 'Format email sepertinya salah.';
+                                    message = 'Format email tidak valid.';
                                 } else {
                                     message = 'Mohon isi alamat email Anda.';
                                 }
                                 break;
-                            case 'pelatihan_id':
-                                message = 'Anda harus memilih pelatihan terlebih dahulu.';
+                            case 'no_hp':
+                                message = 'Nomor handphone wajib diisi.';
+                                break;
+                            case 'tempat_lahir':
+                                message = 'Tempat lahir wajib diisi.';
+                                break;
+                            case 'tanggal_lahir':
+                                message = 'Tanggal lahir wajib diisi.';
+                                break;
+                            case 'jenis_kelamin':
+                                message = 'Pilih jenis kelamin Anda.';
+                                break;
+                            case 'agama':
+                                message = 'Pilih agama Anda.';
+                                break;
+                            case 'alamat':
+                                message = 'Alamat tinggal wajib diisi.';
                                 break;
                         }
 
@@ -343,9 +358,37 @@
                 // Jika ada error, fokus ke elemen pertama
                 if (firstErrorElement) {
                     firstErrorElement.focus();
+                    firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             });
         });
     </script>
+
+    <style>
+        /* Error popup animation */
+        .error-popup {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+            z-index: 10;
+        }
+
+        .error-popup.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Custom select styling */
+        select option {
+            color: #1e3a8a;
+        }
+
+        /* Focus states */
+        input:focus, select:focus, textarea:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
 
 @endsection
