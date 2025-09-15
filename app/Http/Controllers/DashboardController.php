@@ -7,47 +7,104 @@ use App\Models\Tes;
 use App\Models\Peserta;
 use App\Models\Percobaan;
 use App\Models\JawabanUser;
-use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    // ======================
-    // DASHBOARD INDEX
-    // ======================
-    public function index()
-    {
-        $user = Auth::user();
-        $surveyStatus = $user && $user->survey ? 'done' : 'pending';
-
-        return view('dashboard.index', compact('surveyStatus'));
-    }
-
-    // ======================
-    // HOME & PROFILE
-    // ======================
+    /**
+     * Dashboard Home
+     */
     public function home()
     {
-        return view('dashboard.pages.home');
+        $peserta = Peserta::all();
+        $pesertaId = session('peserta_id');
+        $pesertaAktif = $pesertaId ? Peserta::find($pesertaId) : null;
+
+        return view('dashboard.pages.home', compact('peserta', 'pesertaAktif'));
     }
 
+    /**
+     * Pilih Peserta (set peserta_id di session)
+     */
+    public function setPeserta(Request $request)
+    {
+        $request->validate([
+            'peserta_id' => 'required|exists:peserta,id',
+        ]);
+
+        session(['peserta_id' => $request->peserta_id]);
+
+        return redirect()->route('dashboard.home')
+            ->with('success', 'Peserta berhasil dipilih!');
+    }
+
+    /**
+     * Unset Peserta (hapus peserta_id dari session)
+     * NOTE: route untuk method ini sebaiknya POST (bukan GET) agar konsisten dan aman.
+     */
+    public function unsetPeserta(Request $request)
+    {
+        $request->session()->forget('peserta_id');
+
+        return redirect()->route('dashboard.home')
+            ->with('success', 'Silakan pilih peserta untuk melanjutkan.');
+    }
+
+    /**
+     * Logout - hapus semua session & token
+     */
+    public function logout(Request $request)
+    {
+        // Hapus peserta_id saja dulu, lalu invalidate session
+        $request->session()->forget('peserta_id');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('dashboard.home')
+            ->with('success', 'Logout berhasil, silakan pilih peserta kembali.');
+    }
+
+    /**
+     * Profile view
+     */
     public function profile()
     {
         return view('dashboard.pages.profile');
     }
 
+    /**
+     * Materi listing
+     */
     public function materi()
     {
         return view('dashboard.pages.materi');
     }
 
+    /**
+     * Materi single view
+     */
     public function materiShow($materi)
     {
         return view('dashboard.pages.materi-show', compact('materi'));
     }
 
-    // ======================
-    // PRE-TEST
-    // ======================
+    /**
+     * Survey (feedback)
+     */
+    public function survey()
+    {
+        return view('dashboard.pages.survey');
+    }
+
+    public function surveySubmit(Request $request)
+    {
+        // proses survey jika ada (disederhanakan)
+        return redirect()->route('dashboard.survey')
+            ->with('success', 'Survey berhasil dikerjakan!');
+    }
+
+    /**
+     * Pre-test: daftar, start, begin, show, submit, result
+     */
     public function pretest()
     {
         $tes = Tes::where('sub_tipe', 'pre-test')->get();
@@ -60,21 +117,19 @@ class DashboardController extends Controller
         return view('dashboard.pages.pre-test.pretest-start-form', compact('tes', 'peserta'));
     }
 
-    public function pretestBegin(Request $request, $tesId)
+    public function pretestBegin(Request $request, Tes $tes)
     {
-        $request->validate([
-            'peserta_id' => 'required|exists:peserta,id',
-        ]);
+        $request->validate(['peserta_id' => 'required|exists:peserta,id']);
 
         $percobaan = Percobaan::create([
-            'peserta_id'  => $request->peserta_id,
-            'tes_id'      => $tesId,
-            'tipe'        => 'pretest',
+            'peserta_id' => $request->peserta_id,
+            'tes_id' => $tes->id,
+            'tipe' => 'pretest',
             'waktu_mulai' => now(),
         ]);
 
         return redirect()->route('dashboard.pretest.show', [
-            'tes' => $tesId,
+            'tes' => $tes->id,
             'percobaan' => $percobaan->id,
         ]);
     }
@@ -112,16 +167,8 @@ class DashboardController extends Controller
         ));
     }
 
-    public function pretestSubmit(Request $request, ?Percobaan $percobaan = null)
+    public function pretestSubmit(Request $request, Percobaan $percobaan)
     {
-        if (!$percobaan) {
-            $percobaanId = $request->input('percobaan_id')
-                ?? $request->route('percobaan')
-                ?? $request->query('percobaan');
-            $percobaan = Percobaan::find($percobaanId);
-            if (!$percobaan) abort(404, 'Percobaan tidak ditemukan.');
-        }
-
         $jawabanData = $request->input('jawaban', []);
         foreach ($jawabanData as $pertanyaanId => $opsiId) {
             JawabanUser::updateOrCreate(
@@ -158,9 +205,9 @@ class DashboardController extends Controller
         return view('dashboard.pages.pre-test.pretest-result', compact('percobaan'));
     }
 
-    // ======================
-    // POST-TEST
-    // ======================
+    /**
+     * Post-test: daftar, start, begin, show, submit, result
+     */
     public function posttest()
     {
         $tes = Tes::where('sub_tipe', 'post-test')->get();
@@ -173,21 +220,19 @@ class DashboardController extends Controller
         return view('dashboard.pages.post-test.posttest-start-form', compact('tes', 'peserta'));
     }
 
-    public function posttestBegin(Request $request, $tesId)
+    public function posttestBegin(Request $request, Tes $tes)
     {
-        $request->validate([
-            'peserta_id' => 'required|exists:peserta,id',
-        ]);
+        $request->validate(['peserta_id' => 'required|exists:peserta,id']);
 
         $percobaan = Percobaan::create([
-            'peserta_id'  => $request->peserta_id,
-            'tes_id'      => $tesId,
-            'tipe'        => 'posttest',
+            'peserta_id' => $request->peserta_id,
+            'tes_id' => $tes->id,
+            'tipe' => 'posttest',
             'waktu_mulai' => now(),
         ]);
 
         return redirect()->route('dashboard.posttest.show', [
-            'tes' => $tesId,
+            'tes' => $tes->id,
             'percobaan' => $percobaan->id,
         ]);
     }
@@ -225,16 +270,8 @@ class DashboardController extends Controller
         ));
     }
 
-    public function posttestSubmit(Request $request, ?Percobaan $percobaan = null)
+    public function posttestSubmit(Request $request, Percobaan $percobaan)
     {
-        if (!$percobaan) {
-            $percobaanId = $request->input('percobaan_id')
-                ?? $request->route('percobaan')
-                ?? $request->query('percobaan');
-            $percobaan = Percobaan::find($percobaanId);
-            if (!$percobaan) abort(404, 'Percobaan tidak ditemukan.');
-        }
-
         $jawabanData = $request->input('jawaban', []);
         foreach ($jawabanData as $pertanyaanId => $opsiId) {
             JawabanUser::updateOrCreate(
@@ -271,31 +308,24 @@ class DashboardController extends Controller
         return view('dashboard.pages.post-test.posttest-result', compact('percobaan'));
     }
 
-    // ======================
-    // SURVEY
-    // ======================
-    public function survey()
+    /**
+     * Progress view (stub) — pastikan view exists or adjust accordingly
+     */
+    public function progress()
     {
-        return view('dashboard.pages.survey');
+        return view('dashboard.pages.progress');
     }
 
-    public function surveySubmit(Request $request)
-    {
-        return redirect()->route('dashboard.survey')->with('success', 'Survey berhasil dikerjakan!');
-    }
-
-    // ======================
-    // Helper: hitung skor
-    // ======================
+    /**
+     * Helper: hitung skor berdasarkan jawaban user
+     */
     protected function hitungSkor(Percobaan $percobaan): int
     {
         $percobaan->loadMissing(['jawabanUser.opsiJawabans']);
         $jawabanCollection = $percobaan->jawabanUser ?? collect();
 
         $total = $jawabanCollection->count();
-        if ($total === 0) {
-            return 0;
-        }
+        if ($total === 0) return 0;
 
         $benar = $jawabanCollection->filter(fn($j) => ($j->opsiJawabans->apakah_benar ?? false))->count();
 

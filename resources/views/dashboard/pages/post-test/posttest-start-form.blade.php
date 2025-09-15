@@ -5,7 +5,20 @@
 
 @section('content')
 <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-    <h2 class="text-lg font-bold mb-4">Pilih Peserta untuk Memulai Post-Test</h2>
+    <h2 class="text-lg font-bold mb-4">Informasi Peserta</h2>
+
+    {{-- Tampilkan nama user & status survey --}}
+    <div class="mb-4">
+        <p class="text-gray-700"><strong>Nama:</strong> {{ $user->name ?? '-' }}</p>
+        <p class="text-gray-700">
+            <strong>Status Survey:</strong>
+            @if($surveyStatus === 'done')
+                <span class="text-green-600">Sudah Dikerjakan</span>
+            @else
+                <span class="text-red-600">Belum Dikerjakan</span>
+            @endif
+        </p>
+    </div>
 
     @if(session('error'))
         <div class="mb-3 p-2 bg-red-100 text-red-700 rounded">{{ session('error') }}</div>
@@ -14,24 +27,13 @@
     <form action="{{ route('dashboard.posttest.begin', $tes->id) }}" method="POST">
         @csrf
 
-        {{-- Pilih nama peserta --}}
-        <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Nama Peserta</label>
-            <select name="peserta_id" required class="w-full p-2 border rounded">
-                <option value="">-- Pilih Peserta --</option>
-                @foreach($pesertas as $peserta)
-                    <option value="{{ $peserta->id }}" {{ old('peserta_id') == $peserta->id ? 'selected' : '' }}>
-                        {{ $peserta->nama }} - {{ $peserta->instansi ?? '' }}
-                    </option>
-                @endforeach
-            </select>
-            @error('peserta_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-        </div>
+        {{-- peserta_id otomatis --}}
+        <input type="hidden" name="peserta_id" value="{{ $user->id }}">
 
-        {{-- Instansi (opsional) --}}
+        {{-- Instansi opsional --}}
         <div class="mb-3">
             <label class="block text-sm font-medium mb-1">Instansi (opsional)</label>
-            <input type="text" name="instansi" value="{{ old('instansi') }}"
+            <input type="text" name="instansi" value="{{ old('instansi', $user->instansi ?? '') }}"
                    class="w-full p-2 border rounded" />
         </div>
 
@@ -42,4 +44,3 @@
     </form>
 </div>
 @endsection
-
