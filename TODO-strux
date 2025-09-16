@@ -1,0 +1,291 @@
+siap. di bawah ini konsep arsitektur untuk kasus pendaftaran peserta dengan entitas:
+
+* **Pengisian** (record pendaftaran yang mengaitkan: `peserta`, `user` operator, `instansi`, dan `lampiran`)
+* **Master**: `pelatihan`, `bidang` (dengan relasi `bidang → instansi`)
+
+Aku bagi jadi 3 skenario: **(1) MVC Laravel**, **(2) Filament**, **(3) Hybrid MVC + Filament**.
+
+---
+
+# ERD singkat (inti relasi)
+
+```
+users (id)
+peserta (id, user_id?)        1----? pendaftaran (id, peserta_id, pelatihan_id, instansi_id, operator_user_id, status, nomor_registrasi, ... )
+instansi (id)                 |            |
+bidang (id, instansi_id)      |            +----* lampiran (id, pendaftaran_id, path, tipe, ...)
+pelatihan (id)                |
+                              +-- peserta.user_id (opsional: bila peserta juga punya akun)
+```
+
+* **Aturan umum**:
+
+  * Satu `pendaftaran` unik per `(peserta_id, pelatihan_id)`.
+  * `bidang` milik `instansi`: `bidang.instansi_id`.
+  * `pendaftaran.operator_user_id` = user petugas/pegawai yang input (jika ada).
+  * `lampiran` menempel ke `pendaftaran` (bisa juga polymorphic bila lampiran multi-entity).
+  * `nomor_registrasi` di-generate (unique, bisa mengandung kode `bidang`/`instansi`/running number).
+
+---
+
+# 1) MVC Laravel (tanpa Filament)
+
+## a) Struktur folder
+
+```
+app/
+  Http/
+    Controllers/
+      PendaftaranController.php
+    Requests/
+      Pendaftaran/
+        StoreRequest.php
+        UpdateRequest.php
+  Models/
+    Peserta.php
+    Pelatihan.php
+    Instansi.php
+    Bidang.php
+    Pendaftaran.php
+    Lampiran.php
+  Policies/
+    PendaftaranPolicy.php
+  Services/ (atau Actions/)
+    Pendaftaran/
+      CreatePendaftaran.php
+      UpdatePendaftaran.php
+      GenerateNomorRegistrasi.php
+  Rules/
+    UniquePendaftaranPerPesertaPelatihan.php
+  Observers/
+    PendaftaranObserver.php
+  Repositories/ (opsional)
+resources/views/
+  pendaftaran/
+    create.blade.php
+    show.blade.php
+    index.blade.php
+```
+
+## b) Migrations (garis besar)
+
+* `pelatihan`: `id, nama, tanggal_mulai, tanggal_selesai, kuota, ...`
+* `instansi`: `id, nama, ...`
+* `bidang`: `id, instansi_id → instansi.id, nama, kode, ...`
+* `peserta`: `id, user_id? → users.id, nama, email?, telepon, ...`
+* `pendaftaran`:
+  `id, peserta_id → peserta.id, pelatihan_id → pelatihan.id, instansi_id → instansi.id, operator_user_id → users.id (nullable), bidang_id? → bidang.id (opsional tergantung skema), status(enum: draft/submitted/verified/approved/rejected), nomor_registrasi unique, created_at...`
+* `lampiran`: `id, pendaftaran_id → pendaftaran.id, path, tipe(enum: KTP, Ijazah, ...), keterangan, ...`
+
+> Index & constraints penting:
+>
+> * unique: (`peserta_id`, `pelatihan_id`)
+> * index: `nomor_registrasi`, `status`
+
+## c) Model highlights
+
+* `Pendaftaran`:
+
+  * Relasi: `peserta()`, `pelatihan()`, `instansi()`, `bidang()`, `operator() as BelongsTo User`, `lampiran()`.
+  * Scope: `scopeStatus($q, $status)`, `scopeSearch($q, term)`.
+  * Event/Observer: saat creating → panggil service **GenerateNomorRegistrasi** jika kosong.
+
+## d) Validasi & Otorisasi
+
+* **FormRequest** (`StoreRequest`) memastikan:
+
+  * `peserta_id` valid, `pelatihan_id` exist, **unik kombinasi** via Rule kustom.
+  * `instansi_id` wajib; jika `bidang_id` dikirim, harus milik `instansi_id`.
+  * Lampiran: ukuran/tipe file.
+* **Policy** (`PendaftaranPolicy`):
+
+  * `create`: peserta sendiri atau operator berizin.
+  * `update/view`: pemilik atau petugas/role tertentu.
+  * `verify/approve`: role tertentu.
+
+## e) Controller (tipis)
+
+* `store()`: terima `StoreRequest`, delegasikan ke **CreatePendaftaran**.
+* `update()`: ke **UpdatePendaftaran**.
+* `show()/index()`: pakai Repository/Query object jika filter kompleks.
+* Balikannya: Blade view (untuk portal publik) atau JSON (bila API).
+
+## f) Service/Action (inti bisnis)
+
+* **CreatePendaftaran**:
+
+  * Cek/dapatkan peserta, validasi relasi `bidang` ↔ `instansi`.
+  * Generate `nomor_registrasi`.
+  * Simpan pendaftaran + simpan lampiran (transactions).
+  * Dispatch event (`PendaftaranSubmitted`).
+* **UpdatePendaftaran**: perubahan status, ganti lampiran, dsb.
+
+## g) View (Blade)
+
+* Pecah input menjadi komponen (select instansi → select bidang dependen).
+* Form upload lampiran (multiple).
+* Tampilkan `nomor_registrasi` & status.
+
+---
+
+# 2) Filament Laravel (admin panel)
+
+## a) Struktur
+
+```
+app/Filament/
+  Resources/
+    PendaftaranResource.php
+    PendaftaranResource/
+      Pages/
+        ListPendaftarans.php
+        CreatePendaftaran.php
+        EditPendaftaran.php
+        ViewPendaftaran.php
+      RelationManagers/
+        LampiranRelationManager.php
+  Widgets/
+    PendaftaranStats.php
+```
+
+## b) Resource & Pages
+
+* `PendaftaranResource::$model = Pendaftaran::class`
+* **Form schema**:
+
+  * `Select::make('peserta_id')->relationship('peserta','nama')->searchable()->preload()`
+  * `Select::make('pelatihan_id')->relationship('pelatihan','nama')->searchable()`
+  * `Select::make('instansi_id')->relationship('instansi','nama')->reactive()`
+  * `Select::make('bidang_id')->options(fn (Get $get) => Bidang::where('instansi_id', $get('instansi_id'))->pluck('nama','id'))`
+  * `Select::make('operator_user_id')->relationship('operator','name')->default(auth()->id())->disabled(fn()=> !auth()->user()->can('assignOperator', Pendaftaran::class))`
+  * `TextInput::make('nomor_registrasi')->disabled()` (diisi otomatis)
+  * `Toggle/Select::make('status')->options([...])` dengan policy
+  * (Bisa juga upload lampiran di RelationManager)
+* **Table schema**:
+
+  * Kolom: peserta.nama, pelatihan.nama, instansi.nama, bidang.nama, status (badge), nomor\_registrasi, created\_at (since)
+  * Filter: status, pelatihan, instansi, tanggal
+  * Actions: view, edit, delete, custom approve/reject (dengan authorize)
+* **Relation Manager** `LampiranRelationManager`:
+
+  * `FileUpload::make('path')->directory('pendaftaran/lampiran')->multiple?`
+  * Kolom tabel: preview gambar/file, tipe, created\_at
+
+## c) Hubungkan ke domain logic
+
+* Override:
+
+  * `CreatePendaftaran::handleRecordCreation($data)` → panggil **CreatePendaftaran Action** (sama seperti di MVC).
+  * `EditPendaftaran::mutateFormDataBeforeSave()` untuk validasi granular (sebaiknya tetap di Action/Rule).
+* **Policy** otomatis jalan untuk view/create/update/delete.
+* **Widget**: metrik (jumlah submitted/approved minggu ini, dsb.)
+
+> Intinya, Filament menyelesaikan **UI admin** & listing tanpa menulis Blade/controller; **logika bisnis tetap di Action/Policy/Observer** milik Laravel.
+
+---
+
+# 3) Hybrid MVC + Filament (rekomendasi produksi)
+
+* **Front-office (publik/portal peserta)**: **MVC** (route, controller, blade)
+  Peserta mendaftar sendiri, upload lampiran, cek status, cetak kartu.
+* **Back-office (staf/admin)**: **Filament**
+  Verifikasi, approve/reject, kelola master (`pelatihan`, `instansi`, `bidang`), unduh laporan.
+
+## Pembagian tanggung jawab
+
+* **Domain** (shared):
+
+  * Models, Policies, Rules, Observers, Services/Actions, Events/Jobs → satu tempat, dipakai oleh **keduanya**.
+* **MVC (portal)**:
+
+  * `PendaftaranController@create/store/show` (UI peserta).
+  * Blade komponen untuk form publik & upload progress.
+* **Filament (admin)**:
+
+  * `PendaftaranResource` (+ RelationManagers, Widgets).
+  * Resource untuk master data (`PelatihanResource`, `InstansiResource`, `BidangResource`).
+
+## Alur proses (contoh)
+
+1. Peserta submit via portal (MVC) → `CreatePendaftaran` generate `nomor_registrasi`, status `submitted`.
+2. Admin buka Filament → review berkas di `LampiranRelationManager`.
+3. Admin klik **Approve** (custom table action) → `UpdatePendaftaran` set status `approved`, kirim notifikasi.
+4. Peserta melihat status berubah di portal.
+
+## Keamanan & aturan
+
+* **Policy** harus mencakup:
+
+  * Peserta hanya bisa melihat/mengedit miliknya (kecuali status final).
+  * Admin/operator dapat mengubah status & mengelola master.
+* **FormRequest** (portal) dan **Form Rules** (Filament) keduanya memanggil **Rule**/Action yang sama agar konsisten.
+* **Constraint DB** (unique kombinasi, FK) melindungi dari race condition.
+
+---
+
+# Detail implementasi cepat (snippet ringkas)
+
+**Unique kombinasi pendaftaran**
+
+```php
+// Rules/UniquePendaftaranPerPesertaPelatihan.php
+public function validate($attribute, $value, $fail)
+{
+    [$pesertaId, $pelatihanId] = [$this->pesertaId, $this->pelatihanId];
+    $exists = Pendaftaran::where('peserta_id',$pesertaId)
+        ->where('pelatihan_id',$pelatihanId)
+        ->when($this->ignoreId, fn($q)=>$q->whereKey('!=',$this->ignoreId))
+        ->exists();
+    if ($exists) $fail('Peserta sudah terdaftar pada pelatihan ini.');
+}
+```
+
+**Generate nomor registrasi (service)**
+
+```php
+class GenerateNomorRegistrasi {
+  public function __invoke(Pendaftaran $p): string {
+    // Contoh: {KODEBIDANG}-{TAHUN}{3digit urut}
+    $kode = optional($p->bidang)->kode ?? 'GEN';
+    $tahun = now()->format('y');
+    $urut = Pendaftaran::whereYear('created_at', now()->year)->count() + 1;
+    return sprintf('%s-%s%03d', $kode, $tahun, $urut);
+  }
+}
+```
+
+**Observer**
+
+```php
+class PendaftaranObserver {
+  public function creating(Pendaftaran $p) {
+    if (blank($p->nomor_registrasi)) {
+      $p->nomor_registrasi = app(GenerateNomorRegistrasi::class)($p);
+    }
+  }
+}
+```
+
+**Filament Custom Action (approve)**
+
+```php
+Tables\Actions\Action::make('approve')
+  ->label('Approve')
+  ->icon('heroicon-o-check')
+  ->requiresConfirmation()
+  ->authorize(fn($record)=>auth()->user()->can('approve',$record))
+  ->action(fn($record)=>app(UpdatePendaftaran::class)->approve($record));
+```
+
+---
+
+# Ringkasan keputusan desain
+
+* **Gunakan Hybrid**: MVC untuk portal peserta, Filament untuk admin.
+* **Satu sumber kebenaran** untuk logika bisnis: **Actions/Rules/Policies** dipakai di kedua sisi.
+* **Konsistensi data**: tegakkan **constraint DB** (unique combo, FK), plus Rule validasi.
+* **Lampiran**: simpan di storage bernama jelas (`pendaftaran/{id}/...`), catat tipe & metadata.
+* **Skalabilitas**: pekerjaan berat (verifikasi dokumen, kirim email) → **Jobs/Queue**.
+* **Ekstensi**: mudah menambah audit trail (model `ActivityLog`) dan notifikasi.
+
+Kalau kamu mau, aku bisa kirim **daftar file siap-buat** (migrations + model relationships + resource Filament + controller & request portal) sesuai kebutuhan spesifik field yang kamu inginkan.
