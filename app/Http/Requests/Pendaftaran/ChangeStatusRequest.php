@@ -1,28 +1,37 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Pendaftaran;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class ChangeStatusPendaftaranRequest extends FormRequest
+class ChangeStatusRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        // return $this->user()?->can('changeStatus', $this->route('pendaftaran')) ?? false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'status' => [
+                'required',
+                Rule::in(['draft','submitted','verified','approved','rejected']),
+            ],
+            'alasan' => [
+                'nullable',
+                'string',
+                'max:1000',
+            ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'status.in' => 'Status tidak valid.',
         ];
     }
 }

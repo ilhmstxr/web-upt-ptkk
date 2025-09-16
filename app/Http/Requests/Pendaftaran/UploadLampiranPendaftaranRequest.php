@@ -1,28 +1,33 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Pendaftaran;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UploadLampiranPendaftaranRequest extends FormRequest
+class UploadLampiranRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        // return $this->user()?->can('uploadLampiran', $this->route('pendaftaran')) ?? false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'lampiran'         => ['required','array','min:1'],
+            'lampiran.*.file'  => ['required','file','max:5120', 'mimes:pdf,jpg,jpeg,png'], // sesuaikan mimes
+            'lampiran.*.tipe'  => ['required', Rule::in(['KTP','IJAZAH','SERTIFIKAT','LAINNYA'])],
+            'lampiran.*.catatan' => ['nullable','string','max:255'],
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'lampiran.*.file' => 'berkas lampiran',
+            'lampiran.*.tipe' => 'tipe lampiran',
         ];
     }
 }
