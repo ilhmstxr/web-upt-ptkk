@@ -62,7 +62,7 @@ class EditPeserta extends EditRecord
                     ],
                     [
                         'bidang_keahlian' => $base->bidang_keahlian,
-                        'cabang_dinas_id' => $base->cabang_dinas_id,
+                        'cabangDinas_id' => $base->cabangDinas_id,
                     ]
                 );
 
@@ -133,7 +133,7 @@ class EditPeserta extends EditRecord
                                     ->live()
                                     ->afterStateUpdated(function (Set $set, ?string $state) {
                                         if ($state && ($instansi = Instansi::find($state))) {
-                                            $set('cabang_dinas_id', $instansi->cabang_dinas_id);
+                                            $set('cabangDinas_id', $instansi->cabangDinas_id);
                                             $set('instansi_kelas', $instansi->kelas); // sinkron awal
                                         } else {
                                             $set('instansi_kelas', null);
@@ -158,20 +158,27 @@ class EditPeserta extends EditRecord
                                     ->required(),
 
                                 // Field logic (BUKAN kolom tabel peserta)
+
                                 TextInput::make('instansi_kelas')
                                     ->label('Kelas (Instansi)')
                                     ->required()
-                                    ->dehydrated(false) // jangan simpan ke tabel peserta
-                                    ->reactive()        // <— kunci: reaktif
-                                    ->afterStateUpdated(function (Set $set, Get $get, ?string $kelas) {
-                                        // AUTO: setiap kali kelas diubah di form Edit, langsung update/create instansi & set instansi_id
-                                        if ($kelas === null || $kelas === '') return;
+                                    ->dehydrated(false)   // keep this
+                                    ->reactive()
+                                    ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
+                                        // $state = nilai terbaru field instansi_kelas
+                                        if ($state === null || $state === '') {
+                                            return;
+                                        }
 
                                         $currentInstansiId = $get('instansi_id');
-                                        if (! $currentInstansiId) return;
+                                        if (! $currentInstansiId) {
+                                            return;
+                                        }
 
                                         $base = Instansi::find($currentInstansiId);
-                                        if (! $base) return;
+                                        if (! $base) {
+                                            return;
+                                        }
 
                                         $target = Instansi::updateOrCreate(
                                             [
@@ -179,15 +186,15 @@ class EditPeserta extends EditRecord
                                                 'alamat_instansi' => $base->alamat_instansi,
                                                 'kota'            => $base->kota,
                                                 'kota_id'         => $base->kota_id,
-                                                'kelas'           => $kelas, // <- PEMBEDA
+                                                'kelas'           => $state, // ← use $state, not $kelas
                                             ],
                                             [
                                                 'bidang_keahlian' => $base->bidang_keahlian,
-                                                'cabang_dinas_id' => $base->cabang_dinas_id,
+                                                'cabangDinas_id' => $base->cabangDinas_id,
                                             ]
                                         );
 
-                                        // ganti pilihan dropdown instansi di form saat itu juga
+                                        // Ganti dropdown instansi di form saat itu juga
                                         $set('instansi_id', $target->id);
                                     })
                                     ->helperText('Mengubah ini akan otomatis membuat/memilih instansi sesuai kelas yang baru.'),
