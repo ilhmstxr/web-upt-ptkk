@@ -109,4 +109,45 @@
     </div>
 
 </div>
+
+{{-- ================= MODAL INPUT PESERTA ================= --}}
+@if(!session('peserta_id'))
+<div id="pesertaModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-8 relative animate__animated animate__fadeInDown">
+        {{-- Judul --}}
+        <h2 class="text-2xl font-extrabold text-gray-800 mb-2 text-center">Selamat Datang!</h2>
+        <p class="text-gray-500 text-center mb-6">Isi data peserta terlebih dahulu sebelum memulai tes.</p>
+
+        {{-- Form --}}
+        <form method="POST" action="{{ route('dashboard.home.storePeserta') }}" class="space-y-4">
+            @csrf
+
+            {{-- Nama --}}
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+                <input type="text" name="nama" placeholder="Masukkan nama lengkap"
+                       class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            </div>
+
+            {{-- Sekolah --}}
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Sekolah / Instansi</label>
+                <input type="text" name="sekolah" placeholder="Masukkan nama sekolah"
+                       class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            </div>
+
+            {{-- Tombol --}}
+            <button type="submit"
+                class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-blue-700 transition">
+                Simpan & Lanjutkan
+            </button>
+        </form>
+
+        {{-- Info --}}
+        <p class="text-xs text-gray-400 mt-6 text-center">
+            Data yang dimasukkan akan dipakai otomatis untuk Pre-Test, Post-Test, dan Monev.
+        </p>
+    </div>
+</div>
+@endif
 @endsection
