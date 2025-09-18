@@ -20,6 +20,7 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
 
 use Filament\Forms\Components\View; // <-- Tambahkan ini di atas
+use Filament\Forms\Get;
 use Illuminate\Support\Arr; // <-- 1. TAMBAHKAN USE STATEMENT INI
 use Illuminate\Database\Eloquent\Model; // <-- Pastikan 'use' statement ini ada
 
@@ -27,15 +28,47 @@ class EditPeserta extends EditRecord
 {
     protected static string $resource = PesertaResource::class;
 
-   protected function mutateFormDataBeforeFill(array $data): array
+    protected function mutateFormDataBeforeFill(array $data): array
     {
         $lampiran = $this->record->lampiran;
 
         if ($lampiran) {
-                        $data['no_surat_tugas'] = $lampiran->no_surat_tugas;
+            $data['no_surat_tugas'] = $lampiran->no_surat_tugas;
 
             // Kita tidak perlu mengisi data file di sini lagi
             // karena akan ditangani oleh komponen View kustom.
+        }
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        // Ambil state non-dehydrated dari form
+        $kelasBaru = data_get($this->form->getState(), 'instansi_kelas');
+
+        if (! empty($data['instansi_id']) && $kelasBaru !== null) {
+            $base = Instansi::find($data['instansi_id']);
+
+            if ($base) {
+                // KUNCI: masukkan 'kelas' supaya sekolah sama + kelas beda → record beda
+                $instansi = Instansi::updateOrCreate(
+                    [
+                        'asal_instansi'   => $base->asal_instansi,
+                        'alamat_instansi' => $base->alamat_instansi,
+                        'kota'            => $base->kota,
+                        'kota_id'         => $base->kota_id,
+                        'kelas'           => $kelasBaru,
+                    ],
+                    [
+                        'bidang_keahlian' => $base->bidang_keahlian,
+                        'cabang_dinas_id' => $base->cabang_dinas_id,
+                    ]
+                );
+
+                // Re-assign peserta ke instansi hasil create/update
+                $data['instansi_id'] = $instansi->id;
+            }
         }
 
         return $data;
@@ -76,8 +109,14 @@ class EditPeserta extends EditRecord
                                 ])->required(),
                                 Textarea::make('alamat')->label('Alamat Tempat Tinggal')->required(),
                                 TextInput::make('no_hp')->label('Nomor Handphone')->required(),
-                                TextInput::make('email')->label('Email')->email()->required(),
+                                Select::make('user_id')
+                                    ->relationship('user', 'email')
+                                    ->label('Email')
+                                    ->searchable()
+                                    ->required(),
+
                             ])->columns(2),
+
 
                         Section::make('Biodata Sekolah')
                             ->description('Pilih instansi yang sudah ada atau buat baru.')
@@ -85,50 +124,75 @@ class EditPeserta extends EditRecord
                                 Select::make('instansi_id')
                                     ->relationship('instansi', 'asal_instansi')
                                     ->label('Asal Lembaga / Sekolah')
+                                    ->getOptionLabelFromRecordUsing(
+                                        fn(Instansi $i) => trim("{$i->asal_instansi}" . ($i->kelas ? " — Kelas {$i->kelas}" : ''))
+                                    )
                                     ->searchable()
+                                    ->preload()
                                     ->required()
-                                    ->live() // Membuat form reaktif
+                                    ->live()
                                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                                        if ($state) {
-                                            $instansi = Instansi::find($state);
-                                            if ($instansi) {
-                                                $set('cabang_dinas_id', $instansi->cabang_dinas_id);
-                                            }
+                                        if ($state && ($instansi = Instansi::find($state))) {
+                                            $set('cabang_dinas_id', $instansi->cabang_dinas_id);
+                                            $set('instansi_kelas', $instansi->kelas); // sinkron awal
+                                        } else {
+                                            $set('instansi_kelas', null);
+                                        }
+                                    })
+                                    ->afterStateHydrated(function (Get $get, Set $set, ?Model $record) {
+                                        if ($record?->instansi) {
+                                            $set('instansi_kelas', $record->instansi->kelas); // prefill saat membuka Edit
                                         }
                                     }),
+
                                 Select::make('pelatihan_id')
                                     ->relationship('pelatihan', 'nama_pelatihan')
                                     ->label('Pelatihan')
                                     ->searchable()
                                     ->required(),
+
                                 Select::make('bidang_id')
                                     ->relationship('bidang', 'nama_bidang')
                                     ->label('Bidang Keahlian')
                                     ->searchable()
                                     ->required(),
-                                // Select::make('cabang_dinas_id')
-                                //     ->label('Cabang Dinas')
-                                //     ->options(CabangDinas::all()->pluck('nama', 'id'))
-                                //     ->searchable()
-                                //     ->disabled() // Tetap dinonaktifkan karena diisi otomatis
-                                //     ->afterStateHydrated(function ($state, callable $set, ?Model $record) {
-                                //         // Hanya jalankan jika form sedang dalam mode edit (ada $record)
-                                //         if (!$record) {
-                                //             return;
-                                //         }
 
-                                //         // 1. Ambil nama wilayah dari kolom string di model Instansi
-                                //         $namaWilayah = $record->cabang_dinas_wilayah;
+                                // Field logic (BUKAN kolom tabel peserta)
+                                TextInput::make('instansi_kelas')
+                                    ->label('Kelas (Instansi)')
+                                    ->required()
+                                    ->dehydrated(false) // jangan simpan ke tabel peserta
+                                    ->reactive()        // <— kunci: reaktif
+                                    ->afterStateUpdated(function (Set $set, Get $get, ?string $kelas) {
+                                        // AUTO: setiap kali kelas diubah di form Edit, langsung update/create instansi & set instansi_id
+                                        if ($kelas === null || $kelas === '') return;
 
-                                //         // 2. Cari CabangDinas yang namanya cocok
-                                //         $cabangDinas = CabangDinas::where('nama', $namaWilayah)->first();
+                                        $currentInstansiId = $get('instansi_id');
+                                        if (! $currentInstansiId) return;
 
-                                //         // 3. Jika ditemukan, set state (nilai) dari field ini dengan ID yang cocok
-                                //         if ($cabangDinas) {
-                                //             $set('cabang_dinas_id', $cabangDinas->id);
-                                //         }
-                                //     }),
-                            ])->columns(2),
+                                        $base = Instansi::find($currentInstansiId);
+                                        if (! $base) return;
+
+                                        $target = Instansi::updateOrCreate(
+                                            [
+                                                'asal_instansi'   => $base->asal_instansi,
+                                                'alamat_instansi' => $base->alamat_instansi,
+                                                'kota'            => $base->kota,
+                                                'kota_id'         => $base->kota_id,
+                                                'kelas'           => $kelas, // <- PEMBEDA
+                                            ],
+                                            [
+                                                'bidang_keahlian' => $base->bidang_keahlian,
+                                                'cabang_dinas_id' => $base->cabang_dinas_id,
+                                            ]
+                                        );
+
+                                        // ganti pilihan dropdown instansi di form saat itu juga
+                                        $set('instansi_id', $target->id);
+                                    })
+                                    ->helperText('Mengubah ini akan otomatis membuat/memilih instansi sesuai kelas yang baru.'),
+                            ])
+                            ->columns(2),
 
                         Section::make('Lampiran Dokumen')
                             ->description('Dokumen-dokumen pendukung yang diunggah oleh pendaftar.')

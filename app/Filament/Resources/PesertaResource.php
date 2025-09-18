@@ -93,7 +93,7 @@ protected static ?string $navigationLabel   = 'Pendaftaran';
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable(),
-                Tables\Columns\TextColumn::make('instansi.kelas')->searchable(),
+                Tables\Columns\TextColumn::make('instansi.kelas')->label('kelas')->searchable(),
                 Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('jenis_kelamin')->sortable(),
