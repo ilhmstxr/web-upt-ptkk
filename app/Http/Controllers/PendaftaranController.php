@@ -21,6 +21,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
+use PhpOffice\PhpWord\TemplateProcessor;
 use ZipArchive;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -286,6 +289,104 @@ class PendaftaranController extends Controller
         return Excel::download(new PesertaExport($ids), $fileName);
     }
 
+
+    public function exportBulk(Pelatihan $pelatihan)
+    {
+        $pendaftarans = PendaftaranPelatihan::with(['peserta', 'pelatihan', 'bidang'])
+            ->where('pelatihan_id', $pelatihan->id)
+            ->get();
+
+        if ($pendaftarans->isEmpty()) {
+            return back()->with('danger', 'Belum ada pendaftaran untuk pelatihan ini.');
+        }
+
+        $tmpDir = storage_path('app/tmp/exports');
+        if (! is_dir($tmpDir)) @mkdir($tmpDir, 0775, true);
+
+        $zipPath = $tmpDir . '/pendaftaran-' . now()->format('Ymd-His') . '.zip';
+        $zip = new \ZipArchive();
+        $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+        foreach ($pendaftarans as $pendaftaran) {
+            $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
+            $zip->addFile($pdfPath, basename($pdfPath));
+        }
+        $zip->close();
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+    public function exportSample(Pelatihan $pelatihan)
+    {
+        $pendaftaran = PendaftaranPelatihan::with(['peserta', 'pelatihan', 'bidang'])
+            ->where('pelatihan_id', $pelatihan->id)
+            ->latest('id')
+            ->firstOrFail();
+
+        $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
+        return response()->download($pdfPath)->deleteFileAfterSend(true);
+    }
+
+    public function exportSingle(PendaftaranPelatihan $pendaftaran)
+    {
+        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
+        $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
+        return response()->download($pdfPath)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Helper: isi template DOCX → render PDF → kembalikan path PDF di storage/tmp.
+     */
+    private function generatePendaftaranPdf(PendaftaranPelatihan $pendaftaran): string
+    {
+        // siapkan renderer PDF (DomPDF)
+        Settings::setPdfRendererName(Settings::PDF_RENDERER_DOMPDF);
+
+        $templateRelative = 'templates/BIODATA_PESERTA_template.docx'; // simpan di storage/app/templates/
+        $templatePath = Storage::path($templateRelative);
+
+        $tp = new TemplateProcessor($templatePath);
+
+        $peserta   = $pendaftaran->peserta;
+        $pelatihan = $pendaftaran->pelatihan;
+        $bidang    = $pendaftaran->bidang;
+
+        // mapping placeholder sesuai TEMPLATE
+        $tp->setValue('nama', $peserta->nama ?? '');
+        $tp->setValue('tempat_lahir', $peserta->tempat_lahir ?? '');
+        $tp->setValue('tanggal_lahir', optional($peserta->tanggal_lahir)->format('d-m-Y') ?? '');
+        $tp->setValue('jenis_kelamin', $peserta->jenis_kelamin ?? '');
+        $tp->setValue('agama', $peserta->agama ?? '');
+        $tp->setValue('no_hp', $peserta->no_hp ?? '');
+        $tp->setValue('nik', $peserta->nik ?? '');
+        $tp->setValue('asal_instansi', $peserta->asal_instansi ?? '');
+        $tp->setValue('alamat_instansi', $peserta->alamat_instansi ?? '');
+        $tp->setValue('kelas', $pendaftaran->kelas ?? '');
+        $tp->setValue('nama_bidang', $bidang->nama ?? '');
+
+        // header judul & tanggal kegiatan (sesuaikan dengan kolom di model)
+        $tp->setValue('judul', $pelatihan->nama_pelatihan ?? '');
+        $tp->setValue('tanggal_kegiatan', $pelatihan->tanggal_mulai
+            ? Carbon::parse($pelatihan->tanggal_mulai)->translatedFormat('d F Y')
+            : '');
+
+        // simpan DOCX sementara
+        $tmpDir = storage_path('app/tmp/exports');
+        if (! is_dir($tmpDir)) @mkdir($tmpDir, 0775, true);
+
+        $base = Str::slug(($peserta->nama ?? 'peserta') . '-' . ($pelatihan->nama_pelatihan ?? 'pelatihan'));
+        $docx = $tmpDir . "/{$base}.docx";
+        $pdf  = $tmpDir . "/{$base}.pdf";
+
+        $tp->saveAs($docx);
+
+        // konversi → PDF
+        $word = IOFactory::load($docx);
+        $writer = IOFactory::createWriter($word, 'PDF');
+        $writer->save($pdf);
+
+        return $pdf;
+    }
     public function testing()
     {
         $peserta = Peserta::with('instansi', 'lampiran')->get();
