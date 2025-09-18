@@ -127,10 +127,10 @@ class PendaftaranController extends Controller
                     'alamat_instansi'   => $allData['alamat_instansi'],
                     'kota'   => $allData['kota'],
                     'kota_id'   => $allData['kota_id'],
+                    'kelas' => $allData['kelas'],
                 ],
                 [
                     'bidang_keahlian'       => $allData['bidang_keahlian'],
-                    'kelas'                 => $allData['kelas'],
                     'cabangDinas_id'  => $allData['cabangDinas_id'],
                 ]
             );
@@ -204,7 +204,7 @@ class PendaftaranController extends Controller
                 ->latest('id')
                 ->first();
 
-                // return $pendaftaran;
+            // return $pendaftaran;
 
             $request->session()->forget('pendaftaran_data');
             return redirect()
