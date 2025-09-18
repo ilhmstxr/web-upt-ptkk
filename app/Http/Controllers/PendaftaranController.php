@@ -339,50 +339,43 @@ class PendaftaranController extends Controller
      */
     private function generatePendaftaranPdf(PendaftaranPelatihan $pendaftaran): string
     {
-        // siapkan renderer PDF (DomPDF)
-        Settings::setPdfRendererName(Settings::PDF_RENDERER_DOMPDF);
-
-        $templateRelative = 'templates/BIODATA_PESERTA_template.docx'; // simpan di storage/app/templates/
-        $templatePath = Storage::path($templateRelative);
+        $templatePath = Storage::path('templates/BIODATA_PESERTA_template.docx');
 
         $tp = new TemplateProcessor($templatePath);
 
-        $peserta   = $pendaftaran->peserta;
-        $pelatihan = $pendaftaran->pelatihan;
-        $bidang    = $pendaftaran->bidang;
+        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
+        $p = $pendaftaran->peserta;
+        $pl = $pendaftaran->pelatihan;
+        $b = $pendaftaran->bidang;
 
-        // mapping placeholder sesuai TEMPLATE
-        $tp->setValue('nama', $peserta->nama ?? '');
-        $tp->setValue('tempat_lahir', $peserta->tempat_lahir ?? '');
-        $tp->setValue('tanggal_lahir', optional($peserta->tanggal_lahir)->format('d-m-Y') ?? '');
-        $tp->setValue('jenis_kelamin', $peserta->jenis_kelamin ?? '');
-        $tp->setValue('agama', $peserta->agama ?? '');
-        $tp->setValue('no_hp', $peserta->no_hp ?? '');
-        $tp->setValue('nik', $peserta->nik ?? '');
-        $tp->setValue('asal_instansi', $peserta->asal_instansi ?? '');
-        $tp->setValue('alamat_instansi', $peserta->alamat_instansi ?? '');
+        // isi placeholder sesuai template
+        $tp->setValue('nama', $p->nama ?? '');
+        $tp->setValue('tempat_lahir', $p->tempat_lahir ?? '');
+        $tp->setValue('tanggal_lahir', optional($p->tanggal_lahir)->format('d-m-Y') ?? '');
+        $tp->setValue('jenis_kelamin', $p->jenis_kelamin ?? '');
+        $tp->setValue('agama', $p->agama ?? '');
+        $tp->setValue('no_hp', $p->no_hp ?? '');
+        $tp->setValue('nik', $p->nik ?? '');
+        $tp->setValue('asal_instansi', $p->asal_instansi ?? '');
+        $tp->setValue('alamat_instansi', $p->alamat_instansi ?? '');
         $tp->setValue('kelas', $pendaftaran->kelas ?? '');
-        $tp->setValue('nama_bidang', $bidang->nama ?? '');
+        $tp->setValue('nama_bidang', $b->nama ?? '');
+        $tp->setValue('judul', $pl->nama_pelatihan ?? '');
+        $tp->setValue('tanggal_kegiatan', optional($pl->tanggal_mulai)?->translatedFormat('d F Y') ?? '');
 
-        // header judul & tanggal kegiatan (sesuaikan dengan kolom di model)
-        $tp->setValue('judul', $pelatihan->nama_pelatihan ?? '');
-        $tp->setValue('tanggal_kegiatan', $pelatihan->tanggal_mulai
-            ? Carbon::parse($pelatihan->tanggal_mulai)->translatedFormat('d F Y')
-            : '');
+        $tmp = storage_path('app/tmp/exports');
+        if (!is_dir($tmp)) @mkdir($tmp, 0775, true);
 
-        // simpan DOCX sementara
-        $tmpDir = storage_path('app/tmp/exports');
-        if (! is_dir($tmpDir)) @mkdir($tmpDir, 0775, true);
+        $base = Str::slug(($p->nama ?? 'peserta') . '-' . ($pl->nama_pelatihan ?? 'pelatihan'));
+        $docx = "$tmp/$base.docx";
+        $pdf  = "$tmp/$base.pdf";
 
-        $base = Str::slug(($peserta->nama ?? 'peserta') . '-' . ($pelatihan->nama_pelatihan ?? 'pelatihan'));
-        $docx = $tmpDir . "/{$base}.docx";
-        $pdf  = $tmpDir . "/{$base}.pdf";
-
+        // simpan DOCX hasil merge
         $tp->saveAs($docx);
 
-        // konversi → PDF
-        $word = IOFactory::load($docx);
-        $writer = IOFactory::createWriter($word, 'PDF');
+        // load DOCX → render ke PDF
+        $phpWord = IOFactory::load($docx);
+        $writer  = IOFactory::createWriter($phpWord, 'PDF'); // ← akan pakai DomPDF karena sudah diset di AppServiceProvider
         $writer->save($pdf);
 
         return $pdf;
