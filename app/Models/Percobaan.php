@@ -12,6 +12,7 @@ class Percobaan extends Model
     protected $table = 'percobaan';
 
     protected $fillable = [
+        'peserta_id',         // Kolom baru untuk data baru
         'pesertaSurvei_id',
         'tes_id',
         'waktu_mulai',
@@ -47,7 +48,7 @@ class Percobaan extends Model
     public function peserta()
     {
         if (class_exists(\App\Models\Peserta::class)) {
-            return $this->belongsTo(\App\Models\Peserta::class, 'pesertaSurvei_id', 'id')->withDefault();
+            return $this->belongsTo(\App\Models\Peserta::class, 'peserta_id', 'id')->withDefault();
         }
         return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id')->withDefault();
     }
@@ -119,7 +120,8 @@ class Percobaan extends Model
             $totalSoal = $this->jawabanUser()->count();
         }
 
-        if ($totalSoal <= 0) return 0.0;
+        if ($totalSoal <= 0)
+            return 0.0;
 
         $benar = $this->hitungSkor();
 
