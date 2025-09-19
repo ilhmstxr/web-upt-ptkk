@@ -377,6 +377,32 @@ class PendaftaranController extends Controller
         $phpWord = IOFactory::load($docx);
         $writer  = IOFactory::createWriter($phpWord, 'PDF'); // ← akan pakai DomPDF karena sudah diset di AppServiceProvider
         $writer->save($pdf);
+        try {
+            $writer->save($pdf);
+        } finally {
+            // pastikan semua handle/stream dilepas sebelum unlink
+            unset($writer, $phpWord);
+            gc_collect_cycles();   // bantu bebaskan resource di Windows
+        }
+
+        // 2) Hapus DOCX dengan retry (atasi "Resource temporarily unavailable")
+        function safeUnlink(string $path, int $retries = 10, int $sleepMs = 250): void
+        {
+            if (!file_exists($path)) return;
+
+            for ($i = 0; $i < $retries; $i++) {
+                if (@unlink($path)) {
+                    return; // sukses
+                }
+                clearstatcache(true, $path);
+                gc_collect_cycles();
+                usleep($sleepMs * 1000); // tunggu sebentar biar lock lepas
+            }
+
+            throw new \RuntimeException("Gagal unlink: {$path} setelah {$retries} percobaan");
+        }
+
+        safeUnlink($docx);
 
         return $pdf;
     }
