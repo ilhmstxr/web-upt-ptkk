@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Traits;
+namespace App\Traits; // <-- PASTIKAN NAMESPACE INI BENAR
 
 use App\Models\Bidang;
 use App\Models\PendaftaranPelatihan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
-trait ManagesRegistrationTokens
+trait ManagesRegistrationTokens // <-- PASTIKAN NAMA TRAIT INI BENAR
 {
     /**
      * Generate nomor registrasi yang unik untuk kombinasi pelatihan dan bidang.
@@ -35,7 +36,6 @@ trait ManagesRegistrationTokens
             $nextUrut = $jumlah + 1;
             $nomor    = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeBidang), $nextUrut);
 
-            // Asumsi tabel pendaftaran_pelatihan punya kolom 'urutan_per_bidang'
             return ['nomor' => $nomor, 'urutan' => $nextUrut];
         }, 3);
     }
@@ -43,7 +43,7 @@ trait ManagesRegistrationTokens
     private function akronim(string $nama): string
     {
         $words = preg_split('/\s+/', trim($nama));
-        $akronim = collect($words)->map(fn($w) => \Illuminate\Support\Str::substr($w, 0, 1))->implode('');
+        $akronim = collect($words)->map(fn($w) => Str::substr($w, 0, 1))->implode('');
         $akronim = preg_replace('/[^A-Za-z0-9]/', '', $akronim) ?: 'BDG';
         return strtoupper($akronim);
     }

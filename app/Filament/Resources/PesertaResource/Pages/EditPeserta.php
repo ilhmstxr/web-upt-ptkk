@@ -22,11 +22,11 @@ use Filament\Forms\Components\View;
 use Filament\Forms\Get;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\ManagesRegistrationTokens;
+// use App\Traits\ManagesRegistrationTokens;
 
 class EditPeserta extends EditRecord
 {
-    use ManagesRegistrationTokens;
+    // use ManagesRegistrationTokens;
 
     protected static string $resource = PesertaResource::class;
 
