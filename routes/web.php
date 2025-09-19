@@ -94,10 +94,9 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     // Set peserta (form modal di home) -> route name: dashboard.setPeserta
     Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
     Route::match(['get', 'post'], 'logout', [DashboardController::class, 'logout'])
-    ->name('logout');
+        ->name('logout');
 
     // Set/Unset Peserta (gunakan POST untuk keamanan & konsistensi)
-    Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
     Route::post('unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
 
     // Logout (dashboard-specific logout that clears peserta_id & session)
@@ -130,7 +129,7 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
         Route::post('{tes}/begin', [DashboardController::class, 'posttestBegin'])->name('begin');
         Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
-});
+    });
 
 
 
@@ -176,7 +175,7 @@ Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
 
 // If you also want resource routes for admin CRUD, keep this line. Be aware of duplication.
-Route::resource('/survey', SurveyController::class)->except(['index','create','store']); // avoid duplicate index/create/store
+Route::resource('/survey', SurveyController::class)->except(['index', 'create', 'store']); // avoid duplicate index/create/store
 
 /*
 |--------------------------------------------------------------------------
