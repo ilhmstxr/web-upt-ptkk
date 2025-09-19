@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\instruktur;
+use App\Models\Instruktur;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -82,7 +82,7 @@ class InstrukturController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(instruktur $instruktur)
+    public function edit(Instruktur $instruktur)
     {
         //
     }
@@ -90,7 +90,7 @@ class InstrukturController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, instruktur $instruktur)
+    public function update(Request $request, Instruktur $instruktur)
     {
         //
     }
@@ -98,7 +98,7 @@ class InstrukturController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(instruktur $instruktur)
+    public function destroy(Instruktur $instruktur)
     {
         //
     }

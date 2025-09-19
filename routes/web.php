@@ -58,6 +58,15 @@ Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk
 
 // Cetak Massal
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
+Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
+Route::get('/exports/pendaftaran/{pelatihan}/bulk',   [PendaftaranController::class, 'exportBulk'])
+    ->name('exports.pendaftaran.bulk');
+
+Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::class, 'exportSample'])
+    ->name('exports.pendaftaran.sample');
+
+Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
+    ->name('exports.pendaftaran.single');
 
 // Step View
 Route::prefix('pendaftaran/step')->group(function () {
@@ -110,6 +119,7 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
 
         // show pertanyaan per tes (letakkan setelah route spesifik di atas)
         Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
+        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
     });
 
     // Post-Test
