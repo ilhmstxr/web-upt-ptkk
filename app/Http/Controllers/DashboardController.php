@@ -123,14 +123,12 @@ class DashboardController extends Controller
     public function setPeserta(Request $request)
     {
         // return $request;
-        $allPeserta = Peserta::all();
-        return $allPeserta;
-        $pesertaId = Peserta::where('nama', $request->nama)->where('asal', $request->sekolah)->value('id');
         $request->validate([
             'nama'    => 'required|string|max:150',
             'sekolah' => 'nullable|string|max:150',
             'peserta_id' => 'nullable|exists:peserta,id', // ID dari tabel peserta (opsional)
         ]);
+
 
         // --- Jika langsung pilih peserta_id (misal dari dropdown) ---
         if ($request->filled('peserta_id')) {
@@ -350,7 +348,6 @@ class DashboardController extends Controller
     public function posttest(Request $request)
     {
         $pesertaId = session('peserta_id'); // ambil peserta dari session
-
         $peserta = \App\Models\Peserta::find($pesertaId);
 
         if (!$peserta) {
