@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use PhpOffice\PhpWord\Settings;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,7 +13,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Pilih renderer DomPDF
+        Settings::setPdfRendererName(Settings::PDF_RENDERER_DOMPDF);
+
+        // Tunjuk folder vendor DomPDF (WAJIB, terutama di Windows/Laragon)
+        Settings::setPdfRendererPath(base_path('vendor/dompdf/dompdf'));
     }
 
     /**
@@ -21,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (config('app.env') === 'production') {
-    		URL::forceScheme('https');
-    	}
+            URL::forceScheme('https');
+        }
     }
 }

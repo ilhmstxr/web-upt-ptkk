@@ -21,6 +21,7 @@ class InstrukturResource extends Resource
 {
     protected static ?string $model = Instruktur::class;
 
+    protected static ?string $navigationLabel   = 'Instruktur';
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
     protected static ?string $navigationGroup = 'Pendaftaran';
 
@@ -126,7 +127,7 @@ class InstrukturResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('Cetak Biodata')
                     ->icon('heroicon-o-printer')
-                    ->url(fn(Instruktur $record): string => route('instruktur.cetak', $record->id))
+                    ->url(fn(Instruktur $record): string => route('Instruktur.cetak', $record->id))
                     ->openUrlInNewTab(),
             ])
             ->bulkActions([

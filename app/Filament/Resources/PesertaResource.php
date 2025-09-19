@@ -26,6 +26,7 @@ use Filament\Tables\Actions\BulkAction;
 class PesertaResource extends Resource
 {
     protected static ?string $model = Peserta::class;
+protected static ?string $navigationLabel   = 'Pendaftaran';
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Pendaftaran';
 
@@ -92,18 +93,19 @@ class PesertaResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable(),
+                Tables\Columns\TextColumn::make('instansi.kelas')->label('kelas')->searchable(),
                 Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
-                Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
+                Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('jenis_kelamin')->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
                 // tambahan kamar & bed
                 Tables\Columns\TextColumn::make('kamar_virtual')
                     ->label('Kamar')
-                    ->getStateUsing(fn ($record) => self::assignKamar($record)),
+                    ->getStateUsing(fn($record) => self::assignKamar($record)),
                 Tables\Columns\TextColumn::make('bed_virtual')
                     ->label('Bed')
-                    ->getStateUsing(fn ($record) => self::assignBed($record)),
+                    ->getStateUsing(fn($record) => self::assignBed($record)),
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
 
             ])
@@ -149,7 +151,7 @@ class PesertaResource extends Resource
                         session([
                             'kamar' => collect($data['kamar'])
                                 ->groupBy('blok')
-                                ->map(fn ($rooms) => $rooms->map(fn ($r) => [
+                                ->map(fn($rooms) => $rooms->map(fn($r) => [
                                     'no' => $r['no'],
                                     'bed' => (int) $r['bed'],
                                 ])->toArray())
@@ -164,12 +166,12 @@ class PesertaResource extends Resource
                 Action::make('download_pdf')
                     ->label('Cetak PDF')
                     ->icon('heroicon-o-printer')
-                    ->url(fn (Peserta $record): string => route('peserta.download-pdf', $record))
+                    ->url(fn(Peserta $record): string => route('peserta.download-pdf', $record))
                     ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-                
+
                 // --- AKSI GABUNGAN UNTUK EXCEL + ZIP ---
                 BulkAction::make('export_paket_lengkap')
                     ->label('Export Paket Lengkap (Excel + Lampiran)')
@@ -260,11 +262,11 @@ class PesertaResource extends Resource
                 });
             })
             ->flatten(1)
-            ->filter(fn ($k) => $k['bed'] > 0)
+            ->filter(fn($k) => $k['bed'] > 0)
             ->values();
 
         $peserta = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
-        $index = $peserta->search(fn ($p) => $p->id === $record->id);
+        $index = $peserta->search(fn($p) => $p->id === $record->id);
 
         $counter = 0;
         foreach ($listKamar as $kamar) {
@@ -303,7 +305,7 @@ class PesertaResource extends Resource
             return self::assignKamar($p) === $blok . ' - No.' . $no;
         })->values();
 
-        $indexInRoom = $pesertaInRoom->search(fn ($p) => $p->id === $record->id);
+        $indexInRoom = $pesertaInRoom->search(fn($p) => $p->id === $record->id);
 
         if ($indexInRoom === false || $indexInRoom >= $capacity) {
             return '-';

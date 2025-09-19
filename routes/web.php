@@ -44,12 +44,22 @@ Route::get('/home', function () {
 Route::resource('pendaftaran', PendaftaranController::class);
 Route::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('pendaftaran-testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
+Route::get('/pendaftaran/selesai/{id}', [PendaftaranController::class, 'selesai'])
+    ->name('pendaftaran.selesai');
 
 Route::get('pendaftaran/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download');
 Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
+Route::get('/exports/pendaftaran/{pelatihan}/bulk',   [PendaftaranController::class, 'exportBulk'])
+    ->name('exports.pendaftaran.bulk');
+
+Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::class, 'exportSample'])
+    ->name('exports.pendaftaran.sample');
+
+Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
+    ->name('exports.pendaftaran.single');
 
 Route::prefix('pendaftaran/step')->group(function () {
     Route::view('1', 'peserta.pendaftaran.bio-peserta');
@@ -86,8 +96,8 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('/', [DashboardController::class, 'pretest'])->name('index');
         Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
         Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
-        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
         Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
+        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
         Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
     });
 
@@ -187,7 +197,6 @@ Route::get('api/peserta', fn() => Peserta::with('lampiran', 'bidang', 'pelatihan
 */
 Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
-Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
 Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');

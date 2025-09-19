@@ -18,4 +18,7 @@ USER
 ADMIN 
 - TODO buat chart monev
 - TODO export monev ke excel
-- TODO bedain postest, pretest, monev per container, nanti ada pelatihan & MTU, pelatihan ada akselerasi dan reguler 
+- TODO benerin peserta downloadnya jadi zip
+
+- TODO bikin template email buat token 
+- TODO nanti nyampaikan token ke peserta via email
