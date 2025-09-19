@@ -21,3 +21,22 @@ ADMIN
 
 - TODO bikin template email buat token 
 - TODO nanti nyampaikan token ke peserta via email
+
+TODO
+- bidang                xv
+- cabang dinas          xv
+- instansi              xv
+- pelatihan             xv
+- tes                   xv
+- pertanyaan            xv
+- opsi jawaban          xv
+- pivot jawaban         xv
+- peserta survei        xv
+- percobaan             x
+- user                  x
+- peserta               x
+- lampiran              xv
+- jawaban user          xv
+- pendaftaran_pelatihan xv
+- 
+- 

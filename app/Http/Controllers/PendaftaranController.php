@@ -172,14 +172,7 @@ class PendaftaranController extends Controller
 
             ['nomor' => $nomorReg, 'urutan' => $urutBidang] = $this->generateToken($allData['pelatihan_id'], $allData['bidang_keahlian']);
 
-            PendaftaranPelatihan::create([
-                'peserta_id'            => $peserta->id,
-                'pelatihan_id'          => $allData['pelatihan_id'],
-                'bidang_id'             => $allData['bidang_keahlian'],
-                'urutan_per_bidang'     => $urutBidang,
-                'nomor_registrasi'      => $nomorReg,
-                'tanggal_pendaftaran'   => now(),
-            ]);
+
 
             // 4) Lampiran + upload file
             $lampiranData = [
@@ -203,6 +196,14 @@ class PendaftaranController extends Controller
 
             Lampiran::create($lampiranData);
 
+            PendaftaranPelatihan::create([
+                'peserta_id'            => $peserta->id,
+                'pelatihan_id'          => $allData['pelatihan_id'],
+                'bidang_id'             => $allData['bidang_keahlian'],
+                'urutan_per_bidang'     => $urutBidang,
+                'nomor_registrasi'      => $nomorReg,
+                'tanggal_pendaftaran'   => now(),
+            ]);
             $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
                 ->latest('id')
                 ->first();
@@ -417,7 +418,7 @@ class PendaftaranController extends Controller
     public function edit(string $id) {}
     public function update(Request $request, string $id) {}
     public function destroy(string $id) {}
-    
+
     private function generateToken(int $pelatihanId, int $bidangId): array
     {
         // [Langkah 1] Memulai transaction, jika gagal akan di-rollback otomatis
