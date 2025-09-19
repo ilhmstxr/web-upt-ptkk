@@ -5,21 +5,9 @@
 
 @section('content')
 <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-    <h2 class="text-lg font-bold mb-4">Informasi Peserta</h2>
+    <h2 class="text-lg font-bold mb-4">Tata Tertib Post-Test</h2>
 
-    {{-- Tampilkan nama user & status survey --}}
-    <div class="mb-4">
-        <p class="text-gray-700"><strong>Nama:</strong> {{ $user->name ?? '-' }}</p>
-        <p class="text-gray-700">
-            <strong>Status Survey:</strong>
-            @if($surveyStatus === 'done')
-                <span class="text-green-600">Sudah Dikerjakan</span>
-            @else
-                <span class="text-red-600">Belum Dikerjakan</span>
-            @endif
-        </p>
-    </div>
-
+    {{-- Notifikasi error --}}
     @if(session('error'))
         <div class="mb-3 p-2 bg-red-100 text-red-700 rounded">{{ session('error') }}</div>
     @endif
@@ -27,14 +15,17 @@
     <form action="{{ route('dashboard.posttest.begin', $tes->id) }}" method="POST">
         @csrf
 
-        {{-- peserta_id otomatis --}}
-        <input type="hidden" name="peserta_id" value="{{ $user->id }}">
+        {{-- Hidden peserta_survei_id dari session --}}
+        <input type="hidden" name="peserta_survei_id" value="{{ session('pesertaSurvei_id') }}">
 
-        {{-- Instansi opsional --}}
-        <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Instansi (opsional)</label>
-            <input type="text" name="instansi" value="{{ old('instansi', $user->instansi ?? '') }}"
-                   class="w-full p-2 border rounded" />
+        {{-- Tampilkan tatib --}}
+        <div class="mb-4 text-sm text-gray-700 leading-relaxed">
+            <ol class="list-decimal list-inside space-y-2">
+                <li>Kerjakan soal dengan jujur dan tanpa bantuan orang lain.</li>
+                <li>Waktu pengerjaan sudah ditentukan, pastikan fokus.</li>
+                <li>Jangan keluar dari halaman ujian sebelum selesai.</li>
+                <li>Hasil tes akan otomatis tersimpan setelah waktu habis atau tombol submit ditekan.</li>
+            </ol>
         </div>
 
         <div class="flex justify-end gap-2">
