@@ -66,6 +66,7 @@ class DashboardController extends Controller
         $pesertaId = session('peserta_id');
         $pesertaAktif = $pesertaId ? Peserta::find($pesertaId) : null;
 
+        // return $pesertaAktif;
         // gunakan pesertaSurvei_id untuk percobaan
         $pesertaSurveiId = session('pesertaSurvei_id');
 

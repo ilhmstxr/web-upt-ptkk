@@ -18,10 +18,10 @@
     </div>
 @endif
 
-{{-- Hidden form untuk unset peserta (dipakai oleh tombol "Ganti Peserta" / "Batal") --}}
+{{-- Hidden form untuk unset peserta (dipakai oleh tombol "Ganti Peserta" / "Batal") 
 <form id="hiddenUnsetForm" action="{{ route('dashboard.logout') }}" method="POST" style="display:none;">
     @csrf
-</form>
+</form> --}}
 
 @php
     $isBlur = empty($pesertaAktif);
@@ -36,21 +36,21 @@
                 <p class="text-gray-600">Selamat datang di dashboard pelatihan</p>
             </div>
             <div class="flex gap-2">
-                {{-- Ganti Peserta --}}
+                {{-- Ganti Peserta 
                 <button id="btnGantiPeserta"
                         type="button"
                         class="text-sm px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
                     Ganti Peserta
-                </button>
+                </button> --}}
 
-                {{-- Logout --}}
+                {{-- Logout 
                 <form action="{{ route('dashboard.logout') }}" method="POST">
                     @csrf
                     <button type="submit"
                             class="text-sm px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
                         Logout
                     </button>
-                </form>
+                </form> --}}
             </div>
         </div>
     @endif
