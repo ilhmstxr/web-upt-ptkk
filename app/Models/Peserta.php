@@ -96,4 +96,10 @@ class Peserta extends Model
     {
         return $this->belongsTo (User::class, 'user_id');
     }
+
+    public function pendaftaranPelatihan()
+    {
+        return $this->hasOne(pendaftaranPelatihan::class);
+    }
+
 }

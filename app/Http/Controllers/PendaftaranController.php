@@ -417,32 +417,36 @@ class PendaftaranController extends Controller
     public function edit(string $id) {}
     public function update(Request $request, string $id) {}
     public function destroy(string $id) {}
-
+    
     private function generateToken(int $pelatihanId, int $bidangId): array
     {
+        // [Langkah 1] Memulai transaction, jika gagal akan di-rollback otomatis
         return DB::transaction(function () use ($pelatihanId, $bidangId) {
             $bidang     = Bidang::findOrFail($bidangId);
             $kodeBidang = $bidang->kode ?? $this->akronim($bidang->nama);
 
-            // 1) Lock subset baris yang relevan (ambil id saja, FOR UPDATE)
+            // [Langkah 2] Kunci semua baris yang relevan
+            // Proses lain yang mencoba mengakses baris ini akan disuruh MENUNGGU
             PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
                 ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
                 ->where('peserta.bidang_id', $bidangId)
                 ->select('pendaftaran_pelatihan.id')
-                ->lockForUpdate()
+                ->lockForUpdate() // <--- BAGIAN PALING PENTING
                 ->get();
 
-            // 2) Baru hitung jumlah (tanpa FOR UPDATE juga sudah aman karena subset terkunci)
+            // [Langkah 3] Hitung jumlah pendaftar
+            // Karena proses lain menunggu, hitungan ini DIJAMIN akurat
             $jumlah = PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
                 ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
                 ->where('peserta.bidang_id', $bidangId)
                 ->count();
 
+            // [Langkah 4] Buat nomor unik yang sudah pasti aman
             $nextUrut = $jumlah + 1;
             $nomor    = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeBidang), $nextUrut);
 
             return ['nomor' => $nomor, 'urutan' => $nextUrut];
-        }, 3);
+        }, 3); // Coba ulang 3 kali jika terjadi deadlock
     }
 
 
