@@ -73,6 +73,14 @@ class DashboardController extends Controller
     // ======================
     public function setPeserta(Request $request)
     {
+        // return $request;
+        $Peserta = Peserta::query()
+            ->join('instansi', 'instansi.id', '=', 'peserta.instansi_id')
+            ->where('peserta.nama', 'LIKE', '%' . $request->input('nama') . '%')
+            ->where('instansi.asal_instansi', 'LIKE', '%' . $request->input('sekolah') . '%')
+            ->select('peserta.*')
+            ->first();
+        // return $Peserta;
         $request->validate([
             'nama' => 'required_without:peserta_id|string|max:150',
             'sekolah' => 'nullable|string|max:150',
