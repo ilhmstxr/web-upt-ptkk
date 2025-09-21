@@ -12,38 +12,57 @@ class JawabanUser extends Model
     protected $table = 'jawaban_user';
 
     protected $fillable = [
-        'opsi_jawaban_id', // untuk jawaban pilihan ganda
-        'pertanyaan_id',    // pertanyaan terkait
-        'percobaan_id',     // percobaan terkait (pre/post test)
-        'nilai_jawaban',    // untuk skala likert 1-5
-        'jawaban_teks',     // untuk jawaban esai / teks bebas
+        'opsi_jawaban_id',
+        'pertanyaan_id',
+        'percobaan_id',
+        'nilai_jawaban',
+        'jawaban_teks',
+        // 'pesertaSurvei_id' // uncomment jika kolom ada di tabel
     ];
 
-    /**
-     * Relasi ke percobaan
-     */
+    // -------------------------
+    // RELATIONS
+    // -------------------------
+
     public function percobaan()
     {
-        return $this->belongsTo(Percobaan::class, 'percobaan_id');
+        return $this->belongsTo(Percobaan::class, 'percobaan_id', 'id');
     }
 
-    /**
-     * Relasi ke pertanyaan
-     */
     public function pertanyaan()
     {
-        return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
+        return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id', 'id');
     }
 
     /**
-     * Relasi ke opsi jawaban (jika jawaban pilihan ganda)
+     * Singular relation to opsi jawaban (most likely used)
+     */
+    public function opsiJawaban()
+    {
+        return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id', 'id');
+    }
+
+    /**
+     * Plural alias kept for backward compatibility if some code uses opsiJawabans()
      */
     public function opsiJawabans()
     {
-        return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id');
+        return $this->opsiJawaban();
     }
 
-    public function pesertaSurvei(){
-        return $this->belongsTo(PesertaSurvei::class, 'pesertaSurvei_id');
+    /**
+     * Optional relation to pesertaSurvei (if jawaban_user table stores pesertaSurvei_id)
+     */
+    public function pesertaSurvei()
+    {
+        // If PesertaSurvei model exists, use it; otherwise try Peserta
+        if (class_exists(\App\Models\PesertaSurvei::class)) {
+            return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id');
+        }
+        if (class_exists(\App\Models\Peserta::class)) {
+            return $this->belongsTo(\App\Models\Peserta::class, 'pesertaSurvei_id', 'id');
+        }
+        // fallback (will error if neither model exists but method must return relation)
+        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id');
     }
 }

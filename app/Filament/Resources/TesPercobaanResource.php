@@ -13,59 +13,83 @@ use Filament\Resources\Resource;
 class TesPercobaanResource extends Resource
 {
     protected static ?string $model = Percobaan::class;
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationLabel = 'Percobaan Tes';
+
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard';
+    protected static ?string $navigationGroup = 'Tes & Percobaan';
+    protected static ?string $navigationLabel = 'Tes Percobaan';
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Select::make('peserta_id')
-                ->relationship('peserta', 'nama')
+            Forms\Components\Select::make('pesertaSurvei_id')
+                ->label('Peserta')
+                ->relationship('peserta', 'nama') // pakai relasi peserta() dari model
+                ->searchable()
                 ->required(),
 
             Forms\Components\Select::make('tes_id')
-                ->relationship('tes', 'judul')
+                ->label('Tes')
+                ->relationship('tes', 'judul') // pakai relasi tes() dari model
+                ->searchable()
                 ->required(),
 
-            Forms\Components\DateTimePicker::make('waktu_mulai')->required(),
-            Forms\Components\DateTimePicker::make('waktu_selesai'),
+            Forms\Components\DateTimePicker::make('waktu_mulai')
+                ->label('Waktu Mulai')
+                ->required(),
 
-            // Kolom skor bisa diisi manual, tapi bisa juga otomatis dihitung
+            Forms\Components\DateTimePicker::make('waktu_selesai')
+                ->label('Waktu Selesai'),
+
             Forms\Components\TextInput::make('skor')
                 ->numeric()
-                ->disabled() // agar user tidak bisa edit langsung
-                ->default(fn ($record) => $record?->hitungSkor() ?? 0),
+                ->label('Skor'),
+
+            Forms\Components\Textarea::make('pesan_kesan')
+                ->label('Pesan & Kesan')
+                ->rows(3),
         ]);
     }
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
-            Tables\Columns\TextColumn::make('peserta.nama')
-                ->label('Peserta')
-                ->searchable(),
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('peserta.nama')
+                    ->label('Peserta')
+                    ->searchable()
+                    ->sortable(),
 
-            Tables\Columns\TextColumn::make('tes.judul')
-                ->label('Tes')
-                ->searchable(),
+                Tables\Columns\TextColumn::make('tes.judul')
+                    ->label('Tes')
+                    ->searchable()
+                    ->sortable(),
 
-            Tables\Columns\TextColumn::make('waktu_mulai')->dateTime(),
-            Tables\Columns\TextColumn::make('waktu_selesai')->dateTime(),
+                Tables\Columns\TextColumn::make('waktu_mulai')
+                    ->label('Mulai')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
 
-            Tables\Columns\TextColumn::make('skor')
-                ->label('Skor')
-                ->getStateUsing(fn ($record) => $record->hitungSkor())
-                ->sortable(),
+                Tables\Columns\TextColumn::make('waktu_selesai')
+                    ->label('Selesai')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
 
-            Tables\Columns\TextColumn::make('created_at')->dateTime(),
-        ])
-        ->actions([
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\DeleteAction::make(),
-        ])
-        ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
-        ]);
+                Tables\Columns\TextColumn::make('skor')
+                    ->label('Skor'),
+
+                Tables\Columns\TextColumn::make('pesan_kesan')
+                    ->label('Pesan & Kesan')
+                    ->limit(30),
+            ])
+            ->filters([])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getRelations(): array
