@@ -22,7 +22,7 @@ ADMIN
 - TODO bikin template email buat token 
 - TODO nanti nyampaikan token ke peserta via email
 
-TODO
+TABEL INJECTION
 - bidang                xv
 - cabang dinas          xv
 - instansi              xv
@@ -32,11 +32,9 @@ TODO
 - opsi jawaban          xv
 - pivot jawaban         xv
 - peserta survei        xv
-- percobaan             x
-- user                  x
-- peserta               x
+- percobaan             xv
+- user                  xv
+- peserta               xv
 - lampiran              xv
 - jawaban user          xv
 - pendaftaran_pelatihan xv
-- 
-- 
