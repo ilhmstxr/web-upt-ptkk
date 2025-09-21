@@ -2620,7 +2620,7 @@ INSERT INTO
 VALUES
   (
     1,
-    'Post-Test Teknik Pendingin',
+    'Teknik Pendingin',
     'Tes akhir untuk mengukur pemahaman materi Teknik Pendingin dan Tata Udara.',
     'tes',
     4,
@@ -2631,7 +2631,7 @@ VALUES
   ),
   (
     2,
-    'Post-Test Kecantikan',
+    'Kecantikan',
     'Tes akhir untuk mengukur pemahaman materi Kecantikan (Perawatan Rambut).',
     'tes',
     3,
@@ -2642,7 +2642,7 @@ VALUES
   ),
   (
     3,
-    'Post-Test Tata Boga',
+    'Tata Boga',
     'Tes akhir untuk mengukur pemahaman materi Produk Bakery dan Pastry.',
     'tes',
     1,
@@ -2653,7 +2653,7 @@ VALUES
   ),
   (
     4,
-    'Post-Test Tata Busana',
+    'Tata Busana',
     'Tes akhir untuk mengukur pemahaman materi Menjahit dan Pola.',
     'tes',
     2,
@@ -2675,7 +2675,7 @@ VALUES
   ),
   (
     6,
-    'Post-Test Videografi',
+    'Videografi',
     'Tes akhir untuk mengukur pemahaman materi Videografi.',
     'tes',
     5,
@@ -2686,7 +2686,7 @@ VALUES
   ),
   (
     7,
-    'Post-Test PLC',
+    'PLC',
     'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).',
     'tes',
     6,
@@ -2697,7 +2697,7 @@ VALUES
   ),
   (
     8,
-    'Post-Test Fotografi',
+    'Fotografi',
     'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.',
     'tes',
     7,

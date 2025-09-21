@@ -171,7 +171,7 @@ Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.com
 Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
 Route::post('/survey/check-credentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
 
-Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
+Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.step');
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
 
 // If you also want resource routes for admin CRUD, keep this line. Be aware of duplication.

@@ -42,4 +42,30 @@ class Pertanyaan extends Model
     {
         return $this->gambar ? asset('storage/' . $this->gambar) : null;
     }
+
+    public function templates()
+    {
+        return $this->belongsToMany(
+            self::class,           // self-referencing
+            'pivot_jawaban',       // nama tabel pivot
+            'pertanyaan_id',       // FK ke pertanyaan ini
+            'template_pertanyaan_id' // FK ke pertanyaan template
+        );
+    }
+
+    // Aksesori: ambil opsi final (punya sendiri, kalau kosong pakai dari template pertama)
+    public function getOpsiJawabanFinalAttribute()
+    {
+        $own = $this->relationLoaded('opsiJawabans')
+            ? $this->opsiJawabans
+            : $this->opsiJawabans()->get();
+
+        if ($own->isNotEmpty()) return $own;
+
+        $templates = $this->relationLoaded('templates')
+            ? $this->templates
+            : $this->templates()->with('opsiJawabans')->get();
+
+        return collect(optional($templates->first())->opsiJawabans);
+    }
 }
