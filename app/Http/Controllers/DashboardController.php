@@ -265,7 +265,7 @@ class DashboardController extends Controller
     public function monev()
     {
         $tes = Tes::where('sub_tipe', 'monev')->get();
-        return view('dashboard.pages.monev.monev', compact('tes'));
+        return view('dashboard.pages.monev', compact('tes'));
     }
 
     public function monevStart(Tes $tes)
