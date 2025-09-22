@@ -9,37 +9,57 @@ class JawabanUser extends Model
 {
     use HasFactory;
 
-    protected $table = 'jawaban_users';
+    protected $table = 'jawaban_user';
 
     protected $fillable = [
-        'opsi_jawabans_id', // untuk jawaban pilihan ganda
-        'pertanyaan_id',    // pertanyaan terkait
-        'percobaan_id',     // percobaan terkait (pre/post test)
-        'nilai_jawaban',    // untuk skala likert 1-5
-        'jawaban_teks',     // untuk jawaban esai / teks bebas
+        'opsi_jawaban_id',
+        'pertanyaan_id',
+        'percobaan_id',
+        'nilai_jawaban',
+        'jawaban_teks',
+        // 'pesertaSurvei_id' // uncomment kalau kolom memang ada
     ];
 
-    /**
-     * Relasi ke percobaan
-     */
+    // -------------------------
+    // RELATIONS
+    // -------------------------
+
     public function percobaan()
     {
-        return $this->belongsTo(Percobaan::class, 'percobaan_id');
+        return $this->belongsTo(Percobaan::class, 'percobaan_id', 'id');
     }
 
-    /**
-     * Relasi ke pertanyaan
-     */
     public function pertanyaan()
     {
-        return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
+        return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id', 'id');
     }
 
     /**
-     * Relasi ke opsi jawaban (jika jawaban pilihan ganda)
+     * Singular relation → benar, karena 1 jawaban_user
+     * hanya bisa punya 1 opsi jawaban.
+     */
+    public function opsiJawaban()
+    {
+        return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id', 'id');
+    }
+
+    /**
+     * Ini agak rancu. 
+     * Plural biasanya untuk hasMany, 
+     * jadi kalau `opsiJawabans()` hanya memanggil `opsiJawaban()`,
+     * sebaiknya dihapus biar nggak bikin bingung.
      */
     public function opsiJawabans()
     {
-        return $this->belongsTo(OpsiJawabans::class, 'opsi_jawabans_id');
+        return $this->opsiJawaban();
+    }
+
+    /**
+     * Relasi opsional ke peserta survei.
+     * Ini oke kalau memang ada kolom `pesertaSurvei_id`.
+     */
+    public function pesertaSurvei()
+    {
+        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id');
     }
 }

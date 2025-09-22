@@ -26,6 +26,7 @@ use Filament\Tables\Actions\BulkAction;
 class PesertaResource extends Resource
 {
     protected static ?string $model = Peserta::class;
+protected static ?string $navigationLabel   = 'Pendaftaran';
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Pendaftaran';
 
@@ -92,18 +93,19 @@ class PesertaResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->searchable(),
+                Tables\Columns\TextColumn::make('instansi.kelas')->label('kelas')->searchable(),
                 Tables\Columns\TextColumn::make('bidang.nama_bidang')->sortable(),
-                Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable(),
+                Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('jenis_kelamin')->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->sortable(),
                 Tables\Columns\TextColumn::make('email'),
                 // tambahan kamar & bed
                 Tables\Columns\TextColumn::make('kamar_virtual')
                     ->label('Kamar')
-                    ->getStateUsing(fn ($record) => self::assignKamar($record)),
+                    ->getStateUsing(fn($record) => self::assignKamar($record)),
                 Tables\Columns\TextColumn::make('bed_virtual')
                     ->label('Bed')
-                    ->getStateUsing(fn ($record) => self::assignBed($record)),
+                    ->getStateUsing(fn($record) => self::assignBed($record)),
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->sortable(),
 
             ])
@@ -116,9 +118,9 @@ class PesertaResource extends Resource
                 Action::make('atur_kamar')
                     ->label('Atur Jumlah Kamar & Bed')
                     ->form(function () {
-                        $kamars = session('kamars') ?? config('kamar');
+                        $kamar = session('kamar') ?? config('kamar');
                         return [
-                            Forms\Components\Repeater::make('kamars')
+                            Forms\Components\Repeater::make('kamar')
                                 ->label('Daftar Asrama & Kamar')
                                 ->schema([
                                     Forms\Components\TextInput::make('blok')
@@ -132,7 +134,7 @@ class PesertaResource extends Resource
                                         ->label('Jumlah Bed'),
                                 ])
                                 ->default(
-                                    collect($kamars)->flatMap(function ($rooms, $blok) {
+                                    collect($kamar)->flatMap(function ($rooms, $blok) {
                                         return collect($rooms)->map(function ($room) use ($blok) {
                                             return [
                                                 'blok' => $blok,
@@ -147,9 +149,9 @@ class PesertaResource extends Resource
                     })
                     ->action(function (array $data) {
                         session([
-                            'kamars' => collect($data['kamars'])
+                            'kamar' => collect($data['kamar'])
                                 ->groupBy('blok')
-                                ->map(fn ($rooms) => $rooms->map(fn ($r) => [
+                                ->map(fn($rooms) => $rooms->map(fn($r) => [
                                     'no' => $r['no'],
                                     'bed' => (int) $r['bed'],
                                 ])->toArray())
@@ -164,12 +166,12 @@ class PesertaResource extends Resource
                 Action::make('download_pdf')
                     ->label('Cetak PDF')
                     ->icon('heroicon-o-printer')
-                    ->url(fn (Peserta $record): string => route('peserta.download-pdf', $record))
+                    ->url(fn(Peserta $record): string => route('peserta.download-pdf', $record))
                     ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-                
+
                 // --- AKSI GABUNGAN UNTUK EXCEL + ZIP ---
                 BulkAction::make('export_paket_lengkap')
                     ->label('Export Paket Lengkap (Excel + Lampiran)')
@@ -241,14 +243,14 @@ class PesertaResource extends Resource
     /** ==================== FUNGSI KAMAR ==================== */
     protected static function assignKamar($record)
     {
-        $kamars = session('kamars') ?? config('kamar');
+        $kamar = session('kamar') ?? config('kamar');
         $gender = $record->jenis_kelamin;
 
         $blokDipakai = $gender === 'Laki-laki'
             ? ['Melati Bawah', 'Tulip Bawah']
             : ['Mawar', 'Melati Atas', 'Tulip Atas'];
 
-        $listKamar = collect($kamars)
+        $listKamar = collect($kamar)
             ->only($blokDipakai)
             ->map(function ($rooms, $blok) {
                 return collect($rooms)->map(function ($r) use ($blok) {
@@ -260,11 +262,11 @@ class PesertaResource extends Resource
                 });
             })
             ->flatten(1)
-            ->filter(fn ($k) => $k['bed'] > 0)
+            ->filter(fn($k) => $k['bed'] > 0)
             ->values();
 
-        $pesertas = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
-        $index = $pesertas->search(fn ($p) => $p->id === $record->id);
+        $peserta = Peserta::where('jenis_kelamin', $gender)->orderBy('id')->get();
+        $index = $peserta->search(fn($p) => $p->id === $record->id);
 
         $counter = 0;
         foreach ($listKamar as $kamar) {
@@ -280,8 +282,8 @@ class PesertaResource extends Resource
 
     protected static function assignBed($record)
     {
-        $kamars = session('kamars') ?? config('kamar');
-        $pesertas = Peserta::where('jenis_kelamin', $record->jenis_kelamin)
+        $kamar = session('kamar') ?? config('kamar');
+        $peserta = Peserta::where('jenis_kelamin', $record->jenis_kelamin)
             ->orderBy('id')
             ->get();
 
@@ -295,15 +297,15 @@ class PesertaResource extends Resource
         $no = (int) $noText;
 
         // Ambil kapasitas kamar
-        $capacity = collect($kamars[$blok] ?? [])
+        $capacity = collect($kamar[$blok] ?? [])
             ->firstWhere('no', $no)['bed'] ?? 0;
 
         // Peserta yang berada di kamar itu saja
-        $pesertaInRoom = $pesertas->filter(function ($p) use ($blok, $no) {
+        $pesertaInRoom = $peserta->filter(function ($p) use ($blok, $no) {
             return self::assignKamar($p) === $blok . ' - No.' . $no;
         })->values();
 
-        $indexInRoom = $pesertaInRoom->search(fn ($p) => $p->id === $record->id);
+        $indexInRoom = $pesertaInRoom->search(fn($p) => $p->id === $record->id);
 
         if ($indexInRoom === false || $indexInRoom >= $capacity) {
             return '-';

@@ -23,13 +23,18 @@ class DatabaseSeeder extends Seeder
             // BidangSeeder::class,
             // PesertaSeeder::class,
             // SurveySeeder::class,
-            ProductionSeeder::class,
+            // ProductionSeeder::class,
         ]);
 
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@admin.com',
+            'password' => bcrypt('admin'),
+        ]);
         // User::create([
-        //     'name' => 'Admin',
-        //     'email' => 'admin@admin.com',
-        //     'password' => bcrypt('admin'),
+        //     'name' => 'Admin UPT',
+        //     'email' => 'admin@upt.com',
+        //     'password' => bcrypt('adminadmin'),
         // ]);
 
     }

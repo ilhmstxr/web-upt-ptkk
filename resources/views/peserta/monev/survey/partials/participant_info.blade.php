@@ -6,14 +6,23 @@
             Data Peserta
         </h3>
     </div>
-    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+    <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
         <div>
             <p class="text-gray-500">Nama</p>
             <p class="font-medium">{{ $peserta->nama }}</p>
         </div>
         <div>
             <p class="text-gray-500">Email</p>
-            <p class="font-medium">{{ $peserta->email }}</p>
+            <p class="font-medium">{{ $peserta->user->email }}</p>
+        </div>
+        <div>
+            <p class="text-gray-500">Angkatan</p>
+            {{-- <p class="font-medium">{{ $peserta->angkatan }}</p> --}}
+            <p class="font-medium">II</p>
+        </div>
+        <div>
+            <p class="text-gray-500">Kompetensi</p>
+            <p class="font-medium">{{ $peserta->bidang->nama_bidang }}</p>
         </div>
     </div>
 </div>

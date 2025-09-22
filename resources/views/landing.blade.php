@@ -5,6 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UPT PTKK Dinas Pendidikan Jawa Timur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-upt-ptkk.png') }} " class="w-4">
     <style>
         /* ====== CSS dari desain kamu ====== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -69,6 +71,10 @@
                 <div class="hero-image">
                     <img src="{{ asset('images/pelatihan.jpg') }}" alt="Professional Team" onerror="this.style.display='none'" />
                 </div>
+            <div class="lg:w-1/2 mt-8 lg:mt-0 flex justify-center">
+                <img src="{{ asset('images/pelatihan.jpg') }}"
+                    alt="Pelatihan"
+                    class="rounded-lg shadow-lg w-full h-auto">
             </div>
         </section>
 
@@ -81,6 +87,26 @@
                 <div class="program-content">
                     <h3 class="program-title">Tata Boga</h3>
                     <span class="program-date">25 - 30 Agustus 2025</span>
+        <!-- Pelatihan Tersedia Section -->
+        <section class="mt-16 text-center">
+            <h3 class="text-3xl font-bold text-gray-800">Pelatihan Tersedia</h3>
+            <p class="mt-2 text-gray-600">Pilih salah satu dari pelatihan berikut.</p>
+        </section>
+
+        <!-- Cards Container -->
+        <section class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Card 1 -->
+            <a href="/pelatihan/tata-boga"
+                class="block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 card-hover-effect fade-in-up">
+                <img src="{{ asset('images/tata-boga.jpg') }}"
+                    alt="Tata Boga"
+                    class="w-full h-48 object-cover rounded-lg shadow-md">
+                <div class="p-4">
+                    <h4 class="font-semibold text-lg text-gray-800">Tata Boga</h4>
+                    <p class="text-sm text-gray-500 mt-1">25 - 30 Agustus 2025</p>
+                    <button class="mt-3 px-4 py-2 bg-[#5c76c1] text-white rounded-lg hover:bg-blue-600 transition">
+                        Lihat Detail
+                    </button>
                 </div>
             </a>
 

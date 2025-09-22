@@ -1,0 +1,45 @@
+=tugas
+- DONE tambahin spreadsheet pertanyaan & jawaban post-test, pretest, monev.
+https://docs.google.com/spreadsheets/d/1oKDqVlw_SW45XlMvwPmfXuM6YPUdxoLV1csuP6fZfGE/edit?usp=sharing 
+- DONE testing pretest - posttest (cek juga di mobile / resolusi hp) . done
+- DONE nambain export monev buat diagram & data biasa.
+- TODO buat form pendaftaran buat instruktur. 
+- TODO soal pretest posttest di opsi jawabannya bisa pake gambar
+- TODO ADMIN e yang rata rata penilaian monev rata2/max, cth: 3.8/4.0
+
+
+USER
+ pendaftaran controller
+- DONE validasi email
+- CHECK TAMBAHIN KOLOM KABUPATEN SEBELUM CABANG DINAS. 
+- CHECK Di form MTU ada perbedaan dengan aksel dan reguler yaitu ga ada surat sehat (segera bedakan data masuk jika buat pendaftaran mtu ya masuk mtu dan reguler masuk reguler dst)
+- TODO Pretest Postest
+
+ADMIN 
+- TODO buat chart monev
+- TODO export monev ke excel
+- TODO benerin peserta downloadnya jadi zip
+
+- TODO bikin template email buat token 
+- TODO nanti nyampaikan token ke peserta via email
+
+tes pertanyaan
+tes 
+
+
+TABEL INJECTION
+- bidang                xv
+- cabang dinas          xv
+- instansi              xv
+- pelatihan             xv
+- tes                   xv
+- pertanyaan            xv
+- opsi jawaban          xv
+- pivot jawaban         xv
+- peserta survei        xv
+- user                  xv
+- peserta               xv
+- lampiran              xv
+- percobaan             xv
+- jawaban user          xv
+- pendaftaran_pelatihan xv

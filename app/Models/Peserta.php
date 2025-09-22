@@ -13,7 +13,7 @@ class Peserta extends Model
 {
     use HasFactory;
 
-    protected $table = 'pesertas';
+    protected $table = 'peserta';
 
     protected $fillable = [
         'pelatihan_id',
@@ -27,7 +27,7 @@ class Peserta extends Model
         'agama',
         'alamat',
         'no_hp',
-        'email',
+        'user_id',
     ];
 
     // ✅ otomatis casting ke Carbon
@@ -64,17 +64,17 @@ class Peserta extends Model
         return 'lampiran/' . Str::slug($this->nama); // folder storage/app/public/lampiran/{nama}
     }
 
-    public function lampirans(): array
-    {
-        $files = [];
-        if ($this->lampiran) {
-            foreach ($this->lampiran->getAttributes() as $key => $value) {
-                if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
-                if ($value) $files[$key] = asset('storage/' . $value);
-            }
-        }
-        return $files;
-    }
+    // public function lampiran(): array
+    // {
+    //     $files = [];
+    //     if ($this->lampiran) {
+    //         foreach ($this->lampiran->getAttributes() as $key => $value) {
+    //             if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
+    //             if ($value) $files[$key] = asset('storage/' . $value);
+    //         }
+    //     }
+    //     return $files;
+    // }
 
     public function pertanyaan()
     {
@@ -85,5 +85,21 @@ class Peserta extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function percobaan()
+    {
+        return $this->hasMany(Percobaan::class, 'peserta_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function pendaftaranPelatihan()
+    {
+        // Ubah menjadi PendaftaranPelatihan::class
+        return $this->hasOne(PendaftaranPelatihan::class);
     }
 }

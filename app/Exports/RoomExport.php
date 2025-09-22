@@ -19,8 +19,8 @@ class RoomExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        $pesertas = Peserta::orderBy('id')->get();
-        return $pesertas->map(function ($p, $i) {
+        $peserta = Peserta::orderBy('id')->get();
+        return $peserta->map(function ($p, $i) {
             return [
                 'nama' => $p->nama,
                 'jenis_kelamin' => $p->jenis_kelamin,

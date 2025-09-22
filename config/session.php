@@ -213,5 +213,8 @@ return [
     */
 
     'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
+    'lifetime' => 30,        // session otomatis expired 30 menit
+'expire_on_close' => true, // session hilang saat browser ditutup
+
 
 ];

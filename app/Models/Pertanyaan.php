@@ -4,17 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-
 
 class Pertanyaan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pertanyaans';
+    protected $table = 'pertanyaan';
 
     protected $fillable = [
         'tes_id',
@@ -24,62 +19,91 @@ class Pertanyaan extends Model
         'tipe_jawaban',
     ];
 
+    // -------------------------
+    // RELATIONS
+    // -------------------------
+
     // Relasi ke Tes
     public function tes()
     {
         return $this->belongsTo(Tes::class, 'tes_id');
     }
 
-    // Relasi ke Opsi Jawaban (plural karena hasMany)
+    // Relasi ke Opsi Jawaban (plural: hasMany)
     public function opsiJawabans()
     {
-        return $this->hasMany(OpsiJawabans::class, 'pertanyaan_id');
+        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id');
+    }
+
+    // Alias singular supaya kode lama tetap jalan
+    public function opsiJawaban()
+    {
+        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id');
     }
 
     // Relasi ke Jawaban User
-    public function jawabanUser()
+    public function jawabanUsers()
     {
         return $this->hasMany(JawabanUser::class, 'pertanyaan_id');
     }
 
-    // Accessor untuk URL gambar
+    // Relasi ke template pertanyaan (self-referencing many-to-many)
+    public function templates()
+    {
+        return $this->belongsToMany(
+            self::class,
+            'pivot_jawaban',           // nama tabel pivot
+            'pertanyaan_id',           // FK ke pertanyaan ini
+            'template_pertanyaan_id'   // FK ke pertanyaan template
+        );
+    }
+
+    // -------------------------
+    // ACCESSORS
+    // -------------------------
+
+    // URL gambar
     public function getGambarUrlAttribute()
     {
         return $this->gambar ? asset('storage/' . $this->gambar) : null;
     }
 
     /**
-     * Mendapatkan link ke pertanyaan template.
-     * Digunakan untuk soal tipe survei.
+     * Ambil opsi jawaban final
+     * - Pakai opsi sendiri kalau ada
+     * - Kalau kosong, fallback ke template pertama
      */
-    public function opsiLink(): HasOne
+    public function getOpsiJawabanFinalAttribute()
     {
-        return $this->hasOne(PivotJawaban::class, 'pertanyaan_id');
+        $own = $this->relationLoaded('opsiJawabans')
+            ? $this->opsiJawabans
+            : $this->opsiJawabans()->get();
+
+        if ($own->isNotEmpty()) {
+            return $own;
+        }
+
+        $templates = $this->relationLoaded('templates')
+            ? $this->templates
+            : $this->templates()->with('opsiJawabans')->get();
+
+        return collect(optional($templates->first())->opsiJawabans);
     }
 
     /**
-     * Accessor untuk mendapatkan koleksi opsi jawaban final.
-     *
-     * Accessor ini secara cerdas akan memeriksa apakah pertanyaan ini
-     * memiliki link ke template. Jika ya, ia akan mengembalikan opsi jawaban
-     * dari template tersebut. Jika tidak, ia akan mengembalikan opsi jawaban
-     * miliknya sendiri.
-     *
-     * @return Attribute
+     * Helper: ambil jawaban yang benar dari collection jawaban user
      */
-    protected function opsiJawabanFinal(): Attribute
+    public function hitungSkor(Percobaan $percobaan): int
     {
-        return Attribute::make(
-            get: function () {
-                // Cek apakah ada link ke template
-                if ($this->opsiLink) {
-                    // Jika ada, ambil opsi jawaban dari pertanyaan template
-                    return $this->opsiLink->templatePertanyaan->opsiJawabans;
-                }
+        $percobaan->loadMissing(['jawabanUser.opsiJawaban']);
+        $jawabanCollection = $percobaan->jawabanUser ?? collect();
 
-                // Jika tidak ada link, ambil opsi jawaban langsung milik pertanyaan ini
-                return $this->opsiJawabans;
-            }
-        );
+        $total = $jawabanCollection->count();
+        if ($total === 0) {
+            return 0;
+        }
+
+        $benar = $jawabanCollection->filter(fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar)->count();
+        return (int) round(($benar / $total) * 100);
     }
 }

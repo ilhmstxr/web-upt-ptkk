@@ -56,35 +56,16 @@ class User extends Authenticatable implements FilamentUser
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
-public function canAccessPanel(Panel $panel): bool
+    public function canAccessPanel(Panel $panel): bool
     {
         return true;
     }
 
-    /**
-     * Relasi ke Biodata Diri
-     */
-    public function biodataDiri()
+    public function instansi()
     {
-        return $this->hasOne(BiodataDiri::class);
-    }
-
-    /**
-     * Relasi ke Biodata Sekolah
-     */
-    public function biodataSekolah()
-    {
-        return $this->hasOne(BiodataSekolah::class);
-    }
-
-    /**
-     * Relasi ke Biodata Dokumen
-     */
-    public function biodataDokumen()
-    {
-        return $this->hasOne(BiodataDokumen::class);
+        return $this->hasOne(Instansi::class, 'user_id');
     }
 }

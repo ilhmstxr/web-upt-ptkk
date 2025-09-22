@@ -33,46 +33,121 @@
         <form action="{{ route('survey.start') }}" method="POST" class="space-y-6">
             @csrf
             <input type="hidden" name="tes_id" value="{{ $tes->id }}">
-            <div class="relative">
+            {{-- Menggunakan Grid Layout dari Tailwind CSS untuk membuat 2 kolom --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
 
-                <label for="nama" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                    <i class="fas fa-user text-indigo-500 mr-2"></i> Nama Lengkap
-                </label>
-
-                <input type="text" id="nama" name="nama" value="{{ old('nama') }}"
-                    class="form-input w-full px-4 py-2 sm:py-3 border {{ $errors->has('nama') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                    required placeholder="Ketik nama Anda, sistem akan membantu..." autocomplete="off">
-
-                <div id="suggestions"
-                    class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg hidden">
-                </div>
-
-                @if ($errors->has('nama'))
-                    <p class="text-red-500 text-xs mt-1">{{ $errors->first('nama') }}</p>
-                @endif
-
-            </div>
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                    <i class="fas fa-envelope text-indigo-500 mr-2"></i> Alamat Email
-                </label>
+                {{-- Kolom 1: Nama Lengkap --}}
                 <div class="relative">
-                    <input type="email" id="email" name="email" value="{{ old('email') }}"
-                        class="form-input w-full px-4 py-2 sm:py-3 border {{ $errors->has('email') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                        required placeholder="Masukkan email sesuai registrasi">
-                    <div id="status-icon" class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"></div>
+                    <label for="nama" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fas fa-user text-indigo-500 mr-2"></i> Nama Lengkap
+                    </label>
+                    <input type="text" id="nama" name="nama" value="{{ old('nama') }}"
+                        class="form-input w-full px-4 py-3 border {{ $errors->has('nama') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        required placeholder="Ketik nama Anda..." autocomplete="off">
+
+                    <div id="suggestions"
+                        class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg hidden">
+                    </div>
+
+                    @if ($errors->has('nama'))
+                        <p class="text-red-500 text-xs mt-1">{{ $errors->first('nama') }}</p>
+                    @endif
                 </div>
-                <p id="status-message" class="text-xs mt-1"></p>
-                @if ($errors->has('email'))
-                    <p class="text-red-500 text-xs mt-1">{{ $errors->first('email') }}</p>
-                @endif
+
+                {{-- Kolom 2: Periode Kegiatan --}}
+                {{-- <div>
+                    <label for="periode_kegiatan" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fas fa-calendar-alt text-indigo-500 mr-2"></i> Periode Kegiatan
+                    </label>
+                    <input type="text" id="periode_kegiatan" name="periode_kegiatan"
+                        value="{{ old('periode_kegiatan') }}"
+                        class="form-input w-full px-4 py-3 border {{ $errors->has('periode_kegiatan') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        required placeholder="Contoh: Angkatan I">
+
+                    @if ($errors->has('periode_kegiatan'))
+                        <p class="text-red-500 text-xs mt-1">{{ $errors->first('periode_kegiatan') }}</p>
+                    @endif
+                </div> --}}
+
+                {{-- Kolom 3: Kompetensi --}}
+                <div>
+                    <label for="bidang_id" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fas fa-graduation-cap text-indigo-500 mr-2"></i> Kompetensi
+                    </label>
+                    <select id="bidang_id" name="bidang_id"
+                        class="form-select w-full px-4 py-3 border {{ $errors->has('bidang_id') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        required>
+                        <option value="" disabled selected>Pilih Kompetensi</option>
+                        @foreach ($bidang as $b)
+                            <option value="{{ $b->id }}" {{ old('bidang_id') == $b->id ? 'selected' : '' }}>
+                                {{ $b->nama_bidang }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @if ($errors->has('bidang_id'))
+                        <p class="text-red-500 text-xs mt-1">{{ $errors->first('bidang_id') }}</p>
+                    @endif
+                </div>
+
+
+                {{-- Kolom 5: Alamat Email --}}
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fas fa-envelope text-indigo-500 mr-2"></i> Alamat Email
+                    </label>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}"
+                        class="form-input w-full px-4 py-3 border {{ $errors->has('email') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        required placeholder="Masukkan email sesuai registrasi">
+
+                    @if ($errors->has('email'))
+                        <p class="text-red-500 text-xs mt-1">{{ $errors->first('email') }}</p>
+                    @endif
+                </div>
+
+                {{-- angkatan --}}
+                <div>
+                    <label for="angkatan" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fas fa-envelope text-indigo-500 mr-2"></i> Angkatan
+                    </label>
+                    <input type="text" id="angkatan" name="angkatan" value="{{ old('angkatan') }}"
+                        class="form-input w-full px-4 py-3 border {{ $errors->has('angkatan') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        required placeholder="contoh: Angkatan II">
+
+                    @if ($errors->has('angkatan'))
+                        <p class="text-red-500 text-xs mt-1">{{ $errors->first('angkatan') }}</p>
+                    @endif
+                </div>
+
+
+                {{-- Kolom 4: Pelatihan --}}
+                <div>
+                    <label for="pelatihan_id" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fas fa-chalkboard-teacher text-indigo-500 mr-2"></i> Pelatihan
+                    </label>
+                    <select id="pelatihan_id" name="pelatihan_id"
+                        class="form-select w-full px-4 py-3 border {{ $errors->has('pelatihan_id') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        required>
+                        <option value="" disabled selected>Pilih Pelatihan</option>
+                        @foreach ($pelatihan as $p)
+                            <option value="{{ $p->id }}" {{ old('pelatihan_id') == $p->id ? 'selected' : '' }}>
+                                {{ $p->nama_pelatihan }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @if ($errors->has('pelatihan_id'))
+                        <p class="text-red-500 text-xs mt-1">{{ $errors->first('pelatihan_id') }}</p>
+                    @endif
+                </div>
+
             </div>
 
-            <div class="pt-4">
+            {{-- Tombol Submit di luar grid --}}
+            <div class="mt-8">
                 <button type="submit"
-                    class="btn-primary w-full py-2 sm:py-3 px-4 text-white font-semibold rounded-lg flex items-center justify-center">
-                    <span>Mulai Survei</span>
-                    <i class="fas fa-arrow-right ml-2"></i>
+                    class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300">
+                    Selanjutnya <i class="fas fa-arrow-right ml-2"></i>
                 </button>
             </div>
         </form>

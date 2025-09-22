@@ -23,8 +23,8 @@ class ProductionSeeder extends Seeder
     public function run()
     {
      
-        // 1. Memasukkan data untuk tabel `bidangs`
-        $bidangs= [
+        // 1. Memasukkan data untuk tabel `bidang`
+        $bidang= [
             ['id' => 1, 'nama_bidang' => 'Tata Boga', 'deskripsi' => 'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.', 'created_at' => null, 'updated_at' => null],
             ['id' => 2, 'nama_bidang' => 'Tata Busana', 'deskripsi' => 'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.', 'created_at' => null, 'updated_at' => null],
             ['id' => 3, 'nama_bidang' => 'Kecantikan', 'deskripsi' => 'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.', 'created_at' => null, 'updated_at' => null],
@@ -854,7 +854,7 @@ class ProductionSeeder extends Seeder
             ]
         ];
 
-        // 4. Memasukkan data untuk tabel `pelatihans`
+        // 4. Memasukkan data untuk tabel `pelatihan`
         $pelatihan = [
             ['id' => 1, 'nama_pelatihan' => 'Kegiatan Pengembangan dan Pelatihan Kompetensi Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 (Kelas Keterampilan) Angkatan II Tahun 2025', 'tanggal_mulai' => '2025-09-01', 'tanggal_selesai' => '2025-09-06', 'created_at' => null, 'updated_at' => null],
         ];
@@ -2585,7 +2585,7 @@ class ProductionSeeder extends Seeder
                 'updated_at' => '2025-08-23 14:19:14'
             ]
         ];
-        Bidang::insert($bidangs);
+        Bidang::insert($bidang);
         CabangDinas::insert($cabang_dinas);
         Instansi::insert($instansi);
         Pelatihan::insert($pelatihan);

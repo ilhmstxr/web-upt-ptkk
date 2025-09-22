@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StartSurveyRequest;
 use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\StoreSurveyRequest;
+use App\Models\Bidang;
 use App\Models\Survey;
 use App\Models\Jawaban;
 use App\Models\JawabanUser;
 use App\Models\Kuis;
 use App\Models\OpsiJawaban;
+use App\Models\Pelatihan;
 use App\Models\Percobaan;
 use App\Models\Pertanyaan;
 use App\Models\Peserta;
@@ -31,8 +33,11 @@ class SurveyController extends Controller
         // Mengambil tes yang akan dikerjakan.
         // return 'konto';
         $tes = Tes::where('tipe', 'survei')->firstorfail();
+        $pelatihan = Pelatihan::all();
+        $bidang = Bidang::all();
+        // return $bidang;  
         // return $tes;
-        return view('peserta.monev.survey.start', compact('tes'));
+        return view('peserta.monev.survey.start', compact('tes', 'pelatihan', 'bidang'));
     }
 
     /**
@@ -118,62 +123,65 @@ class SurveyController extends Controller
         // return response()->json($peserta);
     }
 
-    public function start(Request $request)
+    // public function start(Request $request)
+    public function start(Peserta $Peserta)
     {
+        // return $request;
         // 1. Validasi input
-        $validated = $request->validate([
-            'email'   => 'required|email',
-            'nama'    => 'required|string',
-            'tes_id' => 'required|integer|exists:tes,id'
-        ]);
+        // 1. Validasi input
+        // $validated = $request->validate([
+        //     'email'        => 'required|email',
+        //     'nama'         => 'required|string',
+        //     'angkatan'         => 'required|string',
+        //     'pelatihan_id' => 'required|integer|exists:pelatihan,id', // Sebaiknya integer & exists
+        //     'bidang_id' => 'required|integer|exists:bidang,id',   // Ganti nama & validasi
+        //     'tes_id'       => 'required|integer|exists:tes,id'
+        // ]);
 
-        $namaLengkap = $validated['nama'];
-        $email = $validated['email'];
-        $keywords = explode(' ', $namaLengkap);
+        // $peserta = PesertaSurvei::updateOrCreate(
+        //     // Array 1: Kunci unik untuk mencari data
+        //     [
+        //         'email' => $validated['email']
+        //     ],
+        //     // Array 2: Data yang akan di-update atau dibuat
+        //     [
+        //         'nama'         => $validated['nama'],
+        //         'angkatan'         => $validated['angkatan'],
+        //         'pelatihan_id' => $validated['pelatihan_id'],
+        //         'bidang_id'    => $validated['bidang_id'] // Sesuaikan dengan nama dari form
+        //     ]
+        // );
+        // REVISI DI SINI
+        // IMPROVE: untuk menyimpan datanya di  
 
-        // 2. Cari peserta berdasarkan nama ATAU email
-        // $peserta = Peserta::query()
-        //     ->where(function ($query) use ($keywords) {
-        //         foreach ($keywords as $keyword) {
-        //             $query->orWhereRaw('LOWER(nama) LIKE ?', ['%' . strtolower($keyword) . '%']);
-        //         }
-        //     })
-        //     ->orWhere('email', $email)
-        //     ->first();
-
-        // // 3. Tambahkan pengecekan jika peserta tidak ditemukan
-        // if (!$peserta) {
-        //     return back()->withErrors(['message' => 'Data peserta tidak ditemukan.'])->withInput();
-        // }
-        $peserta = PesertaSurvei::updateOrCreate(
-            ['email' => $validated['email']], // Kunci unik untuk mencari
-            ['nama' => $validated['nama']]     // Data yang akan di-update atau dibuat
-        );
 
         // 4. Redirect ke route 'survey.show' dengan parameter yang sesuai
         //    Hanya kirim 'peserta' dan 'order' karena hanya itu yang ada di URI route.
-        return redirect()->route('survey.show', [
-            'peserta' => $peserta->id,
-            'order'   => $validated['tes_id'],
-        ]);
+        // return redirect()->route('survey.show', [
+        //     'peserta' => $peserta->id,
+        //     'order'   => $validated['tes_id'],
+        // 'peserta' => $peserta->id,
+        // 'order'   => $validated['tes_id'],
+        // ]);
     }
     // app/Http/Controllers/SurveyController.php
 
     // Laravel akan otomatis mencari Peserta berdasarkan ID yang ada di URL
-    public function show(PesertaSurvei $peserta, $order, Request $request)
+    // public function show(PesertaSurvei $peserta, $order, Request $request)
+    public function show(Peserta $peserta, $order, Request $request)
     {
         $tesId = $order;
 
         $section = Tes::findOrFail($tesId);
+        // return $section;
         // Langkah 3: Ambil semua pertanyaan yang terkait, diurutkan berdasarkan nomor
         $questions = Pertanyaan::where('tes_id', $section->id)
-            ->with([
-                'opsiJawabans', // Untuk pertanyaan yang punya opsi sendiri
-                'opsiLink.templatePertanyaan.opsiJawabans' // Untuk pertanyaan yang mencontek dari template
-            ])
+            ->with(['opsiJawabans', 'templates.opsiJawabans'])
             ->orderBy('nomor', 'asc')
             ->get();
 
+
+        // return $peserta;
         // return $questions;
 
         // Langkah 4: Tampilkan view dengan data yang sudah disiapkan
@@ -267,7 +275,7 @@ class SurveyController extends Controller
         // return $request;
         // 1. Validasi semua data yang masuk
         $validatedData = $request->validate([
-            'peserta_id' => 'required|integer|exists:pesertas,id',
+            'peserta_id' => 'required|integer|exists:peserta,id',
             'tes_id'     => 'required|integer|exists:tes,id', // Sesuai dengan nama field Anda
             'answers'    => 'required|array',
             'answers.*'  => 'required',
@@ -310,7 +318,7 @@ class SurveyController extends Controller
 
             // REVISI: Mengganti 'teks_opsi' menjadi 'opsi_jawaban_id'
             $dataJawaban = [
-                'opsi_jawabans_id' => null, // INI YANG DIUBAH
+                'opsi_jawaban_id' => null, // INI YANG DIUBAH
                 'percobaan_id'    => $percobaan->id,
                 'pertanyaan_id'   => $pertanyaanId,
                 'nilai_jawaban'   => null,
@@ -325,7 +333,7 @@ class SurveyController extends Controller
                 $selectedOption = $allOptions->get($jawabanValue);
                 if ($selectedOption) {
                     // REVISI: Menyesuaikan kunci array dengan nama kolom yang benar
-                    $dataJawaban['opsi_jawabans_id'] = $selectedOption->id; // INI YANG DIUBAH
+                    $dataJawaban['opsi_jawaban_id'] = $selectedOption->id; // INI YANG DIUBAH
                     $dataJawaban['nilai_jawaban']   = $selectedOption->nilai;
                 }
             }
@@ -336,7 +344,7 @@ class SurveyController extends Controller
 
         // return $jawabanUntukDisimpan;
         //      protected $fillable = [
-        //     'opsi_jawabans_id', // untuk jawaban pilihan ganda
+        //     'opsi_jawaban_id', // untuk jawaban pilihan ganda
         //     'pertanyaan_id',    // pertanyaan terkait
         //     'percobaan_id',     // percobaan terkait (pre/post test)
         //     'nilai_jawaban',    // untuk skala likert 1-5

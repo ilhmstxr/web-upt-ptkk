@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class CabangDinas extends Model
 {
-    /** @use HasFactory<\Database\Factories\CabangDinasFactory> */
     use HasFactory;
+
+    protected $table = 'cabang_dinas';
+
+    protected $fillable = [
+        'nama',
+        'alamat',
+        'laman',
+    ];
 }

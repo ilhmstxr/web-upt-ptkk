@@ -7,22 +7,54 @@ use Illuminate\Database\Eloquent\Model;
 
 class PesertaSurvei extends Model
 {
-    /** @use HasFactory<\Database\Factories\PesertaSurveiFactory> */
     use HasFactory;
 
-    // protected $table = 'peserta_survei';
+    protected $table = 'peserta_survei';
+
     protected $fillable = [
-        'email',
-        'nama'
+        'nama',
+        'pelatihan_id',
+        'bidang_id',
+        'tes_id',
     ];
 
-    public function jawaban()
+    /**
+     * Relasi ke jawaban user
+     */
+    public function jawabanUsers()
     {
-        return $this->hasMany(JawabanUser::class);
+        return $this->hasMany(JawabanUser::class, 'pesertaSurvei_id');
     }
 
+    /**
+     * Relasi ke percobaan
+     */
     public function percobaan()
     {
-        return $this->hasMany(Percobaan::class);
+        return $this->hasMany(Percobaan::class, 'pesertaSurvei_id');
+    }
+
+    /**
+     * Relasi ke pelatihan
+     */
+    public function pelatihan()
+    {
+        return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
+    }
+
+    /**
+     * Relasi ke bidang
+     */
+    public function bidang()
+    {
+        return $this->belongsTo(Bidang::class, 'bidang_id');
+    }
+
+    /**
+     * Relasi opsional ke tes
+     */
+    public function tes()
+    {
+        return $this->belongsTo(Tes::class, 'tes_id');
     }
 }

@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class instruktur extends Model
+class Instruktur extends Model
 {
     /** @use HasFactory<\Database\Factories\InstrukturFactory> */
     use HasFactory;
 
-    protected $table = 'instrukturs';
+    protected $table = 'instruktur';
 
     protected $fillable = [
         'bidang_id',

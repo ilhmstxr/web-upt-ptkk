@@ -19,6 +19,7 @@ class JawabanSurveiResource extends Resource
 {
     protected static ?string $model = PesertaSurvei::class;
 
+    protected static ?string $navigationGroup = 'Survei Monev';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -33,13 +34,8 @@ class JawabanSurveiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('jawaban')->limit(50),
-                Tables\Columns\TextColumn::make('created_at')->dateTime(),
-                Tables\Columns\TextColumn::make('updated_at')->dateTime(),
-                Tables\Columns\TextColumn::make('deleted_at')->dateTime(),
-                Tables\Columns\TextColumn::make('jawaban_survei_id'),
-                Tables\Columns\TextColumn::make('jawaban_user_id'),
-                Tables\Columns\TextColumn::make('percobaan.pesertaSurvei.nama'),
+                Tables\Columns\TextColumn::make('nama')->limit(50),
+                Tables\Columns\TextColumn::make('email')->limit(50),
             ])
             ->filters([
                 //
@@ -67,6 +63,8 @@ class JawabanSurveiResource extends Resource
             'index' => Pages\ListJawabanSurveis::route('/'),
             'create' => Pages\CreateJawabanSurvei::route('/create'),
             'edit' => Pages\EditJawabanSurvei::route('/{record}/edit'),
+            'report' => Pages\PelatihanReport::route('/{pelatihanId}/report'),
+            'belum-mengisi' => Pages\DaftarPesertaBelumMengisi::route('/belum-mengisi'),
         ];
     }
 }
