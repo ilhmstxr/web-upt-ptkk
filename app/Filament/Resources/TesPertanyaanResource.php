@@ -35,9 +35,7 @@ class TesPertanyaanResource extends Resource
                         ->label('Nomor Pertanyaan')
                         ->default(function (\Filament\Forms\Get $get) {
                             $tesId = $get('tes_id');
-                            if (!$tesId) {
-                                return 1;
-                            }
+                            if (!$tesId) return 1;
                             $nomorTerakhir = Pertanyaan::where('tes_id', $tesId)->max('nomor') ?? 0;
                             return $nomorTerakhir + 1;
                         })
@@ -52,6 +50,7 @@ class TesPertanyaanResource extends Resource
                         ->label('Gambar Pertanyaan')
                         ->image()
                         ->directory('pertanyaan')
+                        ->disk('public')
                         ->nullable()
                         ->maxSize(2048),
 
@@ -60,14 +59,21 @@ class TesPertanyaanResource extends Resource
                         ->label('Opsi Jawaban')
                         ->relationship()
                         ->schema([
-                            Forms\Components\Textarea::make('teks_opsi')->label('Teks Opsi')->required(),
+                            Forms\Components\Textarea::make('teks_opsi')
+                                ->label('Teks Opsi')
+                                ->required(),
+
                             Forms\Components\FileUpload::make('gambar')
                                 ->label('Gambar Opsi')
                                 ->image()
                                 ->directory('opsi-jawaban')
+                                ->disk('public')
                                 ->nullable()
                                 ->maxSize(2048),
-                            Forms\Components\Toggle::make('apakah_benar')->label('Benar?')->default(false),
+
+                            Forms\Components\Toggle::make('apakah_benar')
+                                ->label('Benar?')
+                                ->default(false),
                         ])
                         ->columns(2)
                         ->defaultItems(4)
@@ -92,14 +98,22 @@ class TesPertanyaanResource extends Resource
 
                             Forms\Components\FileUpload::make('gambar')
                                 ->label('Gambar Pertanyaan')
-                                ->image(),
+                                ->image()
+                                ->disk('public'),
 
                             Forms\Components\Repeater::make('opsi_jawaban')
                                 ->label('Opsi Jawaban')
                                 ->schema([
-                                    Forms\Components\Textarea::make('teks_opsi')->required(),
-                                    Forms\Components\FileUpload::make('gambar')->image(),
-                                    Forms\Components\Toggle::make('apakah_benar')->label('Benar?')->default(false),
+                                    Forms\Components\Textarea::make('teks_opsi')
+                                        ->required(),
+
+                                    Forms\Components\FileUpload::make('gambar')
+                                        ->image()
+                                        ->disk('public'),
+
+                                    Forms\Components\Toggle::make('apakah_benar')
+                                        ->label('Benar?')
+                                        ->default(false),
                                 ])
                                 ->columns(2)
                                 ->defaultItems(4),
