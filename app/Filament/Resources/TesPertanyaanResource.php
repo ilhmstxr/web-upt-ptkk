@@ -33,12 +33,7 @@ class TesPertanyaanResource extends Resource
                 ->schema([
                     Forms\Components\TextInput::make('nomor')
                         ->label('Nomor Pertanyaan')
-                        ->default(function (\Filament\Forms\Get $get) {
-                            $tesId = $get('tes_id');
-                            if (!$tesId) return 1;
-                            $nomorTerakhir = Pertanyaan::where('tes_id', $tesId)->max('nomor') ?? 0;
-                            return $nomorTerakhir + 1;
-                        })
+                        ->default(fn (\Filament\Forms\Get $get) => Pertanyaan::where('tes_id', $get('tes_id'))->max('nomor') + 1 ?? 1)
                         ->numeric()
                         ->required(),
 
@@ -57,7 +52,7 @@ class TesPertanyaanResource extends Resource
                     // Opsi Jawaban
                     Forms\Components\Repeater::make('opsiJawaban')
                         ->label('Opsi Jawaban')
-                        ->relationship()
+                        ->relationship('opsiJawaban') // Pastikan ada relationship di Model
                         ->schema([
                             Forms\Components\Textarea::make('teks_opsi')
                                 ->label('Teks Opsi')
@@ -99,7 +94,10 @@ class TesPertanyaanResource extends Resource
                             Forms\Components\FileUpload::make('gambar')
                                 ->label('Gambar Pertanyaan')
                                 ->image()
-                                ->disk('public'),
+                                ->directory('pertanyaan')
+                                ->disk('public')
+                                ->nullable()
+                                ->maxSize(2048),
 
                             Forms\Components\Repeater::make('opsi_jawaban')
                                 ->label('Opsi Jawaban')
@@ -109,7 +107,10 @@ class TesPertanyaanResource extends Resource
 
                                     Forms\Components\FileUpload::make('gambar')
                                         ->image()
-                                        ->disk('public'),
+                                        ->directory('opsi-jawaban')
+                                        ->disk('public')
+                                        ->nullable()
+                                        ->maxSize(2048),
 
                                     Forms\Components\Toggle::make('apakah_benar')
                                         ->label('Benar?')
