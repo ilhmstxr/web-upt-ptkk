@@ -17,8 +17,9 @@
                 </p>
                 <a href="{{ route('dashboard.pretest.start', $t->id) }}"
                     class="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-                    Kerjakan {{ ucfirst($t->sub_tipe) ?? 'Tes' }}
                 </a>
+                Kerjakan {{ ucfirst($t->sub_tipe) ?? 'Tes' }}
+                {{-- Kerjakan {{ ucfirst($t) ?? 'Tes' }} --}}
             </div>
         @empty
             <p class="text-gray-500">Tidak ada data tes tersedia saat ini.</p>

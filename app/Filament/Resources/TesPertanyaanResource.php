@@ -54,7 +54,11 @@ class TesPertanyaanResource extends Resource
                             // Upload gambar opsional
                             Forms\Components\FileUpload::make('gambar')
                                 ->label('Gambar Pertanyaan')
-                                ->image(),
+                                ->image()
+                                ->disk('public')
+                                // ->directory('uploads')
+                                ->preserveFilenames() // opsional
+                                ->maxSize(2048), // max size 2 MB
 
                             // Nested Repeater untuk opsi jawaban
                             Forms\Components\Repeater::make('opsi_jawaban')
@@ -83,13 +87,13 @@ class TesPertanyaanResource extends Resource
             Tables\Columns\TextColumn::make('teks_pertanyaan')->limit(50)->searchable(),
             Tables\Columns\TextColumn::make('created_at')->dateTime(),
         ])
-        ->actions([
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\DeleteAction::make(),
-        ])
-        ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
-        ]);
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getRelations(): array
