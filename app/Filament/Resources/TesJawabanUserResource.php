@@ -22,14 +22,17 @@ class TesJawabanUserResource extends Resource
         return $form->schema([
             Forms\Components\Select::make('percobaan_id')
                 ->relationship('percobaan', 'id')
+                ->label('Percobaan')
                 ->required(),
 
             Forms\Components\Select::make('pertanyaan_id')
                 ->relationship('pertanyaan', 'teks_pertanyaan')
+                ->label('Pertanyaan')
                 ->required(),
 
             Forms\Components\Select::make('opsi_jawaban_id')
-                ->relationship('opsiJawabans', 'teks_opsi')
+                ->relationship('opsiJawaban', 'teks_opsi') // singular
+                ->label('Jawaban Pilihan')
                 ->nullable(),
 
             Forms\Components\TextInput::make('nilai_jawaban')
@@ -49,46 +52,79 @@ class TesJawabanUserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('percobaan.peserta.nama')->label('Nama Siswa'),
-                Tables\Columns\TextColumn::make('percobaan.peserta.instansi')->label('Instansi'),
-                Tables\Columns\TextColumn::make('percobaan.tes.tipe')->label('Tipe Tes'),
-                Tables\Columns\TextColumn::make('percobaan.tes.sub_tipe')->label('Sub-Tipe'),
-                Tables\Columns\TextColumn::make('percobaan.tes.bidang.nama_bidang')->label('Bidang Keahlian'),
-                Tables\Columns\TextColumn::make('pertanyaan.teks_pertanyaan')->label('Pertanyaan'),
-                Tables\Columns\TextColumn::make('opsiJawabans.teks_opsi')->label('Jawaban Pilihan'),
-                Tables\Columns\TextColumn::make('jawaban_teks')->label('Jawaban Teks'),
-                Tables\Columns\TextColumn::make('nilai_jawaban')->label('Nilai Likert'),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->label('Dikirim'),
+                Tables\Columns\TextColumn::make('percobaan.peserta.nama')
+                    ->label('Nama Peserta')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('percobaan.peserta.instansi')
+                    ->label('Instansi')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('percobaan.tes.tipe')
+                    ->label('Tipe Tes'),
+
+                Tables\Columns\TextColumn::make('percobaan.tes.sub_tipe')
+                    ->label('Sub-Tipe'),
+
+                Tables\Columns\TextColumn::make('percobaan.tes.bidang.nama_bidang')
+                    ->label('Bidang Keahlian'),
+
+                Tables\Columns\TextColumn::make('pertanyaan.teks_pertanyaan')
+                    ->label('Pertanyaan')
+                    ->limit(50)
+                    ->wrap(),
+
+                Tables\Columns\TextColumn::make('opsiJawaban.teks_opsi')
+                    ->label('Jawaban Pilihan'),
+
+                Tables\Columns\TextColumn::make('jawaban_teks')
+                    ->label('Jawaban Teks')
+                    ->limit(50)
+                    ->wrap(),
+
+                Tables\Columns\TextColumn::make('nilai_jawaban')
+                    ->label('Nilai Likert'),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dikirim')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
             ])
             ->filters([
                 // Filter sub-tipe tes
-                Tables\Filters\Filter::make('sub_tipe')
+                Tables\Filters\SelectFilter::make('sub_tipe')
                     ->label('Sub-Tipe Tes')
-                    ->form([
-                        Forms\Components\Select::make('sub_tipe')
-                            ->options([
-                                'pre-test' => 'Pre-Test',
-                                'post-test' => 'Post-Test',
-                            ])
-                            ->placeholder('Pilih Sub-Tipe'),
+                    ->options([
+                        'pre-test' => 'Pre-Test',
+                        'post-test' => 'Post-Test',
                     ])
-                    ->query(fn($query, array $data) => 
-                        $data['sub_tipe'] 
-                            ? $query->whereHas('percobaan.tes', fn($q) => $q->where('sub_tipe', $data['sub_tipe'])) 
-                            : $query
-                    ),
+                    ->query(function ($query, $value) {
+                        if ($value) {
+                            $query->whereHas('percobaan.tes', fn($q) => $q->where('sub_tipe', $value));
+                        }
+                    }),
 
-                // Filter bidang keahlian
+                // Filter bidang keahlian (pakai whereHas biar aman)
                 Tables\Filters\SelectFilter::make('bidang')
                     ->label('Bidang Keahlian')
-                    ->relationship('percobaan.tes.bidang', 'nama_bidang'),
+                    ->options(function () {
+                        return \App\Models\Bidang::pluck('nama_bidang', 'id')->toArray();
+                    })
+                    ->query(function ($query, $value) {
+                        if ($value) {
+                            $query->whereHas('percobaan.tes.bidang', fn($q) => $q->where('id', $value));
+                        }
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-                \Filament\Tables\Actions\ExportBulkAction::make(),
+                // aktifkan jika sudah install filament/export
+                // \Filament\Tables\Actions\ExportBulkAction::make(),
             ]);
     }
 

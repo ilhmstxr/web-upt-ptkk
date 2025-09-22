@@ -123,60 +123,65 @@ class SurveyController extends Controller
         // return response()->json($peserta);
     }
 
-    public function start(Request $request)
+    // public function start(Request $request)
+    public function start(Peserta $Peserta)
     {
         // return $request;
         // 1. Validasi input
         // 1. Validasi input
-        $validated = $request->validate([
-            'email'        => 'required|email',
-            'nama'         => 'required|string',
-            'angkatan'         => 'required|string',
-            'pelatihan_id' => 'required|integer|exists:pelatihan,id', // Sebaiknya integer & exists
-            'bidang_id' => 'required|integer|exists:bidang,id',   // Ganti nama & validasi
-            'tes_id'       => 'required|integer|exists:tes,id'
-        ]);
+        // $validated = $request->validate([
+        //     'email'        => 'required|email',
+        //     'nama'         => 'required|string',
+        //     'angkatan'         => 'required|string',
+        //     'pelatihan_id' => 'required|integer|exists:pelatihan,id', // Sebaiknya integer & exists
+        //     'bidang_id' => 'required|integer|exists:bidang,id',   // Ganti nama & validasi
+        //     'tes_id'       => 'required|integer|exists:tes,id'
+        // ]);
 
+        // $peserta = PesertaSurvei::updateOrCreate(
+        //     // Array 1: Kunci unik untuk mencari data
+        //     [
+        //         'email' => $validated['email']
+        //     ],
+        //     // Array 2: Data yang akan di-update atau dibuat
+        //     [
+        //         'nama'         => $validated['nama'],
+        //         'angkatan'         => $validated['angkatan'],
+        //         'pelatihan_id' => $validated['pelatihan_id'],
+        //         'bidang_id'    => $validated['bidang_id'] // Sesuaikan dengan nama dari form
+        //     ]
+        // );
         // REVISI DI SINI
         // IMPROVE: untuk menyimpan datanya di  
-        $peserta = PesertaSurvei::updateOrCreate(
-            // Array 1: Kunci unik untuk mencari data
-            [
-                'email' => $validated['email']
-            ],
-            // Array 2: Data yang akan di-update atau dibuat
-            [
-                'nama'         => $validated['nama'],
-                'angkatan'         => $validated['angkatan'],
-                'pelatihan_id' => $validated['pelatihan_id'],
-                'bidang_id'    => $validated['bidang_id'] // Sesuaikan dengan nama dari form
-            ]
-        );
+
 
         // 4. Redirect ke route 'survey.show' dengan parameter yang sesuai
         //    Hanya kirim 'peserta' dan 'order' karena hanya itu yang ada di URI route.
-        return redirect()->route('survey.show', [
-            'peserta' => $peserta->id,
-            'order'   => $validated['tes_id'],
-        ]);
+        // return redirect()->route('survey.show', [
+        //     'peserta' => $peserta->id,
+        //     'order'   => $validated['tes_id'],
+        // 'peserta' => $peserta->id,
+        // 'order'   => $validated['tes_id'],
+        // ]);
     }
     // app/Http/Controllers/SurveyController.php
 
     // Laravel akan otomatis mencari Peserta berdasarkan ID yang ada di URL
-    public function show(PesertaSurvei $peserta, $order, Request $request)
+    // public function show(PesertaSurvei $peserta, $order, Request $request)
+    public function show(Peserta $peserta, $order, Request $request)
     {
         $tesId = $order;
 
         $section = Tes::findOrFail($tesId);
+        // return $section;
         // Langkah 3: Ambil semua pertanyaan yang terkait, diurutkan berdasarkan nomor
         $questions = Pertanyaan::where('tes_id', $section->id)
-            ->with([
-                'opsiJawabans', // Untuk pertanyaan yang punya opsi sendiri
-                'opsiLink.templatePertanyaan.opsiJawabans' // Untuk pertanyaan yang mencontek dari template
-            ])
+            ->with(['opsiJawabans', 'templates.opsiJawabans'])
             ->orderBy('nomor', 'asc')
             ->get();
 
+
+        // return $peserta;
         // return $questions;
 
         // Langkah 4: Tampilkan view dengan data yang sudah disiapkan

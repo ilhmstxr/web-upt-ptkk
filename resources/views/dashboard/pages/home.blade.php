@@ -5,11 +5,7 @@
 
 @section('content')
 
-@php
-    $peserta = $peserta ?? collect();
-@endphp
-
-{{-- Pesan notifikasi --}}
+{{-- Flash messages --}}
 @if(session('success'))
     <div class="mb-4 px-4 py-3 rounded-lg bg-green-100 text-green-700 font-semibold" role="alert">
         {{ session('success') }}
@@ -22,13 +18,17 @@
     </div>
 @endif
 
-{{-- Hidden form untuk unset peserta (tidak nested) --}}
-<form id="hiddenUnsetForm" action="{{ route('dashboard.unsetPeserta') }}" method="POST" style="display:none;">
+{{-- Hidden form untuk unset peserta (dipakai oleh tombol "Ganti Peserta" / "Batal") 
+<form id="hiddenUnsetForm" action="{{ route('dashboard.logout') }}" method="POST" style="display:none;">
     @csrf
-</form>
+</form> --}}
 
-{{-- Konten dashboard --}}
-<div class="{{ empty($pesertaAktif) ? 'blur-sm pointer-events-none select-none' : '' }}">
+@php
+    $isBlur = empty($pesertaAktif);
+@endphp
+
+
+<div class="{{ $isBlur ? 'blur-sm pointer-events-none select-none' : '' }}">
     @if($pesertaAktif)
         <div class="mb-6 flex justify-between items-center">
             <div>
@@ -36,26 +36,28 @@
                 <p class="text-gray-600">Selamat datang di dashboard pelatihan</p>
             </div>
             <div class="flex gap-2">
-                {{-- Ganti Peserta (men-submit hidden form) --}}
+                {{-- Ganti Peserta 
                 <button id="btnGantiPeserta"
+                        type="button"
                         class="text-sm px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
                     Ganti Peserta
-                </button>
+                </button> --}}
 
-                {{-- Logout --}}
+                {{-- Logout 
                 <form action="{{ route('dashboard.logout') }}" method="POST">
                     @csrf
                     <button type="submit"
                             class="text-sm px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
                         Logout
                     </button>
-                </form>
+                </form> --}}
             </div>
         </div>
     @endif
 
-    {{-- Card dashboard --}}
+    {{-- Dashboard cards --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {{-- ... (isi kartu seperti sebelumnya) --}}
         {{-- Pre-Test --}}
         <div class="bg-white p-6 rounded-2xl shadow-sm flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
             <div>
@@ -101,82 +103,154 @@
             </a>
         </div>
 
-        {{-- Progress Cards --}}
+        {{-- Progress cards (contoh ringkas) --}}
         <div class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
             <h3 class="text-lg font-bold text-gray-800">Progress Pre-Test</h3>
             <div class="flex items-baseline mt-2">
-                <span class="text-3xl font-bold text-yellow-600">2</span>
-                <span class="text-lg text-gray-500 ml-1">/ 3 dikerjakan</span>
+                <span class="text-3xl font-bold text-yellow-600">{{ $preTestAttempts ?? 0 }}</span>
+                <span class="text-lg text-gray-500 ml-1">/ {{ $preTestMax ?? 1 }} dikerjakan</span>
             </div>
+            @php
+                $prePercent = ($preTestMax ?? 1) > 0 ? round((($preTestAttempts ?? 0) / ($preTestMax ?? 1)) * 100) : 0;
+            @endphp
             <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
-                <div class="bg-yellow-500 h-2.5 rounded-full" style="width: 66%"></div>
+                <div class="bg-yellow-500 h-2.5 rounded-full" style="width: {{ $prePercent }}%"></div>
             </div>
         </div>
 
+        {{-- Progress Post-Test --}}
         <div class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
             <h3 class="text-lg font-bold text-gray-800">Progress Post-Test</h3>
             <div class="flex items-center mt-2">
-                <span class="text-lg font-semibold text-red-600">Belum dikerjakan</span>
+                <span class="text-lg font-semibold {{ ($postTestDone ?? false) ? 'text-green-600' : 'text-red-600' }}">
+                    {{ ($postTestDone ?? false) ? 'Sudah dikerjakan' : 'Belum dikerjakan' }}
+                </span>
             </div>
+            @php
+                $postPercent = ($postTestMax ?? 1) > 0 ? round(((($postTestDone ?? false) ? 1 : 0) / ($postTestMax ?? 1)) * 100) : 0;
+            @endphp
             <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
-                <div class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
+                <div class="bg-green-500 h-2.5 rounded-full" style="width: {{ $postPercent }}%"></div>
             </div>
         </div>
 
+        {{-- Progress MONEV --}}
         <div class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
             <h3 class="text-lg font-bold text-gray-800">Progress MONEV</h3>
             <div class="flex items-center mt-2">
-                <span class="text-lg font-semibold text-red-600">Belum dikerjakan</span>
+                <span class="text-lg font-semibold {{ ($monevDone ?? false) ? 'text-blue-600' : 'text-red-600' }}">
+                    {{ ($monevDone ?? false) ? 'Sudah dikerjakan' : 'Belum dikerjakan' }}
+                </span>
             </div>
+            @php
+                $monevPercent = ($monevMax ?? 1) > 0 ? round(((($monevDone ?? false) ? 1 : 0) / ($monevMax ?? 1)) * 100) : 0;
+            @endphp
             <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
-                <div class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
+                <div class="bg-green-500 h-2.5 rounded-full" style="width: {{ $monevPercent }}%"></div>
             </div>
         </div>
     </div>
 </div>
+
 @endsection
 
-{{-- Push overlay ke stack modals agar berada di level root --}}
-@push('modals')
-    @if(empty($pesertaAktif))
-        <div
-            class="fixed inset-0 z-[99999] flex items-center justify-center bg-gray-900 bg-opacity-60"
-            aria-hidden="true"
-            style="backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);">
-            <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
-                <h2 class="text-xl font-bold mb-4 text-center">Pilih Peserta</h2>
+{{-- Modal langsung di-template (tidak mengandalkan @push) --}}
+@if(empty($pesertaAktif))
+    <div id="pesertaOverlayRoot" class="fixed inset-0 z-[99999] flex items-center justify-center bg-gray-900 bg-opacity-60"
+         style="backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
+            <h2 class="text-xl font-bold mb-4 text-center">Pilih Peserta untuk Memulai Post-Test</h2>
 
-                <form id="setPesertaForm" action="{{ route('dashboard.setPeserta') }}" method="POST">
-                    @csrf
-                    <select name="peserta_id" required class="w-full p-2 border rounded mb-3">
-                        <option value="">-- Pilih Peserta --</option>
-                        @foreach($peserta as $p)
-                            <option value="{{ $p->id }}">
-                                {{ $p->nama }} - {{ $p->instansi->nama ?? '' }}
-                            </option>
+            {{-- tampilkan validation errors --}}
+            @if($errors->any())
+                <div class="mb-3 p-2 bg-red-50 text-red-700 rounded">
+                    <ul class="list-disc pl-5 text-sm">
+                        @foreach ($errors->all() as $err)
+                            <li>{{ $err }}</li>
                         @endforeach
-                    </select>
+                    </ul>
+                </div>
+            @endif
 
-                    <div class="flex justify-end gap-2">
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Simpan Peserta</button>
-                        <button type="button" id="btnCancelSelect" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Batal</button>
-                    </div>
-                </form>
-            </div>
+            <form id="setPesertaForm" action="{{ route('dashboard.setPeserta') }}" method="POST" class="space-y-3">
+                @csrf
+
+                <div class="mb-3">
+                    <label class="block text-sm font-medium mb-1">Nama Peserta</label>
+                    <input
+                        type="text"
+                        name="nama"
+                        value="{{ old('nama') }}"
+                        required
+                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                        placeholder="Tulis nama lengkap" />
+                    @error('nama')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label class="block text-sm font-medium mb-1">Instansi (opsional)</label>
+                    <input
+                        type="text"
+                        name="sekolah"
+                        value="{{ old('sekolah') }}"
+                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                        placeholder="Tulis nama sekolah / instansi" />
+                    @error('sekolah')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="submit" id="btnSavePeserta"
+                            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Simpan Peserta
+                    </button>
+
+                    <button type="button" id="btnCancelSelect" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                        Batal
+                    </button>
+                </div>
+            </form>
+
+            <p class="text-xs text-gray-400 mt-4 text-center">Data yang dimasukkan akan dipakai otomatis untuk Pre-Test, Post-Test, dan Monev.</p>
         </div>
-    @endif
-@endpush
+    </div>
+@endif
 
-@push('scripts')
+{{-- Inline script (tidak bergantung pada @stack) --}}
 <script>
-    // Submit hidden unset form when user clicks "Ganti Peserta" (di header)
-    document.getElementById('btnGantiPeserta')?.addEventListener('click', function(){
-        document.getElementById('hiddenUnsetForm').submit();
+    // Ganti Peserta -> submit hidden POST form
+    document.getElementById('btnGantiPeserta')?.addEventListener('click', function () {
+        const f = document.getElementById('hiddenUnsetForm');
+        if (f) f.submit();
     });
 
-    // Cancel button in overlay: submit unset form to clear session (hidupkan overlay)
-    document.getElementById('btnCancelSelect')?.addEventListener('click', function(){
-        document.getElementById('hiddenUnsetForm').submit();
+    // Batal pada overlay -> submit hiddenUnsetForm (POST) untuk clear session
+    document.getElementById('btnCancelSelect')?.addEventListener('click', function () {
+        const f = document.getElementById('hiddenUnsetForm');
+        if (f) {
+            f.submit();
+            return;
+        }
+        location.reload();
     });
+
+    // Disable tombol submit untuk mencegah double submit
+    document.getElementById('setPesertaForm')?.addEventListener('submit', function (e) {
+        const btn = document.getElementById('btnSavePeserta');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = 'Menyimpan...';
+        }
+    });
+
+    // Safety: jika server mengirim session('success'), hapus overlay client-side (biasanya server-side sudah tidak merender modal)
+    @if(session('success'))
+        (function removeOverlay(){
+            const ov = document.getElementById('pesertaOverlayRoot');
+            if (ov) ov.remove();
+        })();
+    @endif
 </script>
-@endpush

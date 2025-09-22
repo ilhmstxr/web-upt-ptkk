@@ -1,7 +1,7 @@
 @extends('dashboard.layouts.main')
 
-@section('title', 'Post-Test')
-@section('page-title', 'Post-Test')
+@section('title', 'monev')
+@section('page-title', 'monev')
 
 @section('content')
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
