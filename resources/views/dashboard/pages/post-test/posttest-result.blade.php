@@ -16,22 +16,42 @@
             </p>
         </div>
 
-        {{-- Detail Skor dan Status --}}
+        {{-- Detail Skor & Waktu --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+            {{-- Skor --}}
             <div class="p-4 bg-gray-50 rounded-lg shadow">
                 <h3 class="font-semibold text-lg">Skor</h3>
                 <p class="text-gray-700 text-xl font-bold">
-                    {{ $percobaan->skor ?? 0 }}
+                    {{ isset($percobaan->skor) ? $percobaan->skor : 0 }}
+                </p>
+            </div>
+
+            {{-- Waktu Mulai --}}
+            <div class="p-4 bg-gray-50 rounded-lg shadow">
+                <h3 class="font-semibold text-lg">Waktu Mulai</h3>
+                <p class="text-gray-700">
+                    {{ $percobaan->waktu_mulai ?? '-' }}
+                </p>
+            </div>
+
+            {{-- Waktu Selesai --}}
+            <div class="p-4 bg-gray-50 rounded-lg shadow">
+                <h3 class="font-semibold text-lg">Waktu Selesai</h3>
+                <p class="text-gray-700">
+                    {{ $percobaan->waktu_selesai ?? 'Belum selesai' }}
                 </p>
             </div>
         </div>
 
-        <a href="{{ route('dashboard.home') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+        <a href="{{ route('dashboard.home') }}"
+           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
             Kembali ke Dashboard
         </a>
     @else
         <p class="text-gray-500">Hasil percobaan tidak ditemukan.</p>
-        <a href="{{ route('dashboard.home') }}" class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+        <a href="{{ route('dashboard.home') }}"
+           class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
             Kembali ke Dashboard
         </a>
     @endif

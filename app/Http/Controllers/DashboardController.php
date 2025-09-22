@@ -277,7 +277,7 @@ class DashboardController extends Controller
             // Hitung skor langsung
             $jawaban = $percobaan->jawabanUser;
             $total = $jawaban->count();
-            $benar = $jawaban->where('opsiJawaban.benar', true)->count();
+            $benar = $jawaban->filter(fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar)->count();
             $percobaan->skor = $total > 0 ? round(($benar / $total) * 100, 2) : 0;
 
             $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
@@ -287,7 +287,7 @@ class DashboardController extends Controller
                 ->with('error', 'Waktu tes sudah habis.');
         }
 
-        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
+        $pertanyaanList = $tes->pertanyaan()->with('opsiJawaban')->get();
         $currentQuestionIndex = (int) $request->query('q', 0);
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
@@ -336,7 +336,7 @@ class DashboardController extends Controller
         // Hitung skor langsung
         $jawaban = $percobaan->jawabanUser;
         $total = $jawaban->count();
-        $benar = $jawaban->where('opsiJawaban.benar', true)->count();
+        $benar = $jawaban->filter(fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar)->count();
         $percobaan->skor = $total > 0 ? round(($benar / $total) * 100, 2) : 0;
 
         $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
@@ -347,7 +347,7 @@ class DashboardController extends Controller
 
     public function pretestResult(Percobaan $percobaan)
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawabans', 'tes', 'pesertaSurvei']);
+        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'pesertaSurvei']);
         return view('dashboard.pages.pre-test.pretest-result', compact('percobaan'));
     }
 
@@ -421,7 +421,7 @@ class DashboardController extends Controller
             // Hitung skor langsung
             $jawaban = $percobaan->jawabanUser;
             $total = $jawaban->count();
-            $benar = $jawaban->where('opsiJawaban.benar', true)->count();
+            $benar = $jawaban->filter(fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar)->count();
             $percobaan->skor = $total > 0 ? round(($benar / $total) * 100, 2) : 0;
 
             $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
@@ -431,7 +431,7 @@ class DashboardController extends Controller
                 ->with('error', 'Waktu tes sudah habis.');
         }
 
-        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
+        $pertanyaanList = $tes->pertanyaan()->with('opsiJawaban')->get();
         $currentQuestionIndex = (int) $request->query('q', 0);
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
@@ -486,7 +486,7 @@ class DashboardController extends Controller
         // Hitung skor langsung
         $jawaban = $percobaan->jawabanUser;
         $total = $jawaban->count();
-        $benar = $jawaban->where('opsiJawaban.benar', true)->count();
+        $benar = $jawaban->filter(fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar)->count();
         $percobaan->skor = $total > 0 ? round(($benar / $total) * 100, 2) : 0;
 
         $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
@@ -497,7 +497,7 @@ class DashboardController extends Controller
 
     public function posttestResult(Percobaan $percobaan)
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawabans', 'tes', 'pesertaSurvei']);
+        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'pesertaSurvei']);
         return view('dashboard.pages.post-test.posttest-result', compact('percobaan'));
     }
 
@@ -572,7 +572,7 @@ class DashboardController extends Controller
     protected function hitungSkor(Percobaan $percobaan): int
 
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawabans']);
+        $percobaan->loadMissing(['jawabanUser.opsiJawaban']);
         $jawabanCollection = $percobaan->jawabanUser ?? collect();
 
 
@@ -589,7 +589,7 @@ class DashboardController extends Controller
             return 0;
         }
 
-        $benar = $jawabanCollection->filter(fn($j) => ($j->opsiJawabans->apakah_benar ?? false))->count();
+        $benar = $jawabanCollection->filter(fn($j) => ($j->opsiJawaban->apakah_benar ?? false))->count();
         return (int) round(($benar / $total) * 100);
     }
 }

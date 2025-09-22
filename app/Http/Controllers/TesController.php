@@ -29,8 +29,8 @@ class TesController extends Controller
 
         $percobaan = Percobaan::firstOrCreate(
             [
-                'peserta_id' => $userId,
-                'tes_id' => $tes->id,
+                'pesertaSurvei_id' => $userId,
+                'tes_id'           => $tes->id,
             ],
             [
                 'waktu_mulai' => now(),
@@ -46,7 +46,7 @@ class TesController extends Controller
             'tes',
             'pertanyaan',
             'percobaan',
-            'currentQuestion',
+            'currentQuestionIndex',
             'pertanyaanList'
         ));
     }
@@ -68,7 +68,7 @@ class TesController extends Controller
         foreach ($jawaban as $pertanyaan_id => $opsi_jawaban_id) {
             JawabanUser::updateOrCreate(
                 [
-                    'percobaan_id' => $percobaan->id,
+                    'percobaan_id'  => $percobaan->id,
                     'pertanyaan_id' => $pertanyaan_id,
                 ],
                 [
@@ -94,7 +94,10 @@ class TesController extends Controller
         }
 
         // Lanjut ke pertanyaan berikutnya
-        return redirect()->route('tes.show', ['tes' => $percobaan->tes_id, 'q' => $nextQuestion]);
+        return redirect()->route('tes.show', [
+            'tes' => $percobaan->tes_id,
+            'q'   => $nextQuestion
+        ]);
     }
 
     /**
@@ -115,13 +118,16 @@ class TesController extends Controller
      */
     protected function hitungSkor(Percobaan $percobaan)
     {
-        $jawabanUser = $percobaan->jawabanUser()->with('opsiJawabans')->get();
-        $total = $jawabanUser->count();
+        $jawabanUsers = $percobaan->jawabanUsers()->with('opsiJawaban')->get();
+        $total = $jawabanUsers->count();
 
         if ($total === 0) return 0;
 
-        $benar = $jawabanUser->filter(fn($j) => $j->opsiJawabans->apakah_benar)->count();
+        $benar = $jawabanUsers->filter(
+            fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar
+        )->count();
 
+        // Bisa pilih: jumlah benar atau persentase
         return round(($benar / $total) * 100);
     }
 }

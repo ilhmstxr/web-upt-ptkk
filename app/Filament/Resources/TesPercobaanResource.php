@@ -23,13 +23,13 @@ class TesPercobaanResource extends Resource
         return $form->schema([
             Forms\Components\Select::make('pesertaSurvei_id')
                 ->label('Peserta')
-                ->relationship('peserta', 'nama') // pakai relasi peserta() dari model
+                ->relationship('pesertaSurvei', 'nama') // pakai pesertaSurvei, bukan peserta
                 ->searchable()
                 ->required(),
 
             Forms\Components\Select::make('tes_id')
                 ->label('Tes')
-                ->relationship('tes', 'judul') // pakai relasi tes() dari model
+                ->relationship('tes', 'judul')
                 ->searchable()
                 ->required(),
 
@@ -43,10 +43,6 @@ class TesPercobaanResource extends Resource
             Forms\Components\TextInput::make('skor')
                 ->numeric()
                 ->label('Skor'),
-
-            Forms\Components\Textarea::make('pesan_kesan')
-                ->label('Pesan & Kesan')
-                ->rows(3),
         ]);
     }
 
@@ -54,7 +50,7 @@ class TesPercobaanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('peserta.nama')
+                Tables\Columns\TextColumn::make('pesertaSurvei.nama')
                     ->label('Peserta')
                     ->searchable()
                     ->sortable(),
@@ -77,9 +73,10 @@ class TesPercobaanResource extends Resource
                 Tables\Columns\TextColumn::make('skor')
                     ->label('Skor'),
 
-                Tables\Columns\TextColumn::make('pesan_kesan')
-                    ->label('Pesan & Kesan')
-                    ->limit(30),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
             ])
             ->filters([])
             ->actions([

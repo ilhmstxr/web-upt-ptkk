@@ -17,7 +17,7 @@ class JawabanUser extends Model
         'percobaan_id',
         'nilai_jawaban',
         'jawaban_teks',
-        // 'pesertaSurvei_id' // uncomment jika kolom ada di tabel
+        // 'pesertaSurvei_id' // uncomment kalau kolom memang ada
     ];
 
     // -------------------------
@@ -35,7 +35,8 @@ class JawabanUser extends Model
     }
 
     /**
-     * Singular relation to opsi jawaban (most likely used)
+     * Singular relation → benar, karena 1 jawaban_user
+     * hanya bisa punya 1 opsi jawaban.
      */
     public function opsiJawaban()
     {
@@ -43,7 +44,10 @@ class JawabanUser extends Model
     }
 
     /**
-     * Plural alias kept for backward compatibility if some code uses opsiJawabans()
+     * Ini agak rancu. 
+     * Plural biasanya untuk hasMany, 
+     * jadi kalau `opsiJawabans()` hanya memanggil `opsiJawaban()`,
+     * sebaiknya dihapus biar nggak bikin bingung.
      */
     public function opsiJawabans()
     {
@@ -51,18 +55,11 @@ class JawabanUser extends Model
     }
 
     /**
-     * Optional relation to pesertaSurvei (if jawaban_user table stores pesertaSurvei_id)
+     * Relasi opsional ke peserta survei.
+     * Ini oke kalau memang ada kolom `pesertaSurvei_id`.
      */
     public function pesertaSurvei()
     {
-        // If PesertaSurvei model exists, use it; otherwise try Peserta
-        if (class_exists(\App\Models\PesertaSurvei::class)) {
-            return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id');
-        }
-        if (class_exists(\App\Models\Peserta::class)) {
-            return $this->belongsTo(\App\Models\Peserta::class, 'pesertaSurvei_id', 'id');
-        }
-        // fallback (will error if neither model exists but method must return relation)
         return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id');
     }
 }
