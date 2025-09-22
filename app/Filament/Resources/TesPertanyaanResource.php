@@ -33,7 +33,7 @@ class TesPertanyaanResource extends Resource
                 ->schema([
                     Forms\Components\TextInput::make('nomor')
                         ->label('Nomor Pertanyaan')
-                        ->default(fn(\Filament\Forms\Get $get) => Pertanyaan::where('tes_id', $get('tes_id'))->max('nomor') + 1 ?? 1)
+                        ->default(fn (\Filament\Forms\Get $get) => Pertanyaan::where('tes_id', $get('tes_id'))->max('nomor') + 1 ?? 1)
                         ->numeric()
                         ->required(),
 
@@ -82,7 +82,6 @@ class TesPertanyaanResource extends Resource
                     Forms\Components\Repeater::make('pertanyaan_list')
                         ->label('Daftar Pertanyaan')
                         ->schema([
-
                             Forms\Components\TextInput::make('nomor')
                                 ->label('Nomor Pertanyaan')
                                 ->numeric()
@@ -92,13 +91,13 @@ class TesPertanyaanResource extends Resource
                                 ->label('Pertanyaan')
                                 ->required(),
 
-                            // PATH yang disimpan ke DB (hidden)
-                            Forms\Components\TextInput::make('gambar')->hidden(),
-
-                            // Uploader custom (tidak pakai /livewire/upload-file)
-                            Forms\Components\View::make('gambar_uploader')
+                            Forms\Components\FileUpload::make('gambar')
                                 ->label('Gambar Pertanyaan')
-                                ->view('filament/components/simple-uploader'),
+                                ->image()
+                                ->directory('pertanyaan')
+                                ->disk('public')
+                                ->nullable()
+                                ->maxSize(2048),
 
                             Forms\Components\Repeater::make('opsi_jawaban')
                                 ->label('Opsi Jawaban')
@@ -106,13 +105,12 @@ class TesPertanyaanResource extends Resource
                                     Forms\Components\Textarea::make('teks_opsi')
                                         ->required(),
 
-                                    // PATH yang disimpan ke DB (hidden)
-                                    Forms\Components\TextInput::make('gambar')->hidden(),
-
-                                    // Uploader custom untuk gambar opsi
-                                    Forms\Components\View::make('gambar_uploader')
-                                        ->label('Gambar Opsi (Opsional)')
-                                        ->view('filament/components/simple-uploader'),
+                                    Forms\Components\FileUpload::make('gambar')
+                                        ->image()
+                                        ->directory('opsi-jawaban')
+                                        ->disk('public')
+                                        ->nullable()
+                                        ->maxSize(2048),
 
                                     Forms\Components\Toggle::make('apakah_benar')
                                         ->label('Benar?')
