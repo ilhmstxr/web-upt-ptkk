@@ -197,7 +197,7 @@ class DashboardController extends Controller
                 ->with('error', 'Waktu tes sudah habis.');
         }
 
-        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
+        $pertanyaanList = $tes->pertanyaan()->with('opsiJawaban')->get();
         $currentQuestionIndex = (int) $request->query('q', 0);
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
@@ -253,7 +253,7 @@ class DashboardController extends Controller
 
         // ===== SATU-SATUNYA PERUBAHAN ADA DI SINI =====
         // Kita muat kedua kemungkinan relasi agar accessor 'participant' efisien.
-        $percobaan->loadMissing(['jawabanUser.opsiJawabans', 'tes', 'peserta', 'pesertaSurvei']);
+        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'peserta', 'pesertaSurvei']);
 
         return view("dashboard.pages.{$tipe}.{$tipe}-result", compact('percobaan', 'tipe'));
     }
@@ -343,8 +343,7 @@ class DashboardController extends Controller
 
         $jawaban = $percobaan->jawabanUser()->with('opsiJawaban')->get();
         $total = $jawaban->count();
-        $benar = $jawaban->where('opsiJawaban.benar', true)->count();
-
+        $benar = $jawaban->filter(fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar)->count();
         $percobaan->skor = $total > 0 ? round(($benar / $total) * 100, 2) : 0;
         $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
         $percobaan->save();
