@@ -7,6 +7,7 @@ use Filament\Actions;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -75,9 +76,19 @@ class EditTesPertanyaan extends EditRecord
                             ->description('Kelola pilihan jawaban untuk pertanyaan ini.')
                             ->visible(fn(Get $get): bool => in_array($get('tipe_jawaban'), ['pilihan_ganda', 'skala_likert']))
                             ->schema([
+                                Hidden::make('opsi_benar_path')
+                                    ->dehydrated(false), // jangan disimpan ke DB
                                 Repeater::make('opsiJawabans')
                                     ->relationship('opsiJawabans')
                                     ->label('Daftar Opsi')
+                                    ->afterStateHydrated(function (Get $get, Set $set, ?array $state) {
+                                        foreach (array_keys($state ?? []) as $key) {
+                                            if ($get("opsiJawabans.$key.apakah_benar")) {
+                                                $set('opsi_benar_path', "opsiJawabans.$key.apakah_benar");
+                                                break;
+                                            }
+                                        }
+                                    })
                                     ->schema([
                                         Textarea::make('teks_opsi')
                                             ->label('Teks Opsi')
@@ -95,23 +106,25 @@ class EditTesPertanyaan extends EditRecord
                                         Toggle::make('apakah_benar')
                                             ->label('Jawaban Benar')
                                             ->default(false)
-                                            ->live()
+                                            ->live() // penting agar afterStateUpdated terpanggil langsung
                                             ->afterStateUpdated(function (Set $set, Get $get, ?bool $state, Component $component): void {
-                                                if (! $state) {
-                                                    return;
-                                                }
+                                                $current = $component->getStatePath(); // contoh: 'opsiJawabans.xyz.apakah_benar'
 
-                                                $currentPath = $component->getStatePath();
-                                                $items = $get('opsiJawabans') ?? [];
-
-                                                foreach (array_keys($items) as $index) {
-                                                    $path = "opsiJawabans." . $index . '.apakah_benar';
-                                                    if ($path !== $currentPath) {
-                                                        $set($path, false);
+                                                if ($state) {
+                                                    // Matikan toggle yang sebelumnya aktif (jika ada & berbeda)
+                                                    $last = $get('opsi_benar_path');
+                                                    if ($last && $last !== $current) {
+                                                        $set($last, false);
+                                                    }
+                                                    // Tandai yang sekarang sebagai "terakhir aktif"
+                                                    $set('opsi_benar_path', $current);
+                                                } else {
+                                                    // Jika mematikan toggle yang sedang jadi "terakhir aktif", kosongkan penandanya
+                                                    if ($get('opsi_benar_path') === $current) {
+                                                        $set('opsi_benar_path', null);
                                                     }
                                                 }
-                                            })
-                                            ->columnSpan(1),
+                                            })->columnSpan(1),
                                     ])
                                     ->columns(3)
                                     ->defaultItems(4)
