@@ -300,7 +300,7 @@
     <header class="header">
       <div class="logo">
         <!-- Ganti src dengan URL logo UPT PTKK Anda -->
-        <img src="./logo-upt-ptkk.png" alt="Logo UPT PTKK" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <img src="./logo-upt-ptkk.jpg" alt="Logo UPT PTKK" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
         <div class="logo-fallback" style="display: none">UPT<br />PTKK</div>
       </div>
       <h1 class="header-title">UPT PTKK Dinas Pendidikan Jawa Timur</h1>

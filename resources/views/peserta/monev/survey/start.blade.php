@@ -5,7 +5,7 @@
 @section('content')
     <div class="max-w-2xl mx-auto text-center px-4 py-8 sm:py-12">
 
-        <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt="Logo Kementerian Pendidikan"
+        <img src="{{ asset('images/logo-upt-ptkk.jpg') }}" alt="Logo Kementerian Pendidikan"
             class="mx-auto h-20 sm:h-24 md:h-28 mb-6" onerror="this.style.display='none'">
 
         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-indigo-800 mb-3 leading-tight break-words">
