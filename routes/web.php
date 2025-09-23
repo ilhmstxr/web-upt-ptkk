@@ -19,6 +19,8 @@ use App\Mail\TestMail;
 use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
+use App\Http\Controllers\PertanyaanController;
+use App\Http\Controllers\UploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -137,6 +139,13 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('survey', [DashboardController::class, 'survey'])->name('survey');
     Route::post('survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
 });
+// routes/web.php
+Route::post('/admin/uploads', [UploadController::class, 'store'])
+    ->middleware(['web', 'auth'])
+    ->name('admin.uploads.store');
+
+route::resource('pertanyaan', PertanyaanController::class);
+
 
 
 /*

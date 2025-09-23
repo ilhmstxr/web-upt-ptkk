@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class OpsiJawaban extends Model
 {
@@ -16,6 +17,12 @@ class OpsiJawaban extends Model
         'teks_opsi',
         'gambar',
         'apakah_benar',
+    ];
+
+    protected $casts = [
+        'pertanyaan_id' => 'integer',
+        'apakah_benar'  => 'boolean',
+        'sort_order'    => 'integer',
     ];
 
     // Relasi ke Pertanyaan
@@ -31,8 +38,15 @@ class OpsiJawaban extends Model
     }
 
     // Accessor untuk URL gambar
-    public function getGambarUrlAttribute()
+    // public function getGambarUrlAttribute()
+    // {
+    //     return $this->gambar ? asset('storage/' . $this->gambar) : null;
+    // }
+    public function getGambarUrlAttribute(): ?string
     {
-        return $this->gambar ? asset('storage/' . $this->gambar) : null;
+        if (! $this->gambar) {
+            return null;
+        }
+        return Storage::disk('public')->url($this->gambar);
     }
 }
