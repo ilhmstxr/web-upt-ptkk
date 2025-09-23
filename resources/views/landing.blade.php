@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UPT PTKK Dinas Pendidikan Jawa Timur</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo-upt-ptkk.png') }} " class="w-4">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-upt-ptkk.jpg') }} " class="w-4">
     <style>
         /* ====== CSS dari desain kamu ====== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -53,7 +53,7 @@
 
     <header class="header">
         <div class="logo">
-            <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt="Logo UPT PTKK" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <img src="{{ asset('images/logo-upt-ptkk.jpg') }}" alt="Logo UPT PTKK" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             <div class="logo-fallback" style="display: none">UPT<br>PTKK</div>
         </div>
         <h1 class="header-title">UPT PTKK Dinas Pendidikan Jawa Timur</h1>

@@ -56,7 +56,7 @@
             class="flex items-center justify-between bg-blue-700 p-4 rounded-xl shadow-md mb-8 text-white select-none">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 overflow-hidden rounded-full flex-shrink-0 relative">
-                    <img src="{{ asset('../images/logo-upt-ptkk.png') }}" alt="Logo UPT PTKK"
+                    <img src="{{ asset('../images/logo-upt-ptkk.jpg') }}" alt="Logo UPT PTKK"
                         class="w-full h-full object-cover"
                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                     <div
