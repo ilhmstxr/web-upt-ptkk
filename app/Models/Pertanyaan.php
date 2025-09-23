@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pertanyaan extends Model
 {
@@ -19,6 +20,10 @@ class Pertanyaan extends Model
         'tipe_jawaban',
     ];
 
+
+    protected $casts = [
+        'nomor' => 'integer',
+    ];
     // -------------------------
     // RELATIONS
     // -------------------------
@@ -30,9 +35,10 @@ class Pertanyaan extends Model
     }
 
     // Relasi ke Opsi Jawaban (plural: hasMany)
-    public function opsiJawabans()
+    public function opsiJawabans(): HasMany
     {
-        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id');
+        // Tambahkan kolom sort_order di DB bila ingin kontrol urutan
+        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id')->orderBy('id');
     }
 
     // Alias singular supaya kode lama tetap jalan
@@ -93,17 +99,26 @@ class Pertanyaan extends Model
     /**
      * Helper: ambil jawaban yang benar dari collection jawaban user
      */
-    public function hitungSkor(Percobaan $percobaan): int
+    public function hitungSkor(?int $jumlahBenar, ?int $jumlahTotal): int
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawaban']);
-        $jawabanCollection = $percobaan->jawabanUser ?? collect();
-
-        $total = $jawabanCollection->count();
+        $benar = max(0, (int) ($jumlahBenar ?? 0));
+        $total = max(0, (int) ($jumlahTotal ?? 0));
         if ($total === 0) {
             return 0;
         }
-
-        $benar = $jawabanCollection->filter(fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar)->count();
         return (int) round(($benar / $total) * 100);
     }
+    // public function hitungSkor(Percobaan $percobaan): int
+    // {
+    //     $percobaan->loadMissing(['jawabanUser.opsiJawaban']);
+    //     $jawabanCollection = $percobaan->jawabanUser ?? collect();
+
+    //     $total = $jawabanCollection->count();
+    //     if ($total === 0) {
+    //         return 0;
+    //     }
+
+    //     $benar = $jawabanCollection->filter(fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar)->count();
+    //     return (int) round(($benar / $total) * 100);
+    // }
 }
