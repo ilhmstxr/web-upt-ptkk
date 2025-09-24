@@ -20,6 +20,7 @@ use App\Models\PivotJawaban;
 use App\Models\Tes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SurveyController extends Controller
 {
@@ -309,94 +310,105 @@ class SurveyController extends Controller
 
     public function store(Request $request)
     {
-        // return $request;
         // 1. Validasi semua data yang masuk
         $validatedData = $request->validate([
             'peserta_id' => 'required|integer|exists:peserta,id',
-            'tes_id'     => 'required|integer|exists:tes,id', // Sesuai dengan nama field Anda
+            'tes_id'     => 'required|integer|exists:tes,id',
             'answers'    => 'required|array',
             'answers.*'  => 'required',
             'comments'   => 'nullable|string',
         ]);
 
-        // return $validatedData;   
+        try {
+            // Mulai transaksi database untuk memastikan konsistensi data
+            DB::beginTransaction();
 
-        // try {
-        // Mulai transaksi database untuk memastikan semua data tersimpan atau tidak sama sekali
-        // DB::transaction(function () use ($validatedData) {
+            // 2. Buat record percobaan (attempt)
+            // PERUBAHAN: Menyimpan ke 'peserta_id' dan men-null-kan 'pesertaSurvei_id'
+            $percobaan = Percobaan::create([
+                'peserta_id'         => $validatedData['peserta_id'],
+                'pesertaSurvei_id'   => null, // Eksplisit diatur menjadi null sesuai permintaan
+                'tes_id'             => $validatedData['tes_id'],
+                'waktu_mulai'        => now(), // Sebaiknya ada waktu mulai yang sebenarnya dari frontend
+                'waktu_selesai'      => now(),
+                'pesan_kesan'        => $validatedData['comments'] ?? null,
+            ]);
 
-        // 2. Ambil semua data yang dibutuhkan sekali saja untuk efisiensi
-        $questions = Pertanyaan::where('tes_id', $validatedData['tes_id'])->get()->keyBy('id');
-        $questionIds = $questions->pluck('id');
+            // 3. Ambil semua data yang dibutuhkan sekali saja untuk efisiensi
+            $questions = Pertanyaan::where('tes_id', $validatedData['tes_id'])->get()->keyBy('id');
+            $questionIds = $questions->pluck('id');
 
-        $templateIds = PivotJawaban::whereIn('pertanyaan_id', $questionIds)
-            ->pluck('template_pertanyaan_id');
+            // Ambil ID template jika ada
+            $templateIds = PivotJawaban::whereIn('pertanyaan_id', $questionIds)
+                ->pluck('template_pertanyaan_id');
 
-        $allRelevantQuestionIds = $questionIds->merge($templateIds)->unique();
-        $allOptions = OpsiJawaban::whereIn('pertanyaan_id', $allRelevantQuestionIds)
-            ->get()
-            ->keyBy('id');
+            $allRelevantQuestionIds = $questionIds->merge($templateIds)->unique();
 
-        // 3. Buat record percobaan (attempt)
-        $percobaan = Percobaan::create([
-            'pesertaSurvei_id'  => $validatedData['peserta_id'],
-            'tes_id'      => $validatedData['tes_id'],
-            'waktu_mulai' => now(), // Sebaiknya ada waktu mulai yang sebenarnya
-            'waktu_selesai' => now(),
-            'pesan_kesan' => $validatedData['comments'] ?? null,
-        ]);
+            // Ambil semua opsi jawaban yang relevan
+            $allOptions = OpsiJawaban::whereIn('pertanyaan_id', $allRelevantQuestionIds)
+                ->get()
+                ->keyBy('id');
 
-        // 4. Siapkan array jawaban untuk disimpan secara massal (bulk insert)
-        // ...
-        $jawabanUntukDisimpan = [];
-        foreach ($validatedData['answers'] as $pertanyaanId => $jawabanValue) {
-            $question = $questions->get($pertanyaanId);
-            if (!$question) continue; // Lewati jika pertanyaan tidak valid
 
-            // REVISI: Mengganti 'teks_opsi' menjadi 'opsi_jawaban_id'
-            $dataJawaban = [
-                'opsi_jawaban_id' => null, // INI YANG DIUBAH
-                'percobaan_id'    => $percobaan->id,
-                'pertanyaan_id'   => $pertanyaanId,
-                'nilai_jawaban'   => null,
-                'jawaban_teks'    => null,
-                'created_at'      => now(),
-                'updated_at'      => now(),
-            ];
-
-            if ($question->tipe_jawaban === 'teks_bebas') {
-                $dataJawaban['jawaban_teks'] = $jawabanValue;
-            } else {
-                $selectedOption = $allOptions->get($jawabanValue);
-                if ($selectedOption) {
-                    // REVISI: Menyesuaikan kunci array dengan nama kolom yang benar
-                    $dataJawaban['opsi_jawaban_id'] = $selectedOption->id; // INI YANG DIUBAH
-                    $dataJawaban['nilai_jawaban']   = $selectedOption->nilai;
+            // 4. Siapkan array jawaban untuk disimpan secara massal (bulk insert)
+            $jawabanUntukDisimpan = [];
+            foreach ($validatedData['answers'] as $pertanyaanId => $jawabanValue) {
+                $question = $questions->get($pertanyaanId);
+                if (!$question) {
+                    continue; // Lewati jika ID pertanyaan tidak valid untuk tes ini
                 }
+
+                $dataJawaban = [
+                    'opsi_jawaban_id' => null,
+                    'percobaan_id'    => $percobaan->id,
+                    'pertanyaan_id'   => $pertanyaanId,
+                    'nilai_jawaban'   => null,
+                    'jawaban_teks'    => null,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ];
+
+                if ($question->tipe_jawaban === 'teks_bebas') {
+                    $dataJawaban['jawaban_teks'] = $jawabanValue;
+                } else {
+                    // Asumsi $jawabanValue adalah ID dari opsi jawaban
+                    $selectedOption = $allOptions->get($jawabanValue);
+                    if ($selectedOption) {
+                        $dataJawaban['opsi_jawaban_id'] = $selectedOption->id;
+                        // PERBAIKAN: Mengisi 'nilai_jawaban' berdasarkan 'apakah_benar'
+                        // Asumsi: 1 untuk benar, 0 untuk salah.
+                        $dataJawaban['nilai_jawaban']   = $selectedOption->apakah_benar ? 1 : 0;
+                    }
+                }
+
+                $jawabanUntukDisimpan[] = $dataJawaban;
             }
 
-            $jawabanUntukDisimpan[] = $dataJawaban;
+            // 5. Simpan semua jawaban sekaligus jika ada
+            if (!empty($jawabanUntukDisimpan)) {
+                JawabanUser::insert($jawabanUntukDisimpan);
+            }
+
+            // 6. Hitung dan simpan skor akhir percobaan
+            $percobaan->hitungDanSimpanSkor();
+
+            // Jika semua berhasil, commit transaksi
+            DB::commit();
+
+            // 7. Arahkan ke halaman selesai
+            return redirect()->route('survey.complete')
+                ->with('success', 'Terima kasih, survei Anda berhasil disimpan.');
+        } catch (\Exception $e) {
+            // Jika terjadi error, batalkan semua perubahan
+            DB::rollBack();
+
+            // Catat error untuk debugging
+            Log::error('Gagal menyimpan hasil survei: ' . $e->getMessage());
+
+            // Kembalikan user ke halaman sebelumnya dengan pesan error
+            return back()->withInput()
+                ->with('error', 'Terjadi kesalahan saat menyimpan survei. Silakan coba lagi.');
         }
-
-
-        // return $jawabanUntukDisimpan;
-        //      protected $fillable = [
-        //     'opsi_jawaban_id', // untuk jawaban pilihan ganda
-        //     'pertanyaan_id',    // pertanyaan terkait
-        //     'percobaan_id',     // percobaan terkait (pre/post test)
-        //     'nilai_jawaban',    // untuk skala likert 1-5
-        //     'jawaban_teks',     // untuk jawaban esai / teks bebas
-        // ];
-
-        // 5. Simpan semua jawaban sekaligus jika ada
-        if (!empty($jawabanUntukDisimpan)) {
-            JawabanUser::insert($jawabanUntukDisimpan);
-        }
-
-
-        // 6. Jika semua berhasil, arahkan ke halaman selesai
-        return redirect()->route('survey.complete')
-            ->with('success', 'Terima kasih, survei Anda berhasil disimpan.');
     }
 
 

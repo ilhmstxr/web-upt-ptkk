@@ -368,15 +368,6 @@ class DashboardController extends Controller
         // Ambil tes berdasarkan bidang peserta
         $tes = \App\Models\Tes::where('bidang_id', $peserta->bidang_id)->get();
 
-
-
-
-
-
-
-
-
-
         return view('dashboard.pages.post-test.posttest', compact('tes', 'peserta'));
     }
 
@@ -434,9 +425,6 @@ class DashboardController extends Controller
         $pertanyaanList = $tes->pertanyaan()->with('opsiJawaban')->get();
         $currentQuestionIndex = (int) $request->query('q', 0);
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
-
-
-
 
 
 
@@ -578,14 +566,6 @@ class DashboardController extends Controller
 
         $total = $jawabanCollection->count();
         if ($total === 0) {
-
-
-
-
-
-
-
-
             return 0;
         }
 
