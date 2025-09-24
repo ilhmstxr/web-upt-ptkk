@@ -81,7 +81,7 @@
                                 required
                             >
                             @if(!empty($opsi->gambar))
-                                <img src="{{ asset('storage/'.$opsi->gambar) }}"
+                                <img src="{{ asset('images/opsi-jawaban/'.$gambar) }}"
                                      class="inline-block w-12 h-12 mr-2 rounded align-middle cursor-pointer hover:scale-105 transition"
                                      onclick="openImageModal('{{ asset('storage/'.$opsi->gambar) }}')">
                             @endif
