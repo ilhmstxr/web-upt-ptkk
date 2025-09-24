@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
-use PhpOffice\PhpWord\Settings;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
