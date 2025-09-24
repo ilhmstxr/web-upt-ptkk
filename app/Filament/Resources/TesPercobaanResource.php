@@ -51,6 +51,7 @@ class TesPercobaanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('pesertaSurvei.nama')
+                // Tables\Columns\TextColumn::make('peserta.nama')
                     ->label('Peserta')
                     ->searchable()
                     ->sortable(),
