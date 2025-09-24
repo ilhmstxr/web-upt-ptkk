@@ -95,7 +95,7 @@ class TesPertanyaanResource extends Resource
                                 ->label('Gambar Pertanyaan')
                                 ->image()
                                 ->directory('pertanyaan')
-                                ->disk('public/storage')
+                                ->disk('public')
                                 ->nullable()
                                 ->maxSize(2048),
 
