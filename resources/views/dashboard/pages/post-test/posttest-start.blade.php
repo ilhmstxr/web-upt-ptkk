@@ -58,7 +58,7 @@
 
             {{-- Gambar pertanyaan --}}
             @if(!empty($pertanyaan->gambar))
-                <img src="{{ asset('storage/'.$pertanyaan->gambar) }}" 
+                <img src="{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}">
                      class="mb-4 rounded shadow cursor-pointer hover:scale-105 transition"
                      onclick="openImageModal('{{ asset('storage/'.$pertanyaan->gambar) }}')">
             @endif
