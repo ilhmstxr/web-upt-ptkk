@@ -33,7 +33,7 @@ class TesPertanyaanResource extends Resource
                 ->schema([
                     Forms\Components\TextInput::make('nomor')
                         ->label('Nomor Pertanyaan')
-                        ->default(fn (\Filament\Forms\Get $get) => Pertanyaan::where('tes_id', $get('tes_id'))->max('nomor') + 1 ?? 1)
+                        ->default(fn(\Filament\Forms\Get $get) => Pertanyaan::where('tes_id', $get('tes_id'))->max('nomor') + 1 ?? 1)
                         ->numeric()
                         ->required(),
 
@@ -95,7 +95,7 @@ class TesPertanyaanResource extends Resource
                                 ->label('Gambar Pertanyaan')
                                 ->image()
                                 ->directory('pertanyaan')
-                                ->disk('public')
+                                ->disk('public/storage')
                                 ->nullable()
                                 ->maxSize(2048),
 
