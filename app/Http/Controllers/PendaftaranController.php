@@ -19,13 +19,20 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
+use PhpOffice\PhpWord\TemplateProcessor;
 use ZipArchive;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PendaftaranController extends Controller
 {
+    public const LAMPIRAN_DESTINATION = 'pertanyaan/opsi';
+
+
     public function index()
     {
         return redirect()->route('pendaftaran.create');
@@ -52,6 +59,7 @@ class PendaftaranController extends Controller
                 $pelatihan = Pelatihan::where('status', 'aktif')->get();
                 $bidang = Bidang::all();
                 $cabangDinas = CabangDinas::all();
+                // return $pelatihan;
                 return view('peserta.pendaftaran.bio-sekolah', compact('currentStep', 'allowedStep', 'formData', 'pelatihan', 'bidang', 'cabangDinas'));
             case 3:
                 $pelatihanId = $formData['pelatihan_id'] ?? null;
@@ -127,10 +135,10 @@ class PendaftaranController extends Controller
                     'alamat_instansi'   => $allData['alamat_instansi'],
                     'kota'   => $allData['kota'],
                     'kota_id'   => $allData['kota_id'],
+                    'kelas' => $allData['kelas'],
                 ],
                 [
                     'bidang_keahlian'       => $allData['bidang_keahlian'],
-                    'kelas'                 => $allData['kelas'],
                     'cabangDinas_id'  => $allData['cabangDinas_id'],
                 ]
             );
@@ -169,14 +177,7 @@ class PendaftaranController extends Controller
 
             ['nomor' => $nomorReg, 'urutan' => $urutBidang] = $this->generateToken($allData['pelatihan_id'], $allData['bidang_keahlian']);
 
-            PendaftaranPelatihan::create([
-                'peserta_id'            => $peserta->id,
-                'pelatihan_id'          => $allData['pelatihan_id'],
-                'bidang_id'             => $allData['bidang_keahlian'],
-                'urutan_per_bidang'     => $urutBidang,
-                'nomor_registrasi'      => $nomorReg,
-                'tanggal_pendaftaran'   => now(),
-            ]);
+
 
             // 4) Lampiran + upload file
             $lampiranData = [
@@ -192,19 +193,33 @@ class PendaftaranController extends Controller
                     $fileName = $peserta->id . '_' . $peserta->bidang_id . '_' . $peserta->instansi_id
                         . '_' . $field . '.' . $file->extension();
 
-                    // simpan di storage app/public/berkas_pendaftaran
-                    $path = $file->storeAs('berkas_pendaftaran', $fileName, 'public');
-                    $lampiranData[$field] = $path;
+                    // simpan di public/pertanyaan/opsi
+                    $targetDirectory = public_path(self::LAMPIRAN_DESTINATION);
+                    if (! File::isDirectory($targetDirectory)) {
+                        File::makeDirectory($targetDirectory, 0755, true);
+                    }
+
+                    $file->move($targetDirectory, $fileName);
+
+                    $lampiranData[$field] = self::LAMPIRAN_DESTINATION . '/' . $fileName;
                 }
             }
 
             Lampiran::create($lampiranData);
 
+            PendaftaranPelatihan::create([
+                'peserta_id'            => $peserta->id,
+                'pelatihan_id'          => $allData['pelatihan_id'],
+                'bidang_id'             => $allData['bidang_keahlian'],
+                'urutan_per_bidang'     => $urutBidang,
+                'nomor_registrasi'      => $nomorReg,
+                'tanggal_pendaftaran'   => now(),
+            ]);
             $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
                 ->latest('id')
                 ->first();
 
-                // return $pendaftaran;
+            // return $pendaftaran;
 
             $request->session()->forget('pendaftaran_data');
             return redirect()
@@ -213,6 +228,7 @@ class PendaftaranController extends Controller
         }
     }
 
+    // public function selesai(int $id)
     public function selesai(int $id)
     {
         // return $id;
@@ -286,6 +302,123 @@ class PendaftaranController extends Controller
         return Excel::download(new PesertaExport($ids), $fileName);
     }
 
+
+    public function exportBulk(Pelatihan $pelatihan)
+    {
+        $pendaftarans = PendaftaranPelatihan::with(['peserta', 'pelatihan', 'bidang'])
+            ->where('pelatihan_id', $pelatihan->id)
+            ->get();
+
+        if ($pendaftarans->isEmpty()) {
+            return back()->with('danger', 'Belum ada pendaftaran untuk pelatihan ini.');
+        }
+
+        $tmpDir = storage_path('app/tmp/exports');
+        if (! is_dir($tmpDir)) @mkdir($tmpDir, 0775, true);
+
+        $zipPath = $tmpDir . '/pendaftaran-' . now()->format('Ymd-His') . '.zip';
+        $zip = new \ZipArchive();
+        $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+        foreach ($pendaftarans as $pendaftaran) {
+            $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
+            $zip->addFile($pdfPath, basename($pdfPath));
+        }
+        $zip->close();
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+    public function exportSample(Pelatihan $pelatihan)
+    {
+        $pendaftaran = PendaftaranPelatihan::with(['peserta', 'pelatihan', 'bidang'])
+            ->where('pelatihan_id', $pelatihan->id)
+            ->latest('id')
+            ->firstOrFail();
+
+        $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
+        return response()->download($pdfPath)->deleteFileAfterSend(true);
+    }
+
+    public function exportSingle(PendaftaranPelatihan $pendaftaran)
+    {
+        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
+        $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
+        return response()->download($pdfPath)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Helper: isi template DOCX → render PDF → kembalikan path PDF di storage/tmp.
+     */
+    private function generatePendaftaranPdf(PendaftaranPelatihan $pendaftaran): string
+    {
+        $templatePath = Storage::path('templates/BIODATA_PESERTA_template.docx');
+
+        $tp = new TemplateProcessor($templatePath);
+
+        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
+        $p = $pendaftaran->peserta;
+        $pl = $pendaftaran->pelatihan;
+        $b = $pendaftaran->bidang;
+
+        // isi placeholder sesuai template
+        $tp->setValue('nama', $p->nama ?? '');
+        $tp->setValue('tempat_lahir', $p->tempat_lahir ?? '');
+        $tp->setValue('tanggal_lahir', optional($p->tanggal_lahir)->format('d-m-Y') ?? '');
+        $tp->setValue('jenis_kelamin', $p->jenis_kelamin ?? '');
+        $tp->setValue('agama', $p->agama ?? '');
+        $tp->setValue('no_hp', $p->no_hp ?? '');
+        $tp->setValue('nik', $p->nik ?? '');
+        $tp->setValue('asal_instansi', $p->asal_instansi ?? '');
+        $tp->setValue('alamat_instansi', $p->alamat_instansi ?? '');
+        $tp->setValue('kelas', $pendaftaran->kelas ?? '');
+        $tp->setValue('nama_bidang', $b->nama ?? '');
+        $tp->setValue('judul', $pl->nama_pelatihan ?? '');
+        $tp->setValue('tanggal_kegiatan', optional($pl->tanggal_mulai)?->translatedFormat('d F Y') ?? '');
+
+        $tmp = storage_path('app/tmp/exports');
+        if (!is_dir($tmp)) @mkdir($tmp, 0775, true);
+
+        $base = Str::slug(($p->nama ?? 'peserta') . '-' . ($pl->nama_pelatihan ?? 'pelatihan'));
+        $docx = "$tmp/$base.docx";
+        $pdf  = "$tmp/$base.pdf";
+
+        // simpan DOCX hasil merge
+        $tp->saveAs($docx);
+
+        // load DOCX → render ke PDF
+        $phpWord = IOFactory::load($docx);
+        $writer  = IOFactory::createWriter($phpWord, 'PDF'); // ← akan pakai DomPDF karena sudah diset di AppServiceProvider
+        $writer->save($pdf);
+        try {
+            $writer->save($pdf);
+        } finally {
+            // pastikan semua handle/stream dilepas sebelum unlink
+            unset($writer, $phpWord);
+            gc_collect_cycles();   // bantu bebaskan resource di Windows
+        }
+
+        // 2) Hapus DOCX dengan retry (atasi "Resource temporarily unavailable")
+        function safeUnlink(string $path, int $retries = 10, int $sleepMs = 250): void
+        {
+            if (!file_exists($path)) return;
+
+            for ($i = 0; $i < $retries; $i++) {
+                if (@unlink($path)) {
+                    return; // sukses
+                }
+                clearstatcache(true, $path);
+                gc_collect_cycles();
+                usleep($sleepMs * 1000); // tunggu sebentar biar lock lepas
+            }
+
+            throw new \RuntimeException("Gagal unlink: {$path} setelah {$retries} percobaan");
+        }
+
+        safeUnlink($docx);
+
+        return $pdf;
+    }
     public function testing()
     {
         $peserta = Peserta::with('instansi', 'lampiran')->get();
@@ -300,29 +433,33 @@ class PendaftaranController extends Controller
 
     private function generateToken(int $pelatihanId, int $bidangId): array
     {
+        // [Langkah 1] Memulai transaction, jika gagal akan di-rollback otomatis
         return DB::transaction(function () use ($pelatihanId, $bidangId) {
             $bidang     = Bidang::findOrFail($bidangId);
             $kodeBidang = $bidang->kode ?? $this->akronim($bidang->nama);
 
-            // 1) Lock subset baris yang relevan (ambil id saja, FOR UPDATE)
+            // [Langkah 2] Kunci semua baris yang relevan
+            // Proses lain yang mencoba mengakses baris ini akan disuruh MENUNGGU
             PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
                 ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
                 ->where('peserta.bidang_id', $bidangId)
                 ->select('pendaftaran_pelatihan.id')
-                ->lockForUpdate()
+                ->lockForUpdate() // <--- BAGIAN PALING PENTING
                 ->get();
 
-            // 2) Baru hitung jumlah (tanpa FOR UPDATE juga sudah aman karena subset terkunci)
+            // [Langkah 3] Hitung jumlah pendaftar
+            // Karena proses lain menunggu, hitungan ini DIJAMIN akurat
             $jumlah = PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
                 ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
                 ->where('peserta.bidang_id', $bidangId)
                 ->count();
 
+            // [Langkah 4] Buat nomor unik yang sudah pasti aman
             $nextUrut = $jumlah + 1;
             $nomor    = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeBidang), $nextUrut);
 
             return ['nomor' => $nomor, 'urutan' => $nextUrut];
-        }, 3);
+        }, 3); // Coba ulang 3 kali jika terjadi deadlock
     }
 
 

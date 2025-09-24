@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Bidang extends Model
 {
@@ -13,13 +12,18 @@ class Bidang extends Model
     protected $table = 'bidang';
 
     protected $fillable = [
-        'nama_bidang', 
+        'nama_bidang',
         'deskripsi',
     ];
 
-    // public function pelatihan(): HasMany
-    // {
-    //     return $this->hasMany(Pelatihan::class, 'bidang_id');
-    // }
+    // 🔹 Relasi many-to-many ke Pelatihan melalui pivot table bidang_pelatihan
+    public function pelatihans()
+    {
+        return $this->belongsToMany(
+            Pelatihan::class,       // Model yang dihubungkan
+            'bidang_pelatihan',     // Nama tabel pivot
+            'bidang_id',            // Foreign key di tabel pivot untuk model ini (Bidang)
+            'pelatihan_id'          // Foreign key di tabel pivot untuk model Pelatihan
+        );
+    }
 }
-

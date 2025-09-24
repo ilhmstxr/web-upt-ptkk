@@ -15,14 +15,14 @@
             <p class="text-sm text-gray-500">
                 Pelatihan: {{ $t->pelatihan->nama_pelatihan ?? '-' }}
             </p>
-            <a href="{{ route('dashboard.posttest.show', $t->id) }}" 
+            <a href="{{ route('dashboard.posttest.start', $t->id) }}" 
                class="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
                Kerjakan {{ ucfirst($t->sub_tipe) ?? 'Tes' }}
             </a>
         </div>
     @empty
         <p class="text-gray-500">Tidak ada data tes tersedia saat ini.</p>
+        <p class="text-gray-500">Tidak ada data tes tersedia saat ini.</p>
     @endforelse
 </div>
 @endsection
-
