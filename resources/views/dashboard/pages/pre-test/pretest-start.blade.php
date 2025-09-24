@@ -58,9 +58,9 @@
 
             {{-- Gambar pertanyaan --}}
             @if(!empty($pertanyaan->gambar))
-                <img src="{{ asset('storage/'.$pertanyaan->gambar) }}" 
+                <img src="{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}" 
                      class="mb-4 rounded shadow cursor-pointer hover:scale-105 transition"
-                     onclick="openImageModal('{{ asset('storage/'.$pertanyaan->gambar) }}')">
+                     onclick="openImageModal('{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}')">
             @endif
 
             {{-- Opsi Jawaban --}}
@@ -81,9 +81,9 @@
                                 required
                             >
                             @if(!empty($opsi->gambar))
-                                <img src="{{ asset('storage/'.$opsi->gambar) }}"
+                                <img src="{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}" 
                                      class="inline-block w-12 h-12 mr-2 rounded align-middle cursor-pointer hover:scale-105 transition"
-                                     onclick="openImageModal('{{ asset('storage/'.$opsi->gambar) }}')">
+                                     onclick="openImageModal('{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}')">
                             @endif
                             <span class="align-middle">{{ $opsi->teks_opsi ?? '-' }}</span>
                         </label>
