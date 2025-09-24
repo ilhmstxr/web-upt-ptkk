@@ -50,3 +50,4 @@ UPDATE percobaan SET peserta_id = 45 WHERE pesertaSurvei_id = 13;
 UPDATE percobaan SET peserta_id = 23 WHERE pesertaSurvei_id = 55;
 UPDATE percobaan SET peserta_id = 37 WHERE pesertaSurvei_id = 56;
 UPDATE percobaan SET peserta_id = 38 WHERE pesertaSurvei_id = 57;
+UPDATE percobaan SET peserta_id = 8 WHERE pesertaSurvei_id = 3;

@@ -36,32 +36,6 @@
         <input type="hidden" name="tes_id" value="{{ $section->id }}">
 
         <div class="bg-white rounded-b-xl shadow-md overflow-hidden">
-            {{-- Bagian Header Skala (opsional, bisa dipindah jika perlu) --}}
-            {{-- <div class="p-6 border-b border-gray-200 hidden md:block">
-                <div class="grid grid-cols-5 gap-4 text-center">
-                    <div>
-                        <div class="text-3xl mb-1">😠</div>
-                        <p class="text-xs font-medium">Sangat Tidak Memuaskan</p>
-                    </div>
-                    <div>
-                        <div class="text-3xl mb-1">😟</div>
-                        <p class="text-xs font-medium">Tidak Memuaskan</p>
-                    </div>
-                    <div>
-                        <div class="text-3xl mb-1">😐</div>
-                        <p class="text-xs font-medium">Cukup</p>
-                    </div>
-                    <div>
-                        <div class="text-3xl mb-1">😊</div>
-                        <p class="text-xs font-medium">Memuaskan</p>
-                    </div>
-                    <div>
-                        <div class="text-3xl mb-1">🤩</div>
-                        <p class="text-xs font-medium">Sangat Memuaskan</p>
-                    </div>
-                </div>
-            </div> --}}
-
             <div class="p-6">
                 {{-- Menampilkan pesan error validasi jika ada --}}
                 @if ($errors->any())
@@ -70,13 +44,23 @@
                         <p>Pastikan semua pertanyaan telah diisi sebelum menyimpan.</p>
                     </div>
                 @endif
+                {{-- Loop untuk setiap GRUP pertanyaan --}}
+                @foreach ($groupedQuestions as $group)
+                    {{-- 1. Tampilkan Kategori untuk setiap grup --}}
+                    <div class="bg-gray-100 p-3 rounded-lg border my-6">
+                        <h3 class="text-md font-semibold text-gray-700">
+                            {{-- Tampilkan langsung karena sudah berupa string --}}
+                            Kategori Penilaian: {{ $group['kategori'] }}
+                        </h3>
+                    </div>
 
-                {{-- Loop untuk menampilkan semua kartu pertanyaan --}}
-                @foreach ($questions as $question)
-                    @include('peserta.monev.survey.partials.question_card', [
-                        'question' => $question,
-                        'loop' => $loop,
-                    ])
+                    {{-- 2. Loop untuk setiap PERTANYAAN di dalam grup saat ini --}}
+                    @foreach ($group['pertanyaan'] as $question)
+                        @include('peserta.monev.survey.partials.question_card', [
+                            'question' => $question,
+                            'loop' => $loop,
+                        ])
+                    @endforeach
                 @endforeach
 
                 {{-- Tombol submit diubah menjadi 'Simpan' atau 'Selesai' --}}

@@ -8,14 +8,20 @@ use Filament\Pages\Page;
 class DetailPelatihan extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-chart-pie';
+    protected static string $routePath = '/detail-pelatihan/{record}';
+    
     protected static string $view = 'filament.pages.detail-pelatihan';
     protected static bool $shouldRegisterNavigation = false; // Sembunyikan dari navigasi
+
 
     public Pelatihan $record;
 
     // Gunakan metode mount() untuk menerima parameter dari URL
     public function mount(Pelatihan $record): void
     {
+        // dd($record);
+        // $p = Pelatihan::find($record);
+        // $this->id = $record;
         $this->record = $record;
     }
 }

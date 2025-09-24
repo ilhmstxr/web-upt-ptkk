@@ -54,6 +54,7 @@ class PendaftaranController extends Controller
             case 1:
                 $cabangDinas = CabangDinas::all();
                 $pelatihan = Pelatihan::all();
+
                 return view('peserta.pendaftaran.bio-peserta', compact('currentStep', 'allowedStep', 'formData', 'cabangDinas'));
             case 2:
                 $pelatihan = Pelatihan::where('status', 'aktif')->get();

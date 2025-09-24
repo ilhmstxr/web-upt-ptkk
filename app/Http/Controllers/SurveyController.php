@@ -173,22 +173,59 @@ class SurveyController extends Controller
         $tesId = $order;
 
         $section = Tes::findOrFail($tesId);
-        // return $section;
-        // Langkah 3: Ambil semua pertanyaan yang terkait, diurutkan berdasarkan nomor
         $questions = Pertanyaan::where('tes_id', $section->id)
             ->with(['opsiJawabans', 'templates.opsiJawabans'])
             ->orderBy('nomor', 'asc')
             ->get();
 
 
-        // return $peserta;
-        // return $questions;
+        $arrayCustom = ["Kesesuaian Pelayanan", "Kedisiplinan Penyelenggara", "Tanggung Jawab Penyelenggara"];
 
+        // Proses untuk mengelompokkan pertanyaan
+        $groupedQuestions = [];
+        $groupKey = 1; // Kunci grup dimulai dari 1
+        $tempGroup = [];
+
+        foreach ($questions as $question) {
+            $tempGroup[] = $question;
+
+            if ($question->tipe_jawaban === 'teks_bebas' && str_starts_with(strtolower($question->teks_pertanyaan), 'pesan dan kesan')) {
+                // Tentukan index untuk array custom (groupKey 1 -> index 0, dst.)
+                $categoryIndex = $groupKey - 1;
+
+                // Ambil kategori dari array custom sesuai urutan.
+                // Gunakan isset() untuk mencegah error jika grup lebih banyak dari kategori.
+                $category = isset($arrayCustom[$categoryIndex]) ? $arrayCustom[$categoryIndex] : null;
+
+                $groupedQuestions[$groupKey] = [
+                    'pertanyaan' => $tempGroup,
+                    'kategori'   => $category, // Simpan satu elemen kategori
+                ];
+
+                $tempGroup = [];
+                $groupKey++;
+            }
+        }
+
+        // Lakukan hal yang sama untuk sisa pertanyaan terakhir
+        if (!empty($tempGroup)) {
+            $categoryIndex = $groupKey - 1;
+            $category = isset($arrayCustom[$categoryIndex]) ? $arrayCustom[$categoryIndex] : null;
+
+            $groupedQuestions[$groupKey] = [
+                'pertanyaan' => $tempGroup,
+                'kategori'   => $category,
+            ];
+        }
+
+        // return $questions;
+        // return $groupedQuestions;
         // Langkah 4: Tampilkan view dengan data yang sudah disiapkan
         return view('peserta.monev.survey.step', [
             'peserta'   => $peserta,
             'section'   => $section,
-            'questions' => $questions,
+            // 'questions' => $questions,
+            'groupedQuestions' => $groupedQuestions,
         ]);
     }
 
