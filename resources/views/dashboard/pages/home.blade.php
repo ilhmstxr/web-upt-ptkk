@@ -18,7 +18,7 @@
         </div>
     @endif
 
-    {{-- Hidden form untuk unset peserta (dipakai oleh tombol "Ganti Peserta" / "Batal") 
+    {{-- Hidden form untuk unset peserta (dipakai oleh tombol "Ganti Peserta" / "Batal")
 <form id="hiddenUnsetForm" action="{{ route('dashboard.logout') }}" method="POST" style="display:none;">
     @csrf
 </form> --}}
@@ -36,14 +36,14 @@
                     <p class="text-gray-600">Selamat datang di dashboard pelatihan</p>
                 </div>
                 <div class="flex gap-2">
-                    {{-- Ganti Peserta 
+                    {{-- Ganti Peserta
                 <button id="btnGantiPeserta"
                         type="button"
                         class="text-sm px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
                     Ganti Peserta
                 </button> --}}
 
-                    {{-- Logout 
+                    {{-- Logout
                 <form action="{{ route('dashboard.logout') }}" method="POST">
                     @csrf
                     <button type="submit"
@@ -101,68 +101,61 @@
                     </div>
                     <p class="text-gray-500 mt-2">Akses Monitoring dan Evaluasi Selama Mengikuti Pelatihan.</p>
                 </div>
-                <a href="{{ route('dashboard.materi') }}"
-                    class="mt-6 block text-center w-full lg:w-auto bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                    <a href="{{ route('dashboard.survey') }}"
+                class="mt-6 block text-center w-full lg:w-auto bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
                     Mulai Survey
                 </a>
+
             </div>
 
-            {{-- Progress cards (contoh ringkas) --}}
-            <div
-                class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
-                <h3 class="text-lg font-bold text-gray-800">Progress Pre-Test</h3>
-                <div class="flex items-baseline mt-2">
-                    <span class="text-3xl font-bold text-yellow-600">{{ $preTestAttempts ?? 0 }}</span>
-                    <span class="text-lg text-gray-500 ml-1">/ {{ $preTestMax ?? 1 }} dikerjakan</span>
-                </div>
-                @php
-                    $prePercent =
-                        ($preTestMax ?? 1) > 0 ? round((($preTestAttempts ?? 0) / ($preTestMax ?? 1)) * 100) : 0;
-                @endphp
-                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
-                    <div class="bg-yellow-500 h-2.5 rounded-full" style="width: {{ $prePercent }}%"></div>
-                </div>
-            </div>
+{{-- Progress Pre-Test --}}
+<div class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
+  <h3 class="text-lg font-bold text-gray-800">Progress Pre-Test</h3>
+  @php
+    $preAttempts = $preTestAttempts ?? (($preTestDone ?? false) ? 1 : 0);
+    $preBar = $preAttempts >= 1 ? 100 : 0; // penuh jika >=1, kosong jika 0
+  @endphp
+  <div class="flex items-baseline mt-2">
+    <span class="text-3xl font-bold text-yellow-600">{{ $preAttempts }}</span>
+    <span class="text-lg text-gray-500 ml-1">/ 1 dikerjakan</span>
+  </div>
+  <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+    <div class="bg-yellow-500 h-2.5 rounded-full" style="width: {{ $preBar }}%"></div>
+  </div>
+</div>
 
-            {{-- Progress Post-Test --}}
-            <div
-                class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
-                <h3 class="text-lg font-bold text-gray-800">Progress Post-Test</h3>
-                <div class="flex items-center mt-2">
-                    <span class="text-lg font-semibold {{ $postTestDone ?? false ? 'text-green-600' : 'text-red-600' }}">
-                        {{ $postTestDone ?? false ? 'Sudah dikerjakan' : 'Belum dikerjakan' }}
-                    </span>
-                </div>
-                @php
-                    $postPercent =
-                        ($postTestMax ?? 1) > 0
-                            ? round((($postTestDone ?? false ? 1 : 0) / ($postTestMax ?? 1)) * 100)
-                            : 0;
-                @endphp
-                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
-                    <div class="bg-green-500 h-2.5 rounded-full" style="width: {{ $postPercent }}%"></div>
-                </div>
-            </div>
+{{-- Progress Post-Test --}}
+<div class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
+  <h3 class="text-lg font-bold text-gray-800">Progress Post-Test</h3>
+  @php
+    $postAttempts = $postTestAttempts ?? (($postTestDone ?? false) ? 1 : 0);
+    $postBar = $postAttempts >= 1 ? 100 : 0;
+  @endphp
+  <div class="flex items-baseline mt-2">
+    <span class="text-3xl font-bold text-green-600">{{ $postAttempts }}</span>
+    <span class="text-lg text-gray-500 ml-1">/ 1 dikerjakan</span>
+  </div>
+  <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+    <div class="bg-green-500 h-2.5 rounded-full" style="width: {{ $postBar }}%"></div>
+  </div>
+</div>
 
-            {{-- Progress MONEV --}}
-            <div
-                class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
-                <h3 class="text-lg font-bold text-gray-800">Progress MONEV</h3>
-                <div class="flex items-center mt-2">
-                    <span class="text-lg font-semibold {{ $monevDone ?? false ? 'text-blue-600' : 'text-red-600' }}">
-                        {{ $monevDone ?? false ? 'Sudah dikerjakan' : 'Belum dikerjakan' }}
-                    </span>
-                </div>
-                @php
-                    $monevPercent =
-                        ($monevMax ?? 1) > 0 ? round((($monevDone ?? false ? 1 : 0) / ($monevMax ?? 1)) * 100) : 0;
-                @endphp
-                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
-                    <div class="bg-green-500 h-2.5 rounded-full" style="width: {{ $monevPercent }}%"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+{{-- Progress MONEV --}}
+<div class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
+  <h3 class="text-lg font-bold text-gray-800">Progress MONEV</h3>
+  @php
+    $monevAttempts = $monevAttempts ?? (($monevDone ?? false) ? 1 : 0);
+    $monevBar = $monevAttempts >= 1 ? 100 : 0;
+  @endphp
+  <div class="flex items-baseline mt-2">
+    <span class="text-3xl font-bold text-blue-600">{{ $monevAttempts }}</span>
+    <span class="text-lg text-gray-500 ml-1">/ 1 dikerjakan</span>
+  </div>
+  <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+    <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $monevBar }}%"></div>
+  </div>
+</div>
+
 
 @endsection
 
