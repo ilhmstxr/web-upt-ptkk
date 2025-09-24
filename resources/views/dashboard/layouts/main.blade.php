@@ -48,7 +48,7 @@
             <!-- Sidebar -->
             <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 flex flex-col border-r">
                 <div class="flex items-center justify-center p-4 border-b">
-                    <img src="{{ asset('images/logo-upt-ptkk.png') }}"
+                    <img src="{{ asset('images/logo-upt-ptkk.jpg') }}"
                          onerror="this.onerror=null;this.src='https://placehold.co/60x60/3B82F6/FFFFFF?text=LOGO';"
                          alt="Logo UPT"
                          class="rounded-full w-14 h-14 object-cover">

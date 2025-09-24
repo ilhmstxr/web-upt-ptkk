@@ -18,10 +18,10 @@
     {{-- <link rel="icon" href="/favicon.ico" sizes="any"> --}}
     <h1>label asset</h1>
     <link rel="icon" href="{{ asset('images/logo-upt-ptkk.svg') }}" type="image/svg+xml">
-    <link rel="icon" href="{{ asset('images/logo-upt-ptkk.png') }}" type="image/png" sizes="any">
+    <link rel="icon" href="{{ asset('images/logo-upt-ptkk.jpg') }}" type="image/png" sizes="any">
     <link rel="icon" href="/favicon.ico" sizes="any">
 
-    <img src="{{ asset('images/logo-upt-ptkk.png')}}" alt="">
+    <img src="{{ asset('images/logo-upt-ptkk.jpg')}}" alt="">
 </body>
 
 </html>

@@ -12,7 +12,7 @@
 
     <div class="max-w-4xl mx-auto">
         <h1 class="text-3xl font-bold mb-6 text-center">Daftar Lampiran Peserta</h1>
-        {{-- <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt=""> --}}
+        {{-- <img src="{{ asset('images/logo-upt-ptkk.jpg') }}" alt=""> --}}
 
         @forelse ($peserta as $peserta)
             <div class="bg-white p-6 rounded-lg shadow-md mb-8">

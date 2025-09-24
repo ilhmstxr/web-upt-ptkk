@@ -19,6 +19,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpWord\IOFactory;
@@ -29,6 +30,9 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PendaftaranController extends Controller
 {
+    public const LAMPIRAN_DESTINATION = 'pertanyaan/opsi';
+
+
     public function index()
     {
         return redirect()->route('pendaftaran.create');
@@ -55,6 +59,7 @@ class PendaftaranController extends Controller
                 $pelatihan = Pelatihan::where('status', 'aktif')->get();
                 $bidang = Bidang::all();
                 $cabangDinas = CabangDinas::all();
+                // return $pelatihan;
                 return view('peserta.pendaftaran.bio-sekolah', compact('currentStep', 'allowedStep', 'formData', 'pelatihan', 'bidang', 'cabangDinas'));
             case 3:
                 $pelatihanId = $formData['pelatihan_id'] ?? null;
@@ -188,9 +193,15 @@ class PendaftaranController extends Controller
                     $fileName = $peserta->id . '_' . $peserta->bidang_id . '_' . $peserta->instansi_id
                         . '_' . $field . '.' . $file->extension();
 
-                    // simpan di storage app/public/berkas_pendaftaran
-                    $path = $file->storeAs('berkas_pendaftaran', $fileName, 'public');
-                    $lampiranData[$field] = $path;
+                    // simpan di public/pertanyaan/opsi
+                    $targetDirectory = public_path(self::LAMPIRAN_DESTINATION);
+                    if (! File::isDirectory($targetDirectory)) {
+                        File::makeDirectory($targetDirectory, 0755, true);
+                    }
+
+                    $file->move($targetDirectory, $fileName);
+
+                    $lampiranData[$field] = self::LAMPIRAN_DESTINATION . '/' . $fileName;
                 }
             }
 
@@ -217,6 +228,7 @@ class PendaftaranController extends Controller
         }
     }
 
+    // public function selesai(int $id)
     public function selesai(int $id)
     {
         // return $id;
