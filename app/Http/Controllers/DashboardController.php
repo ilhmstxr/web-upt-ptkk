@@ -28,12 +28,11 @@ class DashboardController extends Controller
     // ======================
     public function index(): View
     {
-        $pesertaSurveiId = session('pesertaSurvei_id');
-
+        $pesertaSurveiId = session('peserta_id');
         $surveyStatus = 'pending';
 
         $preTestAttempts = Percobaan::where('tes_id', 1)
-            ->where('pesertaSurvei_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaSurveiId)
             ->count();
 
         $preTestMax = 1;
@@ -41,11 +40,11 @@ class DashboardController extends Controller
         $monevMax    = 1;
 
         $postTestDone = Percobaan::where('tes_id', 2)
-            ->where('pesertaSurvei_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaSurveiId)
             ->exists();
 
         $monevDone = Percobaan::where('tes_id', 3)
-            ->where('pesertaSurvei_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaSurveiId)
             ->exists();
 
         return view('dashboard.index', compact(
@@ -73,11 +72,11 @@ class DashboardController extends Controller
         $pesertaAktif = $pesertaId ? Peserta::find($pesertaId) : null;
 
         // return $pesertaAktif;
-        // gunakan pesertaSurvei_id untuk percobaan
-        $pesertaSurveiId = session('pesertaSurvei_id');
+        // gunakan peserta_id untuk percobaan
+        $pesertaSurveiId = session('peserta_id');
 
         $preTestAttempts = Percobaan::where('tes_id', 1)
-            ->where('pesertaSurvei_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaSurveiId)
             ->count();
 
         $preTestMax = 1;
@@ -85,11 +84,11 @@ class DashboardController extends Controller
         $monevMax    = 1;
 
         $postTestDone = Percobaan::where('tes_id', 2)
-            ->where('pesertaSurvei_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaSurveiId)
             ->exists();
 
         $monevDone = Percobaan::where('tes_id', 3)
-            ->where('pesertaSurvei_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaSurveiId)
             ->exists();
 
         return view('dashboard.pages.home', compact(
@@ -150,7 +149,7 @@ class DashboardController extends Controller
 
         //     session([
         //         'peserta_id'       => $peserta->id,
-        //         'pesertaSurvei_id' => $pesertaSurvei->id,
+        //         'peserta_id' => $pesertaSurvei->id,
         //     ]);
         // }
 
@@ -192,7 +191,7 @@ class DashboardController extends Controller
         // Simpan id peserta + peserta_survei ke session
         session([
             'peserta_id'       => $peserta->id,
-            'pesertaSurvei_id' => $pesertaSurvei->id,
+            'peserta_id' => $pesertaSurvei->id,
         ]);
 
         return redirect()->route('dashboard.home')->with('success', 'Selamat masuk ke dashboard!');
@@ -206,7 +205,7 @@ class DashboardController extends Controller
     // ======================
     public function logout(Request $request)
     {
-        $request->session()->forget(['peserta_id', 'pesertaSurvei_id']);
+        $request->session()->forget(['peserta_id', 'peserta_id']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -237,14 +236,14 @@ class DashboardController extends Controller
 
     public function pretestStart(Tes $tes)
     {
-        $pesertaSurveiId = session('pesertaSurvei_id');
+        $pesertaSurveiId = session('peserta_id');
         if (!$pesertaSurveiId) {
             return redirect()->route('dashboard.home')->with('error', 'Silakan pilih peserta terlebih dahulu.');
         }
 
         // Langsung buat percobaan baru
         $percobaan = Percobaan::create([
-            'pesertaSurvei_id' => $pesertaSurveiId,
+            'peserta_id' => $pesertaSurveiId,
             'tes_id'           => $tes->id,
             'waktu_mulai'      => now(),
         ]);
@@ -372,14 +371,15 @@ class DashboardController extends Controller
 
     public function posttestStart(Tes $tes)
     {
-        $pesertaSurveiId = session('pesertaSurvei_id');
+        return $tes;
+        $pesertaSurveiId = session('peserta_id');
         if (!$pesertaSurveiId) {
             return redirect()->route('dashboard.home')->with('error', 'Silakan pilih peserta terlebih dahulu.');
         }
 
         // Langsung buat percobaan baru
         $percobaan = Percobaan::create([
-            'pesertaSurvei_id' => $pesertaSurveiId,
+            'peserta_id' => $pesertaSurveiId,
             'tes_id'           => $tes->id,
             'waktu_mulai'      => now(),
         ]);
@@ -517,7 +517,7 @@ class DashboardController extends Controller
         }
 
         $percobaan = Percobaan::create([
-            'pesertaSurvei_id' => session('pesertaSurvei_id'),
+            'peserta_id' => session('peserta_id'),
             'tes_id'           => $tesId,
             'tipe'             => 'monev',
             'waktu_mulai'      => now(),
