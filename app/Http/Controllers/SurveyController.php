@@ -180,8 +180,8 @@ class SurveyController extends Controller
             ->get();
 
 
-        $arrayCustom = ["Kesesuaian Pelayanan", "Kedisiplinan Penyelenggara", "Tanggung Jawab Penyelenggara"];
-
+        $arrayCustom = ["Pendapat Tentang Penyelenggaran Pelatihan", "Persepsi Terhadap Program Pelatihan", "Penilaian Terhadap Instruktur"];
+        
         // Proses untuk mengelompokkan pertanyaan
         $groupedQuestions = [];
         $groupKey = 1; // Kunci grup dimulai dari 1
