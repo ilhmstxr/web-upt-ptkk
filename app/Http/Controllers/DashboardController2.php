@@ -123,7 +123,7 @@ class DashboardController extends Controller
 
         session(['peserta_id' => $peserta->id]);
 
-        return redirect()->route('dashboard.home')->with('success', 'Selamat datang di dashboard!');
+       // return redirect()->route('dashboard.home')->with('success', 'Selamat datang di dashboard!');
     }
 
     public function logout(Request $request)

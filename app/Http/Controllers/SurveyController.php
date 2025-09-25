@@ -36,7 +36,7 @@ class SurveyController extends Controller
         $tes = Tes::where('tipe', 'survei')->firstorfail();
         $pelatihan = Pelatihan::all();
         $bidang = Bidang::all();
-        // return $bidang;  
+        // return $bidang;
         // return $tes;
         return view('peserta.monev.survey.start', compact('tes', 'pelatihan', 'bidang'));
     }
@@ -153,7 +153,7 @@ class SurveyController extends Controller
         //     ]
         // );
         // REVISI DI SINI
-        // IMPROVE: untuk menyimpan datanya di  
+        // IMPROVE: untuk menyimpan datanya di
 
 
         // 4. Redirect ke route 'survey.show' dengan parameter yang sesuai
@@ -324,7 +324,7 @@ class SurveyController extends Controller
             DB::beginTransaction();
 
             // 2. Buat record percobaan (attempt)
-            // PERUBAHAN: Menyimpan ke 'peserta_id' dan men-null-kan 'pesertaSurvei_id'
+            // PERUBAHAN: Menyimpan ke 'peserta_id' dan men-null-kan 'peserta_id'
             $percobaan = Percobaan::create([
                 'peserta_id'         => $validatedData['peserta_id'],
                 'pesertaSurvei_id'   => null, // Eksplisit diatur menjadi null sesuai permintaan

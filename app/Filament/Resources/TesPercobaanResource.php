@@ -21,7 +21,7 @@ class TesPercobaanResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Select::make('pesertaSurvei_id')
+            Forms\Components\Select::make('peserta_id')
                 ->label('Peserta')
                 ->relationship('pesertaSurvei', 'nama') // pakai pesertaSurvei, bukan peserta
                 ->searchable()
