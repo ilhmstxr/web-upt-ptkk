@@ -15,7 +15,6 @@ use App\Models\JawabanUser;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
-use App\Models\PesertaSurvei;
 
 
 
@@ -139,21 +138,21 @@ class DashboardController extends Controller
         ]);
 
         // --- Jika langsung pilih peserta_id (misal dari dropdown) ---
-        if ($request->filled('peserta_id')) {
-            $peserta = Peserta::findOrFail($request->peserta_id);
+        // if ($request->filled('peserta_id')) {
+        //     $peserta = Peserta::findOrFail($request->peserta_id);
 
-            // buat atau ambil peserta_survei (pakai nama + sekolah atau email, bukan peserta_id)
-            $pesertaSurvei = PesertaSurvei::firstOrCreate([
-                'nama'    => $peserta->nama,
-                'email'   => $peserta->email,
-                'angkatan' => $peserta->angkatan ?? null,
-            ]);
+        //     // buat atau ambil peserta_survei (pakai nama + sekolah atau email, bukan peserta_id)
+        //     $pesertaSurvei = Peserta::firstOrCreate([
+        //         'nama'    => $peserta->nama,
+        //         'email'   => $peserta->email,
+        //         'angkatan' => $peserta->angkatan ?? null,
+        //     ]);
 
-            session([
-                'peserta_id'       => $peserta->id,
-                'pesertaSurvei_id' => $pesertaSurvei->id,
-            ]);
-        }
+        //     session([
+        //         'peserta_id'       => $peserta->id,
+        //         'pesertaSurvei_id' => $pesertaSurvei->id,
+        //     ]);
+        // }
 
         // --- Cari peserta berdasarkan nama + sekolah ---
         $nama    = Str::lower(trim($request->input('nama')));
@@ -186,7 +185,7 @@ class DashboardController extends Controller
         }
 
         // --- Buat peserta_survei kalau belum ada (pakai nama/email) ---
-        $pesertaSurvei = PesertaSurvei::firstOrCreate([
+        $pesertaSurvei = Peserta::firstOrCreate([
             'nama'    => $peserta->nama,
         ]);
 
