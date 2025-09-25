@@ -373,6 +373,8 @@ class DashboardController extends Controller
     public function posttestStart(Tes $tes)
     {
         $pesertaSurveiId = session('pesertaSurvei_id');
+//	return $tes;	
+// return $pesertaSurveiId;
         if (!$pesertaSurveiId) {
             return redirect()->route('dashboard.home')->with('error', 'Silakan pilih peserta terlebih dahulu.');
         }
