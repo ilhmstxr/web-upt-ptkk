@@ -22,8 +22,7 @@
         </div>
     @empty
         <p class="text-gray-500">Tidak ada data tes tersedia saat ini.</p>
-
+        <p class="text-gray-500">Tidak ada data tes tersedia saat ini.</p>
     @endforelse
 </div>
 @endsection
-

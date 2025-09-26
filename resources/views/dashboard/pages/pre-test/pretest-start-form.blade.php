@@ -16,7 +16,7 @@
         @csrf
 
         {{-- Hidden peserta_survei_id dari session --}}
-        <input type="hidden" name="peserta_survei_id" value="{{ session('pesertaSurvei_id') }}">
+        <input type="hidden" name="peserta_id" value="{{ session('peserta_id') }}">
 
         {{-- Tampilkan tata tertib --}}
         <div class="mb-4 text-sm text-gray-700 leading-relaxed">

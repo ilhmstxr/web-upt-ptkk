@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('percobaan', function (Blueprint $table) {
             $table->id();
             // IMPROVE: percobaan terkena RESTRICT
-            $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete()->nullable();
-            $table->foreignId('pesertaSurvei_id')->constrained('peserta_survei')->cascadeOnDelete()->nullable();
+            $table->foreignId('peserta_id')->nullable()->constrained('peserta')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('pesertaSurvei_id')->nullable()->constrained('peserta_survei')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
             $table->timestamp('waktu_mulai');
             $table->timestamp('waktu_selesai')->nullable();

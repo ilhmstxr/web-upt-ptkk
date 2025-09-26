@@ -19,6 +19,8 @@ use App\Mail\TestMail;
 use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
+use App\Http\Controllers\PertanyaanController;
+use App\Http\Controllers\UploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,8 +48,8 @@ Route::get('/home', function () {
 |--------------------------------------------------------------------------
 */
 Route::resource('pendaftaran', PendaftaranController::class);
-Route::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
-Route::get('pendaftaran/selesai/{id}', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai.byid');
+// Route::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
+Route::get('pendaftaran/selesai/{id}', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('pendaftaran-testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
 Route::get('pendaftaran/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download');
 Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
@@ -91,52 +93,48 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 
     // ===== PERBAIKAN PATH: gunakan path relatif (tanpa 'dashboard/') =====
-    // Set peserta (form modal di home) -> route name: dashboard.setPeserta
-    Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
-    Route::match(['get', 'post'], 'logout', [DashboardController::class, 'logout'])
-        ->name('logout');
+ // Set/Unset Peserta
+Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
+Route::post('unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
 
-    // Set/Unset Peserta (gunakan POST untuk keamanan & konsistensi)
-    Route::post('unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
+Route::get('ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
+    ->name('ajax.peserta.instansiByNama');
 
-    // Logout (dashboard-specific logout that clears peserta_id & session)
-    Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
+// Logout (pilih salah satu, saran: POST)
+Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
+// HAPUS ini bila pakai POST saja:
+// Route::match(['get','post'], 'logout', [DashboardController::class, 'logout'])->name('logout');
 
-    // Pre-Test
-    Route::prefix('pretest')->name('pretest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'pretest'])->name('index');
+Route::prefix('pretest')->name('pretest.')->group(function () {
+    Route::get('/', [DashboardController::class, 'pretest'])->name('index');
+    Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result'); // spesifik dulu
+    Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
+    Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
+    Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
+    Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show'); // dinamis terakhir
+});
 
-        // start sebelum menangkap '{tes}'
-        Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
-        Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
-
-        // submit jawaban (menggunakan percobaan id pada URI)
-        Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
-
-        // hasil perlu diletakkan sebelum route '{tes}' supaya 'result' tidak tertangkap sebagai tes id
-        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
-
-        // show pertanyaan per tes (letakkan setelah route spesifik di atas)
-        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
-        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
-    });
-
-    // Post-Test
-    Route::prefix('posttest')->name('posttest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'posttest'])->name('index');
-        Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
-        Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
-        Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
-        Route::post('{tes}/begin', [DashboardController::class, 'posttestBegin'])->name('begin');
-        Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
-    });
-
+Route::prefix('posttest')->name('posttest.')->group(function () {
+    Route::get('/', [DashboardController::class, 'posttest'])->name('index');
+    Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
+    Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
+    Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
+    Route::post('{tes}/begin', [DashboardController::class, 'posttestBegin'])->name('begin');
+    Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
+});
 
 
     // Feedback (survey)
     Route::get('survey', [DashboardController::class, 'survey'])->name('survey');
     Route::post('survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
 });
+// routes/web.php
+Route::post('/admin/uploads', [UploadController::class, 'store'])
+    ->middleware(['web', 'auth'])
+    ->name('admin.uploads.store');
+
+route::resource('pertanyaan', PertanyaanController::class);
+
 
 
 /*
@@ -171,7 +169,7 @@ Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.com
 Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
 Route::post('/survey/check-credentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
 
-Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.show');
+Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.step');
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
 
 // If you also want resource routes for admin CRUD, keep this line. Be aware of duplication.
@@ -221,7 +219,7 @@ Route::get('api/peserta', fn() => Peserta::with('lampiran', 'bidang', 'pelatihan
 */
 Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
-Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
+// Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
 Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');

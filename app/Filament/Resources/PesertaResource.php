@@ -26,7 +26,7 @@ use Filament\Tables\Actions\BulkAction;
 class PesertaResource extends Resource
 {
     protected static ?string $model = Peserta::class;
-protected static ?string $navigationLabel   = 'Pendaftaran';
+    protected static ?string $navigationLabel   = 'Peserta';
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Pendaftaran';
 

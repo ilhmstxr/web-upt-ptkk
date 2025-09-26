@@ -58,7 +58,9 @@
 
             {{-- Gambar pertanyaan --}}
             @if(!empty($pertanyaan->gambar))
-                <img src="{{ asset('storage/'.$pertanyaan->gambar) }}" class="mb-4 rounded shadow">
+                <img src="{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}" 
+                     class="mb-4 rounded shadow cursor-pointer hover:scale-105 transition"
+                     onclick="openImageModal('{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}')">
             @endif
 
             {{-- Opsi Jawaban --}}
@@ -79,8 +81,9 @@
                                 required
                             >
                             @if(!empty($opsi->gambar))
-                                <img src="{{ asset('storage/'.$opsi->gambar) }}"
-                                     class="inline-block w-12 h-12 mr-2 rounded align-middle">
+                                <img src="{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}" 
+                                     class="inline-block w-12 h-12 mr-2 rounded align-middle cursor-pointer hover:scale-105 transition"
+                                     onclick="openImageModal('{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}')">
                             @endif
                             <span class="align-middle">{{ $opsi->teks_opsi ?? '-' }}</span>
                         </label>
@@ -115,6 +118,7 @@
         </form>
 
     @else
+        {{-- Semua soal selesai --}}
         <p class="text-gray-500">Semua soal telah selesai.</p>
         <p class="text-lg font-semibold mt-2">
             Nilai Anda: {{ $percobaan->skor ?? 0 }} / {{ $totalSoal ?? 0 }}
@@ -129,6 +133,17 @@
            Lihat Hasil Detail
         </a>
     @endif
+</div>
+
+{{-- Modal Zoom Gambar --}}
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50" onclick="closeImageModal()">
+    <div class="relative" onclick="event.stopPropagation()">
+        <button onclick="closeImageModal()" 
+                class="absolute -top-4 -right-4 bg-white text-black rounded-full p-2 shadow hover:bg-gray-200">
+            ✕
+        </button>
+        <img id="modalImage" src="" class="max-w-full max-h-screen rounded shadow-lg">
+    </div>
 </div>
 
 {{-- Timer JS --}}
@@ -148,7 +163,10 @@
             document.getElementById('timer').textContent = "00:00:00";
             clearInterval(interval);
             let form = document.getElementById("form-tes");
-            if (form) form.submit();
+            if (form) {
+                // auto-submit terakhir → skor dihitung
+                form.submit();
+            }
             return;
         }
         const hours = pad(Math.floor(remaining/3600));
@@ -161,5 +179,14 @@
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
 })();
+
+function openImageModal(src) {
+    document.getElementById('modalImage').src = src;
+    document.getElementById('imageModal').classList.remove('hidden');
+}
+function closeImageModal() {
+    document.getElementById('imageModal').classList.add('hidden');
+    document.getElementById('modalImage').src = '';
+}
 </script>
 @endsection

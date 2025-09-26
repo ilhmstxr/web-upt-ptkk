@@ -13,7 +13,7 @@ USER
 - DONE validasi email
 - CHECK TAMBAHIN KOLOM KABUPATEN SEBELUM CABANG DINAS. 
 - CHECK Di form MTU ada perbedaan dengan aksel dan reguler yaitu ga ada surat sehat (segera bedakan data masuk jika buat pendaftaran mtu ya masuk mtu dan reguler masuk reguler dst)
-- TODO Pretest Postest
+- DONE Pretest Postest
 
 ADMIN 
 - TODO buat chart monev
@@ -22,3 +22,28 @@ ADMIN
 
 - TODO bikin template email buat token 
 - TODO nanti nyampaikan token ke peserta via email
+- TODO bikin hasil monev
+- TODO bikin hasil post-test pretest
+- TODO bikin dokumen
+- 
+
+tes pertanyaan
+tes 
+
+
+TABEL INJECTION
+- bidang                xv
+- cabang dinas          xv
+- instansi              xv
+- pelatihan             xv
+- tes                   xv
+- pertanyaan            xv
+- opsi jawaban          xv
+- pivot jawaban         xv
+- peserta survei        xv
+- user                  xv
+- peserta               xv
+- lampiran              xv
+- percobaan             xv
+- jawaban user          xv
+- pendaftaran_pelatihan xv

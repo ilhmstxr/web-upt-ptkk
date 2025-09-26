@@ -31,7 +31,7 @@ class PelatihanDetailStats extends BaseWidget
                     // Cocokkan nama (case-insensitive dan tanpa spasi ekstra)
                     ->on(DB::raw('LOWER(TRIM(peserta.nama))'), '=', DB::raw('LOWER(TRIM(ps.nama))'))
                     // ATAU cocokkan email (case-insensitive dan tanpa spasi ekstra)
-                    ->orOn(DB::raw('LOWER(TRIM(peserta.email))'), '=', DB::raw('LOWER(TRIM(ps.email))'))
+                    // ->orOn(DB::raw('LOWER(TRIM(peserta.email))'), '=', DB::raw('LOWER(TRIM(ps.email))'))
                     // Pastikan join hanya pada pelatihan yang sama
                     ->where('ps.pelatihan_id', '=', $this->pelatihan->id);
             })

@@ -20,12 +20,11 @@ class Instansi extends Model
         'kota',
         'kota_id',
         'kelas',
-        'kota',
-        'kota_id',
         'cabangDinas_id',
+        'user_id',
     ];
 
-    public function cabangDinas()
+    public function cabangDinas(): BelongsTo
     {
         return $this->belongsTo(CabangDinas::class, 'cabangDinas_id');
     }
@@ -38,5 +37,12 @@ class Instansi extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Opsional: scope pencarian sekolah
+    public function scopeCariSekolah($query, string $q)
+    {
+        $q = mb_strtolower(trim($q));
+        return $query->whereRaw('LOWER(asal_instansi) LIKE ?', ['%'.str_replace(' ', '%', $q).'%']);
     }
 }

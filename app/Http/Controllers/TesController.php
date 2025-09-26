@@ -6,7 +6,6 @@ use App\Models\Tes;
 use App\Models\Percobaan;
 use App\Models\JawabanUser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class TesController extends Controller
 {
@@ -20,108 +19,117 @@ class TesController extends Controller
     }
 
     /**
-     * Menampilkan halaman tes untuk user.
+     * Menampilkan halaman tes untuk peserta.
      * Membuat percobaan baru jika belum ada.
      */
     public function show(Tes $tes, Request $request)
     {
-        $userId = Auth::id();
+        $pesertaId = session('peserta_id');
+        if (!$pesertaId) {
+            return redirect()->route('dashboard.home')
+                ->with('error', 'Silakan pilih/aktifkan peserta terlebih dahulu.');
+        }
 
+        // 1 percobaan per peserta per tes (ubah sesuai kebijakanmu)
         $percobaan = Percobaan::firstOrCreate(
-            [
-                'peserta_id' => $userId,
-                'tes_id' => $tes->id,
-            ],
-            [
-                'waktu_mulai' => now(),
-            ]
+            ['peserta_id' => $pesertaId, 'tes_id' => $tes->id],
+            ['waktu_mulai' => now()]
         );
 
-        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
+        // Pastikan relasi di model Pertanyaan: function opsiJawaban() { ... }
+        $pertanyaanList = $tes->pertanyaan()->with('opsiJawaban')->get();
 
-        $currentQuestionIndex = (int) $request->query('q', 0);
+        $currentQuestionIndex = max(0, (int) $request->query('q', 0));
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
+
+        // Jika index di luar jangkauan, arahkan ke hasil
+        if (!$pertanyaan) {
+            return redirect()->route('tes.result', $percobaan->id);
+        }
 
         return view('tes.show', compact(
             'tes',
             'pertanyaan',
             'percobaan',
-            'currentQuestion',
+            'currentQuestionIndex',
             'pertanyaanList'
         ));
     }
 
     /**
-     * Menyimpan jawaban user dan hitung skor jika selesai.
+     * Simpan jawaban peserta dan hitung skor jika selesai.
      */
     public function submit(Request $request, Percobaan $percobaan)
     {
-        $userId = Auth::id();
-
-        // Pastikan percobaan milik user
-        if ($percobaan->pesertaSurvei_id != $userId) {
+        $pesertaId = session('peserta_id');
+        if (!$pesertaId || $percobaan->peserta_id !== $pesertaId) {
             abort(403, 'Unauthorized');
         }
 
         $jawaban = $request->input('jawaban', []);
 
-        foreach ($jawaban as $pertanyaan_id => $opsi_jawaban_id) {
+        foreach ($jawaban as $pertanyaanId => $opsiJawabanId) {
             JawabanUser::updateOrCreate(
-                [
-                    'percobaan_id' => $percobaan->id,
-                    'pertanyaan_id' => $pertanyaan_id,
-                ],
-                [
-                    'opsi_jawaban_id' => $opsi_jawaban_id,
-                ]
+                ['percobaan_id' => $percobaan->id, 'pertanyaan_id' => $pertanyaanId],
+                ['opsi_jawaban_id' => $opsiJawabanId]
             );
         }
 
-        // Ambil semua pertanyaan
-        $pertanyaanList = $percobaan->tes->pertanyaan()->get();
-        $total = $pertanyaanList->count();
-
+        $total = $percobaan->tes->pertanyaan()->count();
         $currentQuestionIndex = (int) $request->query('q', 0);
         $nextQuestion = $currentQuestionIndex + 1;
 
         if ($nextQuestion >= $total) {
-            // Semua soal selesai, hitung skor
-            $percobaan->waktu_selesai = now();
-            $percobaan->skor = $this->hitungSkor($percobaan);
-            $percobaan->save();
+            // Selesai: hitung skor & simpan
+            // Pakai helper di model kalau ada:
+            if (method_exists($percobaan, 'hitungDanSimpanSkor')) {
+                $percobaan->hitungDanSimpanSkor();
+            } else {
+                $percobaan->waktu_selesai = now();
+                $percobaan->skor = $this->hitungSkor($percobaan);
+                $percobaan->save();
+            }
 
             return redirect()->route('tes.result', $percobaan->id);
         }
 
-        // Lanjut ke pertanyaan berikutnya
-        return redirect()->route('tes.show', ['tes' => $percobaan->tes_id, 'q' => $nextQuestion]);
+        // Lanjut ke soal berikutnya
+        return redirect()->route('tes.show', [
+            'tes' => $percobaan->tes_id,
+            'q'   => $nextQuestion
+        ]);
     }
 
     /**
-     * Menampilkan hasil tes
+     * Menampilkan hasil tes.
      */
     public function result(Percobaan $percobaan)
     {
-        // Pastikan percobaan milik user
-        if ($percobaan->pesertaSurvei_id != Auth::id()) {
+        $pesertaId = session('peserta_id');
+        if (!$pesertaId || $percobaan->peserta_id !== $pesertaId) {
             abort(403, 'Unauthorized');
         }
 
+        $percobaan->loadMissing(['tes', 'jawabanUser.opsiJawaban']);
         return view('tes.result', compact('percobaan'));
     }
 
     /**
-     * Hitung skor berdasarkan jawaban user
+     * Hitung skor (persentase) berdasarkan jawaban peserta.
+     * Dipakai jika model belum punya helper hitungDanSimpanSkor().
      */
-    protected function hitungSkor(Percobaan $percobaan)
+    protected function hitungSkor(Percobaan $percobaan): float|int
     {
-        $jawabanUser = $percobaan->jawabanUser()->with('opsiJawabans')->get();
-        $total = $jawabanUser->count();
+        // Pastikan relasi di model Percobaan: function jawabanUser() { return $this->hasMany(...); }
+        $jawabanUsers = $percobaan->jawabanUser()->with('opsiJawaban')->get();
+        $total = $jawabanUsers->count();
 
         if ($total === 0) return 0;
 
-        $benar = $jawabanUser->filter(fn($j) => $j->opsiJawabans->apakah_benar)->count();
+        $benar = $jawabanUsers->filter(
+            fn($j) => ($j->opsiJawaban->apakah_benar ?? false)
+        )->count();
 
-        return round(($benar / $total) * 100);
+        return round(($benar / $total) * 100, 2);
     }
 }

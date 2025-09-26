@@ -13,6 +13,8 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
                 $table->foreignId('pertanyaan_id')->constrained('pertanyaan')->onDelete('cascade');
+                $table->boolean('is_pre_test')->default(false);
+                $table->boolean('is_post_test')->default(false);
                 // IMPROVE: 
                 // $table->integer('nomor')->nullable()->after('pertanyaan_id');
                 // $table->unique(['tes_id', 'pertanyaan_id'], 'uq_tes_pertanyaan');

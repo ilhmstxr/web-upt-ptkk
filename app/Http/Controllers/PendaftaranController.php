@@ -19,6 +19,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpWord\IOFactory;
@@ -29,6 +30,9 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PendaftaranController extends Controller
 {
+    public const LAMPIRAN_DESTINATION = 'pertanyaan/opsi';
+
+
     public function index()
     {
         return redirect()->route('pendaftaran.create');
@@ -50,11 +54,13 @@ class PendaftaranController extends Controller
             case 1:
                 $cabangDinas = CabangDinas::all();
                 $pelatihan = Pelatihan::all();
+
                 return view('peserta.pendaftaran.bio-peserta', compact('currentStep', 'allowedStep', 'formData', 'cabangDinas'));
             case 2:
                 $pelatihan = Pelatihan::where('status', 'aktif')->get();
                 $bidang = Bidang::all();
                 $cabangDinas = CabangDinas::all();
+                // return $pelatihan;
                 return view('peserta.pendaftaran.bio-sekolah', compact('currentStep', 'allowedStep', 'formData', 'pelatihan', 'bidang', 'cabangDinas'));
             case 3:
                 $pelatihanId = $formData['pelatihan_id'] ?? null;
@@ -172,14 +178,7 @@ class PendaftaranController extends Controller
 
             ['nomor' => $nomorReg, 'urutan' => $urutBidang] = $this->generateToken($allData['pelatihan_id'], $allData['bidang_keahlian']);
 
-            PendaftaranPelatihan::create([
-                'peserta_id'            => $peserta->id,
-                'pelatihan_id'          => $allData['pelatihan_id'],
-                'bidang_id'             => $allData['bidang_keahlian'],
-                'urutan_per_bidang'     => $urutBidang,
-                'nomor_registrasi'      => $nomorReg,
-                'tanggal_pendaftaran'   => now(),
-            ]);
+
 
             // 4) Lampiran + upload file
             $lampiranData = [
@@ -195,14 +194,28 @@ class PendaftaranController extends Controller
                     $fileName = $peserta->id . '_' . $peserta->bidang_id . '_' . $peserta->instansi_id
                         . '_' . $field . '.' . $file->extension();
 
-                    // simpan di storage app/public/berkas_pendaftaran
-                    $path = $file->storeAs('berkas_pendaftaran', $fileName, 'public');
-                    $lampiranData[$field] = $path;
+                    // simpan di public/pertanyaan/opsi
+                    $targetDirectory = public_path(self::LAMPIRAN_DESTINATION);
+                    if (! File::isDirectory($targetDirectory)) {
+                        File::makeDirectory($targetDirectory, 0755, true);
+                    }
+
+                    $file->move($targetDirectory, $fileName);
+
+                    $lampiranData[$field] = self::LAMPIRAN_DESTINATION . '/' . $fileName;
                 }
             }
 
             Lampiran::create($lampiranData);
 
+            PendaftaranPelatihan::create([
+                'peserta_id'            => $peserta->id,
+                'pelatihan_id'          => $allData['pelatihan_id'],
+                'bidang_id'             => $allData['bidang_keahlian'],
+                'urutan_per_bidang'     => $urutBidang,
+                'nomor_registrasi'      => $nomorReg,
+                'tanggal_pendaftaran'   => now(),
+            ]);
             $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
                 ->latest('id')
                 ->first();
@@ -216,6 +229,7 @@ class PendaftaranController extends Controller
         }
     }
 
+    // public function selesai(int $id)
     public function selesai(int $id)
     {
         // return $id;
@@ -377,6 +391,32 @@ class PendaftaranController extends Controller
         $phpWord = IOFactory::load($docx);
         $writer  = IOFactory::createWriter($phpWord, 'PDF'); // ← akan pakai DomPDF karena sudah diset di AppServiceProvider
         $writer->save($pdf);
+        try {
+            $writer->save($pdf);
+        } finally {
+            // pastikan semua handle/stream dilepas sebelum unlink
+            unset($writer, $phpWord);
+            gc_collect_cycles();   // bantu bebaskan resource di Windows
+        }
+
+        // 2) Hapus DOCX dengan retry (atasi "Resource temporarily unavailable")
+        function safeUnlink(string $path, int $retries = 10, int $sleepMs = 250): void
+        {
+            if (!file_exists($path)) return;
+
+            for ($i = 0; $i < $retries; $i++) {
+                if (@unlink($path)) {
+                    return; // sukses
+                }
+                clearstatcache(true, $path);
+                gc_collect_cycles();
+                usleep($sleepMs * 1000); // tunggu sebentar biar lock lepas
+            }
+
+            throw new \RuntimeException("Gagal unlink: {$path} setelah {$retries} percobaan");
+        }
+
+        safeUnlink($docx);
 
         return $pdf;
     }
@@ -394,29 +434,33 @@ class PendaftaranController extends Controller
 
     private function generateToken(int $pelatihanId, int $bidangId): array
     {
+        // [Langkah 1] Memulai transaction, jika gagal akan di-rollback otomatis
         return DB::transaction(function () use ($pelatihanId, $bidangId) {
             $bidang     = Bidang::findOrFail($bidangId);
             $kodeBidang = $bidang->kode ?? $this->akronim($bidang->nama);
 
-            // 1) Lock subset baris yang relevan (ambil id saja, FOR UPDATE)
+            // [Langkah 2] Kunci semua baris yang relevan
+            // Proses lain yang mencoba mengakses baris ini akan disuruh MENUNGGU
             PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
                 ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
                 ->where('peserta.bidang_id', $bidangId)
                 ->select('pendaftaran_pelatihan.id')
-                ->lockForUpdate()
+                ->lockForUpdate() // <--- BAGIAN PALING PENTING
                 ->get();
 
-            // 2) Baru hitung jumlah (tanpa FOR UPDATE juga sudah aman karena subset terkunci)
+            // [Langkah 3] Hitung jumlah pendaftar
+            // Karena proses lain menunggu, hitungan ini DIJAMIN akurat
             $jumlah = PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
                 ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
                 ->where('peserta.bidang_id', $bidangId)
                 ->count();
 
+            // [Langkah 4] Buat nomor unik yang sudah pasti aman
             $nextUrut = $jumlah + 1;
             $nomor    = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeBidang), $nextUrut);
 
             return ['nomor' => $nomor, 'urutan' => $nextUrut];
-        }, 3);
+        }, 3); // Coba ulang 3 kali jika terjadi deadlock
     }
 
 

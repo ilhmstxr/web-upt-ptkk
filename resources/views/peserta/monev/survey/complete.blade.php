@@ -20,7 +20,8 @@
                 </div>
             </div>
             <div class="mt-8 flex flex-col sm:flex-row gap-3">
-                <a href="{{ route('survey.index') }}"
+                {{-- <a href="{{ route('survey.index') }}" --}}
+                <a href="{{ route('dashboard.home') }}"
                     class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">
                     <i class="fa-solid fa-house mr-2"></i>Kembali ke Halaman Awal
                 </a>

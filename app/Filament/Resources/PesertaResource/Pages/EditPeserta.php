@@ -18,40 +18,33 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
-
-use Filament\Forms\Components\View; // <-- Tambahkan ini di atas
+use Filament\Forms\Components\View;
 use Filament\Forms\Get;
-use Illuminate\Support\Arr; // <-- 1. TAMBAHKAN USE STATEMENT INI
-use Illuminate\Database\Eloquent\Model; // <-- Pastikan 'use' statement ini ada
+use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\Model;
+// use App\Traits\ManagesRegistrationTokens;
 
 class EditPeserta extends EditRecord
 {
+    // use ManagesRegistrationTokens;
+
     protected static string $resource = PesertaResource::class;
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $lampiran = $this->record->lampiran;
-
         if ($lampiran) {
             $data['no_surat_tugas'] = $lampiran->no_surat_tugas;
-
-            // Kita tidak perlu mengisi data file di sini lagi
-            // karena akan ditangani oleh komponen View kustom.
         }
-
         return $data;
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        // Ambil state non-dehydrated dari form
         $kelasBaru = data_get($this->form->getState(), 'instansi_kelas');
-
-        if (! empty($data['instansi_id']) && $kelasBaru !== null) {
+        if (!empty($data['instansi_id']) && $kelasBaru !== null) {
             $base = Instansi::find($data['instansi_id']);
-
             if ($base) {
-                // KUNCI: masukkan 'kelas' supaya sekolah sama + kelas beda → record beda
                 $instansi = Instansi::updateOrCreate(
                     [
                         'asal_instansi'   => $base->asal_instansi,
@@ -65,12 +58,9 @@ class EditPeserta extends EditRecord
                         'cabangDinas_id' => $base->cabangDinas_id,
                     ]
                 );
-
-                // Re-assign peserta ke instansi hasil create/update
                 $data['instansi_id'] = $instansi->id;
             }
         }
-
         return $data;
     }
 
@@ -114,9 +104,7 @@ class EditPeserta extends EditRecord
                                     ->label('Email')
                                     ->searchable()
                                     ->required(),
-
                             ])->columns(2),
-
 
                         Section::make('Biodata Sekolah')
                             ->description('Pilih instansi yang sudah ada atau buat baru.')
@@ -127,159 +115,115 @@ class EditPeserta extends EditRecord
                                     ->getOptionLabelFromRecordUsing(
                                         fn(Instansi $i) => trim("{$i->asal_instansi}" . ($i->kelas ? " — Kelas {$i->kelas}" : ''))
                                     )
-                                    ->searchable()
-                                    ->preload()
-                                    ->required()
-                                    ->live()
+                                    ->searchable()->preload()->required()->live()
                                     ->afterStateUpdated(function (Set $set, ?string $state) {
                                         if ($state && ($instansi = Instansi::find($state))) {
                                             $set('cabangDinas_id', $instansi->cabangDinas_id);
-                                            $set('instansi_kelas', $instansi->kelas); // sinkron awal
+                                            $set('instansi_kelas', $instansi->kelas);
                                         } else {
                                             $set('instansi_kelas', null);
                                         }
                                     })
                                     ->afterStateHydrated(function (Get $get, Set $set, ?Model $record) {
                                         if ($record?->instansi) {
-                                            $set('instansi_kelas', $record->instansi->kelas); // prefill saat membuka Edit
+                                            $set('instansi_kelas', $record->instansi->kelas);
                                         }
                                     }),
-
                                 Select::make('pelatihan_id')
                                     ->relationship('pelatihan', 'nama_pelatihan')
-                                    ->label('Pelatihan')
-                                    ->searchable()
-                                    ->required(),
-
+                                    ->label('Pelatihan')->searchable()->required(),
                                 Select::make('bidang_id')
                                     ->relationship('bidang', 'nama_bidang')
-                                    ->label('Bidang Keahlian')
-                                    ->searchable()
-                                    ->required(),
-
-                                // Field logic (BUKAN kolom tabel peserta)
-
+                                    ->label('Bidang Keahlian')->searchable()->required(),
                                 TextInput::make('instansi_kelas')
-                                    ->label('Kelas (Instansi)')
-                                    ->required()
-                                    ->dehydrated(false)   // keep this
-                                    ->reactive()
+                                    ->label('Kelas (Instansi)')->required()->dehydrated(false)->reactive()
                                     ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
-                                        // $state = nilai terbaru field instansi_kelas
-                                        if ($state === null || $state === '') {
-                                            return;
-                                        }
-
+                                        if ($state === null || $state === '') return;
                                         $currentInstansiId = $get('instansi_id');
-                                        if (! $currentInstansiId) {
-                                            return;
-                                        }
-
+                                        if (!$currentInstansiId) return;
                                         $base = Instansi::find($currentInstansiId);
-                                        if (! $base) {
-                                            return;
-                                        }
-
+                                        if (!$base) return;
                                         $target = Instansi::updateOrCreate(
                                             [
                                                 'asal_instansi'   => $base->asal_instansi,
                                                 'alamat_instansi' => $base->alamat_instansi,
                                                 'kota'            => $base->kota,
                                                 'kota_id'         => $base->kota_id,
-                                                'kelas'           => $state, // ← use $state, not $kelas
+                                                'kelas'           => $state,
                                             ],
                                             [
                                                 'bidang_keahlian' => $base->bidang_keahlian,
                                                 'cabangDinas_id' => $base->cabangDinas_id,
                                             ]
                                         );
-
-                                        // Ganti dropdown instansi di form saat itu juga
                                         $set('instansi_id', $target->id);
                                     })
                                     ->helperText('Mengubah ini akan otomatis membuat/memilih instansi sesuai kelas yang baru.'),
-                            ])
-                            ->columns(2),
+                            ])->columns(2),
 
                         Section::make('Lampiran Dokumen')
                             ->description('Dokumen-dokumen pendukung yang diunggah oleh pendaftar.')
                             ->schema([
-                                TextInput::make('no_surat_tugas')
-                                    ->label('Nomor Surat Tugas'),
-
-                                // KTP
+                                TextInput::make('no_surat_tugas')->label('Nomor Surat Tugas'),
                                 View::make('ktp_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_ktp]),
-                                FileUpload::make('fc_ktp')->label('Unggah Fotocopy KTP Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
-
-
-                                // Ijazah
+                                FileUpload::make('fc_ktp')->label('Unggah Fotocopy KTP Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)),
                                 View::make('ijazah_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_ijazah]),
-                                FileUpload::make('fc_ijazah')->label('Unggah Fotocopy Ijazah Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
-
-
-                                // Surat Tugas
+                                FileUpload::make('fc_ijazah')->label('Unggah Fotocopy Ijazah Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)),
                                 View::make('surat_tugas_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_surat_tugas]),
-                                FileUpload::make('fc_surat_tugas')->label('Unggah Fotocopy Surat Tugas Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
-
-
-                                // Surat Sehat
+                                FileUpload::make('fc_surat_tugas')->label('Unggah Fotocopy Surat Tugas Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)),
                                 View::make('surat_sehat_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->fc_surat_sehat]),
-                                FileUpload::make('fc_surat_sehat')->label('Unggah Surat Keterangan Sehat Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
-
-
-                                // Pas Foto
+                                FileUpload::make('fc_surat_sehat')->label('Unggah Surat Keterangan Sehat Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)),
                                 View::make('pas_foto_preview')->view('components.file-preview-with-download')->viewData(['filePath' => $this->record->lampiran?->pas_foto]),
-                                FileUpload::make('pas_foto')->label('Unggah Pas Foto Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)), // <-- TAMBAHKAN INI
-
-
-                            ])->columns(1), // Menggunakan 1 kolom agar rapi
-
+                                FileUpload::make('pas_foto')->label('Unggah Pas Foto Baru (Opsional)')->disk('public')->dehydrated(fn($state) => filled($state)),
+                            ])->columns(1),
                     ]),
             ]);
     }
+
+    /**
+     * Method ini di-override untuk menambahkan logika update nomor registrasi.
+     */
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        // Memulai transaksi database untuk memastikan integritas data
         DB::beginTransaction();
-
         try {
-            // 1. Definisikan semua key yang dimiliki oleh model Lampiran
-            $lampiranKeys = [
-                'no_surat_tugas',
-                'fc_ktp',
-                'fc_ijazah',
-                'fc_surat_tugas',
-                'fc_surat_sehat',
-                'pas_foto'
-            ];
+            // Ambil ID bidang sebelum ada perubahan, untuk perbandingan
+            $originalBidangId = $record->bidang_id;
+            $newBidangId = $data['bidang_id'];
 
-            // 2. Ambil data HANYA untuk model Peserta (selain data lampiran)
+            // Definisikan key-key yang ada di tabel lampiran
+            $lampiranKeys = ['no_surat_tugas', 'fc_ktp', 'fc_ijazah', 'fc_surat_tugas', 'fc_surat_sehat', 'pas_foto'];
+
+            // Pisahkan dan update data untuk tabel 'peserta'
             $pesertaData = Arr::except($data, $lampiranKeys);
             $record->update($pesertaData);
 
-            // 3. Ambil data HANYA untuk model Lampiran (jika ada di dalam form data)
-            $lampiranData = Arr::only($data, $lampiranKeys);
+            // Cek jika bidang keahlian diubah. Jika ya, generate ulang nomor registrasi.
+            if ($originalBidangId != $newBidangId && $record->pendaftaranPelatihan) {
+                // Panggil fungsi dari Trait untuk membuat nomor & urutan baru
+                ['nomor' => $newNomorReg, 'urutan' => $newUrut] = $this->generateToken(
+                    $record->pelatihan_id,
+                    $newBidangId
+                );
 
-            // 4. Update atau Buat data Lampiran hanya jika ada data yang relevan
-            if (!empty($lampiranData)) {
-                if ($record->lampiran) {
-                    // Jika lampiran sudah ada, update
-                    $record->lampiran->update($lampiranData);
-                } else {
-                    // Jika lampiran belum ada, buat baru
-                    $record->lampiran()->create($lampiranData);
-                }
+                // Update record di tabel 'pendaftaran_pelatihan'
+                $record->pendaftaranPelatihan->update([
+                    'nomor_registrasi' => $newNomorReg,
+                    // 'urutan_per_bidang' => $newUrut, // (Opsional) Uncomment jika ada kolom ini
+                ]);
             }
 
-            // Jika semua berhasil, commit transaksi
+            // Pisahkan dan update/create data untuk tabel 'lampiran'
+            $lampiranData = Arr::only($data, $lampiranKeys);
+            if (!empty(array_filter($lampiranData))) {
+                $record->lampiran()->updateOrCreate(['peserta_id' => $record->id], $lampiranData);
+            }
+
             DB::commit();
-
             return $record;
+            
         } catch (\Exception $e) {
-            // Jika terjadi error, batalkan semua perubahan
             DB::rollBack();
-
-            // Lemparkan kembali error untuk ditampilkan
             throw $e;
         }
     }

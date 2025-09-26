@@ -44,7 +44,7 @@ class JawabanChart extends ChartWidget
                 $join->on('jawaban_user.opsi_jawaban_id', '=', 'ranked_opsi.id');
             })
             ->join('percobaan', 'jawaban_user.percobaan_id', '=', 'percobaan.id')
-            ->join('peserta_survei', 'percobaan.pesertaSurvei_id', '=', 'peserta_survei.id')
+            ->join('peserta_survei', 'percobaan.peserta_id', '=', 'peserta_survei.id')
             ->where('peserta_survei.pelatihan_id', $this->pelatihan->id)
             ->selectRaw('ranked_opsi.level_opsi, count(*) as total')
             ->groupBy('ranked_opsi.level_opsi')
