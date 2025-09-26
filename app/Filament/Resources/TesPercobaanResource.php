@@ -6,6 +6,7 @@ use App\Filament\Resources\TesPercobaanResource\Pages;
 use App\Models\Percobaan;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -21,9 +22,9 @@ class TesPercobaanResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Select::make('pesertaSurvei_id')
+            Forms\Components\Select::make('peserta_id')
                 ->label('Peserta')
-                ->relationship('pesertaSurvei', 'nama') // pakai pesertaSurvei, bukan peserta
+                ->relationship('peserta', 'nama')
                 ->searchable()
                 ->required(),
 
@@ -38,20 +39,24 @@ class TesPercobaanResource extends Resource
                 ->required(),
 
             Forms\Components\DateTimePicker::make('waktu_selesai')
-                ->label('Waktu Selesai'),
+                ->label('Waktu Selesai')
+                ->required(fn (Get $get) => filled($get('skor')))
+                ->minDateTime(fn (Get $get) => $get('waktu_mulai')),
 
             Forms\Components\TextInput::make('skor')
                 ->numeric()
-                ->label('Skor'),
+                ->label('Skor')
+                ->required(fn (Get $get) => filled($get('waktu_selesai'))),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            // pastikan semua relasi diload agar baris tidak “hilang”
+            ->modifyQueryUsing(fn ($query) => $query->with(['peserta', 'tes']))
             ->columns([
-                Tables\Columns\TextColumn::make('pesertaSurvei.nama')
-                // Tables\Columns\TextColumn::make('peserta.nama')
+                Tables\Columns\TextColumn::make('peserta.nama')
                     ->label('Peserta')
                     ->searchable()
                     ->sortable(),
@@ -68,11 +73,25 @@ class TesPercobaanResource extends Resource
 
                 Tables\Columns\TextColumn::make('waktu_selesai')
                     ->label('Selesai')
-                    ->dateTime('d M Y H:i')
+                    // $state sudah Carbon karena di-cast di model
+                    ->formatStateUsing(fn ($state) => $state?->format('d M Y H:i') ?? 'Belum selesai')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('skor')
-                    ->label('Skor'),
+                    ->label('Skor')
+                    ->formatStateUsing(fn ($state) => $state ?? 'Belum dinilai'),
+
+                Tables\Columns\BadgeColumn::make('status')
+                    ->label('Status')
+                    ->getStateUsing(fn ($record) => $record->waktu_selesai ? 'Selesai' : 'Proses')
+                    ->colors([
+                        'success' => 'Selesai',
+                        'warning' => 'Proses',
+                    ])
+                    ->icons([
+                        'heroicon-o-check-circle' => 'Selesai',
+                        'heroicon-o-clock' => 'Proses',
+                    ]),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')

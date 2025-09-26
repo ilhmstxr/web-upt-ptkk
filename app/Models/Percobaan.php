@@ -27,7 +27,10 @@ class Percobaan extends Model
         'waktu_selesai' => 'datetime',
         'skor' => 'decimal:2',
         'lulus' => 'boolean',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
     ];
+
 
     // -------------------------
     // RELATIONS
@@ -50,7 +53,7 @@ class Percobaan extends Model
         if (class_exists(\App\Models\Peserta::class)) {
             return $this->belongsTo(\App\Models\Peserta::class, 'peserta_id', 'id')->withDefault();
         }
-        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id')->withDefault();
+        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'peserta_id', 'id')->withDefault();
     }
 
     public function tes()
@@ -61,6 +64,11 @@ class Percobaan extends Model
     public function jawabanUser()
     {
         return $this->hasMany(\App\Models\JawabanUser::class, 'percobaan_id', 'id');
+    }
+
+    public function tipeTes()
+    {
+        return $this->hasMany(TipeTes::class, 'tes_id', 'tes_id');
     }
 
     // -------------------------

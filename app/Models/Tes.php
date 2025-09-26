@@ -40,6 +40,11 @@ class Tes extends Model
         return $this->hasMany(Pertanyaan::class, 'tes_id');
     }
 
+    public function tipeTes()
+    {
+        return $this->hasMany(TipeTes::class, 'tes_id');
+    }
+
     // Jika kamu memang pakai pivot table tes_pertanyaan, gunakan ini:
     /*
     public function pertanyaan()
