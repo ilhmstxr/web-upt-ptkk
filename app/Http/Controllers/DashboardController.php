@@ -371,7 +371,7 @@ class DashboardController extends Controller
 
     public function posttestStart(Tes $tes)
     {
-        $pesertaSurveiId = session('pesertaSurvei_id');
+        $pesertaSurveiId = session('peserta_id');
 //	return $tes;	
 // return $pesertaSurveiId;
         if (!$pesertaSurveiId) {
