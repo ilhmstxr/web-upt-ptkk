@@ -115,6 +115,10 @@ class TesPercobaanResource extends Resource
                     })
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('skor')
+                    ->label('Skor')
+                    ->formatStateUsing(fn($state) => $state ?? 'Belum dinilai'),
+
 
                 Tables\Columns\TextColumn::make('waktu_mulai')
                     ->label('Mulai')
@@ -127,9 +131,6 @@ class TesPercobaanResource extends Resource
                     ->formatStateUsing(fn($state) => $state?->format('d M Y H:i') ?? 'Belum selesai')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('skor')
-                    ->label('Skor')
-                    ->formatStateUsing(fn($state) => $state ?? 'Belum dinilai'),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
