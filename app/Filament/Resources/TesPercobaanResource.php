@@ -10,6 +10,8 @@ use Filament\Forms\Get;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class TesPercobaanResource extends Resource
 {
@@ -40,32 +42,60 @@ class TesPercobaanResource extends Resource
 
             Forms\Components\DateTimePicker::make('waktu_selesai')
                 ->label('Waktu Selesai')
-                ->required(fn (Get $get) => filled($get('skor')))
-                ->minDateTime(fn (Get $get) => $get('waktu_mulai')),
+                ->required(fn(Get $get) => filled($get('skor')))
+                ->minDateTime(fn(Get $get) => $get('waktu_mulai')),
 
             Forms\Components\TextInput::make('skor')
                 ->numeric()
                 ->label('Skor')
-                ->required(fn (Get $get) => filled($get('waktu_selesai'))),
+                ->required(fn(Get $get) => filled($get('waktu_selesai'))),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            // pastikan semua relasi diload agar baris tidak “hilang”
-            ->modifyQueryUsing(fn ($query) => $query->with(['peserta', 'tes']))
+            // eager load yang dipakai saja
+            ->modifyQueryUsing(function (Builder $q) {
+                $q->with([
+                    'tes:id,judul,tipe',
+                    'peserta:id,nama',
+                    'pesertaSurvei:id,nama',
+                    // bawa hitungan pertanyaan ke dalam relasi tes
+                    'tes' => fn($t) => $t->withCount('tesPertanyaan'),
+                ]);
+            })
             ->columns([
-                Tables\Columns\TextColumn::make('peserta.nama')
+                Tables\Columns\TextColumn::make('tes.tipe')
+                    ->label('Tipe')
+                    ->badge()
+                    ->sortable()
+                    ->searchable(),
+
+                // IF–ELSE peserta/pesertaSurvei berdasar tes.tipe
+                Tables\Columns\TextColumn::make('peserta_display')
                     ->label('Peserta')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('tes.judul')
-                    ->label('Tes')
-                    ->searchable()
-                    ->sortable(),
-
+                    ->state(
+                        fn($record) =>
+                        $record->tes?->tipe === 'survei'
+                            ? ($record->pesertaSurvei->nama ?? '-')
+                            : ($record->peserta->nama ?? '-')
+                    )
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->where(function (Builder $q) use ($search) {
+                            // survei -> cari di pesertaSurvei
+                            $q->where(function (Builder $qq) use ($search) {
+                                $qq->whereHas('tes', fn(Builder $t) => $t->where('tipe', 'survei'))
+                                    ->whereHas('pesertaSurvei', fn(Builder $r) => $r->where('nama', 'like', "%{$search}%"));
+                            })
+                                // tes -> cari di peserta
+                                ->orWhere(function (Builder $qq) use ($search) {
+                                    $qq->whereHas('tes', fn(Builder $t) => $t->where('tipe', '!=', 'survei'))
+                                        ->whereHas('peserta', fn(Builder $r) => $r->where('nama', 'like', "%{$search}%"));
+                                });
+                        });
+                    }),
+                    
                 Tables\Columns\TextColumn::make('waktu_mulai')
                     ->label('Mulai')
                     ->dateTime('d M Y H:i')
@@ -74,16 +104,16 @@ class TesPercobaanResource extends Resource
                 Tables\Columns\TextColumn::make('waktu_selesai')
                     ->label('Selesai')
                     // $state sudah Carbon karena di-cast di model
-                    ->formatStateUsing(fn ($state) => $state?->format('d M Y H:i') ?? 'Belum selesai')
+                    ->formatStateUsing(fn($state) => $state?->format('d M Y H:i') ?? 'Belum selesai')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('skor')
                     ->label('Skor')
-                    ->formatStateUsing(fn ($state) => $state ?? 'Belum dinilai'),
+                    ->formatStateUsing(fn($state) => $state ?? 'Belum dinilai'),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
-                    ->getStateUsing(fn ($record) => $record->waktu_selesai ? 'Selesai' : 'Proses')
+                    ->getStateUsing(fn($record) => $record->waktu_selesai ? 'Selesai' : 'Proses')
                     ->colors([
                         'success' => 'Selesai',
                         'warning' => 'Proses',

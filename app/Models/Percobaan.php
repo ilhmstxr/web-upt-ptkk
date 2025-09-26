@@ -13,6 +13,7 @@ class Percobaan extends Model
 
     protected $fillable = [
         'peserta_id',
+        'pesertaSurvei_id',
         'tes_id',
         'waktu_mulai',
         'waktu_selesai',
@@ -38,6 +39,11 @@ class Percobaan extends Model
     public function peserta()
     {
         return $this->belongsTo(\App\Models\Peserta::class, 'peserta_id', 'id')->withDefault();
+    }
+
+    public function pesertaSurvei()
+    {
+        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id')->withDefault();
     }
 
     public function tes()
