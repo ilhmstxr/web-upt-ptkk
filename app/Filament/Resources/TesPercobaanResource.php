@@ -61,8 +61,10 @@ class TesPercobaanResource extends Resource
                     'tes:id,judul,tipe',
                     'peserta:id,nama',
                     'pesertaSurvei:id,nama',
+                    'peserta.bidang:id,nama_bidang',
+                    'pesertaSurvei.bidang:id,nama_bidang',
                     // bawa hitungan pertanyaan ke dalam relasi tes
-                    'tes' => fn($t) => $t->withCount('tesPertanyaan'),
+                    // 'tes' => fn($t) => $t->withCount('tesPertanyaan'),
                 ]);
             })
             ->columns([
@@ -95,7 +97,25 @@ class TesPercobaanResource extends Resource
                                 });
                         });
                     }),
-                    
+                Tables\Columns\TextColumn::make('bidang')
+                    ->label('Tipe')
+                    ->badge()
+                    ->state(
+                        fn($record) =>
+                        // jika pesertaSurvei ada, pakai bidangnya; jika null, fallback ke peserta
+                        $record->pesertaSurvei?->bidang?->nama_bidang
+                            ?? $record->peserta?->bidang?->nama_bidang
+                            ?? '-'
+                    )
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->where(function (Builder $q) use ($search) {
+                            $q->whereHas('pesertaSurvei.bidang', fn(Builder $b) => $b->where('nama_bidang', 'like', "%{$search}%"))
+                                ->orWhereHas('peserta.bidang', fn(Builder $b) => $b->where('nama_bidang', 'like', "%{$search}%"));
+                        });
+                    })
+                    ->sortable(),
+
+
                 Tables\Columns\TextColumn::make('waktu_mulai')
                     ->label('Mulai')
                     ->dateTime('d M Y H:i')
