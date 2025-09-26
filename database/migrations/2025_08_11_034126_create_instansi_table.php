@@ -26,7 +26,6 @@ return new class extends Migration
                 ->nullable()->unique()
                 ->constrained('users')
                 ->onDelete('set null');
-
             $table->timestamps();
         });
     }

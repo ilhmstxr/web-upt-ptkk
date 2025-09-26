@@ -54,7 +54,6 @@ class PendaftaranController extends Controller
             case 1:
                 $cabangDinas = CabangDinas::all();
                 $pelatihan = Pelatihan::all();
-
                 return view('peserta.pendaftaran.bio-peserta', compact('currentStep', 'allowedStep', 'formData', 'cabangDinas'));
             case 2:
                 $pelatihan = Pelatihan::where('status', 'aktif')->get();
@@ -107,6 +106,8 @@ class PendaftaranController extends Controller
                 'cabangDinas_id' => 'required|string|max:255',
                 'pelatihan_id' => 'required|string',
             ]);
+
+            $validatedData['asal_instansi'] = $this->normalizeAsalInstansi($validatedData['asal_instansi']);
 
             $request->session()->put('pendaftaran_data', array_merge($formData, $validatedData));
             $request->session()->put('pendaftaran_step', 3);
@@ -432,6 +433,20 @@ class PendaftaranController extends Controller
     public function update(Request $request, string $id) {}
     public function destroy(string $id) {}
 
+    private function normalizeAsalInstansi(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $normalized = preg_replace('/\bsmk\s+negeri\b/i', 'SMKN', $value);
+        $normalized = preg_replace('/\bsma\s+negeri\b/i', 'SMAN', $normalized);
+        $normalized = preg_replace('/\bsmkn\b/i', 'SMKN', $normalized);
+        $normalized = preg_replace('/\bsman\b/i', 'SMAN', $normalized);
+
+        return Str::squish($normalized);
+    }
+
     private function generateToken(int $pelatihanId, int $bidangId): array
     {
         // [Langkah 1] Memulai transaction, jika gagal akan di-rollback otomatis
@@ -472,3 +487,4 @@ class PendaftaranController extends Controller
         return strtoupper($akronim);
     }
 }
+
