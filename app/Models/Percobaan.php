@@ -12,8 +12,7 @@ class Percobaan extends Model
     protected $table = 'percobaan';
 
     protected $fillable = [
-        'peserta_id',         // Kolom baru untuk data baru
-        'pesertaSurvei_id',
+        'peserta_id',
         'tes_id',
         'waktu_mulai',
         'waktu_selesai',
@@ -23,7 +22,7 @@ class Percobaan extends Model
     ];
 
     protected $casts = [
-        'waktu_mulai' => 'datetime',
+        'waktu_mulai'   => 'datetime',
         'waktu_selesai' => 'datetime',
         'skor' => 'decimal:2',
         'lulus' => 'boolean',
@@ -36,24 +35,9 @@ class Percobaan extends Model
     // RELATIONS
     // -------------------------
 
-    /**
-     * Relasi utama: PesertaSurvei (sesuai kolom pesertaSurvei_id)
-     */
-    public function pesertaSurvei()
-    {
-        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id')->withDefault();
-    }
-
-    /**
-     * Convenience alias 'peserta' (Filament & kode lain sering memanggil peserta)
-     * This will prefer Peserta model if present, otherwise fallback to PesertaSurvei.
-     */
     public function peserta()
     {
-        if (class_exists(\App\Models\Peserta::class)) {
-            return $this->belongsTo(\App\Models\Peserta::class, 'peserta_id', 'id')->withDefault();
-        }
-        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'peserta_id', 'id')->withDefault();
+        return $this->belongsTo(\App\Models\Peserta::class, 'peserta_id', 'id')->withDefault();
     }
 
     public function tes()
@@ -75,76 +59,44 @@ class Percobaan extends Model
     // HELPERS / SCORING
     // -------------------------
 
-    /**
-     * Hitung jumlah jawaban benar (integer).
-     * - Aman dipanggil kapan saja.
-     */
     public function hitungSkor(): int
     {
-        // Ambil semua jawaban + opsi terkait
         $jawaban = $this->jawabanUser()->with('opsiJawaban')->get();
-
-        if ($jawaban->isEmpty()) {
-            return 0;
-        }
+        if ($jawaban->isEmpty()) return 0;
 
         $benar = 0;
         foreach ($jawaban as $j) {
-            $opsi = $j->opsiJawaban ?? null;
-
+            $opsi = $j->opsiJawaban;
             if (!$opsi && $j->opsi_jawaban_id) {
                 $opsi = \App\Models\OpsiJawaban::find($j->opsi_jawaban_id);
             }
+            if (!$opsi) continue;
 
-            if (!$opsi) {
-                continue;
-            }
-
-            // cek berbagai nama boolean di tabel opsi jawaban
-            if (isset($opsi->apakah_benar) && $opsi->apakah_benar) {
-                $benar++;
-            } elseif (isset($opsi->benar) && $opsi->benar) {
-                $benar++;
-            } elseif (isset($opsi->is_correct) && $opsi->is_correct) {
+            if (($opsi->apakah_benar ?? false) || ($opsi->benar ?? false) || ($opsi->is_correct ?? false)) {
                 $benar++;
             }
         }
-
         return (int) $benar;
     }
 
-    /**
-     * Hitung persentase skor (2 desimal)
-     */
     public function hitungSkorPersen(): float
     {
-        // Usahakan pakai jumlah soal di tes jika tersedia
         $totalSoal = 0;
         if ($this->tes && method_exists($this->tes, 'pertanyaan')) {
             $totalSoal = $this->tes->pertanyaan()->count();
         }
-
-        if ($totalSoal <= 0) {
-            $totalSoal = $this->jawabanUser()->count();
-        }
-
-        if ($totalSoal <= 0)
-            return 0.0;
+        if ($totalSoal <= 0) $totalSoal = $this->jawabanUser()->count();
+        if ($totalSoal <= 0) return 0.0;
 
         $benar = $this->hitungSkor();
-
-        return round((($benar / $totalSoal) * 100), 2);
+        return round(($benar / $totalSoal) * 100, 2);
     }
 
-    /**
-     * Convenience: hitung lalu simpan skor + lulus flag
-     */
     public function hitungDanSimpanSkor(float $passingScore = null): void
     {
-        $benar = $this->hitungSkor();
         $persen = $this->hitungSkorPersen();
-
         $this->skor = $persen;
+
         if ($passingScore === null && $this->tes && isset($this->tes->passing_score)) {
             $passingScore = $this->tes->passing_score;
         }

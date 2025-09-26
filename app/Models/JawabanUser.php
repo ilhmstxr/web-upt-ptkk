@@ -17,12 +17,10 @@ class JawabanUser extends Model
         'percobaan_id',
         'nilai_jawaban',
         'jawaban_teks',
-        // 'pesertaSurvei_id' // uncomment kalau kolom memang ada
+        // TIDAK perlu peserta_id di sini
     ];
 
-    // -------------------------
-    // RELATIONS
-    // -------------------------
+    // --- RELATIONS ---
 
     public function percobaan()
     {
@@ -34,32 +32,14 @@ class JawabanUser extends Model
         return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id', 'id');
     }
 
-    /**
-     * Singular relation → benar, karena 1 jawaban_user
-     * hanya bisa punya 1 opsi jawaban.
-     */
     public function opsiJawaban()
     {
         return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id', 'id');
     }
 
-    /**
-     * Ini agak rancu. 
-     * Plural biasanya untuk hasMany, 
-     * jadi kalau `opsiJawabans()` hanya memanggil `opsiJawaban()`,
-     * sebaiknya dihapus biar nggak bikin bingung.
-     */
-    public function opsiJawabans()
-    {
-        return $this->opsiJawaban();
-    }
+    // Hapus ini karena membingungkan (plural tapi relasi belongsTo)
+    // public function opsiJawabans() { return $this->opsiJawaban(); }
 
-    /**
-     * Relasi opsional ke peserta survei.
-     * Ini oke kalau memang ada kolom `pesertaSurvei_id`.
-     */
-    public function pesertaSurvei()
-    {
-        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id', 'id');
-    }
+    // Hapus relasi pesertaSurvei lama karena sudah diganti arsitekturnya
+    // public function pesertaSurvei() { ... }
 }

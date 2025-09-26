@@ -93,46 +93,35 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 
     // ===== PERBAIKAN PATH: gunakan path relatif (tanpa 'dashboard/') =====
-    // Set peserta (form modal di home) -> route name: dashboard.setPeserta
-    Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
-    Route::match(['get', 'post'], 'logout', [DashboardController::class, 'logout'])
-        ->name('logout');
+ // Set/Unset Peserta
+Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
+Route::post('unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
 
-    // Set/Unset Peserta (gunakan POST untuk keamanan & konsistensi)
-    Route::post('unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
+Route::get('ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
+    ->name('ajax.peserta.instansiByNama');
 
-    // Logout (dashboard-specific logout that clears peserta_id & session)
-    Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
+// Logout (pilih salah satu, saran: POST)
+Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
+// HAPUS ini bila pakai POST saja:
+// Route::match(['get','post'], 'logout', [DashboardController::class, 'logout'])->name('logout');
 
-    // Pre-Test
-    Route::prefix('pretest')->name('pretest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'pretest'])->name('index');
+Route::prefix('pretest')->name('pretest.')->group(function () {
+    Route::get('/', [DashboardController::class, 'pretest'])->name('index');
+    Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result'); // spesifik dulu
+    Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
+    Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
+    Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
+    Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show'); // dinamis terakhir
+});
 
-        // start sebelum menangkap '{tes}'
-        Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
-        Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
-
-        // submit jawaban (menggunakan percobaan id pada URI)
-        Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
-
-        // hasil perlu diletakkan sebelum route '{tes}' supaya 'result' tidak tertangkap sebagai tes id
-        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
-
-        // show pertanyaan per tes (letakkan setelah route spesifik di atas)
-        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
-        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
-    });
-
-    // Post-Test
-    Route::prefix('posttest')->name('posttest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'posttest'])->name('index');
-        Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
-        Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
-        Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
-        Route::post('{tes}/begin', [DashboardController::class, 'posttestBegin'])->name('begin');
-        Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
-    });
-
+Route::prefix('posttest')->name('posttest.')->group(function () {
+    Route::get('/', [DashboardController::class, 'posttest'])->name('index');
+    Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
+    Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
+    Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
+    Route::post('{tes}/begin', [DashboardController::class, 'posttestBegin'])->name('begin');
+    Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
+});
 
 
     // Feedback (survey)

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -10,29 +9,22 @@ use App\Models\Peserta;
 use App\Models\Percobaan;
 use App\Models\JawabanUser;
 
-
-
-
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
-
-
-
 class DashboardController extends Controller
 {
-
-
     // ======================
     // DASHBOARD INDEX
     // ======================
     public function index(): View
     {
-        $pesertaSurveiId = session('peserta_id');
+        $pesertaId = session('peserta_id');
+
         $surveyStatus = 'pending';
 
         $preTestAttempts = Percobaan::where('tes_id', 1)
-            ->where('peserta_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaId)
             ->count();
 
         $preTestMax = 1;
@@ -40,11 +32,11 @@ class DashboardController extends Controller
         $monevMax    = 1;
 
         $postTestDone = Percobaan::where('tes_id', 2)
-            ->where('peserta_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaId)
             ->exists();
 
         $monevDone = Percobaan::where('tes_id', 3)
-            ->where('peserta_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaId)
             ->exists();
 
         return view('dashboard.index', compact(
@@ -58,7 +50,6 @@ class DashboardController extends Controller
         ));
     }
 
-
     // ======================
     // HOME & PROFILE
     // ======================
@@ -71,12 +62,9 @@ class DashboardController extends Controller
         $pesertaId = session('peserta_id');
         $pesertaAktif = $pesertaId ? Peserta::find($pesertaId) : null;
 
-        // return $pesertaAktif;
         // gunakan peserta_id untuk percobaan
-        $pesertaSurveiId = session('peserta_id');
-
         $preTestAttempts = Percobaan::where('tes_id', 1)
-            ->where('peserta_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaId)
             ->count();
 
         $preTestMax = 1;
@@ -84,11 +72,11 @@ class DashboardController extends Controller
         $monevMax    = 1;
 
         $postTestDone = Percobaan::where('tes_id', 2)
-            ->where('peserta_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaId)
             ->exists();
 
         $monevDone = Percobaan::where('tes_id', 3)
-            ->where('peserta_id', $pesertaSurveiId)
+            ->where('peserta_id', $pesertaId)
             ->exists();
 
         return view('dashboard.pages.home', compact(
@@ -102,9 +90,6 @@ class DashboardController extends Controller
             'monevDone'
         ));
     }
-
-
-
 
     public function profile()
     {
@@ -123,97 +108,102 @@ class DashboardController extends Controller
 
     // ======================
     // SET / STORE PESERTA dari MODAL HOME
-    // - mendukung dua mode:
-    //   1) memilih peserta existing via peserta_id (select)
-    //   2) menulis manual nama + sekolah (overlay) -> melakukan pencarian case-insensitive pada tabel peserta dan relasi instansi
-    // Setelah ketemu: menyimpan session('peserta_id') = peserta->id dan redirect ke dashboard.home
     // ======================
     public function setPeserta(Request $request)
     {
-        $request->validate([
-            'nama'    => 'required|string|max:150',
-            'sekolah' => 'nullable|string|max:150',
-            'peserta_id' => 'nullable|exists:peserta,id', // ID dari tabel peserta (opsional)
+        $validated = $request->validate([
+            'nama' => ['required','string','max:150'],
         ]);
 
-        // --- Jika langsung pilih peserta_id (misal dari dropdown) ---
-        // if ($request->filled('peserta_id')) {
-        //     $peserta = Peserta::findOrFail($request->peserta_id);
+        $nama = mb_strtolower(trim($validated['nama']));
 
-        //     // buat atau ambil peserta_survei (pakai nama + sekolah atau email, bukan peserta_id)
-        //     $pesertaSurvei = Peserta::firstOrCreate([
-        //         'nama'    => $peserta->nama,
-        //         'email'   => $peserta->email,
-        //         'angkatan' => $peserta->angkatan ?? null,
-        //     ]);
+        // Cari exact match dulu
+        $matches = Peserta::with('instansi:id,asal_instansi,kota')
+            ->whereRaw('LOWER(nama) = ?', [$nama])
+            ->get();
 
-        //     session([
-        //         'peserta_id'       => $peserta->id,
-        //         'peserta_id' => $pesertaSurvei->id,
-        //     ]);
-        // }
-
-        // --- Cari peserta berdasarkan nama + sekolah ---
-        $nama    = Str::lower(trim($request->input('nama')));
-        $sekolah = $request->filled('sekolah') ? Str::lower(trim($request->input('sekolah'))) : null;
-
-        $query = Peserta::whereRaw('LOWER(nama) = ?', [$nama]);
-        if ($sekolah) {
-            $query->whereHas('instansi', function ($q) use ($sekolah) {
-                $q->whereRaw('LOWER(asal_instansi) = ?', [$sekolah]);
-            });
-        }
-        $peserta = $query->first();
-
-        // --- Fallback LIKE search ---
-        if (!$peserta) {
-            $likeNama = '%' . str_replace(' ', '%', $nama) . '%';
-            $query = Peserta::whereRaw('LOWER(nama) LIKE ?', [$likeNama]);
-            if ($sekolah) {
-                $likeSek = '%' . str_replace(' ', '%', $sekolah) . '%';
-                $query->whereHas('instansi', function ($q) use ($likeSek) {
-                    $q->whereRaw('LOWER(asal_instansi) LIKE ?', [$likeSek]);
-                });
-            }
-            $peserta = $query->first();
+        // Fallback LIKE kalau belum ketemu
+        if ($matches->isEmpty()) {
+            $like = '%'.str_replace(' ','%',$nama).'%';
+            $matches = Peserta::with('instansi:id,asal_instansi,kota')
+                ->whereRaw('LOWER(nama) LIKE ?', [$like])
+                ->orderBy('nama')
+                ->get();
         }
 
-        if (!$peserta) {
-            return redirect()->route('dashboard.home')
-                ->with('error', 'Peserta tidak ditemukan.');
+        if ($matches->isEmpty()) {
+            return back()->withInput()->with('error','Peserta tidak ditemukan.');
         }
 
-        // --- Buat peserta_survei kalau belum ada (pakai nama/email) ---
-        $pesertaSurvei = Peserta::firstOrCreate([
-            'nama'    => $peserta->nama,
-        ]);
+        // Kalau lebih dari satu, ambil yang pertama
+        $peserta = $matches->first();
 
-        // Simpan id peserta + peserta_survei ke session
+        // reset & regenerate seperti login
+        $request->session()->forget(['peserta_id','instansi_id','instansi_nama','instansi_kota']);
+        $request->session()->regenerate();
+
+        // simpan peserta + sekolah ke session
         session([
-            'peserta_id'       => $peserta->id,
-            'peserta_id' => $pesertaSurvei->id,
+            'peserta_id'    => $peserta->id,
+            'instansi_id'   => optional($peserta->instansi)->id,
+            'instansi_nama' => optional($peserta->instansi)->asal_instansi,
+            'instansi_kota' => optional($peserta->instansi)->kota,
         ]);
 
-        return redirect()->route('dashboard.home')->with('success', 'Selamat masuk ke dashboard!');
+        return redirect()->route('dashboard.home')
+            ->with('success', 'Peserta dipilih: '.$peserta->nama.' — '.(session('instansi_nama') ?? ''));
     }
 
+    public function lookupInstansiByNama(Request $request)
+    {
+        $nama = mb_strtolower(trim($request->get('nama','')));
 
+        if ($nama === '') {
+            return response()->json(['ok'=>false,'message'=>'Nama kosong'], 422);
+        }
 
+        // Exact dulu
+        $q = Peserta::with('instansi:id,asal_instansi,kota')
+            ->whereRaw('LOWER(nama) = ?', [$nama]);
+
+        $peserta = $q->first();
+
+        // Fallback LIKE 1 kandidat teratas
+        if (!$peserta) {
+            $like = '%'.str_replace(' ','%',$nama).'%';
+            $peserta = Peserta::with('instansi:id,asal_instansi,kota')
+                ->whereRaw('LOWER(nama) LIKE ?', [$like])
+                ->orderBy('nama')
+                ->first();
+        }
+
+        if (!$peserta) {
+            return response()->json(['ok'=>false,'message'=>'Peserta tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'ok' => true,
+            'data' => [
+                'peserta_id' => $peserta->id,
+                'nama'       => $peserta->nama,
+                'instansi'   => optional($peserta->instansi)->asal_instansi,
+                'kota'       => optional($peserta->instansi)->kota,
+            ]
+        ]);
+    }
 
     // ======================
     // Logout - hapus session
     // ======================
     public function logout(Request $request)
     {
-        $request->session()->forget(['peserta_id', 'peserta_id']);
+        $request->session()->forget(['peserta_id']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('dashboard.home')
             ->with('success', 'Logout berhasil.');
     }
-
-
 
     // ======================
     // PRE-TEST
@@ -236,16 +226,16 @@ class DashboardController extends Controller
 
     public function pretestStart(Tes $tes)
     {
-        $pesertaSurveiId = session('peserta_id');
-        if (!$pesertaSurveiId) {
+        $pesertaId = session('peserta_id');
+        if (!$pesertaId) {
             return redirect()->route('dashboard.home')->with('error', 'Silakan pilih peserta terlebih dahulu.');
         }
 
         // Langsung buat percobaan baru
         $percobaan = Percobaan::create([
-            'peserta_id' => $pesertaSurveiId,
-            'tes_id'           => $tes->id,
-            'waktu_mulai'      => now(),
+            'peserta_id'      => $pesertaId,
+            'tes_id'          => $tes->id,
+            'waktu_mulai'     => now(),
         ]);
 
         return redirect()->route('dashboard.pretest.show', [
@@ -345,10 +335,9 @@ class DashboardController extends Controller
 
     public function pretestResult(Percobaan $percobaan)
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'pesertaSurvei']);
+        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'peserta']);
         return view('dashboard.pages.pre-test.pretest-result', compact('percobaan'));
     }
-
 
     // ======================
     // POST-TEST
@@ -371,18 +360,16 @@ class DashboardController extends Controller
 
     public function posttestStart(Tes $tes)
     {
-        $pesertaSurveiId = session('peserta_id');
-//	return $tes;	
-// return $pesertaSurveiId;
-        if (!$pesertaSurveiId) {
+        $pesertaId = session('peserta_id');
+        if (!$pesertaId) {
             return redirect()->route('dashboard.home')->with('error', 'Silakan pilih peserta terlebih dahulu.');
         }
 
         // Langsung buat percobaan baru
         $percobaan = Percobaan::create([
-            'peserta_id' => $pesertaSurveiId,
-            'tes_id'           => $tes->id,
-            'waktu_mulai'      => now(),
+            'peserta_id'      => $pesertaId,
+            'tes_id'          => $tes->id,
+            'waktu_mulai'     => now(),
         ]);
 
         return redirect()->route('dashboard.posttest.show', [
@@ -426,8 +413,6 @@ class DashboardController extends Controller
         $currentQuestionIndex = (int) $request->query('q', 0);
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
-
-
         if (!$pertanyaan) {
             return redirect()->route('dashboard.posttest.result', ['percobaan' => $percobaan->id]);
         }
@@ -460,7 +445,6 @@ class DashboardController extends Controller
         $nextQ = $request->input('next_q');
         $totalQuestions = $percobaan->tes->pertanyaan()->count();
 
-
         if ($nextQ !== null && $nextQ < $totalQuestions) {
             return redirect()->route('dashboard.posttest.show', [
                 'tes'       => $percobaan->tes_id,
@@ -485,19 +469,17 @@ class DashboardController extends Controller
 
     public function posttestResult(Percobaan $percobaan)
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'pesertaSurvei']);
+        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'peserta']);
         return view('dashboard.pages.post-test.posttest-result', compact('percobaan'));
     }
-
 
     // ======================
     // MONEV
     // ======================
     public function monev()
     {
-        // return true;
         $tes = Tes::where('sub_tipe', 'monev')->get();
-        return $tes;
+        return $tes; // (catatan: baris ini akan menghentikan eksekusi; hapus jika ingin menampilkan view)
         return view('dashboard.pages.monev.monev', compact('tes'));
     }
 
@@ -518,35 +500,31 @@ class DashboardController extends Controller
         }
 
         $percobaan = Percobaan::create([
-            'peserta_id' => session('peserta_id'),
-            'tes_id'           => $tesId,
-            'tipe'             => 'monev',
-            'waktu_mulai'      => now(),
+            'peserta_id'  => $pesertaId,
+            'tes_id'      => $tesId,
+            'tipe'        => 'monev',
+            'waktu_mulai' => now(),
         ]);
 
         return redirect()->route('dashboard.monev.show', [
-            'tes' => $tesId,
+            'tes'       => $tesId,
             'percobaan' => $percobaan->id,
         ]);
     }
 
     // ======================
     // SURVEY
-    // ======================   
+    // ======================
     public function survey()
     {
-        // return true;
         $peserta = session('peserta_id');
-        $pid = Peserta::findorFail($peserta);
-        // return $p;
-        // return $peserta;
+        $pid = Peserta::findOrFail($peserta);
         $tes = Tes::where('tipe', 'survei')->where('id', 9)->first();
-        // return $tes;
+
         return redirect()->route('survey.step', [
-            'peserta' => $pid,
-            'order' => $tes->id
+            'peserta' => $pid, // jika route butuh ID, ganti ke $pid->id
+            'order'   => $tes->id
         ]);
-        // return view('dashboard.pages.survey');
     }
 
     public function surveySubmit(Request $request)
@@ -558,11 +536,9 @@ class DashboardController extends Controller
     // Helper: hitung skor
     // ======================
     protected function hitungSkor(Percobaan $percobaan): int
-
     {
         $percobaan->loadMissing(['jawabanUser.opsiJawaban']);
         $jawabanCollection = $percobaan->jawabanUser ?? collect();
-
 
         $total = $jawabanCollection->count();
         if ($total === 0) {
