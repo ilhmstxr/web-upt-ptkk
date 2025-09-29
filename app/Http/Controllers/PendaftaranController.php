@@ -344,7 +344,7 @@ class PendaftaranController extends Controller
 
     public function exportSingle(PendaftaranPelatihan $pendaftaran)
     {
-        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
+    $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
         $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
         return response()->download($pdfPath)->deleteFileAfterSend(true);
     }

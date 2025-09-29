@@ -23,8 +23,8 @@ class TesPercobaanResource extends Resource
     protected static ?string $model = Percobaan::class;
 
     protected static ?string $navigationIcon  = 'heroicon-o-clipboard';
-    protected static ?string $navigationGroup = 'Tes & Percobaan';
-    protected static ?string $navigationLabel = 'Tes Percobaan';
+    protected static ?string $navigationGroup = 'Hasil Kegiatan';
+    protected static ?string $navigationLabel = 'Nilai Peserta';
 
     public static function form(Form $form): Form
     {
