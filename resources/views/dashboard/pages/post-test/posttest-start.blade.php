@@ -172,7 +172,7 @@
         const hours = pad(Math.floor(remaining/3600));
         const minutes = pad(Math.floor((remaining%3600)/60));
         const seconds = pad(remaining%60);
-        document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}`;
+        document.getElementById('timer').textContent = ${hours}:${minutes}:${seconds};
         remaining--;
     }
 

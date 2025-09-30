@@ -3,30 +3,40 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\JawabanSurveiResource\Pages;
-use App\Filament\Resources\JawabanSurveiResource\RelationManagers;
 use App\Models\JawabanSurvei;
-use App\Models\JawabanUser;
-use App\Models\PesertaSurvei;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class JawabanSurveiResource extends Resource
 {
-    protected static ?string $model = PesertaSurvei::class;
+    protected static ?string $model = JawabanSurvei::class;
 
     protected static ?string $navigationGroup = 'Survei Monev';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Jawaban Survei';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('nama')
+                    ->label('Nama')
+                    ->required()
+                    ->maxLength(100),
+
+                Forms\Components\TextInput::make('email')
+                    ->label('Email')
+                    ->email()
+                    ->required()
+                    ->maxLength(150),
+
+                Forms\Components\Textarea::make('jawaban')
+                    ->label('Jawaban')
+                    ->rows(4)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -34,14 +44,34 @@ class JawabanSurveiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama')->limit(50),
-                Tables\Columns\TextColumn::make('email')->limit(50),
+                Tables\Columns\TextColumn::make('nama')
+                    ->label('Nama')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('jawaban')
+                    ->label('Jawaban')
+                    ->limit(100),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dijawab Pada')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
             ])
             ->filters([
-                //
+                // Bisa ditambah filter berdasarkan tanggal atau email
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -53,7 +83,7 @@ class JawabanSurveiResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // tambahkan RelationManager jika ada relasi lain
         ];
     }
 

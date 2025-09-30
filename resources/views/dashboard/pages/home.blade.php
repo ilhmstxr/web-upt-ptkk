@@ -38,18 +38,7 @@
                     </p>
                 </div>
                 <div class="flex gap-2">
-                    {{-- Opsi: ganti peserta / logout (kalau mau aktifkan) --}}
-                    {{-- <button id="btnGantiPeserta" type="button"
-                            class="text-sm px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
-                        Ganti Peserta
-                    </button>
-                    <form action="{{ route('dashboard.logout') }}" method="POST">
-                        @csrf
-                        <button type="submit"
-                                class="text-sm px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
-                            Logout
-                        </button>
-                    </form> --}}
+                    {{-- opsi action (disabled by default) --}}
                 </div>
             </div>
         @endif
@@ -65,10 +54,22 @@
                     </div>
                     <p class="text-gray-500 mt-2 mb-4">Cek kesiapanmu sebelum mengikuti materi.</p>
                 </div>
-                <a href="{{ route('dashboard.pretest.index') }}"
-                   class="w-full block text-center bg-yellow-400 text-yellow-900 font-semibold py-3 px-6 rounded-lg hover:bg-yellow-500 transition-colors">
-                    Kerjakan Pre-Test
-                </a>
+
+                @if(!empty($preTestDone))
+                    <div class="mt-4 text-center">
+                        <button disabled class="inline-block px-3 py-2 bg-gray-100 text-gray-700 rounded cursor-not-allowed">
+                            Sudah dikerjakan
+                        </button>
+                        @if(!empty($preTestScore) || $preTestScore === 0)
+                            <p class="mt-2 text-sm text-gray-600">Nilai: <strong>{{ $preTestScore }}</strong></p>
+                        @endif
+                    </div>
+                @else
+                    <a href="{{ route('dashboard.pretest.index') }}"
+                       class="w-full block text-center bg-yellow-400 text-yellow-900 font-semibold py-3 px-6 rounded-lg hover:bg-yellow-500 transition-colors">
+                        Kerjakan Pre-Test
+                    </a>
+                @endif
             </div>
 
             {{-- Post-Test --}}
@@ -80,10 +81,23 @@
                     </div>
                     <p class="text-gray-500 mt-2 mb-4">Evaluasi hasil belajarmu untuk peningkatan.</p>
                 </div>
-                <a href="{{ route('dashboard.posttest.index') }}"
-                   class="w-full block text-center bg-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors">
-                    Mulai Post-Test
-                </a>
+
+                @if(!empty($postTestDone))
+                    <div class="mt-4 text-center">
+                        <button disabled class="inline-block px-3 py-2 bg-gray-100 text-gray-700 rounded cursor-not-allowed">
+                            Sudah dikerjakan
+                        </button>
+
+                        @if(!is_null($postTestScore))
+                            <p class="mt-2 text-sm text-gray-600">Nilai: <strong>{{ $postTestScore }}</strong></p>
+                        @endif
+                    </div>
+                @else
+                    <a href="{{ route('dashboard.posttest.index') }}"
+                       class="w-full block text-center bg-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors">
+                        Mulai Post-Test
+                    </a>
+                @endif
             </div>
 
             {{-- MONEV / Survey --}}
@@ -95,10 +109,22 @@
                     </div>
                     <p class="text-gray-500 mt-2">Akses Monitoring dan Evaluasi Selama Mengikuti Pelatihan.</p>
                 </div>
-                <a href="{{ route('dashboard.survey') }}"
-                   class="mt-6 block text-center w-full lg:w-auto bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
-                    Mulai Survey
-                </a>
+
+                @if(!empty($monevDone))
+                    <div class="mt-4 text-center">
+                        <button disabled class="inline-block px-3 py-2 bg-gray-100 text-gray-700 rounded cursor-not-allowed">
+                            Sudah dikerjakan
+                        </button>
+                        @if(!is_null($monevScore))
+                            <p class="mt-2 text-sm text-gray-600">Nilai: <strong>{{ $monevScore }}</strong></p>
+                        @endif
+                    </div>
+                @else
+                    <a href="{{ route('dashboard.survey') }}"
+                       class="mt-6 block text-center w-full lg:w-auto bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                        Mulai Survey
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -118,6 +144,9 @@
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
                     <div class="bg-yellow-500 h-2.5 rounded-full" style="width: {{ $preBar }}%"></div>
                 </div>
+                @if(!is_null($preTestScore))
+                    <p class="mt-2 text-sm text-gray-600">Nilai terakhir: <strong>{{ $preTestScore }}</strong></p>
+                @endif
             </div>
 
             {{-- Post-Test --}}
@@ -134,6 +163,9 @@
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
                     <div class="bg-green-500 h-2.5 rounded-full" style="width: {{ $postBar }}%"></div>
                 </div>
+                @if(!is_null($postTestScore))
+                    <p class="mt-2 text-sm text-gray-600">Nilai terakhir: <strong>{{ $postTestScore }}</strong></p>
+                @endif
             </div>
 
             {{-- MONEV --}}
@@ -150,6 +182,9 @@
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
                     <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $monevBar }}%"></div>
                 </div>
+                @if(!is_null($monevScore))
+                    <p class="mt-2 text-sm text-gray-600">Nilai terakhir: <strong>{{ $monevScore }}</strong></p>
+                @endif
             </div>
         </div>
     </div>
@@ -252,7 +287,7 @@
         let t; let lastQuery = ''; let submitting = false;
 
         async function lookup(nama){
-            const url = `{{ route('dashboard.ajax.peserta.instansiByNama') }}?nama=${encodeURIComponent(nama)}`;
+            const url = {{ route('dashboard.ajax.peserta.instansiByNama') }}?nama=${encodeURIComponent(nama)};
             const res = await fetch(url, { headers: { 'X-Requested-With':'XMLHttpRequest' } });
             const data = await res.json().catch(()=>null);
             if (!res.ok || !data?.ok) throw new Error(data?.message || 'Lookup gagal');
@@ -263,7 +298,7 @@
             const sekolah = data?.data?.instansi || '';
             const kota    = data?.data?.kota || '';
             const pid     = data?.data?.peserta_id || '';
-            $inst.value   = sekolah ? (kota ? `${sekolah} (${kota})` : sekolah) : '';
+            $inst.value   = sekolah ? (kota ? ${sekolah} (${kota}) : sekolah) : '';
             $pid.value    = pid;
             $btn.disabled = !(data?.ok && pid);
             if (data?.ok) $help.classList.add('hidden');
