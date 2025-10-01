@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\JawabanSurveiResource\Pages;
 
 use App\Filament\Resources\JawabanSurveiResource;
-use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanChart;
+use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerPertanyaanChart;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\PelatihanDetailStats;
 use App\Filament\Resources\PesertaSurveiResource\Widgets\PesertaBelumMengisi;
 use App\Models\Pelatihan;
@@ -27,12 +27,12 @@ class PelatihanReport extends Page
         return 'Laporan Survei: ' . $this->pelatihan->nama_pelatihan;
     }
 
-    // Cukup panggil satu JawabanChart dan widget lainnya
+    // Cukup panggil satu JawabanPerPertanyaanChart dan widget lainnya
     protected function getHeaderWidgets(): array
     {
         return [
             PelatihanDetailStats::make(['pelatihan' => $this->pelatihan]),
-            JawabanChart::make(['pelatihan' => $this->pelatihan]), // Panggil satu kali saja
+            JawabanPerPertanyaanChart::make(['pelatihan' => $this->pelatihan]), // Panggil satu kali saja
             PesertaBelumMengisi::make(['pelatihan' => $this->pelatihan]),
         ];
     }

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\JawabanSurveiResource\Pages;
 
 use App\Filament\Resources\JawabanSurveiResource;
-use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanChart;
+use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerPertanyaanChart;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\PelatihanDetailStats;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\PelatihanList;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\SurveyStatsOverview;
@@ -22,7 +22,7 @@ class ListJawabanSurveis extends ListRecords
             SurveyStatsOverview::class,
             PelatihanList::class,
             PesertaBelumMengisi::class,
-            JawabanChart::class,
+            JawabanPerPertanyaanChart::class,
         ];
     }
 

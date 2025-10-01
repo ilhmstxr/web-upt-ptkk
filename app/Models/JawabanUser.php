@@ -17,29 +17,35 @@ class JawabanUser extends Model
         'percobaan_id',
         'nilai_jawaban',
         'jawaban_teks',
-        // TIDAK perlu peserta_id di sini
     ];
 
-    // --- RELATIONS ---
-
-    public function percobaan()
-    {
-        return $this->belongsTo(Percobaan::class, 'percobaan_id', 'id');
-    }
-
+    /**
+     * Relasi ke Pertanyaan
+     */
     public function pertanyaan()
     {
-        return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id', 'id');
+        return $this->belongsTo(Pertanyaan::class);
     }
 
+    /**
+     * Relasi ke OpsiJawaban
+     */
     public function opsiJawaban()
     {
-        return $this->belongsTo(OpsiJawaban::class, 'opsi_jawaban_id', 'id');
+        return $this->belongsTo(OpsiJawaban::class);
     }
 
-    // Hapus ini karena membingungkan (plural tapi relasi belongsTo)
-    // public function opsiJawabans() { return $this->opsiJawaban(); }
+    /**
+     * Relasi ke Percobaan
+     */
+    public function percobaan()
+    {
+        return $this->belongsTo(Percobaan::class);
+    }
 
-    // Hapus relasi pesertaSurvei lama karena sudah diganti arsitekturnya
-    // public function pesertaSurvei() { ... }
+    public function tes()
+{
+    return $this->belongsTo(\App\Models\Tes::class, 'tes_id');
+}
+
 }

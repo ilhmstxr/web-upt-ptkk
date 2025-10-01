@@ -43,4 +43,10 @@ class JawabanSurvei extends Model
     {
         return $this->belongsTo(Peserta::class);
     }
+
+    public function tes()
+{
+    return $this->belongsTo(\App\Models\Tes::class, 'tes_id');
+}
+
 }

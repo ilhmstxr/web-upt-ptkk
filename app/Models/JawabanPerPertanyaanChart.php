@@ -1,32 +1,62 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Filament\Resources\JawabanSurveiResource\Widgets;
 
 use App\Models\JawabanUser;
-use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
+use App\Models\Pertanyaan;
+use Filament\Widgets\ChartWidget;
 
-class JawabanPerPertanyaanChart extends ApexChartWidget
+class JawabanPerPertanyaanChart extends ChartWidget
 {
-    protected static string $chartId = 'jawabanPerPertanyaan';
-    protected static ?string $heading = 'Distribusi Jawaban (Tes/Survei)';
+    protected static ?string $heading = 'Distribusi Jawaban per Pertanyaan';
 
-    protected function getOptions(): array
+    public ?int $pertanyaanId = null; // buat filter pertanyaan
+
+    protected function getData(): array
     {
-        // sementara hardcode ID pertanyaan = 1
-        $pertanyaanId = 1;
+        // default ambil pertanyaan pertama kalau belum dipilih
+        $pertanyaanId = $this->pertanyaanId ?? Pertanyaan::query()->value('id');
 
-        $data = JawabanUser::where('pertanyaan_id', $pertanyaanId)
-            ->join('opsi_jawaban', 'jawaban_user.opsi_jawaban_id', '=', 'opsi_jawaban.id')
-            ->selectRaw('opsi_jawaban.teks as label, COUNT(*) as total')
-            ->groupBy('opsi_jawaban.teks')
-            ->pluck('total', 'label');
+        $pertanyaan = Pertanyaan::find($pertanyaanId);
+
+        if (! $pertanyaan) {
+            return [
+                'datasets' => [],
+                'labels' => [],
+            ];
+        }
+
+        // hitung distribusi jawaban berdasarkan opsi_jawaban_id
+        $jawaban = JawabanUser::query()
+            ->where('pertanyaan_id', $pertanyaanId)
+            ->selectRaw('opsi_jawaban_id, COUNT(*) as total')
+            ->groupBy('opsi_jawaban_id')
+            ->get();
+
+        $labels = [];
+        $values = [];
+
+        foreach ($jawaban as $j) {
+            $labels[] = optional($j->opsiJawaban)->teks_opsi ?? 'Teks';
+            $values[] = $j->total;
+        }
 
         return [
-            'chart' => [
-                'type' => 'pie',
+            'datasets' => [
+                [
+                    'label' => $pertanyaan->teks_pertanyaan,
+                    'data' => $values,
+                    'backgroundColor' => [
+                        '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'
+                    ],
+                ],
             ],
-            'series' => $data->values()->toArray(),
-            'labels' => $data->keys()->toArray(),
+            'labels' => $labels,
         ];
+    }
+
+    protected function getType(): string
+    {
+        return 'pie';
     }
 }
