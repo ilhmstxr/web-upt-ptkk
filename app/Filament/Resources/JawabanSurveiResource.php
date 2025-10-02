@@ -93,20 +93,19 @@ class JawabanSurveiResource extends Resource
     }
 
     public static function getPages(): array
-{
-    return [
-        'index' => Pages\ListJawabanSurveis::route('/'),
-        'create' => Pages\CreateJawabanSurvei::route('/create'),
-        'edit' => Pages\EditJawabanSurvei::route('/{record}/edit'),
-        'report' => Pages\ReportJawabanSurvei::route('/report'), // ini
-    ];
-}
+    {
+        return [
+            'index' => Pages\ListJawabanSurveis::route('/'),
+            'create' => Pages\CreateJawabanSurvei::route('/create'),
+            'edit' => Pages\EditJawabanSurvei::route('/{record}/edit'),
+            'report' => Pages\ReportJawabanSurvei::route('/report'), // ini
+        ];
+    }
 
     public static function getWidgets(): array
-{
-    return [
-        \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerPertanyaanChart::class,
-    ];
-}
-
+    {
+        return [
+            \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerPertanyaanChart::class,
+        ];
+    }
 }
