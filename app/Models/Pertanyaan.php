@@ -24,6 +24,9 @@ class Pertanyaan extends Model
     protected $casts = [
         'nomor' => 'integer',
     ];
+
+    protected $hidden = ['templates'];
+
     // -------------------------
     // RELATIONS
     // -------------------------
@@ -34,18 +37,28 @@ class Pertanyaan extends Model
         return $this->belongsTo(Tes::class, 'tes_id');
     }
 
-    // Relasi ke Opsi Jawaban (plural: hasMany)
-    public function opsiJawabans(): HasMany
+    // Alias singular supaya kode lama tetap jalan
+    public function opsiJawabans()
     {
-        // Tambahkan kolom sort_order di DB bila ingin kontrol urutan
         return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id')->orderBy('id');
     }
 
-    // Alias singular supaya kode lama tetap jalan
-    public function opsiJawaban()
-    {
-        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id');
-    }
+   public function pivotTemplate()
+{
+    return $this->hasOne(PivotJawaban::class, 'pertanyaan_id');
+}
+
+public function templatePertanyaan()
+{
+    return $this->hasOneThrough(
+        Pertanyaan::class,
+        PivotJawaban::class,
+        'pertanyaan_id',          // FK di pivot -> pertanyaan ini
+        'id',                     // PK pertanyaan template
+        'id',                     // PK pertanyaan ini
+        'template_pertanyaan_id'  // FK di pivot -> pertanyaan template
+    );
+}
 
     // Relasi ke Jawaban User
     public function jawabanUsers()
@@ -56,12 +69,7 @@ class Pertanyaan extends Model
     // Relasi ke template pertanyaan (self-referencing many-to-many)
     public function templates()
     {
-        return $this->belongsToMany(
-            self::class,
-            'pivot_jawaban',           // nama tabel pivot
-            'pertanyaan_id',           // FK ke pertanyaan ini
-            'template_pertanyaan_id'   // FK ke pertanyaan template
-        );
+        return $this->belongsToMany(self::class, 'pivot_jawaban', 'pertanyaan_id', 'template_pertanyaan_id');
     }
 
     // -------------------------
@@ -79,21 +87,24 @@ class Pertanyaan extends Model
      * - Pakai opsi sendiri kalau ada
      * - Kalau kosong, fallback ke template pertama
      */
-    public function getOpsiJawabanFinalAttribute()
-    {
-        $own = $this->relationLoaded('opsiJawabans')
-            ? $this->opsiJawabans
-            : $this->opsiJawabans()->get();
+    // Di dalam file: app/Models/Pertanyaan.php
 
-        if ($own->isNotEmpty()) {
-            return $own;
+
+    public function getOpsiJawabansAttribute()
+    {
+        // Mengambil data relasi 'opsiJawabans' yang sudah di-load oleh with()
+        $opsiMilikSendiri = $this->getRelationValue('opsiJawabans');
+
+        // Jika ada dan tidak kosong, langsung kembalikan
+        if ($opsiMilikSendiri && $opsiMilikSendiri->isNotEmpty()) {
+            return $opsiMilikSendiri;
         }
 
-        $templates = $this->relationLoaded('templates')
-            ? $this->templates
-            : $this->templates()->with('opsiJawabans')->get();
+        // Jika tidak ada, ambil data 'templates' yang sudah di-load oleh with()
+        $template = $this->getRelationValue('templates')->first();
 
-        return collect(optional($templates->first())->opsiJawabans);
+        // Kembalikan opsi jawaban dari template
+        return optional($template)->getRelationValue('opsiJawabans') ?? collect();
     }
 
     /**

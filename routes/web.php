@@ -21,6 +21,7 @@ use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
+use Illuminate\Support\Facades\DB;;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,35 +94,35 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 
     // ===== PERBAIKAN PATH: gunakan path relatif (tanpa 'dashboard/') =====
- // Set/Unset Peserta
-Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
-Route::post('unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
+    // Set/Unset Peserta
+    Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
+    Route::post('unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
 
-Route::get('ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
-    ->name('ajax.peserta.instansiByNama');
+    Route::get('ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
+        ->name('ajax.peserta.instansiByNama');
 
-// Logout (pilih salah satu, saran: POST)
-Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
-// HAPUS ini bila pakai POST saja:
-// Route::match(['get','post'], 'logout', [DashboardController::class, 'logout'])->name('logout');
+    // Logout (pilih salah satu, saran: POST)
+    Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
+    // HAPUS ini bila pakai POST saja:
+    // Route::match(['get','post'], 'logout', [DashboardController::class, 'logout'])->name('logout');
 
-Route::prefix('pretest')->name('pretest.')->group(function () {
-    Route::get('/', [DashboardController::class, 'pretest'])->name('index');
-    Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result'); // spesifik dulu
-    Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
-    Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
-    Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
-    Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show'); // dinamis terakhir
-});
+    Route::prefix('pretest')->name('pretest.')->group(function () {
+        Route::get('/', [DashboardController::class, 'pretest'])->name('index');
+        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result'); // spesifik dulu
+        Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
+        Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
+        Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
+        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show'); // dinamis terakhir
+    });
 
-Route::prefix('posttest')->name('posttest.')->group(function () {
-    Route::get('/', [DashboardController::class, 'posttest'])->name('index');
-    Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
-    Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
-    Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
-    Route::post('{tes}/begin', [DashboardController::class, 'posttestBegin'])->name('begin');
-    Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
-});
+    Route::prefix('posttest')->name('posttest.')->group(function () {
+        Route::get('/', [DashboardController::class, 'posttest'])->name('index');
+        Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
+        Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
+        Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
+        Route::post('{tes}/begin', [DashboardController::class, 'posttestBegin'])->name('begin');
+        Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
+    });
 
 
     // Feedback (survey)
@@ -231,4 +232,85 @@ Route::get('/cek_icon', fn() => view('cek_icon'));
 | Auth (login, register, dll.)
 |--------------------------------------------------------------------------
 */
+
+/*
+|--------------------------------------------------------------------------
+| Auth (login, register, dll.)
+|--------------------------------------------------------------------------
+*/
+route::get('/test', function () {
+    // skala per pertanyaan done
+    $rows = DB::table('pertanyaan as p')
+        ->leftJoin('opsi_jawaban as o', 'o.pertanyaan_id', '=', 'p.id')                 // opsi milik pertanyaan
+        ->leftJoin('pivot_jawaban as pj', 'pj.pertanyaan_id', '=', 'p.id')               // mapping ke template
+        ->leftJoin('opsi_jawaban as t', 't.pertanyaan_id', '=', 'pj.template_pertanyaan_id') // opsi milik template
+        ->where('p.tipe_jawaban', 'skala_likert')
+        ->groupBy('p.id')
+        ->orderBy('p.id')
+        ->get([
+            'p.id as pertanyaan_id',
+            DB::raw('COUNT(DISTINCT o.id)  as own_cnt'),
+            DB::raw('COUNT(DISTINCT t.id)  as tpl_cnt'),
+        ]);
+
+    $hasil = $rows->map(function ($r) {
+        $cnt = (int) ($r->own_cnt ?: $r->tpl_cnt);   // pakai opsi sendiri; jika 0, pakai opsi template
+        return [
+            'pertanyaan_id' => (int) $r->pertanyaan_id,
+            'skala'         => $cnt ? range(1, $cnt) : [],  // contoh: [1,2,3,4]
+        ];
+    })->values();
+
+
+    $jawaban = App\Models\JawabanUser::with('pertanyaan') // Eager load relasi pertanyaan
+        ->get();
+
+    // Kelompokkan berdasarkan teks pertanyaan untuk hasil yang lebih mudah dibaca
+    $dikelompokkan = $jawaban->groupBy('pertanyaan.teks_pertanyaan');
+
+    return response()->json($dikelompokkan);
+
+    // ====================================
+    // output jawaban per kategori 
+    // ====================================
+    // Eager load relasi secara mendalam: Jawaban -> Pertanyaan -> Tes -> Bidang
+    // $jawaban = App\Models\JawabanUser::with('pertanyaan.tes.bidang')->get();
+
+    // // Kelompokkan berdasarkan nama bidang dari relasi yang sudah di-load
+    // $dikelompokkan = $jawaban->groupBy('pertanyaan.tes.bidang.nama'); // Asumsi kolom nama di tabel bidang
+    
+    // return response()->json($dikelompokkan);
+    
+    
+    // ====================================
+    // akumulasi total 
+    // ====================================
+    // Ambil data yang sudah dikelompokkan seperti pada Output 2
+    // $jawabanPerKategori = App\Models\JawabanUser::with('pertanyaan.tes.bidang')
+    //     ->get()
+    //     ->groupBy('pertanyaan.tes.bidang.nama');
+
+    // // Gunakan method mapWithKeys untuk mentransformasi hasil menjadi laporan
+    // $akumulasi = $jawabanPerKategori->mapWithKeys(function ($jawabanDiKategori, $namaKategori) {
+    //     // Filter hanya jawaban yang memiliki nilai (untuk skala likert)
+    //     $jawabanDenganNilai = $jawabanDiKategori->whereNotNull('nilai_jawaban');
+
+    //     return [
+    //         $namaKategori => [
+    //             'jumlah_jawaban' => $jawabanDiKategori->count(),
+    //             'jumlah_responden_skala' => $jawabanDenganNilai->count(),
+    //             'total_nilai' => $jawabanDenganNilai->sum('nilai_jawaban'),
+    //             'rata_rata_nilai' => round($jawabanDenganNilai->avg('nilai_jawaban'), 2)
+    //         ]
+    //     ];
+    // });
+
+    // return response()->json($akumulasi);
+
+    // dd($jawaban);
+    return 1;
+    // view('login');
+
+
+})->name('login');
 require __DIR__ . '/auth.php';
