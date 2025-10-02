@@ -2,32 +2,35 @@
 
 namespace App\Filament\Resources\JawabanSurveiResource\Pages;
 
-use Filament\Resources\Pages\Page; // penting: Resources\Pages\Page
+use Filament\Resources\Pages\Page;
 use App\Filament\Resources\JawabanSurveiResource;
-use App\Filament\Resources\JawabanSurveiResource\Widgets\{
-    JawabanPerPertanyaanChart,
-    JawabanPerKategoriChart,
-    JawabanAkumulatifChart
-};
+use App\Models\Pelatihan;
 
 class ReportJawabanSurvei extends Page
 {
     protected static string $resource = JawabanSurveiResource::class;
 
-    protected static ?string $title = 'Laporan Jawaban Survei';
+    protected static ?string $title = null;               // matikan judul default
     protected static ?string $navigationLabel = 'Laporan Survei';
-    
-    // gunakan blade khusus agar bisa punya filter (query string: pelatihanId)
     protected static string $view = 'filament.resources.jawaban-surveis.pages.report-page';
 
-    // C:\Users\Ilhamstxr\Documents\laragon\www\htdocs\web-upt-ptkk\resources\views\filament\resources\jawaban-surveis\pages\report-page
-    // tiga chart ditampilkan sebagai header widgets
     protected function getHeaderWidgets(): array
     {
         return [
-            JawabanPerPertanyaanChart::class,
-            JawabanPerKategoriChart::class,
-            JawabanAkumulatifChart::class,
+            \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerPertanyaanChart::class,
+            \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerKategoriChart::class,
+            \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanAkumulatifChart::class,
         ];
+    }
+
+    public function getHeading(): string
+    {
+        $id = request()->integer('pelatihanId');
+        return (string) Pelatihan::whereKey($id)->value('nama_pelatihan'); // hanya satu judul
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Laporan Jawaban Survei'; // opsional: subjudul kecil
     }
 }
