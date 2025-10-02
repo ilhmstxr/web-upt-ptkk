@@ -64,6 +64,9 @@ Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pen
 Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 
+// ==========================================================================
+// EXPORT
+// ==========================================================================
 // Cetak Massal
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
@@ -75,6 +78,11 @@ Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::cl
 
 Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
     ->name('exports.pendaftaran.single');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reports/jawaban-akumulatif/pdf', [JawabanSurveiReportController::class, 'jawabanAkumulatifPdf'])
+        ->name('reports.jawaban-akumulatif.pdf');
+});
+
 
 // Step View
 Route::prefix('pendaftaran/step')->group(function () {
@@ -245,14 +253,14 @@ Route::get('/cek_icon', fn() => view('cek_icon'));
 */
 route::get('/test', function () {
 
-        $pelatihan = App\Models\Pelatihan::findOrFail(1);
-        $pelatihanIds = \App\Models\Pelatihan::with([
-            'tes' => fn($q) => $q->where('tipe', 'survei')
-                ->select('id', 'pelatihan_id')
-                ->with([
-                    'pertanyaan' => fn($qp) => $qp->where('tipe_jawaban', 'skala_likert')
-                ])
-        ])->get();
+    $pelatihan = App\Models\Pelatihan::findOrFail(1);
+    $pelatihanIds = \App\Models\Pelatihan::with([
+        'tes' => fn($q) => $q->where('tipe', 'survei')
+            ->select('id', 'pelatihan_id')
+            ->with([
+                'pertanyaan' => fn($qp) => $qp->where('tipe_jawaban', 'skala_likert')
+            ])
+    ])->get();
 
 
     // $questions = Pertanyaan::whereIn('id', $pertanyaanIds)->where('tipe_jawaban', 'skala_likert')

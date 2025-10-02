@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JawabanSurveiResource\Widgets;
 
+use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
 use Livewire\Attributes\Reactive;
 
@@ -23,54 +24,47 @@ class JawabanAkumulatifChart extends ChartWidget
         $pelatihanId   = $this->pelatihanId ?? request()->integer('pelatihanId');
         $pertanyaanIds = $this->collectPertanyaanIds($pelatihanId);
 
-        $labels = ['Tidak Memuaskan', 'Kurang Memuaskan', 'Cukup Memuaskan', 'Sangat Memuaskan'];
-        $colorsBg = [
-            'rgba(248,113,113,0.7)', // red-400
-            'rgba(251,191,36,0.7)',  // amber-400
-            'rgba(59,130,246,0.7)',  // blue-500
-            'rgba(16,185,129,0.7)',  // emerald-500
-        ];
-        $colorsBorder = [
-            'rgb(239,68,68)',
-            'rgb(245,158,11)',
-            'rgb(59,130,246)',
-            'rgb(16,185,129)',
-        ];
+        $base = ['Tidak Memuaskan', 'Kurang Memuaskan', 'Cukup Memuaskan', 'Sangat Memuaskan'];
+        $bg = ['rgba(248,113,113,0.7)', 'rgba(251,191,36,0.7)', 'rgba(59,130,246,0.7)', 'rgba(16,185,129,0.7)'];
+        $bd = ['rgb(239,68,68)', 'rgb(245,158,11)', 'rgb(59,130,246)', 'rgb(16,185,129)'];
 
-        if ($pertanyaanIds->isEmpty()) {
-            return [
-                'labels' => $labels,
-                'datasets' => [[
-                    'label' => 'Jumlah Jawaban',
-                    'data' => [0, 0, 0, 0],
-                    'backgroundColor' => $colorsBg,
-                    'borderColor' => $colorsBorder,
-                    'borderWidth' => 1,
-                ]],
-            ];
+        // hitung count
+        $counts = [0, 0, 0, 0];
+        if ($pertanyaanIds->isNotEmpty()) {
+            [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIds);
+            $rows = $this->normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId);
+            foreach ($rows as $r) {
+                $s = (int)($r['skala'] ?? 0);
+                if ($s >= 1 && $s <= 4) {
+                    $counts[$s - 1]++;
+                }
+            }
         }
 
-        [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIds);
-        $rows   = $this->normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId);
-
-        $counts = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
-        foreach ($rows as $r) {
-            if (!empty($r['skala'])) $counts[$r['skala']]++;
-        }
+        // legend: nama + persen (global)
+        $total = array_sum($counts) ?: 1;
+        $pct   = array_map(fn($v) => round($v / $total * 100, 1), $counts);
+        $fmt   = fn($v) => str_replace('.', ',', number_format($v, 1));
+        $labels = [
+            "{$base[0]} — {$fmt($pct[0])}%",
+            "{$base[1]} — {$fmt($pct[1])}%",
+            "{$base[2]} — {$fmt($pct[2])}%",
+            "{$base[3]} — {$fmt($pct[3])}%",
+        ];
 
         return [
             'labels' => $labels,
             'datasets' => [[
                 'label' => 'Jumlah Jawaban',
-                'data' => [$counts[1], $counts[2], $counts[3], $counts[4]],
-                'backgroundColor' => $colorsBg,
-                'borderColor' => $colorsBorder,
+                'data' => $counts,
+                'backgroundColor' => $bg,
+                'borderColor' => $bd,
                 'borderWidth' => 1,
             ]],
             'options' => [
                 'plugins' => [
-                    'legend'  => ['position' => 'top'],
-                    'tooltip' => ['mode' => 'index', 'intersect' => false],
+                    'legend' => ['position' => 'right'],
+                    'tooltip' => ['enabled' => true],
                 ],
             ],
         ];

@@ -6,6 +6,8 @@ use App\Filament\Resources\JawabanSurveiResource;
 use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
 use Livewire\Attributes\Url;
+use Filament\Actions;
+
 
 
 class ReportJawabanSurvei extends Page
@@ -16,6 +18,22 @@ class ReportJawabanSurvei extends Page
 
     #[Url(as: 'pelatihanId')]
     public ?int $pelatihanId = null;
+
+
+
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\Action::make('export_pdf')
+                ->label('Export PDF')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->url(fn() => route('reports.jawaban-akumulatif.pdf', [
+                    'pelatihanId' => $this->pelatihanId ?? request()->integer('pelatihanId'),
+                ]))
+                ->openUrlInNewTab(),
+        ];
+    }
 
     protected function getHeaderWidgets(): array
     {
