@@ -19,6 +19,7 @@ use App\Mail\TestMail;
 use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\DB;
@@ -79,7 +80,7 @@ Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::cl
 Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
     ->name('exports.pendaftaran.single');
 Route::middleware(['auth'])->group(function () {
-    Route::get('/reports/jawaban-akumulatif/pdf', [JawabanSurveiReportController::class, 'jawabanAkumulatifPdf'])
+    Route::get('/reports/jawaban-akumulatif/pdf', [ExportController::class, 'jawabanAkumulatifPdf'])
         ->name('reports.jawaban-akumulatif.pdf');
 });
 
@@ -248,11 +249,11 @@ Route::get('/cek_icon', fn() => view('cek_icon'));
 
 /*
 |--------------------------------------------------------------------------
-| Auth (login, register, dll.)
+| TESTING
 |--------------------------------------------------------------------------
 */
 route::get('/test', function () {
-
+    return view('filament.resources.jawaban-surveis.pages.report-jawaban-survei');
     $pelatihan = App\Models\Pelatihan::findOrFail(1);
     $pelatihanIds = \App\Models\Pelatihan::with([
         'tes' => fn($q) => $q->where('tipe', 'survei')

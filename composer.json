@@ -23,6 +23,7 @@
         "mpdf/mpdf": "^8.2",
         "phpoffice/phpword": "^1.4",
         "saade/filament-fullcalendar": "^3.2",
+        "spatie/browsershot": "^5.0",
         "spatie/laravel-permission": "^6.21"
     },
     "require-dev": {
