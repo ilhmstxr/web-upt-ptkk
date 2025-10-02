@@ -1,17 +1,15 @@
 <?php
-
+// app/Filament/Resources/JawabanSurveiResource/Pages/ReportJawabanSurvei.php
 namespace App\Filament\Resources\JawabanSurveiResource\Pages;
 
-use Filament\Resources\Pages\Page;
 use App\Filament\Resources\JawabanSurveiResource;
 use App\Models\Pelatihan;
+use Filament\Resources\Pages\Page;
 
 class ReportJawabanSurvei extends Page
 {
     protected static string $resource = JawabanSurveiResource::class;
-
-    protected static ?string $title = null;               // matikan judul default
-    protected static ?string $navigationLabel = 'Laporan Survei';
+    protected static ?string $title = null;
     protected static string $view = 'filament.resources.jawaban-surveis.pages.report-page';
 
     protected function getHeaderWidgets(): array
@@ -26,11 +24,6 @@ class ReportJawabanSurvei extends Page
     public function getHeading(): string
     {
         $id = request()->integer('pelatihanId');
-        return (string) Pelatihan::whereKey($id)->value('nama_pelatihan'); // hanya satu judul
-    }
-
-    public function getSubheading(): ?string
-    {
-        return 'Laporan Jawaban Survei'; // opsional: subjudul kecil
+        return (string) Pelatihan::whereKey($id)->value('nama_pelatihan');
     }
 }

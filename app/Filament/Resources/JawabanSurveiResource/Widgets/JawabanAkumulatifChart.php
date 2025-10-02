@@ -24,9 +24,9 @@ class JawabanAkumulatifChart extends ChartWidget
             'rgba(16,185,129,0.7)',  // emerald-500
         ];
         $colorsBorder = [
+            'rgb(239,68,68)',
             'rgb(245,158,11)',
             'rgb(59,130,246)',
-            'rgb(239,68,68)',
             'rgb(16,185,129)',
         ];
 
