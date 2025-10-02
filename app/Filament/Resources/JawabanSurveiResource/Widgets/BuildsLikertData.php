@@ -13,20 +13,35 @@ trait BuildsLikertData
     /** Ambil pertanyaan_id berbasis pelatihan → tes(survei) → pertanyaan(skala_likert). */
     protected function collectPertanyaanIds(?int $pelatihanId): Collection
     {
-        $q = JawabanUser::query()
-            ->join('percobaan as pr', 'pr.id', '=', 'jawaban_user.percobaan_id')
+        // salah
+        // $q = JawabanUser::query()
+        //     ->join('percobaan as pr', 'pr.id', '=', 'jawaban_user.percobaan_id')
+        //     ->join('tes as t', 't.id', '=', 'pr.tes_id')
+        //     ->join('pertanyaan as p', 'p.id', '=', 'jawaban_user.pertanyaan_id')
+        //     ->where('t.tipe', 'survei')
+        //     ->where('p.tipe_jawaban', 'skala_likert');
+
+        // if ($pelatihanId) {
+        //     $q->where('t.pelatihan_id', $pelatihanId);
+        // }
+
+        // return $q->distinct()
+        //     ->pluck('jawaban_user.pertanyaan_id')
+        //     ->values();
+
+        // test 1
+        return JawabanUser::query()
+            ->from('jawaban_user as ju')
+            ->join('percobaan as pr', 'pr.id', '=', 'ju.percobaan_id')
             ->join('tes as t', 't.id', '=', 'pr.tes_id')
-            ->join('pertanyaan as p', 'p.id', '=', 'jawaban_user.pertanyaan_id')
+            ->join('pertanyaan as p', 'p.id', '=', 'ju.pertanyaan_id')
             ->where('t.tipe', 'survei')
-            ->where('p.tipe_jawaban', 'skala_likert');
-
-        if ($pelatihanId) {
-            $q->where('t.pelatihan_id', $pelatihanId);
-        }
-
-        return $q->distinct()
-            ->pluck('jawaban_user.pertanyaan_id')
+            ->where('p.tipe_jawaban', 'skala_likert')
+            ->when($pelatihanId, fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
+            ->distinct()
+            ->pluck('ju.pertanyaan_id')
             ->values();
+
     }
 
     /** Normalisasi input apa pun menjadi daftar integer pertanyaan_id unik. */
