@@ -11,7 +11,7 @@ class JawabanPerKategoriChart extends ChartWidget
     use BuildsLikertData;
 
     protected static ?string $heading = 'Distribusi Skala per Kategori';
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = '85%';
 
     private array $arrayCustom = [
         'Pendapat Tentang Penyelenggaran Pelatihan',
@@ -79,6 +79,18 @@ class JawabanPerKategoriChart extends ChartWidget
             }
         }
 
+        foreach ($matrix as $cat => $counts) {
+            $total = array_sum($counts);
+            if ($total <= 0) {
+                $matrix[$cat] = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+                continue;
+            }
+
+            foreach ($counts as $scale => $count) {
+                $matrix[$cat][$scale] = round(($count / $total) * 100, 2);
+            }
+        }
+
         if (empty($matrix)) {
             return ['labels' => [], 'datasets' => []];
         }
@@ -127,7 +139,7 @@ class JawabanPerKategoriChart extends ChartWidget
             'options' => [
                 'scales' => [
                     'x' => ['stacked' => true],
-                    'y' => ['stacked' => true, 'beginAtZero' => true],
+                    'y' => ['stacked' => true, 'beginAtZero' => true, 'max' => 100],
                 ],
                 'plugins' => [
                     'legend'  => ['position' => 'top'],

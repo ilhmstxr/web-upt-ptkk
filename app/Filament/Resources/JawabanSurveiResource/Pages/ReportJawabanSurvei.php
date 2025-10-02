@@ -15,9 +15,11 @@ class ReportJawabanSurvei extends Page
     protected function getHeaderWidgets(): array
     {
         return [
-            \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerPertanyaanChart::class,
-            \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerKategoriChart::class,
+            // \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerPertanyaanChart::class,
             \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanAkumulatifChart::class,
+            \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerKategoriChart::class,
+            \App\Filament\Resources\JawabanSurveiResource\Widgets\PiePerPertanyaanWidget::class,
+
         ];
     }
 

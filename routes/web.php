@@ -244,12 +244,27 @@ Route::get('/cek_icon', fn() => view('cek_icon'));
 |--------------------------------------------------------------------------
 */
 route::get('/test', function () {
-/**
- * End-to-end pipeline:
- *  - Hitung skala Likert per jawaban {percobaan_id, pertanyaan_id, opsi_jawaban_id, skala}
- *  - Kelompokkan jawaban ke kategori kustom berbasis urutan pertanyaan & penanda 'pesan dan kesan'
- *  - Akumulasi nilai skala (1..4) global dan per kategori
- */
+
+        $pelatihan = App\Models\Pelatihan::findOrFail(1);
+        $pelatihanIds = \App\Models\Pelatihan::with([
+            'tes' => fn($q) => $q->where('tipe', 'survei')
+                ->select('id', 'pelatihan_id')
+                ->with([
+                    'pertanyaan' => fn($qp) => $qp->where('tipe_jawaban', 'skala_likert')
+                ])
+        ])->get();
+
+
+    // $questions = Pertanyaan::whereIn('id', $pertanyaanIds)->where('tipe_jawaban', 'skala_likert')
+    //     ->orderBy('tes_id')->orderBy('nomor')
+    //     ->get(['id', 'nomor', 'teks_pertanyaan']);
+    // return $questions;
+    /**
+     * End-to-end pipeline:
+     *  - Hitung skala Likert per jawaban {percobaan_id, pertanyaan_id, opsi_jawaban_id, skala}
+     *  - Kelompokkan jawaban ke kategori kustom berbasis urutan pertanyaan & penanda 'pesan dan kesan'
+     *  - Akumulasi nilai skala (1..4) global dan per kategori
+     */
     // =============================
     // 0) Parameter & kategori kustom
     // =============================
@@ -279,9 +294,9 @@ route::get('/test', function () {
     // 3) Kumpulan opsi untuk pertanyaan + template terkait (sekali query)
     // =============================
     $opsi = OpsiJawaban::whereIn(
-            'pertanyaan_id',
-            collect($pertanyaanIds)->merge($pivot->values())->unique()->all()
-        )
+        'pertanyaan_id',
+        collect($pertanyaanIds)->merge($pivot->values())->unique()->all()
+    )
         ->orderBy('id') // ganti ke kolom 'urutan' jika tersedia
         ->get(['id', 'pertanyaan_id', 'teks_opsi']);
 
@@ -426,13 +441,11 @@ route::get('/test', function () {
     // =============================
     return response()->json([
         'output_1_flat'       => $hasilFlat,                  // [{percobaan_id, pertanyaan_id, opsi_jawaban_id, skala}]
-        'output_2_perKategori'=> $perKategori,                // {kategori: [...rows...]}
+        'output_2_perKategori' => $perKategori,                // {kategori: [...rows...]}
         'output_3_akumulatif' => [
             'global'    => $akumulatifGlobal,                 // {1: n, 2: n, 3: n, 4: n}
-            'perKategori'=> $akumulatifPerKategori,           // {kategori: {1:n,2:n,3:n,4:n}}
+            'perKategori' => $akumulatifPerKategori,           // {kategori: {1:n,2:n,3:n,4:n}}
         ],
     ]);
-
-
 })->name('login');
 require __DIR__ . '/auth.php';

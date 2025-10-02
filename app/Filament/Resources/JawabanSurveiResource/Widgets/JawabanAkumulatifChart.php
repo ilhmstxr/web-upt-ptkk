@@ -9,7 +9,7 @@ class JawabanAkumulatifChart extends ChartWidget
     use BuildsLikertData;
 
     protected static ?string $heading = 'Akumulatif Skala Likert (1–4)';
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = '15%';
 
     protected function getData(): array
     {

@@ -13,7 +13,7 @@ class PiePerPertanyaanWidget extends Widget
     protected static ?string $heading = 'Distribusi Skala per Pertanyaan';
     protected int|string|array $columnSpan = 'full';
 
-    protected static string $view = 'filament.resources.jawaban-survei.widgets.pie-per-pertanyaan-widget';
+    protected static string $view = 'filament.resources.jawaban-surveis.pages.pie-per-pertanyaan-widget';
 
     public array $charts = [];
 
@@ -40,7 +40,7 @@ class PiePerPertanyaanWidget extends Widget
             }
         }
 
-        $questions = Pertanyaan::whereIn('id', $pertanyaanIds)
+        $questions = Pertanyaan::whereIn('id', $pertanyaanIds)->where('tipe_jawaban', 'skala_likert')
             ->orderBy('tes_id')->orderBy('nomor')
             ->get(['id', 'nomor', 'teks_pertanyaan']);
 
