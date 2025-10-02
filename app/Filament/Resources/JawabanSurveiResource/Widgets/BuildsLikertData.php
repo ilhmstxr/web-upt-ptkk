@@ -13,18 +13,22 @@ trait BuildsLikertData
     /** Ambil pertanyaan_id berbasis pelatihan → tes(survei) → pertanyaan(skala_likert). */
     protected function collectPertanyaanIds(?int $pelatihanId): Collection
     {
-        return JawabanUser::query()
+        $q = JawabanUser::query()
             ->join('percobaan as pr', 'pr.id', '=', 'jawaban_user.percobaan_id')
             ->join('tes as t', 't.id', '=', 'pr.tes_id')
             ->join('pertanyaan as p', 'p.id', '=', 'jawaban_user.pertanyaan_id')
             ->where('t.tipe', 'survei')
-            ->where('p.tipe_jawaban', 'skala_likert')
-            ->when(!is_null($pelatihanId), fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
-            ->distinct()
+            ->where('p.tipe_jawaban', 'skala_likert');
+
+        if ($pelatihanId) {
+            $q->where('t.pelatihan_id', $pelatihanId);
+        }
+
+        return $q->distinct()
             ->pluck('jawaban_user.pertanyaan_id')
             ->values();
     }
-    
+
     /** Normalisasi input apa pun menjadi daftar integer pertanyaan_id unik. */
     protected function normalizePertanyaanIds(mixed $input): Collection
     {
