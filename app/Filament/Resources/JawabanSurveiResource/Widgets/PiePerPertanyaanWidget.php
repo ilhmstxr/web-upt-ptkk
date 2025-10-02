@@ -5,6 +5,8 @@ namespace App\Filament\Resources\JawabanSurveiResource\Widgets;
 
 use App\Models\Pertanyaan;
 use Filament\Widgets\Widget;
+use Livewire\Attributes\Reactive;
+
 
 class PiePerPertanyaanWidget extends Widget
 {
@@ -14,12 +16,16 @@ class PiePerPertanyaanWidget extends Widget
     protected int|string|array $columnSpan = 'full';
 
     protected static string $view = 'filament.resources.jawaban-surveis.pages.pie-per-pertanyaan-widget';
-
+    
+    #[Reactive]
+    public ?int $pelatihanId = null;
+    protected static bool $isLazy = false;   // penting
     public array $charts = [];
 
     public function mount(): void
     {
-        $pelatihanId   = request()->integer('pelatihanId');
+        $pelatihanId   = $this->pelatihanId ?? request()->integer('pelatihanId');
+        // dd($pelatihanId);
         $pertanyaanIds = $this->collectPertanyaanIds($pelatihanId);
 
         if ($pertanyaanIds->isEmpty()) {
@@ -53,7 +59,7 @@ class PiePerPertanyaanWidget extends Widget
                 'question_id'    => $q->id,
                 'question_label' => ($q->nomor ? "Q{$q->nomor}. " : "Q{$q->id}. ") . $q->teks_pertanyaan,
                 'labels'         => $labels,
-                'data'           => [ $data[1] ?? 0, $data[2] ?? 0, $data[3] ?? 0, $data[4] ?? 0 ],
+                'data'           => [$data[1] ?? 0, $data[2] ?? 0, $data[3] ?? 0, $data[4] ?? 0],
             ];
         })->values()->all();
     }

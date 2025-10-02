@@ -3,17 +3,24 @@
 namespace App\Filament\Resources\JawabanSurveiResource\Widgets;
 
 use Filament\Widgets\ChartWidget;
+use Livewire\Attributes\Reactive;
+
 
 class JawabanAkumulatifChart extends ChartWidget
 {
     use BuildsLikertData;
 
     protected static ?string $heading = 'Akumulatif Skala Likert (1–4)';
-    protected int|string|array $columnSpan = '15%';
+    protected int|string|array $columnSpan = '4';
+
+    #[Reactive]
+    public ?int $pelatihanId = null;
+    protected static bool $isLazy = false;   // penting
+
 
     protected function getData(): array
     {
-        $pelatihanId   = request()->integer('pelatihanId');
+        $pelatihanId   = $this->pelatihanId ?? request()->integer('pelatihanId');
         $pertanyaanIds = $this->collectPertanyaanIds($pelatihanId);
 
         $labels = ['Tidak Memuaskan', 'Kurang Memuaskan', 'Cukup Memuaskan', 'Sangat Memuaskan'];

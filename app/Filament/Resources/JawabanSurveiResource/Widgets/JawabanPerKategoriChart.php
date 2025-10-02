@@ -5,23 +5,31 @@ namespace App\Filament\Resources\JawabanSurveiResource\Widgets;
 use App\Models\Pertanyaan;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Reactive;
+
 
 class JawabanPerKategoriChart extends ChartWidget
 {
     use BuildsLikertData;
 
     protected static ?string $heading = 'Distribusi Skala per Kategori';
-    protected int|string|array $columnSpan = '85%';
+    protected int|string|array $columnSpan = '8';
 
     private array $arrayCustom = [
         'Pendapat Tentang Penyelenggaran Pelatihan',
         'Persepsi Terhadap Program Pelatihan',
         'Penilaian Terhadap Instruktur',
     ];
+    
+    
+    #[Reactive]
+    public ?int $pelatihanId = null;
+    protected static bool $isLazy = false;   // penting
+
 
     protected function getData(): array
     {
-        $pelatihanId   = request()->integer('pelatihanId');
+        $pelatihanId   = $this->pelatihanId ?? request()->integer('pelatihanId');
         $pertanyaanIds = $this->collectPertanyaanIds($pelatihanId);
         if ($pertanyaanIds->isEmpty()) return ['labels' => [], 'datasets' => []];
 

@@ -37,10 +37,13 @@ trait BuildsLikertData
             ->join('pertanyaan as p', 'p.id', '=', 'ju.pertanyaan_id')
             ->where('t.tipe', 'survei')
             ->where('p.tipe_jawaban', 'skala_likert')
-            ->when($pelatihanId, fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
+            ->when($pelatihanId, fn($q) => $q
+            ->where('t.pelatihan_id', $pelatihanId))
             ->distinct()
             ->pluck('ju.pertanyaan_id')
             ->values();
+
+        // test 2
 
     }
 

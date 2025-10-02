@@ -5,12 +5,17 @@ namespace App\Filament\Resources\JawabanSurveiResource\Pages;
 use App\Filament\Resources\JawabanSurveiResource;
 use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
+use Livewire\Attributes\Url;
+
 
 class ReportJawabanSurvei extends Page
 {
     protected static string $resource = JawabanSurveiResource::class;
     protected static ?string $title = null;
     protected static string $view = 'filament.resources.jawaban-surveis.pages.report-page';
+
+    #[Url(as: 'pelatihanId')]
+    public ?int $pelatihanId = null;
 
     protected function getHeaderWidgets(): array
     {
