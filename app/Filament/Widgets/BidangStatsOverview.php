@@ -9,34 +9,24 @@ use Illuminate\Support\Facades\DB;
 
 class BidangStatsOverview extends BaseWidget
 {
-    public ?Bidang $bidang = null;
+    public Bidang $bidang;
 
     protected function getStats(): array
     {
-        if (!$this->bidang) {
-            return [];
-        }
-
-        // Fungsi untuk menghitung rata-rata
-        $getAverage = function ($jenisTes) {
-            return $this->bidang->peserta()
-                ->join('tes', 'tes.peserta_id', '=', 'pesertas.id')
-                ->join('percobaans', 'percobaans.tes_id', '=', 'tes.id')
-                ->where('tes.jenis_tes', $jenisTes)
-                ->avg('percobaans.nilai');
-        };
-
-        $avgPreTest = $getAverage('pre-test');
-        $avgPostTest = $getAverage('post-test');
-        $avgPraktek = $getAverage('praktek');
-        
-        $overallAvg = ($avgPreTest + $avgPostTest + $avgPraktek) / 3;
+        $averages = $this->bidang->peserta()
+            ->join('tes', 'tes.peserta_id', '=', 'pesertas.id')
+            ->join('percobaans', 'percobaans.tes_id', '=', 'tes.id')
+            ->select(
+                'tes.jenis_tes',
+                DB::raw('AVG(percobaans.nilai) as average_score')
+            )
+            ->groupBy('tes.jenis_tes')
+            ->pluck('average_score', 'jenis_tes');
 
         return [
-            Stat::make('Rata-Rata Pre-Test', number_format($avgPreTest, 2)),
-            Stat::make('Rata-Rata Post-Test', number_format($avgPostTest, 2)),
-            Stat::make('Rata-Rata Praktek', number_format($avgPraktek, 2)),
-            Stat::make('Rata-Rata Keseluruhan', number_format($overallAvg, 2)),
+            Stat::make('Rata-Rata Pre-Test', number_format($averages->get('pre-test', 0), 2)),
+            Stat::make('Rata-Rata Post-Test', number_format($averages->get('post-test', 0), 2)),
+            Stat::make('Rata-Rata Praktek', number_format($averages->get('praktek', 0), 2)),
         ];
     }
 }

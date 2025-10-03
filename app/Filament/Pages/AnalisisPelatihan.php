@@ -19,8 +19,10 @@ class AnalisisPelatihan extends Page implements HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar-square';
     protected static string $view = 'filament.pages.analisis-pelatihan';
-    protected static ?string $navigationLabel = 'Analisis Pelatihan';
     protected static ?string $title = 'Analisis Data Pelatihan';
+    protected static ?string $navigationGroup = 'Hasil Kegiatan';
+
+
 
     protected function getHeaderWidgets(): array
     {
@@ -43,7 +45,7 @@ class AnalisisPelatihan extends Page implements HasTable
                 Action::make('view_detail')
                     ->label('Lihat Detail Peserta')
                     ->icon('heroicon-o-arrow-right')
-                    ->url(fn (Bidang $record): string => ViewBidangDetail::getUrl(['record' => $record])),
+                    ->url(fn(Bidang $record): string => ViewBidangDetail::getUrl(['record' => $record])),
             ])
             ->paginated(false);
     }
