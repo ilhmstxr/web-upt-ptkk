@@ -8,6 +8,7 @@ use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
 use Livewire\Attributes\Url;
 use Filament\Actions;
+use Filament\Actions\Action;
 
 class ReportJawabanSurvei extends Page
 {
@@ -35,17 +36,21 @@ class ReportJawabanSurvei extends Page
         $this->subtitle = $nama ? "Pelatihan: {$nama}" : null;
     }
 
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('export_pdf')
+            Action::make('exportPdf')
                 ->label('Export PDF')
                 ->icon('heroicon-o-arrow-down-tray')
-                ->url(fn() => route('reports.jawaban-akumulatif.pdf', [
+                ->url(fn() => route('export.report-jawaban-survei', [
                     'pelatihanId' => $this->pelatihanId,
+                    // opsional: override judul/subjudul
+                    // 'heading'  => $this->getHeading(),
+                    // 'subtitle' => $this->subtitle,
                 ]))
                 ->openUrlInNewTab()
-                ->hidden(fn() => $this->print), // sembunyikan saat mode print (Browsershot)
+                ->hidden(fn() => $this->print),
         ];
     }
 

@@ -83,6 +83,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/jawaban-akumulatif/pdf', [ExportController::class, 'jawabanAkumulatifPdf'])
         ->name('reports.jawaban-akumulatif.pdf');
 });
+Route::middleware(['auth']) // opsional, sesuai kebutuhan
+    ->get('/exports/report-jawaban-survei', [ExportController::class, 'reportJawabanSurvei'])
+    ->name('export.report-jawaban-survei');
 
 
 // Step View

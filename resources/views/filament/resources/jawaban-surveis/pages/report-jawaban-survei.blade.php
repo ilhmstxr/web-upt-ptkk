@@ -40,18 +40,18 @@
     @endif
 
     <div class="flex items-center justify-between gap-4 mb-4">
-        <div class="space-y-1">
+        {{-- <div class="space-y-1">
             <h1 class="text-2xl font-bold leading-tight">
                 {{ $this->title ?? 'Report Jawaban Survei' }}
             </h1>
             @isset($this->subtitle)
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ $this->subtitle }}</p>
             @endisset
-        </div>
+        </div> --}}
 
-        <x-filament::button tag="a" target="_blank" :href="route('reports.jawaban-akumulatif.pdf', ['pelatihanId' => $this->pelatihanId])" icon="heroicon-o-document-arrow-down">
+        {{-- <x-filament::button tag="a" target="_blank" :href="route('reports.jawaban-akumulatif.pdf', ['pelatihanId' => $this->pelatihanId])" icon="heroicon-o-document-arrow-down">
             Export PDF
-        </x-filament::button>
+        </x-filament::button> --}}
     </div>
 
     <div class="grid grid-cols-1 gap-6">

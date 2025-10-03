@@ -18,14 +18,14 @@
             @endisset
         </div>
 
-        <x-filament::button
+        {{-- <x-filament::button
             tag="a"
             target="_blank"
             :href="route('reports.jawaban-akumulatif.pdf', ['pelatihanId' => $pelatihanId])"
             icon="heroicon-o-document-arrow-down"
         >
             Export PDF
-        </x-filament::button>
+        </x-filament::button> --}}
     </div>
 
     <div class="grid grid-cols-1 gap-6">
