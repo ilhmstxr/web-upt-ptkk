@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\JawabanSurveiResource\Pages\PelatihanReport;
+use App\Filament\Widgets\BidangScoresChart;
+use App\Filament\Widgets\BidangSummaryTable;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -42,6 +44,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                BidangSummaryTable::class,
+                BidangScoresChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,
