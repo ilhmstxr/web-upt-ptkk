@@ -236,39 +236,40 @@ class DashboardController extends Controller
     }
 
     public function lookupInstansiByNama(Request $request)
-    {
-        $nama = mb_strtolower(trim($request->get('nama','')));
+{
+    $nama = mb_strtolower(trim($request->get('nama','')));
 
-        if ($nama === '') {
-            return response()->json(['ok'=>false,'message'=>'Nama kosong'], 422);
-        }
-
-        $peserta = Peserta::with('instansi:id,asal_instansi,kota')
-            ->whereRaw('LOWER(nama) = ?', [$nama])
-            ->first();
-
-        if (!$peserta) {
-            $like = '%'.str_replace(' ','%',$nama).'%';
-            $peserta = Peserta::with('instansi:id,asal_instansi,kota')
-                ->whereRaw('LOWER(nama) LIKE ?', [$like])
-                ->orderBy('nama')
-                ->first();
-        }
-
-        if (!$peserta) {
-            return response()->json(['ok'=>false,'message'=>'Peserta tidak ditemukan'], 404);
-        }
-
-        return response()->json([
-            'ok' => true,
-            'data' => [
-                'peserta_id' => $peserta->id,
-                'nama'       => $peserta->nama,
-                'instansi'   => optional($peserta->instansi)->asal_instansi,
-                'kota'       => optional($peserta->instansi)->kota,
-            ]
-        ]);
+    if ($nama === '') {
+        return response()->json(['ok' => false, 'message' => 'Nama kosong']);
     }
+
+    $peserta = Peserta::with('instansi:id,asal_instansi,kota')
+        ->whereRaw('LOWER(nama) = ?', [$nama])
+        ->first();
+
+    if (!$peserta) {
+        $like = '%'.str_replace(' ','%',$nama).'%';
+        $peserta = Peserta::with('instansi:id,asal_instansi,kota')
+            ->whereRaw('LOWER(nama) LIKE ?', [$like])
+            ->orderBy('nama')
+            ->first();
+    }
+
+    if (!$peserta) {
+        return response()->json(['ok' => false, 'message' => 'Peserta tidak ditemukan']);
+    }
+
+    return response()->json([
+        'ok' => true,
+        'data' => [
+            'peserta_id' => $peserta->id,
+            'nama'       => $peserta->nama,
+            'instansi'   => optional($peserta->instansi)->asal_instansi,
+            'kota'       => optional($peserta->instansi)->kota,
+        ]
+    ]);
+}
+
 
     // ======================
     // Logout - hapus session

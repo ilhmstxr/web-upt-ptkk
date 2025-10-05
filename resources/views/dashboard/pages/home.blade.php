@@ -1,5 +1,4 @@
 @extends('dashboard.layouts.main')
-
 @section('title', 'Home')
 @section('page-title', 'Dashboard Home')
 
@@ -287,7 +286,7 @@
         let t; let lastQuery = ''; let submitting = false;
 
         async function lookup(nama){
-            const url = {{ route('dashboard.ajax.peserta.instansiByNama') }}?nama=${encodeURIComponent(nama)};
+            const url = `${{ route('dashboard.ajax.peserta.instansiByNama') }}?nama=${encodeURIComponent(nama)}`;
             const res = await fetch(url, { headers: { 'X-Requested-With':'XMLHttpRequest' } });
             const data = await res.json().catch(()=>null);
             if (!res.ok || !data?.ok) throw new Error(data?.message || 'Lookup gagal');
@@ -298,7 +297,7 @@
             const sekolah = data?.data?.instansi || '';
             const kota    = data?.data?.kota || '';
             const pid     = data?.data?.peserta_id || '';
-            $inst.value   = sekolah ? (kota ? ${sekolah} (${kota}) : sekolah) : '';
+            $inst.value   = sekolah ? (kota ? `${sekolah} (${kota})` : sekolah) : '';
             $pid.value    = pid;
             $btn.disabled = !(data?.ok && pid);
             if (data?.ok) $help.classList.add('hidden');
