@@ -1,4 +1,4 @@
-<?php  
+<?php
 
 namespace App\Http\Controllers;
 
@@ -11,6 +11,7 @@ use App\Models\Tes;
 use App\Models\Peserta;
 use App\Models\Percobaan;
 use App\Models\JawabanUser;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -236,40 +237,39 @@ class DashboardController extends Controller
     }
 
     public function lookupInstansiByNama(Request $request)
-{
-    $nama = mb_strtolower(trim($request->get('nama','')));
+    {
+        $nama = mb_strtolower(trim($request->get('nama','')));
 
-    if ($nama === '') {
-        return response()->json(['ok' => false, 'message' => 'Nama kosong']);
-    }
+        if ($nama === '') {
+            return response()->json(['ok' => false, 'message' => 'Nama kosong']);
+        }
 
-    $peserta = Peserta::with('instansi:id,asal_instansi,kota')
-        ->whereRaw('LOWER(nama) = ?', [$nama])
-        ->first();
-
-    if (!$peserta) {
-        $like = '%'.str_replace(' ','%',$nama).'%';
         $peserta = Peserta::with('instansi:id,asal_instansi,kota')
-            ->whereRaw('LOWER(nama) LIKE ?', [$like])
-            ->orderBy('nama')
+            ->whereRaw('LOWER(nama) = ?', [$nama])
             ->first();
+
+        if (!$peserta) {
+            $like = '%'.str_replace(' ','%',$nama).'%';
+            $peserta = Peserta::with('instansi:id,asal_instansi,kota')
+                ->whereRaw('LOWER(nama) LIKE ?', [$like])
+                ->orderBy('nama')
+                ->first();
+        }
+
+        if (!$peserta) {
+            return response()->json(['ok' => false, 'message' => 'Peserta tidak ditemukan']);
+        }
+
+        return response()->json([
+            'ok' => true,
+            'data' => [
+                'peserta_id' => $peserta->id,
+                'nama'       => $peserta->nama,
+                'instansi'   => optional($peserta->instansi)->asal_instansi,
+                'kota'       => optional($peserta->instansi)->kota,
+            ]
+        ]);
     }
-
-    if (!$peserta) {
-        return response()->json(['ok' => false, 'message' => 'Peserta tidak ditemukan']);
-    }
-
-    return response()->json([
-        'ok' => true,
-        'data' => [
-            'peserta_id' => $peserta->id,
-            'nama'       => $peserta->nama,
-            'instansi'   => optional($peserta->instansi)->asal_instansi,
-            'kota'       => optional($peserta->instansi)->kota,
-        ]
-    ]);
-}
-
 
     // ======================
     // Logout - hapus session
@@ -354,7 +354,139 @@ class DashboardController extends Controller
     }
 
     // ======================
-    // PRE-TEST endpoints
+    // NEW: SUBMIT ATTEMPT (gabungan & penyesuaian)
+    // ======================
+    /**
+     * Endpoint untuk menyimpan jawaban / menyelesaikan percobaan peserta.
+     * Menerapkan:
+     * - cek max attempts (dari Filament resource constants)
+     * - cek window ketersediaan pre/post berdasarkan tes->pelatihan
+     * - durasi pengerjaan (contoh: 30 menit)
+     * - menyimpan jawaban (jika ada) dan menghitung skor
+     */
+    public function submitAttempt(Request $request)
+    {
+        // pastikan peserta terpilih (mengikuti flow DashboardController)
+        $participant = $this->getParticipantKeyAndId();
+        $key = $participant['key']; $id = $participant['id'];
+
+        if (!$key || !$id) {
+            return response()->json(['ok' => false, 'message' => 'Peserta belum dipilih.'], 422);
+        }
+
+        // validasi input dasar
+        $request->validate([
+            'tes_id' => 'required|integer|exists:tes,id',
+            // 'jawaban' => 'array', // opsional
+            // 'skor' => 'nullable|numeric',
+        ]);
+
+        $tes = Tes::findOrFail($request->tes_id);
+
+        // cek berapa kali peserta sudah mengerjakan tes ini
+        $attemptCount = Percobaan::where('tes_id', $tes->id)
+            ->where($key, $id)
+            ->count();
+
+        // ambil konstanta dari Filament resource (safe dipanggil secara fully-qualified)
+        $maxAttempts = \App\Filament\Resources\TesPercobaanResource::MAX_ATTEMPTS_PER_TES ?? 1;
+        if ($attemptCount >= $maxAttempts) {
+            return response()->json(['ok' => false, 'message' => 'Maksimal percobaan tercapai'], 422);
+        }
+
+        // cek jadwal ketersediaan (asumsi tes->pelatihan->tanggal_mulai/dates)
+        $pel = $tes->pelatihan ?? null;
+        if ($pel) {
+            $now = now();
+            // ambil jenis/tipe tes dari kolom yang tersedia
+            $jenis = strtolower($tes->jenis ?? $tes->tipe ?? '');
+            if ($jenis === 'pretest' || str_contains($jenis, 'pre')) {
+                $from = Carbon::parse($pel->tanggal_mulai)->addDays(\App\Filament\Resources\TesPercobaanResource::PRETEST_AVAILABLE_FROM_OFFSET_DAYS);
+                $to   = Carbon::parse($pel->tanggal_mulai)->addDays(\App\Filament\Resources\TesPercobaanResource::PRETEST_AVAILABLE_TO_OFFSET_DAYS)->endOfDay();
+            } elseif ($jenis === 'posttest' || str_contains($jenis, 'post')) {
+                $from = Carbon::parse($pel->tanggal_selesai)->addDays(\App\Filament\Resources\TesPercobaanResource::POSTTEST_AVAILABLE_FROM_OFFSET_DAYS);
+                $to   = Carbon::parse($pel->tanggal_selesai)->addDays(\App\Filament\Resources\TesPercobaanResource::POSTTEST_AVAILABLE_TO_OFFSET_DAYS)->endOfDay();
+            } else {
+                $from = now()->subYear();
+                $to = now()->addYear();
+            }
+
+            if (! ($now->between($from, $to)) ) {
+                return response()->json(['ok'=>false, 'message'=>'Tes belum tersedia pada jadwal saat ini'], 422);
+            }
+        }
+
+        // cari percobaan "running" (belum selesai) untuk peserta ini & tes ini
+        $running = Percobaan::where('tes_id', $tes->id)
+            ->where($key, $id)
+            ->whereNull('waktu_selesai')
+            ->first();
+
+        // durasi dibaca dari resource constant (menit)
+        $durationMinutes = \App\Filament\Resources\TesPercobaanResource::ATTEMPT_DURATION_MINUTES ?? 30;
+
+        if ($running) {
+            // jika ada percobaan berjalan, cek apakah masih dalam durasi
+            $startAt = $running->waktu_mulai ? Carbon::parse($running->waktu_mulai) : Carbon::now();
+            $allowedFinish = $startAt->copy()->addMinutes($durationMinutes);
+
+            if (Carbon::now()->greaterThan($allowedFinish)) {
+                // waktu habis -> tandai selesai & hitung skor otomatis (jika jawaban ada)
+                $running->waktu_selesai = $running->waktu_selesai ?? now();
+                $running->skor = $this->hitungSkor($running);
+                $running->lulus = $running->skor >= ($running->tes->passing_score ?? 70);
+                $running->save();
+
+                return response()->json(['ok' => false, 'message' => 'Waktu pengerjaan telah habis', 'data' => $running], 422);
+            }
+        } else {
+            // buat percobaan baru (participant key bisa 'peserta_id' atau 'pesertaSurvei_id')
+            $data = [
+                'tes_id' => $tes->id,
+                'waktu_mulai' => now(),
+            ];
+            $data[$key] = $id;
+
+            if (Schema::hasColumn('percobaan', 'tipe')) {
+                $data['tipe'] = strtolower($tes->jenis ?? $tes->tipe ?? ''); // simpan tipe jika kolom ada
+            }
+
+            $running = Percobaan::create($data);
+        }
+
+        // Simpan jawaban apabila dikirim dalam request (struktur jawaban: ['pertanyaan_id' => opsi_id, ...])
+        $jawabanInput = $request->input('jawaban', []);
+        if (is_array($jawabanInput) && count($jawabanInput) > 0) {
+            foreach ($jawabanInput as $pertanyaanId => $opsiId) {
+                JawabanUser::updateOrCreate(
+                    [
+                        'percobaan_id'  => $running->id,
+                        'pertanyaan_id' => $pertanyaanId,
+                    ],
+                    [
+                        'opsi_jawaban_id' => $opsiId,
+                    ]
+                );
+            }
+        }
+
+        // Jika client mengirim skor langsung (mis. proctoring), gunakan itu; jika tidak, hitung
+        if ($request->filled('skor')) {
+            $running->skor = (float) $request->input('skor');
+        } else {
+            // gunakan helper hitungSkor (mengandalkan jawabanUser & opsiJawaban.apakah_benar)
+            $running->skor = $this->hitungSkor($running);
+        }
+
+        $running->waktu_selesai = now();
+        $running->lulus = $running->skor >= ($running->tes->passing_score ?? 70);
+        $running->save();
+
+        return response()->json(['ok' => true, 'message' => 'Tersimpan', 'data' => $running]);
+    }
+
+    // ======================
+    // PRE-TEST endpoints (reuse existing methods)
     // ======================
     public function pretest(Request $request)
     {
@@ -374,7 +506,6 @@ class DashboardController extends Controller
         return $this->startTest('pre', 'Pre-Test', 'dashboard.pretest.show', 'dashboard.pretest.result');
     }
 
-    // tetap pertahankan jika ada route yang mengirim object Tes langsung
     public function pretestStart(Tes $tes)
     {
         return $this->startTest('pre', 'Pre-Test', 'dashboard.pretest.show', 'dashboard.pretest.result');

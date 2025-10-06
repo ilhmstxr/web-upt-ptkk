@@ -93,14 +93,15 @@ class JawabanSurveiResource extends Resource
     }
 
     public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListJawabanSurveis::route('/'),
-            'create' => Pages\CreateJawabanSurvei::route('/create'),
-            'edit' => Pages\EditJawabanSurvei::route('/{record}/edit'),
-            'report' => Pages\ReportJawabanSurvei::route('/report'), // ini
-        ];
-    }
+{
+    return [
+        'index' => Pages\ListJawabanSurveis::route('/'),
+        'create' => Pages\CreateJawabanSurvei::route('/create'),
+        'edit' => Pages\EditJawabanSurvei::route('/{record}/edit'),
+        'report' => Pages\ReportJawabanSurvei::route('/report'),
+        'export' => Pages\ExportJawabanSurvei::route('/export'),
+    ];
+}
 
     public static function getWidgets(): array
     {

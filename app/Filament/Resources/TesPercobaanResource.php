@@ -3,13 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TesPercobaanResource\Pages;
+use App\Exports\TesPercobaanExport;
+use App\Exports\TesPercobaanPdfExport;
 use App\Models\Percobaan;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
+use Filament\Forms\Form as FilamentForm;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
+use Filament\Tables\Table as FilamentTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -17,16 +18,19 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BadgeColumn;
 
 class TesPercobaanResource extends Resource
 {
     protected static ?string $model = Percobaan::class;
 
-    protected static ?string $navigationIcon  = 'heroicon-o-clipboard';
+    protected static ?string $navigationIcon  = 'heroicon-o-document-check';
     protected static ?string $navigationGroup = 'Hasil Kegiatan';
-    protected static ?string $navigationLabel = 'Nilai Peserta';
+    protected static ?string $navigationLabel = 'Tes Percobaan / Nilai';
 
-    public static function form(Form $form): Form
+    public static function form(FilamentForm $form): FilamentForm
     {
         return $form->schema([
             Forms\Components\Select::make('peserta_id')
@@ -36,7 +40,7 @@ class TesPercobaanResource extends Resource
                 ->required(),
 
             Forms\Components\Select::make('tes_id')
-                ->label('Tes')
+                ->label('Tes (pre/post/praktek/survei)')
                 ->relationship('tes', 'judul')
                 ->searchable()
                 ->required(),
@@ -47,23 +51,22 @@ class TesPercobaanResource extends Resource
 
             Forms\Components\DateTimePicker::make('waktu_selesai')
                 ->label('Waktu Selesai')
-                ->required(fn (Get $get) => filled($get('skor')))
-                ->minDateTime(fn (Get $get) => $get('waktu_mulai')),
+                ->required(fn (Forms\Get $get) => filled($get('skor')))
+                ->minDateTime(fn (Forms\Get $get) => $get('waktu_mulai')),
 
             Forms\Components\TextInput::make('skor')
                 ->numeric()
                 ->label('Skor')
-                ->required(fn (Get $get) => filled($get('waktu_selesai'))),
+                ->helperText('Nilai numerik. Biarkan kosong jika belum dinilai.'),
         ]);
     }
 
-    public static function table(Table $table): Table
+    public static function table(FilamentTable $table): FilamentTable
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                // Eager-load yang dipakai
                 $with = [
-                    'tes:id,judul,tipe',
+                    'tes:id,judul,tipe,pelatihan_id',
                     'peserta:id,nama,bidang_id,instansi_id',
                     'pesertaSurvei:id,nama,bidang_id',
                     'peserta.bidang:id,nama_bidang',
@@ -71,7 +74,6 @@ class TesPercobaanResource extends Resource
                     'peserta.instansi:id,asal_instansi',
                 ];
 
-                // Tambahkan instansi untuk PesertaSurvei hanya jika relasinya ada
                 if (method_exists(\App\Models\PesertaSurvei::class, 'instansi')) {
                     $with[] = 'pesertaSurvei.instansi:id,asal_instansi';
                 }
@@ -79,20 +81,17 @@ class TesPercobaanResource extends Resource
                 $query->with($with);
             })
             ->columns([
-                // Nomor urut di paling kiri
-                Tables\Columns\TextColumn::make('no')
+                TextColumn::make('no')
                     ->label('No')
                     ->rowIndex()
                     ->sortable(false),
 
-                Tables\Columns\TextColumn::make('tes.tipe')
-                    ->label('Tipe')
-                    ->badge()
-                    ->sortable()
-                    ->searchable(),
+                BadgeColumn::make('tipe_tes')
+                    ->label('Tipe Tes')
+                    ->getStateUsing(fn ($record) => $record->tes?->tipe ?? '-')
+                    ->sortable(),
 
-                // Nama peserta: prioritas PesertaSurvei, fallback ke Peserta
-                Tables\Columns\TextColumn::make('peserta_display')
+                TextColumn::make('peserta_display')
                     ->label('Peserta')
                     ->state(fn ($record) =>
                         $record->pesertaSurvei?->nama
@@ -107,8 +106,7 @@ class TesPercobaanResource extends Resource
                     })
                     ->sortable(),
 
-                // Bidang: prioritas milik PesertaSurvei, fallback ke Peserta
-                Tables\Columns\TextColumn::make('bidang')
+                TextColumn::make('bidang')
                     ->label('Bidang')
                     ->badge()
                     ->state(fn ($record) =>
@@ -116,67 +114,76 @@ class TesPercobaanResource extends Resource
                             ?? $record->peserta?->bidang?->nama_bidang
                             ?? '-'
                     )
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->where(function (Builder $nested) use ($search) {
-                            $nested->whereHas('pesertaSurvei.bidang', fn (Builder $b) => $b->where('nama_bidang', 'like', "%{$search}%"))
-                                   ->orWhereHas('peserta.bidang', fn (Builder $b) => $b->where('nama_bidang', 'like', "%{$search}%"));
-                        });
-                    })
+                    ->searchable()
                     ->sortable(),
 
-                // Instansi: IF–ELSE untuk Survei & Tes, aman walau relasi instansi() di PesertaSurvei belum ada
-                Tables\Columns\TextColumn::make('instansi')
+                TextColumn::make('instansi')
                     ->label('Instansi')
                     ->badge()
                     ->state(function ($record) {
-                        // Coba ambil dari PesertaSurvei->instansi (jika relasi ada & data ada)
                         $fromSurvei = null;
                         if (isset($record->pesertaSurvei) && method_exists(\App\Models\PesertaSurvei::class, 'instansi')) {
                             $fromSurvei = $record->pesertaSurvei?->instansi?->asal_instansi;
                         }
-                        // Fallback: Peserta->instansi
                         $fromPeserta = $record->peserta?->instansi?->asal_instansi;
-
                         return $fromSurvei ?: ($fromPeserta ?: '-');
                     })
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->where(function (Builder $nested) use ($search) {
-                            // Cari di instansi milik Peserta
-                            $nested->whereHas('peserta.instansi', fn (Builder $rel) =>
-                                $rel->where('asal_instansi', 'like', "%{$search}%")
-                            );
+                    ->searchable()
+                    ->sortable(),
 
-                            // Jika PesertaSurvei punya relasi instansi(), ikut cari juga
-                            if (method_exists(\App\Models\PesertaSurvei::class, 'instansi')) {
-                                $nested->orWhereHas('pesertaSurvei.instansi', fn (Builder $rel) =>
-                                    $rel->where('asal_instansi', 'like', "%{$search}%")
-                                );
-                            }
-                        });
+                TextColumn::make('skor')
+                    ->label('Skor')
+                    ->formatStateUsing(fn ($state) => $state ?? 'Belum dinilai')
+                    ->sortable(),
+
+                TextColumn::make('increase_percent')
+                    ->label('Kenaikan (%)')
+                    ->getStateUsing(function ($record) {
+                        try {
+                            $pesertaId = $record->peserta_id;
+                            $pre = Percobaan::whereHas('tes', fn($q) => $q->where('tipe', 'pretest'))
+                                ->where('peserta_id', $pesertaId)
+                                ->orderByDesc('waktu_selesai')
+                                ->value('skor');
+
+                            $post = Percobaan::whereHas('tes', fn($q) => $q->where('tipe', 'posttest'))
+                                ->where('peserta_id', $pesertaId)
+                                ->orderByDesc('waktu_selesai')
+                                ->value('skor');
+
+                            if ($pre === null || $post === null) return '-';
+                            if ((float)$pre == 0) return ($post > 0) ? '100%' : '0%';
+                            $percent = round((($post - $pre) / (float)$pre) * 100, 2);
+                            return ($percent > 0 ? '+' : '') . $percent . '%';
+                        } catch (\Throwable $e) {
+                            return '-';
+                        }
                     })
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('skor')
-                    ->label('Skor')
-                    ->formatStateUsing(fn ($state) => $state ?? 'Belum dinilai'),
-
-                Tables\Columns\TextColumn::make('waktu_mulai')
+                TextColumn::make('waktu_mulai')
                     ->label('Mulai')
                     ->dateTime('d M Y H:i')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('waktu_selesai')
+                TextColumn::make('waktu_selesai')
                     ->label('Selesai')
-                    ->formatStateUsing(fn ($state) => $state?->format('d M Y H:i') ?? 'Belum selesai')
+                    ->formatStateUsing(fn ($state) => $state ? date('d M Y H:i', strtotime($state)) : 'Belum selesai')
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('status')
+                BadgeColumn::make('status')
                     ->label('Status')
                     ->getStateUsing(fn ($record) => $record->waktu_selesai ? 'Selesai' : 'Proses')
-                    ->colors(['success' => 'Selesai', 'warning' => 'Proses'])
-                    ->icons(['heroicon-o-check-circle' => 'Selesai', 'heroicon-o-clock' => 'Proses']),
+                    ->colors([
+                        'success' => 'Selesai',
+                        'warning' => 'Proses',
+                    ])
+                    ->icons([
+                        'heroicon-o-check-circle' => 'Selesai',
+                        'heroicon-o-clock' => 'Proses',
+                    ]),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y H:i')
                     ->sortable(),
@@ -184,12 +191,17 @@ class TesPercobaanResource extends Resource
             ->filters([
                 SelectFilter::make('tipe')
                     ->label('Tipe Tes')
-                    ->options(['tes' => 'Tes', 'survei' => 'Survei'])
-                    ->searchable()
+                    ->options([
+                        'pretest'  => 'Pretest',
+                        'posttest' => 'Posttest',
+                        'survei'   => 'Survei',
+                        'praktek'  => 'Praktek',
+                    ])
                     ->query(fn (Builder $query, array $data) =>
-                        $query->when($data['value'] ?? null,
-                            fn (Builder $filtered, string $value) =>
-                                $filtered->whereHas('tes', fn (Builder $tesQuery) => $tesQuery->where('tipe', $value))
+                        $query->when($data['value'] ?? null, fn (Builder $filtered, string $value) =>
+                            $filtered->whereHas('tes', fn (Builder $tesQuery) =>
+                                $tesQuery->where('tipe', $value)
+                            )
                         )
                     ),
 
@@ -222,7 +234,6 @@ class TesPercobaanResource extends Resource
                         })
                     ),
 
-                // Filter instansi by ID (via peserta.instansi_id). Jika PesertaSurvei punya relasi instansi(), ikutkan juga.
                 SelectFilter::make('instansi_id')
                     ->label('Instansi')
                     ->options(fn () => DB::table('instansi')->orderBy('asal_instansi')->pluck('asal_instansi', 'id')->toArray())
@@ -282,11 +293,31 @@ class TesPercobaanResource extends Resource
             ->persistFiltersInSession()
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+
+                Tables\Actions\EditAction::make()
+                    ->visible(fn() => auth()->user()?->hasRole('admin')),
+
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn() => auth()->user()?->hasRole('admin')),
+
+                Tables\Actions\Action::make('export_excel')
+                    ->label('Export Excel')
+                    ->icon('heroicon-o-document-download')
+                    ->action(function () {
+                        $query = static::getModel()::query();
+                        return Excel::download(new TesPercobaanExport($query), 'tes_percobaan.xlsx');
+                    })
+                    ->requiresConfirmation()
+                    ->visible(fn() => auth()->user()?->can('export percobaan')),
+
+                Tables\Actions\Action::make('export_pdf')
+                    ->label('Export PDF')
+                    ->icon('heroicon-o-document-text')
+                    ->visible(fn() => auth()->user()?->can('export percobaan')),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make()
+                    ->visible(fn() => auth()->user()?->hasRole('admin')),
             ]);
     }
 
@@ -301,6 +332,7 @@ class TesPercobaanResource extends Resource
             'index'  => Pages\ListTesPercobaan::route('/'),
             'create' => Pages\CreateTesPercobaan::route('/create'),
             'edit'   => Pages\EditTesPercobaan::route('/{record}/edit'),
+            'dashboard' => Pages\DashboardTesPercobaan::route('/dashboard'),
         ];
     }
 }
