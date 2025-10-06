@@ -2,19 +2,27 @@
 
 namespace App\Filament\Resources\TesPercobaanResource\Pages;
 
-use App\Filament\Resources\TesPercobaanResource;
 use Filament\Resources\Pages\Page;
+use Illuminate\Support\Facades\DB;
 
 class DashboardTesPercobaan extends Page
 {
-    protected static string $resource = TesPercobaanResource::class;
-    protected static string $view = 'filament.resources.tes-percobaan-resource.pages.dashboard-tes-percobaan';
+    protected static string $resource = 'App\\Filament\\Resources\\TesPercobaanResource';
 
-    public function mount(): void
+    protected static string $view = 'filament.resources.tes-percobaan.pages.dashboard';
+
+    protected static ?string $title = 'Dashboard Tes Percobaan';
+
+    public $data;
+
+    public function mount()
     {
-        // Pastikan hanya role atasan / kepala / admin boleh melihat
-        if (!auth()->user()->hasAnyRole(['atasan','kepala','admin'])) {
-            abort(403);
-        }
+        // Ambil data agregat
+        $this->data = [
+            'total_pelatihan' => DB::table('pelatihan')->count(),
+            'total_peserta'   => DB::table('peserta')->count(),
+            'total_tes'       => DB::table('tes')->count(),
+            'avg_skor'        => DB::table('percobaan')->avg('skor'),
+        ];
     }
 }
