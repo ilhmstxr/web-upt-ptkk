@@ -33,5 +33,8 @@ class Pelatihan extends Model
         return $this->hasMany(Peserta::class);
     }
 
-    
+    public function tes()
+    {
+        return $this->hasMany(Tes::class);
+    }
 }

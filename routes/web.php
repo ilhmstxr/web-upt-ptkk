@@ -19,6 +19,7 @@ use App\Mail\TestMail;
 use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\DB;
@@ -64,6 +65,9 @@ Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pen
 Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 
+// ==========================================================================
+// EXPORT
+// ==========================================================================
 // Cetak Massal
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
@@ -75,6 +79,11 @@ Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::cl
 
 Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
     ->name('exports.pendaftaran.single');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reports/jawaban-akumulatif/pdf', [ExportController::class, 'jawabanAkumulatifPdf'])
+        ->name('reports.jawaban-akumulatif.pdf');
+});
+
 
 // Step View
 Route::prefix('pendaftaran/step')->group(function () {
@@ -240,16 +249,31 @@ Route::get('/cek_icon', fn() => view('cek_icon'));
 
 /*
 |--------------------------------------------------------------------------
-| Auth (login, register, dll.)
+| TESTING
 |--------------------------------------------------------------------------
 */
 route::get('/test', function () {
-/**
- * End-to-end pipeline:
- *  - Hitung skala Likert per jawaban {percobaan_id, pertanyaan_id, opsi_jawaban_id, skala}
- *  - Kelompokkan jawaban ke kategori kustom berbasis urutan pertanyaan & penanda 'pesan dan kesan'
- *  - Akumulasi nilai skala (1..4) global dan per kategori
- */
+    return view('filament.resources.jawaban-surveis.pages.report-jawaban-survei');
+    $pelatihan = App\Models\Pelatihan::findOrFail(1);
+    $pelatihanIds = \App\Models\Pelatihan::with([
+        'tes' => fn($q) => $q->where('tipe', 'survei')
+            ->select('id', 'pelatihan_id')
+            ->with([
+                'pertanyaan' => fn($qp) => $qp->where('tipe_jawaban', 'skala_likert')
+            ])
+    ])->get();
+
+
+    // $questions = Pertanyaan::whereIn('id', $pertanyaanIds)->where('tipe_jawaban', 'skala_likert')
+    //     ->orderBy('tes_id')->orderBy('nomor')
+    //     ->get(['id', 'nomor', 'teks_pertanyaan']);
+    // return $questions;
+    /**
+     * End-to-end pipeline:
+     *  - Hitung skala Likert per jawaban {percobaan_id, pertanyaan_id, opsi_jawaban_id, skala}
+     *  - Kelompokkan jawaban ke kategori kustom berbasis urutan pertanyaan & penanda 'pesan dan kesan'
+     *  - Akumulasi nilai skala (1..4) global dan per kategori
+     */
     // =============================
     // 0) Parameter & kategori kustom
     // =============================
@@ -279,9 +303,9 @@ route::get('/test', function () {
     // 3) Kumpulan opsi untuk pertanyaan + template terkait (sekali query)
     // =============================
     $opsi = OpsiJawaban::whereIn(
-            'pertanyaan_id',
-            collect($pertanyaanIds)->merge($pivot->values())->unique()->all()
-        )
+        'pertanyaan_id',
+        collect($pertanyaanIds)->merge($pivot->values())->unique()->all()
+    )
         ->orderBy('id') // ganti ke kolom 'urutan' jika tersedia
         ->get(['id', 'pertanyaan_id', 'teks_opsi']);
 
@@ -426,13 +450,11 @@ route::get('/test', function () {
     // =============================
     return response()->json([
         'output_1_flat'       => $hasilFlat,                  // [{percobaan_id, pertanyaan_id, opsi_jawaban_id, skala}]
-        'output_2_perKategori'=> $perKategori,                // {kategori: [...rows...]}
+        'output_2_perKategori' => $perKategori,                // {kategori: [...rows...]}
         'output_3_akumulatif' => [
             'global'    => $akumulatifGlobal,                 // {1: n, 2: n, 3: n, 4: n}
-            'perKategori'=> $akumulatifPerKategori,           // {kategori: {1:n,2:n,3:n,4:n}}
+            'perKategori' => $akumulatifPerKategori,           // {kategori: {1:n,2:n,3:n,4:n}}
         ],
     ]);
-
-
 })->name('login');
 require __DIR__ . '/auth.php';
