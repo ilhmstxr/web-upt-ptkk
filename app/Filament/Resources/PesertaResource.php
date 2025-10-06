@@ -98,7 +98,16 @@ class PesertaResource extends Resource
                 Tables\Columns\TextColumn::make('instansi.asal_instansi')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('jenis_kelamin')->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->sortable(),
-                Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('user_email')
+                    ->label('Email')
+                    ->getStateUsing(fn($record) => $record->user->email ?? $record->email ?? '-')
+                    ->searchable(query: function ($query, $search) {
+                        $query->orWhereHas('user', function ($q) use ($search) {
+                            $q->where('email', 'like', "%{$search}%");
+                        });
+                    }),
+                Tables\Columns\TextColumn::make('no_hp')->label('No HP')->searchable(),
+                Tables\Columns\TextColumn::make('created_at')->label('Terdaftar')->date()->sortable(),
                 // tambahan kamar & bed
                 Tables\Columns\TextColumn::make('kamar_virtual')
                     ->label('Kamar')
