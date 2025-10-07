@@ -292,4 +292,4 @@ SET
   END
 WHERE
   -- Filter hanya untuk pertanyaan yang relevan
-  pertanyaan_id = 105 AND opsi_jawaban_id IN (353, 354, 355, 356);
+  pertanyaan_id = 191 AND opsi_jawaban_id IN (685, 686, 687, 688);

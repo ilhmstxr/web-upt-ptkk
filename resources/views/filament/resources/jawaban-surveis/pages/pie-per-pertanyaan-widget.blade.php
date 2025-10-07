@@ -1,29 +1,27 @@
-{{-- resources/views/filament/resources/jawaban-survei/widgets/pie-per-pertanyaan-widget.blade.php --}}
 <x-filament-widgets::widget>
-    <x-filament::section>
-        <x-slot name="heading">{{ static::$heading }}</x-slot>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <x-filament::card>
+        {{-- Menggunakan grid layout yang sudah kita setujui --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            {{-- Menggunakan @forelse dari file referensi Anda untuk keamanan --}}
             @forelse ($this->charts as $c)
-                <div class="space-y-3">
-                    <div class="text-sm font-medium leading-snug">
+                <div class="flex flex-col p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    {{-- Teks pertanyaan dengan gaya dari versi kita --}}
+                    <h3 class="text-sm font-medium text-center text-gray-900 dark:text-gray-100 mb-4">
                         {{ $c['question_label'] }}
-                    </div>
+                    </h3>
 
+                    {{-- Mengambil SELURUH LOGIKA x-data dari file referensi Anda --}}
                     <div x-data="{
                         labels: @js($c['labels']),
                         data: @js($c['data']),
+                        // Urutan warna disesuaikan untuk skala Likert
                         colorsBg: [
-                            'rgba(248,113,113,0.7)',
-                            'rgba(251,191,36,0.7)',
-                            'rgba(59,130,246,0.7)',
-                            'rgba(16,185,129,0.7)',
-                        ],
-                        colorsBorder: [
-                            'rgb(239,68,68)',
-                            'rgb(245,158,11)',
-                            'rgb(59,130,246)',
-                            'rgb(16,185,129)',
+                            '#EF4444', // 1. Tidak Memuaskan (Merah)
+                            '#F59E0B', // 2. Kurang Memuaskan (Oranye)
+                            '#3B82F6', // 3. Memuaskan (Biru)
+                            '#10B981', // 4. Sangat Memuaskan (Hijau)
+                            '#8B5CF6', // 5. Opsi kelima (Ungu)
                         ],
                         pct: [],
                         init() {
@@ -33,24 +31,22 @@
                                 return Number.isFinite(p) ? p : 0;
                             });
                     
-                            const create = () => {
-                                const ctx = this.$refs.canvas.getContext('2d');
-                                new Chart(ctx, {
+                            const createChart = () => {
+                                new Chart(this.$refs.canvas, {
                                     type: 'pie',
                                     data: {
                                         labels: this.labels,
                                         datasets: [{
                                             data: this.data,
                                             backgroundColor: this.colorsBg,
-                                            borderColor: this.colorsBorder,
-                                            borderWidth: 1,
                                         }],
                                     },
                                     options: {
                                         responsive: true,
-                                        maintainAspectRatio: false,
+                                        maintainAspectRatio: true,
+                                        aspectRatio: 1,
                                         plugins: {
-                                            legend: { display: false }, // legend Chart.js dimatikan
+                                            legend: { display: false }, // Legenda Chart.js dimatikan
                                             tooltip: {
                                                 callbacks: {
                                                     label: (item) => {
@@ -67,42 +63,50 @@
                                 });
                             };
                     
+                            // Metode aman untuk memuat Chart.js dari file referensi
                             if (window.Chart) {
-                                create();
+                                createChart();
                             } else {
                                 const s = document.createElement('script');
                                 s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-                                s.onload = () => create();
+                                s.onload = () => createChart();
                                 document.head.appendChild(s);
                             }
                         },
                         percentStr(i) {
                             const p = (this.pct?.[i] ?? 0);
-                            return p.toFixed(1).replace('.', ',') + '%';
+                            // Menggunakan titik sebagai pemisah desimal
+                            return p.toFixed(1) + '%';
                         }
-                    }" class="flex gap-6 items-start">
-                        <div class="grow min-h-[260px]">
-                            <canvas x-ref="canvas" width="320" height="320" class="w-full h-[260px]"></canvas>
+                    }" class="flex gap-4 items-center w-full flex-grow">
+                        
+                        {{-- PERUBAHAN: Wadah Canvas, porsinya sedikit dikurangi menjadi 7/12 --}}
+                        <div class="w-7/12">
+                            <canvas x-ref="canvas"></canvas>
                         </div>
 
-                        {{-- Legend kustom di kanan --}}
-                        <ul class="w-64 shrink-0 space-y-2" role="list">
-                            <template x-for="(label, i) in labels" :key="i">
-                                <li class="flex items-center justify-between text-sm">
-                                    <div class="flex items-center gap-2">
-                                        <span class="inline-block h-3 w-3 rounded"
-                                            :style="`background:${colorsBg[i]}`"></span>
-                                        <span x-text="label"></span>
-                                    </div>
-                                    <span class="font-medium" x-text="percentStr(i)"></span>
-                                </li>
-                            </template>
-                        </ul>
+                        {{-- PERUBAHAN: Legenda HTML kustom, porsinya ditambah menjadi 5/12 --}}
+                        <div class="w-5/12">
+                            {{-- Menambahkan kelas warna teks untuk dark mode --}}
+                            <ul class="text-xs space-y-2 text-white dark:text-white" role="list">
+                                <template x-for="(label, i) in labels" :key="i">
+                                    <li class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            {{-- PERUBAHAN: Kotak warna dibuat kotak (rounded-sm) dan diberi jarak (mr-2) --}}
+                                            <span class="inline-block h-3 w-3 mr-2 flex-shrink-0 rounded-sm" :style="`background:${colorsBg[i]}`"></span>
+                                            <span x-text="label"></span>
+                                        </div>
+                                        <span class="font-medium" x-text="percentStr(i)"></span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             @empty
-                <div class="text-sm text-gray-500">Data tidak tersedia.</div>
+                <div class="text-sm text-gray-500 col-span-full">Data tidak tersedia.</div>
             @endforelse
         </div>
-    </x-filament::section>
+    </x-filament::card>
 </x-filament-widgets::widget>
+

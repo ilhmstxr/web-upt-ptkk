@@ -32,7 +32,9 @@ class ExportController extends Controller
             $pdf = Browsershot::url($url)
                 // ->setChromePath('C:\Program Files\Google\Chrome\Application\chrome.exe')   // Windows/Laragon
                 ->setNodeBinary('C:\Program Files\nodejs\node.exe')
-                ->setPuppeteerOptions(['protocolTimeout' => 180000]) // 180s
+                ->setPuppeteerOptions(['protocolTimeout' => 360000]) // 180s
+                ->timeout(60000)
+                ->waituntil('networkidle0')
                 ->setCookie($sessionCookieName, $sessionId, ['domain' => '127.0.0.1'])      // bawa sesi agar tidak redirect login
                 ->emulateMedia('screen')    // atau 'print' sesuai CSS
                 ->showBackground()

@@ -24,6 +24,9 @@ class PiePerPertanyaanWidget extends Widget
     protected static bool $isLazy = false; // penting
     public array $charts = [];
 
+    // REVISI TIDAK DIPERLUKAN DI FILE INI.
+    // Logika pengambilan dan pemrosesan data di backend sudah benar.
+    // Masalah ukuran chart ada di bagian frontend (file .blade.php).
     public function mount(): void
     {
         $pelatihanId = $this->pelatihanId ?? request()->integer('pelatihanId');
@@ -80,7 +83,7 @@ class PiePerPertanyaanWidget extends Widget
                 $counts = array_values($answersByQuestion[$q->id] ?? []);
             }
 
-            $total  = array_sum($counts);
+            $total   = array_sum($counts);
             $percentages = $total > 0
                 ? array_map(fn($c) => round(($c / $total) * 100, 1), $counts)
                 : array_fill(0, count($counts), 0);
@@ -88,8 +91,8 @@ class PiePerPertanyaanWidget extends Widget
             $displayNo = $i + 1;
 
             return [
-                'question_id'    => $q,
-                'question_label' => "Q{$displayNo}. " . $q->teks_pertanyaan ,
+                'question_id'    => $q->id,
+                'question_label' => "Q{$displayNo}. " . $q->teks_pertanyaan,
                 'labels'         => $labels,
                 'data'           => $counts,
                 'percentages'    => $percentages,
