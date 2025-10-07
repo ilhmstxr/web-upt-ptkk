@@ -2,8 +2,6 @@
 KONSEP ARSITEKTUR
 =================================================================
 
-
-
 =================================================================
 IMPLEMENTASI
 =================================================================
@@ -15,14 +13,14 @@ siap—kita fokus “membongkar” controller pendaftaran yang gemuk jadi potong
 
 Biasanya berisi campuran:
 
-* Validasi request (panjang)
-* Otorisasi (role/ownership)
-* Query & filter list (search, sort, paginate)
-* Transaksi bisnis (generate nomor registrasi, cek unik, simpan lampiran)
-* Perubahan status (submit/verify/approve/reject)
-* Notifikasi/email, export, dsb.
+-   Validasi request (panjang)
+-   Otorisasi (role/ownership)
+-   Query & filter list (search, sort, paginate)
+-   Transaksi bisnis (generate nomor registrasi, cek unik, simpan lampiran)
+-   Perubahan status (submit/verify/approve/reject)
+-   Notifikasi/email, export, dsb.
 
-Semuanya kita **pecah**: validasi → FormRequest, logika bisnis → Actions/Services, otorisasi → Policy, query → Repository/QueryObject, lampiran → Service khusus storage, output API → Resource, efek samping → Event/Listener/Job, aturan khusus → Rule, hal otomatis → Observer. Controller tinggal jadi *orchestrator* tipis.
+Semuanya kita **pecah**: validasi → FormRequest, logika bisnis → Actions/Services, otorisasi → Policy, query → Repository/QueryObject, lampiran → Service khusus storage, output API → Resource, efek samping → Event/Listener/Job, aturan khusus → Rule, hal otomatis → Observer. Controller tinggal jadi _orchestrator_ tipis.
 
 ---
 
@@ -30,10 +28,10 @@ Semuanya kita **pecah**: validasi → FormRequest, logika bisnis → Actions/Ser
 
 Taruh semua aturan validasi di sini, bukan di controller.
 
-* `app/Http/Requests/Pendaftaran/StoreRequest.php`
-* `app/Http/Requests/Pendaftaran/UpdateRequest.php`
-* `app/Http/Requests/Pendaftaran/ChangeStatusRequest.php` (opsional)
-* `app/Http/Requests/Pendaftaran/UploadLampiranRequest.php`
+-   `app/Http/Requests/Pendaftaran/StoreRequest.php`
+-   `app/Http/Requests/Pendaftaran/UpdateRequest.php`
+-   `app/Http/Requests/Pendaftaran/ChangeStatusRequest.php` (opsional)
+-   `app/Http/Requests/Pendaftaran/UploadLampiranRequest.php`
 
 **Fokus:** aturan field, exists/unique, korelasi antar field (mis. `bidang_id` harus milik `instansi_id`), otorisasi endpoint (boleh create/edit?).
 
@@ -43,7 +41,7 @@ Taruh semua aturan validasi di sini, bukan di controller.
 
 Agar controller tidak penuh if/else per role/status.
 
-* `app/Policies/PendaftaranPolicy.php`
+-   `app/Policies/PendaftaranPolicy.php`
 
 **Method umum:** `viewAny, view, create, update, delete, restore, forceDelete` + kustom mis. `approve, reject, verify, uploadLampiran`.
 
@@ -53,14 +51,14 @@ Agar controller tidak penuh if/else per role/status.
 
 Satu use-case → satu kelas. Di sinilah **transaksi DB** berlangsung.
 
-* `app/Actions/Pendaftaran/CreatePendaftaran.php`
-  (cek unik peserta×pelatihan, generate nomor, simpan & dispatch event)
-* `app/Actions/Pendaftaran/UpdatePendaftaran.php`
-* `app/Actions/Pendaftaran/ChangeStatus.php`
-  (subset: `ApprovePendaftaran`, `RejectPendaftaran`, `VerifyPendaftaran`)
-* `app/Actions/Pendaftaran/AddLampiran.php`
-* `app/Actions/Pendaftaran/RemoveLampiran.php`
-* `app/Actions/Pendaftaran/GenerateNomorRegistrasi.php` (bisa sebagai service mikro)
+-   `app/Actions/Pendaftaran/CreatePendaftaran.php`
+    (cek unik peserta×pelatihan, generate nomor, simpan & dispatch event)
+-   `app/Actions/Pendaftaran/UpdatePendaftaran.php`
+-   `app/Actions/Pendaftaran/ChangeStatus.php`
+    (subset: `ApprovePendaftaran`, `RejectPendaftaran`, `VerifyPendaftaran`)
+-   `app/Actions/Pendaftaran/AddLampiran.php`
+-   `app/Actions/Pendaftaran/RemoveLampiran.php`
+-   `app/Actions/Pendaftaran/GenerateNomorRegistrasi.php` (bisa sebagai service mikro)
 
 > Catatan: kalau di controller ada 3–5 alur berbeda (create/update/status/lampiran), pecah jadi **3–5 Action** seperti di atas.
 
@@ -70,9 +68,9 @@ Satu use-case → satu kelas. Di sinilah **transaksi DB** berlangsung.
 
 Supaya tidak menjejali FormRequest dengan closure panjang.
 
-* `app/Rules/UniquePendaftaranPerPesertaPelatihan.php`
-* `app/Rules/BidangBelongsToInstansi.php`
-* `app/Rules/ValidLampiranType.php` (opsional: cek jenis berkas terhadap pelatihan/bidang)
+-   `app/Rules/UniquePendaftaranPerPesertaPelatihan.php`
+-   `app/Rules/BidangBelongsToInstansi.php`
+-   `app/Rules/ValidLampiranType.php` (opsional: cek jenis berkas terhadap pelatihan/bidang)
 
 ---
 
@@ -80,9 +78,9 @@ Supaya tidak menjejali FormRequest dengan closure panjang.
 
 Kumpulkan logika pencarian/sort/filter/paginate.
 
-* `app/Repositories/PendaftaranRepository.php`
-  (mis. `paginateWithFilters($filters)`, `findByNomor($nomor)`)
-* (opsional) `app/QueryBuilders/PendaftaranQuery.php` bila ingin pola QueryObject lebih ketat.
+-   `app/Repositories/PendaftaranRepository.php`
+    (mis. `paginateWithFilters($filters)`, `findByNomor($nomor)`)
+-   (opsional) `app/QueryBuilders/PendaftaranQuery.php` bila ingin pola QueryObject lebih ketat.
 
 **Tujuan:** controller tidak menulis chain query panjang, cukup panggil metode repository.
 
@@ -92,8 +90,8 @@ Kumpulkan logika pencarian/sort/filter/paginate.
 
 Kalau endpoint kamu JSON, bentuknya jangan di controller.
 
-* `app/Http/Resources/PendaftaranResource.php`
-* `app/Http/Resources/LampiranResource.php`
+-   `app/Http/Resources/PendaftaranResource.php`
+-   `app/Http/Resources/LampiranResource.php`
 
 **Manfaat:** konsisten, mudah versi, dan controller tetap tipis.
 
@@ -103,11 +101,11 @@ Kalau endpoint kamu JSON, bentuknya jangan di controller.
 
 Pisahkan hal yang berpotensi dipakai lintas aksi.
 
-* `app/Services/Numbering/NomorRegistrasiFormatter.php`
-  (format kode, padding, pola per tahun/bidang)
-* `app/Services/Storage/LampiranStorage.php`
-  (path, direktori, rename, keamanan akses)
-* (opsional) `app/Services/Export/PendaftaranExporter.php` (CSV/XLSX/PDF)
+-   `app/Services/Numbering/NomorRegistrasiFormatter.php`
+    (format kode, padding, pola per tahun/bidang)
+-   `app/Services/Storage/LampiranStorage.php`
+    (path, direktori, rename, keamanan akses)
+-   (opsional) `app/Services/Export/PendaftaranExporter.php` (CSV/XLSX/PDF)
 
 ---
 
@@ -115,12 +113,12 @@ Pisahkan hal yang berpotensi dipakai lintas aksi.
 
 Agar controller/Action tak menangani email, logging berat, dsb.
 
-* `app/Events/PendaftaranSubmitted.php`
-* `app/Events/PendaftaranApproved.php`
-* `app/Events/PendaftaranRejected.php`
-* `app/Listeners/NotifyPesertaOnApproval.php`
-* `app/Jobs/SendPendaftaranEmail.php`
-* `app/Jobs/GenerateKartuPendaftaranPdf.php`
+-   `app/Events/PendaftaranSubmitted.php`
+-   `app/Events/PendaftaranApproved.php`
+-   `app/Events/PendaftaranRejected.php`
+-   `app/Listeners/NotifyPesertaOnApproval.php`
+-   `app/Jobs/SendPendaftaranEmail.php`
+-   `app/Jobs/GenerateKartuPendaftaranPdf.php`
 
 **Prinsip:** Action hanya `dispatch()`; proses berat jalan di Job.
 
@@ -130,9 +128,9 @@ Agar controller/Action tak menangani email, logging berat, dsb.
 
 Hal “otomatis” saat create/update tanpa mencemari controller.
 
-* `app/Observers/PendaftaranObserver.php`
-  (mis. auto-generate nomor kalau kosong, normalisasi data)
-* `app/Observers/LampiranObserver.php` (opsional—hapus fisik file saat record dihapus)
+-   `app/Observers/PendaftaranObserver.php`
+    (mis. auto-generate nomor kalau kosong, normalisasi data)
+-   `app/Observers/LampiranObserver.php` (opsional—hapus fisik file saat record dihapus)
 
 ---
 
@@ -140,11 +138,11 @@ Hal “otomatis” saat create/update tanpa mencemari controller.
 
 Hanya orkestrasi: terima Request → authorize → panggil Action → balas Resource/View.
 
-* Tetap `app/Http/Controllers/PendaftaranController.php` (lebih kecil)
-* (opsional) pisah **Web** vs **API**:
+-   Tetap `app/Http/Controllers/PendaftaranController.php` (lebih kecil)
+-   (opsional) pisah **Web** vs **API**:
 
-  * `PendaftaranWebController` (Blade)
-  * `PendaftaranApiController` (JSON + Resource)
+    -   `PendaftaranWebController` (Blade)
+    -   `PendaftaranApiController` (JSON + Resource)
 
 ---
 
@@ -152,10 +150,10 @@ Hanya orkestrasi: terima Request → authorize → panggil Action → balas Reso
 
 Jika ada UI publik (non-admin):
 
-* `resources/views/pendaftaran/create.blade.php`
-* `resources/views/pendaftaran/show.blade.php`
-* `resources/views/components/pendaftaran/form.blade.php`
-* `resources/views/components/pendaftaran/lampiran-uploader.blade.php`
+-   `resources/views/pendaftaran/create.blade.php`
+-   `resources/views/pendaftaran/show.blade.php`
+-   `resources/views/components/pendaftaran/form.blade.php`
+-   `resources/views/components/pendaftaran/lampiran-uploader.blade.php`
 
 **Tujuan:** markup tidak menumpuk di controller, dan form bisa reusable.
 
@@ -165,10 +163,10 @@ Jika ada UI publik (non-admin):
 
 Jika kamu juga pakai Filament, UI admin pindah ke sini (controller makin bebas).
 
-* `app/Filament/Resources/PendaftaranResource.php`
-* `app/Filament/Resources/PendaftaranResource/Pages/{List,Create,Edit,View}.php`
-* `app/Filament/Resources/PendaftaranResource/RelationManagers/LampiranRelationManager.php`
-* `app/Filament/Widgets/PendaftaranStats.php`
+-   `app/Filament/Resources/PendaftaranResource.php`
+-   `app/Filament/Resources/PendaftaranResource/Pages/{List,Create,Edit,View}.php`
+-   `app/Filament/Resources/PendaftaranResource/RelationManagers/LampiranRelationManager.php`
+-   `app/Filament/Widgets/PendaftaranStats.php`
 
 **Khusus penting:** di `Create/Edit` Page, gunakan **Action** (`CreatePendaftaran`, `ChangeStatus`, dll.) agar domain logic tetap satu sumber.
 
@@ -176,48 +174,47 @@ Jika kamu juga pakai Filament, UI admin pindah ke sini (controller makin bebas).
 
 # 13) Routes (jelas & terpisah)
 
-* `routes/web.php` (portal)
-* `routes/api.php` (API JSON)
-* (opsional) `routes/filament.php` (kadang otomatis oleh Filament)
-* Gunakan **Route Model Binding** untuk meringkas controller.
+-   `routes/web.php` (portal)
+-   `routes/api.php` (API JSON)
+-   (opsional) `routes/filament.php` (kadang otomatis oleh Filament)
+-   Gunakan **Route Model Binding** untuk meringkas controller.
 
 ---
 
 # 14) Testing (supaya refactor aman)
 
-* `tests/Feature/Pendaftaran/CreateTest.php`
-* `tests/Feature/Pendaftaran/StatusFlowTest.php`
-* `tests/Unit/Rules/UniquePendaftaranPerPesertaPelatihanTest.php`
-* `tests/Feature/Filament/PendaftaranResourceTest.php` (bila pakai Filament)
+-   `tests/Feature/Pendaftaran/CreateTest.php`
+-   `tests/Feature/Pendaftaran/StatusFlowTest.php`
+-   `tests/Unit/Rules/UniquePendaftaranPerPesertaPelatihanTest.php`
+-   `tests/Feature/Filament/PendaftaranResourceTest.php` (bila pakai Filament)
 
 ---
 
 ## Pemetaan “fat controller concern → file tujuan”
 
-* **Validasi panjang** → `StoreRequest/UpdateRequest/ChangeStatusRequest` + `Rules/*`
-* **Cek izin** → `PendaftaranPolicy`
-* **Generate nomor registrasi** → `Actions/GenerateNomorRegistrasi` (atau Service Numbering) + optional `Observer`
-* **Cek unik (peserta×pelatihan)** → `Rules/UniquePendaftaranPerPesertaPelatihan`
-* **Relasi `bidang` milik `instansi`** → `Rules/BidangBelongsToInstansi`
-* **Simpan/hapus lampiran** → `Actions/AddLampiran/RemoveLampiran` + `Services/Storage/LampiranStorage`
-* **Filter/search daftar** → `PendaftaranRepository`
-* **Perubahan status (submit/verify/approve/reject)** → `Actions/ChangeStatus` (+ Policy)
-* **Notifikasi/email/export** → `Events/Listeners/Jobs` (+ optional `Services/Export`)
-* **Respons JSON** → `Http/Resources/*`
-* **Hal otomatis saat create/update** → `Observers/*`
+-   **Validasi panjang** → `StoreRequest/UpdateRequest/ChangeStatusRequest` + `Rules/*`
+-   **Cek izin** → `PendaftaranPolicy`
+-   **Generate nomor registrasi** → `Actions/GenerateNomorRegistrasi` (atau Service Numbering) + optional `Observer`
+-   **Cek unik (peserta×pelatihan)** → `Rules/UniquePendaftaranPerPesertaPelatihan`
+-   **Relasi `bidang` milik `instansi`** → `Rules/BidangBelongsToInstansi`
+-   **Simpan/hapus lampiran** → `Actions/AddLampiran/RemoveLampiran` + `Services/Storage/LampiranStorage`
+-   **Filter/search daftar** → `PendaftaranRepository`
+-   **Perubahan status (submit/verify/approve/reject)** → `Actions/ChangeStatus` (+ Policy)
+-   **Notifikasi/email/export** → `Events/Listeners/Jobs` (+ optional `Services/Export`)
+-   **Respons JSON** → `Http/Resources/*`
+-   **Hal otomatis saat create/update** → `Observers/*`
 
 ---
 
 ### Hasil akhirnya
 
-* **Controller** tinggal ±5–20 baris per method (super bersih).
-* **Logika bisnis** terkumpul rapi & bisa dipakai ulang (portal, API, admin).
-* **Validasi & izin** konsisten (tak tersebar).
-* **Query** mudah dirawat (satu pintu).
-* **Efek samping** aman via queue.
+-   **Controller** tinggal ±5–20 baris per method (super bersih).
+-   **Logika bisnis** terkumpul rapi & bisa dipakai ulang (portal, API, admin).
+-   **Validasi & izin** konsisten (tak tersebar).
+-   **Query** mudah dirawat (satu pintu).
+-   **Efek samping** aman via queue.
 
-Kalau kamu mau, kirim ringkasan isi method apa saja yang ada di controller kamu (mis. `index`, `create`, `store`, `show`, `update`, `approve`, `reject`, `uploadLampiran`, `export`, dsb.). Aku akan mapping **satu-per-satu** ke daftar file di atas (tanpa menulis kode), jadi kamu dapat *blueprint* refactor yang persis mengikuti controller milikmu.
-
+Kalau kamu mau, kirim ringkasan isi method apa saja yang ada di controller kamu (mis. `index`, `create`, `store`, `show`, `update`, `approve`, `reject`, `uploadLampiran`, `export`, dsb.). Aku akan mapping **satu-per-satu** ke daftar file di atas (tanpa menulis kode), jadi kamu dapat _blueprint_ refactor yang persis mengikuti controller milikmu.
 
 82 ~ 97
 
@@ -226,14 +223,13 @@ Kalau kamu mau, kirim ringkasan isi method apa saja yang ada di controller kamu 
 
 export pdf untuk diagram monev
 
-
 export pdf & excel untuk kebutuhan bu nur
-jadwal kegiatan pelatihan total 10 
-jenis: 
-- reguler:  MJC, keterampilan (generasi emas,)  
-- mtu
-- aksel: sertifikasi uji kompetensi 
+jadwal kegiatan pelatihan total 10
+jenis:
 
+-   reguler: MJC, keterampilan (generasi emas,)
+-   mtu
+-   aksel: sertifikasi uji kompetensi
 
 aksel guru: 2
 mtu: 2
@@ -242,3 +238,58 @@ aksel siswa: 2
 mjc: 2
 
 guru & siswa
+
+105
+191
+
+104
+105
+
+190
+191
+SELECT \* FROM jawaban_user WHERE pertanyaan_id = 105;
+
+
+
+
+
+    
+-- JALANKAN QUERY INI UNTUK MEMPERBAIKI DATA JAWABAN_USER
+UPDATE
+  jawaban_user
+SET
+  opsi_jawaban_id = CASE
+    -- ## Mapping untuk Pertanyaan 105 (Q24) ##
+    -- Sesuaikan ID Lama => ID Baru berdasarkan peta Anda
+    WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 353 THEN 708 -- Contoh untuk 'Sangat Perlu'
+    WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 354 THEN 707 -- Contoh untuk 'Perlu'
+    WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 355 THEN 706 -- Contoh untuk 'Kurang Perlu'
+    WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 356 THEN 705 -- Contoh untuk 'Tidak Perlu'
+    
+    -- Jaga nilai asli jika tidak cocok
+    ELSE opsi_jawaban_id
+  END
+WHERE
+  -- Filter hanya untuk pertanyaan yang relevan
+  pertanyaan_id = 105 AND opsi_jawaban_id IN (353, 354, 355, 356);
+
+
+
+-- JALANKAN QUERY INI UNTUK MEMPERBAIKI DATA JAWABAN_USER
+UPDATE
+  jawaban_user
+SET
+  opsi_jawaban_id = CASE
+    -- ## Mapping untuk Pertanyaan 105 (Q24) ##
+    -- Sesuaikan ID Lama => ID Baru berdasarkan peta Anda
+       WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 685 THEN 712 -- Contoh untuk 'Sangat Perlu'
+    WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 686 THEN 711 -- Contoh untuk 'Perlu'
+    WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 687 THEN 710 -- Contoh untuk 'Kurang Perlu'
+    WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 688 THEN 709 -- Contoh untuk 'Tidak Perlu'
+ 
+    -- Jaga nilai asli jika tidak cocok
+    ELSE opsi_jawaban_id
+  END
+WHERE
+  -- Filter hanya untuk pertanyaan yang relevan
+  pertanyaan_id = 105 AND opsi_jawaban_id IN (353, 354, 355, 356);

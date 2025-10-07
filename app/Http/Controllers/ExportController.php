@@ -2,87 +2,121 @@
 
 namespace App\Http\Controllers;
 
-use App\Filament\Resources\JawabanSurveiResource\Pages\ReportJawabanSurvei as ReportPage;
+use App\views\welcome;
+use App\Filament\Resources\JawabanSurveiResource\Pages\ReportJawabanSurvei;
+use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanAkumulatifChart;
+use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerKategoriChart;
+use App\Filament\Resources\JawabanSurveiResource\Widgets\PiePerPertanyaanWidget;
 use App\Models\Pelatihan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Response;
 use Spatie\Browsershot\Browsershot;
-use Spatie\Browsershot\Enums\Polling;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Spatie\Browsershot\Exceptions\CouldNotTakeBrowsershot;
 
 class ExportController extends Controller
 {
-    public function reportJawabanSurvei(Request $request): StreamedResponse
+    public function generateReportPdf($pelatihanId, Request $request)
     {
-        $pelatihanId = $request->integer('pelatihanId');
-
-        $pageUrl = ReportPage::getUrl([
-            'print' => true,
-            ...($pelatihanId !== null ? ['pelatihanId' => $pelatihanId] : []),
-        ], true);
-
-        $pelatihanName = $pelatihanId
-            ? Pelatihan::whereKey($pelatihanId)->value('nama_pelatihan')
-            : null;
-
-        $filename = 'report-jawaban-survei-'
-            . Str::slug($pelatihanName ?: 'semua-pelatihan')
-            . '-' . now()->format('Ymd_His') . '.pdf';
-
-        $browsershot = Browsershot::url($pageUrl)
-            ->noSandbox()
-            ->emulateMedia('screen')
-            ->showBackground()
-            ->windowSize(800, 600)
-            ->deviceScaleFactor(2)
-            ->format('A4')
-            ->margins(12, 12, 16, 12)
-            ->setDelay(300)
-            ->setPuppeteerOption('waitUntil', 'domcontentloaded')
-            ->setPuppeteerOption('protocolTimeout', 0)
-            ->waitForFunction(
-                'window.__PDF_READY__ === true || window.__chartsReady === true',
-                Polling::RequestAnimationFrame,
-                120000
-            )
-            ->timeout(240);
-
-        // Persist sesi/auth (tanpa header Cookie manual)
-        $cookies = $this->buildBrowsershotCookies($request, $pageUrl);
-        if (!empty($cookies)) {
-            $browsershot->setCookies($cookies);
+        $pelatihan = Pelatihan::find($pelatihanId);
+        if (!$pelatihan) {
+            abort(404, 'Data Pelatihan tidak ditemukan.');
         }
 
-        // Opsional: teruskan User-Agent nyata
-        if ($ua = $request->header('User-Agent')) {
-            $browsershot->setExtraHttpHeaders(['User-Agent' => $ua]);
+        $url = ReportJawabanSurvei::getUrl(['pelatihanId' => $pelatihanId]) . '&print=true';
+        // $url = welcome::getUrl().'&print=true';
+
+        try {
+            $sessionCookieName = config('session.cookie');
+            $sessionId = request()->cookie($sessionCookieName);
+
+            $pdf = Browsershot::url($url)
+                // ->setChromePath('C:\Program Files\Google\Chrome\Application\chrome.exe')   // Windows/Laragon
+                ->setNodeBinary('C:\Program Files\nodejs\node.exe')
+                ->setPuppeteerOptions(['protocolTimeout' => 180000]) // 180s
+                ->setCookie($sessionCookieName, $sessionId, ['domain' => '127.0.0.1'])      // bawa sesi agar tidak redirect login
+                ->emulateMedia('screen')    // atau 'print' sesuai CSS
+                ->showBackground()
+                ->format('A4')
+                ->waitForFunction('window.__reportReady === true')
+                ->pdf();
+
+
+            $filename = 'laporan-pelatihan-' . $pelatihanId . '.pdf';
+
+            return Response::make($pdf, 200, [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+                // 'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            ]);
+        } catch (CouldNotTakeBrowsershot $e) {
+            // Memberikan pesan error yang lebih informatif jika gagal
+            return response("Gagal membuat PDF. Pesan error: <pre>{$e->getMessage()}</pre>", 500);
         }
-
-        $pdfBinary = $browsershot->pdf();
-
-        return response()->streamDownload(
-            static function () use ($pdfBinary) {
-                echo $pdfBinary;
-            },
-            $filename,
-            ['Content-Type' => 'application/pdf']
-        );
     }
 
-    private function buildBrowsershotCookies(Request $request, string $pageUrl): array
+    public function generatePdf(Request $request)
     {
-        $domain = parse_url($pageUrl, PHP_URL_HOST) ?: 'localhost';
+        // 1. Validasi input, contoh: pelatihanId
+        $request->validate(['pelatihanId' => 'required|integer|exists:pelatihan,id']);
+        $pelatihanId = $request->input('pelatihanId');
+        $pelatihan = Pelatihan::find($pelatihanId); // Ambil detail pelatihan jika perlu
 
-        $cookies = [];
-        foreach ($request->cookies->all() as $name => $value) {
-            $cookies[] = [
-                'name'   => (string) $name,
-                'value'  => is_array($value) ? (string) reset($value) : (string) $value,
-                'domain' => $domain,
-                'path'   => '/',
-            ];
+        // 2. Siapkan data dengan menggunakan kembali logika dari widget Filament Anda
+        // Ini adalah cara efisien untuk menghindari duplikasi kode.
+
+        // Data Chart Akumulatif
+        $akumulatifWidget = new JawabanAkumulatifChart();
+        $akumulatifWidget->pelatihanId = $pelatihanId;
+        $akumulatifChartData = [
+            'heading' => $akumulatifWidget::getHeading(),
+            'data' => $akumulatifWidget->getData(),
+        ];
+
+        // Data Chart Per Kategori
+        $perKategoriWidget = new JawabanPerKategoriChart();
+        $perKategoriWidget->pelatihanId = $pelatihanId;
+        $perKategoriChartData = [
+            'heading' => $perKategoriWidget::getHeading(),
+            'data' => $perKategoriWidget->getData(),
+        ];
+
+        // Data Chart Per Pertanyaan
+        $perPertanyaanWidget = new PiePerPertanyaanWidget();
+        $perPertanyaanWidget->pelatihanId = $pelatihanId;
+        $perPertanyaanWidget->mount(); // Panggil mount() karena data disiapkan di sana
+        $perPertanyaanChartsData = $perPertanyaanWidget->charts;
+
+        // 3. Kumpulkan semua data untuk dikirim ke view
+        $viewData = [
+            'title' => 'Laporan Hasil Survei',
+            'subtitle' => 'Evaluasi Pelatihan: ' . ($pelatihan->nama ?? 'ID ' . $pelatihanId),
+            'akumulatifChartData' => $akumulatifChartData,
+            'perKategoriChartData' => $perKategoriChartData,
+            'perPertanyaanChartsData' => $perPertanyaanChartsData,
+        ];
+
+        // 4. Render view Blade menjadi string HTML
+        $html = view('report-page-pdf', $viewData)->render();
+
+        // 5. Konversi HTML menjadi PDF menggunakan Browsershot
+        try {
+            $pdf = Browsershot::html($html)
+                // ->setNodeBinary(config('services.browsershot.node_binary')) // Sesuaikan path jika perlu
+                // ->setNpmBinary(config('services.browsershot.npm_binary'))   // Sesuaikan path jika perlu
+                ->format('A4')
+                ->margins(20, 20, 20, 20, 'mm')
+                // Tunggu hingga JS selesai merender chart sebelum mengambil "gambar" halaman
+                ->waitUntil('window.status === "charts-rendered"', 5000)
+                ->pdf();
+        } catch (\Exception $e) {
+            // Tangani error jika Browsershot gagal (misal: path node/npm salah, timeout)
+            return response('Gagal membuat PDF: ' . $e->getMessage(), 500);
         }
 
-        return $cookies;
+        // 6. Kirimkan PDF sebagai response untuk di-download atau ditampilkan di browser
+        $fileName = 'report-survei-pelatihan-' . $pelatihanId . '.pdf';
+        return response($pdf)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', "inline; filename=\"{$fileName}\"");
     }
 }

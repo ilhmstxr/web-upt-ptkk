@@ -14,11 +14,11 @@ class BidangStatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $averages = $this->bidang->peserta()
-            ->join('tes', 'tes.peserta_id', '=', 'pesertas.id')
-            ->join('percobaans', 'percobaans.tes_id', '=', 'tes.id')
+            ->join('tes', 'tes.peserta_id', '=', 'peserta.id')
+            ->join('percobaan', 'percobaan.tes_id', '=', 'tes.id')
             ->select(
                 'tes.jenis_tes',
-                DB::raw('AVG(percobaans.nilai) as average_score')
+                DB::raw('AVG(percobaan.nilai) as average_score')
             )
             ->groupBy('tes.jenis_tes')
             ->pluck('average_score', 'jenis_tes');

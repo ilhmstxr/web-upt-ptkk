@@ -28,6 +28,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Pertanyaan;
 use App\Models\OpsiJawaban;
 use App\Models\JawabanUser;
+use Illuminate\Support\Facades\Response;
+use Spatie\Browsershot\Browsershot;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,13 +81,18 @@ Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::cl
 
 Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
     ->name('exports.pendaftaran.single');
-Route::middleware(['auth'])->group(function () {
-    Route::get('/reports/jawaban-akumulatif/pdf', [ExportController::class, 'jawabanAkumulatifPdf'])
-        ->name('reports.jawaban-akumulatif.pdf');
-});
-Route::middleware(['auth']) // opsional, sesuai kebutuhan
-    ->get('/exports/report-jawaban-survei', [ExportController::class, 'reportJawabanSurvei'])
-    ->name('export.report-jawaban-survei');
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/reports/jawaban-akumulatif/pdf', [ExportController::class, 'jawabanAkumulatifPdf'])
+//         ->name('reports.jawaban-akumulatif.pdf');
+// });
+// Route::middleware(['auth']) // opsional, sesuai kebutuhan
+//     ->get('/exports/report-jawaban-survei', [ExportController::class, 'reportJawabanSurvei'])
+//     ->name('export.report-jawaban-survei');
+
+Route::middleware(['auth'])->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
+    ->name('export.report.pelatihan');
+// Tambahkan middleware jika halaman ini hanya boleh diakses oleh user yang login
+
 
 
 // Step View
@@ -256,15 +263,15 @@ Route::get('/cek_icon', fn() => view('cek_icon'));
 |--------------------------------------------------------------------------
 */
 route::get('/test', function () {
-    return view('filament.resources.jawaban-surveis.pages.report-jawaban-survei');
-    $pelatihan = App\Models\Pelatihan::findOrFail(1);
-    $pelatihanIds = \App\Models\Pelatihan::with([
-        'tes' => fn($q) => $q->where('tipe', 'survei')
-            ->select('id', 'pelatihan_id')
-            ->with([
-                'pertanyaan' => fn($qp) => $qp->where('tipe_jawaban', 'skala_likert')
-            ])
-    ])->get();
+    // return view('filament.resources.jawaban-surveis.pages.report-jawaban-survei');
+    // $pelatihan = App\Models\Pelatihan::findOrFail(1);
+    // $pelatihanIds = \App\Models\Pelatihan::with([
+    //     'tes' => fn($q) => $q->where('tipe', 'survei')
+    //         ->select('id', 'pelatihan_id')
+    //         ->with([
+    //             'pertanyaan' => fn($qp) => $qp->where('tipe_jawaban', 'skala_likert')
+    //         ])
+    // ])->get();
 
 
     // $questions = Pertanyaan::whereIn('id', $pertanyaanIds)->where('tipe_jawaban', 'skala_likert')
@@ -452,6 +459,7 @@ route::get('/test', function () {
     // Return semua keluaran
     // =============================
     return response()->json([
+        // 'pertanyaan' => $pertanyaan,
         'output_1_flat'       => $hasilFlat,                  // [{percobaan_id, pertanyaan_id, opsi_jawaban_id, skala}]
         'output_2_perKategori' => $perKategori,                // {kategori: [...rows...]}
         'output_3_akumulatif' => [
@@ -460,4 +468,24 @@ route::get('/test', function () {
         ],
     ]);
 })->name('login');
+
+route::get('test-pdf', function () {
+    return view('test-pdf');
+});
+
+// Route::get('testing-export-pdf', function ($pelatihanId) {
+//     $view = view('filament.resources.jawaban-surveis.pages.report-page', ['pelatihanId' => $pelatihanId])->render();
+//     // $view = view('test-pdf')->render();
+//     $pdf = Browsershot::html($view)->pdf();
+//     // $pdfContent = Browsershot::url('https://example.com')->pdf();
+//     // $pdfContent = Browsershot::url('http://127.0.0.1:8000/exports/report-jawaban-survei?pelatihanId=1')->pdf();
+
+//     return Response::make($pdf, 200, [
+//         'Content-Type' => 'application/pdf',
+//         'Content-Disposition' => 'inline; filename="laporan.pdf"',
+//     ]);
+
+
+//     // return view("welcome");
+// });
 require __DIR__ . '/auth.php';

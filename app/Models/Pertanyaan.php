@@ -43,22 +43,22 @@ class Pertanyaan extends Model
         return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id')->orderBy('id');
     }
 
-   public function pivotTemplate()
-{
-    return $this->hasOne(PivotJawaban::class, 'pertanyaan_id');
-}
+    public function pivotTemplate()
+    {
+        return $this->hasOne(PivotJawaban::class, 'pertanyaan_id');
+    }
 
-public function templatePertanyaan()
-{
-    return $this->hasOneThrough(
-        Pertanyaan::class,
-        PivotJawaban::class,
-        'pertanyaan_id',          // FK di pivot -> pertanyaan ini
-        'id',                     // PK pertanyaan template
-        'id',                     // PK pertanyaan ini
-        'template_pertanyaan_id'  // FK di pivot -> pertanyaan template
-    );
-}
+    public function templatePertanyaan()
+    {
+        return $this->hasOneThrough(
+            Pertanyaan::class,
+            PivotJawaban::class,
+            'pertanyaan_id',          // FK di pivot -> pertanyaan ini
+            'id',                     // PK pertanyaan template
+            'id',                     // PK pertanyaan ini
+            'template_pertanyaan_id'  // FK di pivot -> pertanyaan template
+        );
+    }
 
     // Relasi ke Jawaban User
     public function jawabanUsers()

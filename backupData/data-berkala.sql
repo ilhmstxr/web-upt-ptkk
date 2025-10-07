@@ -8249,7 +8249,16 @@ VALUES
   (701, 199, 'Tidak Baik', NULL, 0, NULL, NULL),
   (702, 199, 'Kurang Baik', NULL, 0, NULL, NULL),
   (703, 199, 'Baik', NULL, 0, NULL, NULL),
-  (704, 199, 'Sangat Baik', NULL, 0, NULL, NULL);
+  (704, 199, 'Sangat Baik', NULL, 0, NULL, NULL),
+  -- penambahan
+  (705, 105, 'Sangat Perlu', NULL, 0, NULL, NULL),
+  (706, 105, 'Kurang Perlu', NULL, 0, NULL, NULL),
+  (707, 105, 'Perlu', NULL, 0, NULL, NULL),
+  (708, 105, 'Tidak Perlu', NULL, 0, NULL, NULL),
+  (709, 191, 'Sangat Perlu', NULL, 0, NULL, NULL),
+  (710, 191, 'Kurang Perlu', NULL, 0, NULL, NULL),
+  (711, 191, 'Perlu', NULL, 0, NULL, NULL),
+  (712, 191, 'Tidak Perlu', NULL, 0, NULL, NULL)  ;
 
 --
 -- Dumping data for table `pivot_jawaban`
@@ -8286,7 +8295,7 @@ VALUES
   (111, 81, NULL, NULL),
   (114, 81, NULL, NULL),
   (115, 81, NULL, NULL),
-  (105, 104, NULL, NULL),
+  -- (105, 104, NULL, NULL),
   (178, 177, NULL, NULL),
   (179, 177, NULL, NULL),
   (180, 177, NULL, NULL),
@@ -8300,8 +8309,8 @@ VALUES
   (196, 177, NULL, NULL),
   (197, 177, NULL, NULL),
   (200, 177, NULL, NULL),
-  (201, 177, NULL, NULL),
-  (191, 190, NULL, NULL);
+  (201, 177, NULL, NULL);
+  -- (191, 190, NULL, NULL);
 
 --
 -- Dumping data for table `peserta_survei`

@@ -132,7 +132,12 @@ trait BuildsLikertData
             $skalaMap = $opsiIdToSkala->get($source, []);
             $skala = $opsiId ? ($skalaMap[$opsiId] ?? null) : null;
             if ($skala !== null) {
-                $skala = max(1, min(4, (int) $skala)); // clamp 1..4
+                $maxScale = count($skalaMap);
+                if ($maxScale > 0) {
+                    $skala = max(1, min($maxScale, (int) $skala));
+                } else {
+                    $skala = (int) $skala;
+                }
             }
 
             return [
