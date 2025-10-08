@@ -1,5 +1,4 @@
 {{-- resources/views/filament/resources/jawaban-surveis/pages/report-pdf-view.blade.php --}}
-{{-- Versi tanpa <x-filament::page>. Render sebagai halaman HTML biasa untuk PDF/print. --}}
 <!doctype html>
 <html lang="id">
 
@@ -7,12 +6,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? 'Report Jawaban Survei' }}</title>
-
-    {{-- Muat stylesheet Anda sendiri jika perlu. Hindari ketergantungan layout Filament. --}}
-    {{-- Contoh: @vite(['resources/css/app.css']) --}}
-
     <style>
-        /* Prefer inline CSS agar konsisten di DOMPDF/wkhtmltopdf */
+        /* ... CSS lain tetap sama ... */
         @page {
             size: A4 portrait;
             margin: 16mm;
@@ -56,6 +51,7 @@
             font-size: 12px;
             opacity: .8;
             margin-bottom: 24px;
+            text-align: right;
         }
 
         .section {
@@ -96,10 +92,6 @@
             text-align: left;
         }
 
-        .muted {
-            opacity: .65;
-        }
-
         .page-break {
             page-break-before: always;
         }
@@ -108,22 +100,25 @@
             break-inside: avoid;
         }
 
-        /* Utility minimal */
         .mb-2 {
             margin-bottom: 8px
-        }
-
-        .mb-3 {
-            margin-bottom: 12px
         }
 
         .mb-4 {
             margin-bottom: 16px
         }
 
-        .mt-4 {
-            margin-top: 16px
+        /* ======================================================= */
+        /* REVISI CSS DI SINI: Satu kelas untuk semua chart */
+        /* ======================================================= */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            /* Tinggi seragam untuk SEMUA chart */
+            width: 100%;
         }
+
+        /* ======================================================= */
     </style>
 </head>
 
@@ -144,46 +139,15 @@
             </div>
         </header>
 
-        {{-- === CONTOH BLOK RINGKASAN === --}}
         @isset($ringkasan)
             <section class="section card no-break">
                 <h3 class="mb-2">Ringkasan</h3>
-                {{-- $ringkasan bisa berupa array asosiatif --}}
-                @if (is_array($ringkasan))
-                    <table class="table">
-                        <tbody>
-                            @foreach ($ringkasan as $label => $nilai)
-                                <tr>
-                                    <th style="width:40%">{{ $label }}</th>
-                                    <td>{{ $nilai }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <div class="muted">{{ $ringkasan }}</div>
-                @endif
-            </section>
-        @endisset
-
-        {{-- === CONTOH BLOK TABEL DATA === --}}
-        @isset($tabel)
-            <section class="section card no-break">
-                <h3 class="mb-2">Tabel Data</h3>
                 <table class="table">
-                    <thead>
-                        <tr>
-                            @foreach ($tabel['header'] ?? [] as $head)
-                                <th>{{ $head }}</th>
-                            @endforeach
-                        </tr>
-                    </thead>
                     <tbody>
-                        @foreach ($tabel['rows'] ?? [] as $row)
+                        @foreach ($ringkasan as $label => $nilai)
                             <tr>
-                                @foreach ($row as $cell)
-                                    <td>{{ $cell }}</td>
-                                @endforeach
+                                <th style="width:40%">{{ $label }}</th>
+                                <td>{{ $nilai }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -191,91 +155,127 @@
             </section>
         @endisset
 
-        {{-- === CONTOH BLOK CHART (Chart.js) === --}}
+        {{-- BAGIAN 1 & 2: CHART AKUMULATIF & PER KATEGORI --}}
         @if (!empty($charts))
             <section class="section no-break">
                 <div class="grid">
                     @foreach ($charts as $i => $chart)
-                        <div class="col-6 card">
+                        <div class="col-12 card">
                             <h4 class="mb-2">{{ $chart['title'] ?? 'Chart ' . ($i + 1) }}</h4>
-                            <canvas id="chart_{{ $i }}" width="600" height="320"></canvas>
+                            {{-- REVISI DI SINI: Gunakan kelas .chart-container --}}
+                            <div class="chart-container">
+                                <canvas id="chart_{{ Str::slug($chart['title']) }}"></canvas>
+                            </div>
                         </div>
                     @endforeach
                 </div>
             </section>
         @endif
 
-        {{-- Tempatkan konten laporan lain di bawah ini --}}
-        @yield('report-extra')
+        {{-- BAGIAN 3: PIE PER PERTANYAAN --}}
+        @if (!empty($pieCharts))
+            <div class="page-break"></div>
+            <section class="section no-break">
+                <h3 class="mb-2">Detail Jawaban per Pertanyaan</h3>
+                <div class="grid">
+                    @foreach ($pieCharts as $i => $pie)
+                        <div class="col-6 card">
+                            <h4 class="mb-2" style="font-size: 12px;">{{ $pie['question_label'] }}</h4>
+                            {{-- REVISI DI SINI: Gunakan kelas .chart-container --}}
+                            <div class="chart-container">
+                                <canvas id="pie_chart_{{ $i }}"></canvas>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
     </div>
 
-    {{-- Opsional: Chart.js dari CDN. Abaikan jika Anda sudah bundle aset sendiri. --}}
+    {{-- JavaScript tidak perlu diubah --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Jika controller mengoper $charts dengan dataset Chart.js, inisialisasi di sini
-        // Struktur ekspektasi minimal per item: { type, data, options }
-        @if (!empty($charts))
-            (function() {
-                if (!window.Chart) return; // Chart.js tidak dimuat
+        function getPdfChartOptions(originalOptions) {
+            const options = originalOptions || {};
+            options.animation = options.animation || {};
+            options.animation.duration = 0;
+            return options;
+        }
+
+        (function() {
+            if (!window.Chart) return;
+
+            @if (!empty($charts))
                 try {
-                    const configs = @json($charts);
-                    configs.forEach((cfg, idx) => {
-                        const ctx = document.getElementById('chart_' + idx).getContext('2d');
-                        const options = cfg.options || {};
-                        // Pastikan animasi 0 & tandai selesai render untuk keperluan PDF
-                        options.animation = options.animation || {};
-                        options.animation.duration = 0;
-                        options.animation.onComplete = function() {
-                            window.dispatchEvent(new Event('chartjs:rendered'));
-                        };
-                        new Chart(ctx, {
-                            type: cfg.type || 'bar',
-                            data: cfg.data || {},
-                            options
+                    const mainChartConfigs = @json($charts);
+                    const akumulatifConfig = mainChartConfigs.find(c => c.title.includes('Akumulatif'));
+                    if (akumulatifConfig) {
+                        const ctxAkumulatif = document.getElementById('chart_jawaban-akumulatif').getContext('2d');
+                        const doughnutOptions = getPdfChartOptions(akumulatifConfig.options);
+                        doughnutOptions.maintainAspectRatio = false;
+                        new Chart(ctxAkumulatif, {
+                            type: 'doughnut',
+                            data: akumulatifConfig.data,
+                            options: doughnutOptions
+                        });
+                    }
+
+                    const kategoriConfig = mainChartConfigs.find(c => c.title.includes('Kategori'));
+                    if (kategoriConfig) {
+                        const ctxKategori = document.getElementById('chart_distribusi-jawaban-per-kategori').getContext(
+                            '2d');
+                        const barOptions = getPdfChartOptions(kategoriConfig.options);
+                        barOptions.maintainAspectRatio = false;
+                        new Chart(ctxKategori, {
+                            type: 'bar',
+                            data: kategoriConfig.data,
+                            options: barOptions
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error rendering main charts:', e);
+                }
+            @endif
+
+            @if (!empty($pieCharts))
+                try {
+                    const pieChartConfigs = @json($pieCharts);
+                    pieChartConfigs.forEach((pieConfig, idx) => {
+                        const ctxPie = document.getElementById('pie_chart_' + idx).getContext('2d');
+                        new Chart(ctxPie, {
+                            type: 'doughnut',
+                            data: {
+                                labels: pieConfig.labels,
+                                datasets: [{
+                                    data: pieConfig.data,
+                                    backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6',
+                                        '#10B981', '#8B5CF6'
+                                    ],
+                                }]
+                            },
+                            options: getPdfChartOptions({
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'right',
+                                        labels: {
+                                            boxWidth: 12,
+                                            font: {
+                                                size: 10
+                                            }
+                                        }
+                                    }
+                                }
+                            })
                         });
                     });
                 } catch (e) {
-                    console.error(e);
+                    console.error('Error rendering pie charts:', e);
                 }
-            })();
-        @endif
+            @endif
 
-        // Sinyal siap-cetak untuk engine PDF (wkhtmltopdf/Chromium headless)
-        (function() {
-            let pending = 0;
-
-            function markReady() {
-                pending = Math.max(0, pending - 1);
-                if (pending === 0) {
-                    document.documentElement.setAttribute('data-report-ready', '1');
-                }
-            }
-            window.addEventListener('load', function() {
-                // Jika tidak ada chart, tandai siap langsung
-                @if (empty($charts))
-                    document.documentElement.setAttribute('data-report-ready', '1');
-                @else
-                    // Estimasikan jumlah chart sebagai pekerjaan tertunda
-                    pending = ({{ is_countable($charts) ? count($charts) : 0 }});
-                    if (pending === 0) document.documentElement.setAttribute('data-report-ready', '1');
-                    window.addEventListener('chartjs:rendered', markReady);
-                @endif
-            });
         })();
     </script>
-
-    {{-- Trigger print otomatis bila query ?print=1 --}}
-    @if (request()->boolean('print'))
-        <script>
-            window.addEventListener('load', function() {
-                // Tunggu sedikit agar font/render stabil
-                setTimeout(function() {
-                    window.print();
-                }, 300);
-            });
-        </script>
-    @endif
-
 </body>
 
 </html>

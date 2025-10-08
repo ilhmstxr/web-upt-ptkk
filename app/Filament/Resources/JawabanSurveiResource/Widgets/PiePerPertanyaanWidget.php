@@ -91,12 +91,14 @@ class PiePerPertanyaanWidget extends Widget
             $displayNo = $i + 1;
 
             return [
+            // $data = [
                 'question_id'    => $q->id,
                 'question_label' => "Q{$displayNo}. " . $q->teks_pertanyaan,
                 'labels'         => $labels,
                 'data'           => $counts,
                 'percentages'    => $percentages,
             ];
+            // dd($data);
         })->values()->all();
     }
 }

@@ -137,61 +137,73 @@ class ExportController extends Controller
      */
     public function pdfView(Request $request, int $pelatihanId)
     {
-        // return true;
         // Filter tanggal opsional
         $range = [
             'from' => $request->date('from'),
             'to' => $request->date('to'),
         ];
 
-
-        // Kumpulkan pertanyaan Likert yang relevan
-        $pertanyaanIds = $this->collectPertanyaanIds($pelatihanId);
-
-
-        // Bangun peta likert & normalisasi jawaban untuk ringkasan
-        [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIds);
-        $answers = $this->normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId);
-
-
-        // Ringkasan sederhana
+        // --- Bagian Ringkasan & Chart Lain (Bar & Line) ---
+        // Kode di bagian ini bisa tetap sama jika sudah berfungsi
+        $pertanyaanIdsForSummary = $this->collectPertanyaanIds($pelatihanId);
+        [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIdsForSummary);
+        $answers = $this->normalizedAnswers($pelatihanId, $pertanyaanIdsForSummary, $pivot, $opsiIdToSkala, $opsiTextToId);
         $onlyScored = $answers->filter(fn($a) => $a['skala'] !== null);
         $avgSkala = $onlyScored->avg(fn($a) => (float) $a['skala']);
         $fmt1 = static fn($n) => number_format((float) $n, 1, ',', '.');
         $ringkasan = [
-            'Jumlah Pertanyaan Likert' => $pertanyaanIds->count(),
+            'Jumlah Pertanyaan Likert' => $pertanyaanIdsForSummary->count(),
             'Total Jawaban Terskala' => $onlyScored->count(),
             'Rata-rata Skala Likert' => $avgSkala ? $fmt1($avgSkala) : '0,0',
         ];
 
-
-        // Ambil data chart dari trait
-        $bar = $this->buildPerKategori($pelatihanId, $range); // {labels, datasets, options}
-        $pie = $this->buildPiePerPertanyaan($pelatihanId, $range, $pertanyaanIds->first()); // {labels, datasets, options}
-        $line = $this->buildAkumulatif($pelatihanId, $range); // {labels, datasets, options}
-
-
-        // Normalisasi ke struktur Chart.js: data = {labels, datasets}
+        $bar = $this->buildPerKategori($pelatihanId, $range);
+        $line = $this->buildAkumulatif($pelatihanId, $range);
         $barData = ['labels' => $bar['labels'] ?? [], 'datasets' => $bar['datasets'] ?? []];
-        $pieData = ['labels' => $pie['labels'] ?? [], 'datasets' => $pie['datasets'] ?? []];
         $lineData = ['labels' => $line['labels'] ?? [], 'datasets' => $line['datasets'] ?? []];
+        // --------------------------------------------------
 
 
+        // =======================================================
+        // AWAL DARI LOGIKA BARU UNTUK PIE CHARTS
+        // =======================================================
+
+        // 1. Ambil SEMUA ID pertanyaan terlebih dahulu
+        $piePertanyaanIds = $this->collectPertanyaanIds($pelatihanId);
+
+        // 2. Siapkan array kosong untuk menampung data setiap pie chart
+        $pieCharts = [];
+
+        // 3. Looping setiap ID pertanyaan
+        foreach ($piePertanyaanIds as $pertanyaanId) {
+            // 4. Panggil buildPiePerPertanyaan UNTUK SATU ID PADA SETIAP ITERASI
+            $singlePieData = $this->buildPiePerPertanyaan($pelatihanId, $pertanyaanId, $range);
+
+            // 5. Masukkan hasilnya ke dalam array jika tidak kosong
+            if (!empty($singlePieData)) {
+                $pieCharts[] = $singlePieData;
+            }
+        }
+        // =======================================================
+        // AKHIR DARI LOGIKA BARU
+        // =======================================================
+
+        // Siapkan data chart utama (tanpa pie chart)
         $charts = [
-            ['title' => 'Distribusi Jawaban per Kategori', 'type' => 'bar', 'data' => $barData, 'options' => $bar['options'] ?? []],
-            ['title' => 'Komposisi per Pertanyaan', 'type' => 'doughnut', 'data' => $pieData, 'options' => $pie['options'] ?? []],
             ['title' => 'Jawaban Akumulatif', 'type' => 'line', 'data' => $lineData, 'options' => $line['options'] ?? []],
+            ['title' => 'Distribusi Jawaban per Kategori', 'type' => 'bar', 'data' => $barData, 'options' => $bar['options'] ?? []],
         ];
 
+        // return $charts;
 
-        // Render Blade non-Filament (pastikan view ini tidak memakai <x-filament::page>)
+        // Render Blade dan kirim semua data yang dibutuhkan
         return view('filament.resources.jawaban-surveis.pages.report-pdf-view', [
             'title' => 'Laporan Jawaban Survei',
             'subtitle' => 'Pelatihan #' . $pelatihanId,
             'pelatihanId' => $pelatihanId,
             'ringkasan' => $ringkasan,
             'charts' => $charts,
-            // 'tabel' => [...], // opsional jika butuh tabel tambahan
+            'pieCharts' => $pieCharts, // Kirim array berisi semua data pie chart ke view
         ]);
     }
 }
