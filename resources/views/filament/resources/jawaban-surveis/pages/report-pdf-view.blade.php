@@ -214,7 +214,7 @@
                         const doughnutOptions = getPdfChartOptions(akumulatifConfig.options);
                         doughnutOptions.maintainAspectRatio = false;
                         new Chart(ctxAkumulatif, {
-                            type: 'doughnut',
+                            type: 'pie',
                             data: akumulatifConfig.data,
                             options: doughnutOptions
                         });
@@ -242,10 +242,16 @@
                     const pieChartConfigs = @json($pieCharts);
                     pieChartConfigs.forEach((pieConfig, idx) => {
                         const ctxPie = document.getElementById('pie_chart_' + idx).getContext('2d');
+
+                        const labelsWithPercentages = pieConfig.labels.map((label, index) => {
+                            const percentage = (pieConfig.percentages[index] || 0).toFixed(1).replace(
+                                '.', ',');
+                            return `${label} ${percentage}%`;
+                        });
                         new Chart(ctxPie, {
-                            type: 'doughnut',
+                            type: 'pie',
                             data: {
-                                labels: pieConfig.labels,
+                                labels: labelsWithPercentages,
                                 datasets: [{
                                     data: pieConfig.data,
                                     backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6',
