@@ -37,11 +37,11 @@ class ReportJawabanSurvei extends Page
     protected function getHeaderActions(): array
     {
         return [
-            // Action::make('exportPdf')
-            //     ->label('Export PDF')
-            //     ->color('success')
-            //     ->icon('heroicon-o-document-arrow-down')
-            //     ->url(fn() => route('export.report.pelatihan', ['pelatihanId' => $this->pelatihanId]), shouldOpenInNewTab: true),
+            Action::make('exportPdf')
+                ->label('Export PDF')
+                ->color('success')
+                ->icon('heroicon-o-document-arrow-down')
+                ->url(fn() => route('export.report.pelatihan', ['pelatihanId' => $this->pelatihanId]), shouldOpenInNewTab: true),
             Action::make('PDF-View')
                 ->label('Pdf View')
                 ->color('success')

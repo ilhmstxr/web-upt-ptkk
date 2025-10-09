@@ -12,129 +12,53 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Knp\Snappy\Pdf;
 use ReflectionObject;
+use Spatie\Browsershot\Browsershot;
+use Spatie\Browsershot\Exceptions\CouldNotTakeBrowsershot;
 
 class ExportController extends Controller
 {
     use BuildsLikertData; // <- INI YANG BENAR, bukan `trait BuildsLikertData;`
 
     // browsershot
-    // public function generateReportPdf($pelatihanId, Request $request)
-    // {
-    //     $pelatihan = Pelatihan::find($pelatihanId);
-    //     if (!$pelatihan) {
-    //         abort(404, 'Data Pelatihan tidak ditemukan.');
-    //     }
+    public function generateReportPdf($pelatihanId, Request $request)
+    {
+        $pelatihan = Pelatihan::find($pelatihanId);
+        if (!$pelatihan) {
+            abort(404, 'Data Pelatihan tidak ditemukan.');
+        }
 
-    //     $url = ReportJawabanSurvei::getUrl(['pelatihanId' => $pelatihanId]) . '&print=true';
-    //     // $url = welcome::getUrl().'&print=true';
+        // REVISI KUNCI: Panggil URL dari route 'report.preview' yang kita buat
+        // Ini memastikan Browsershot membuka halaman yang sama dengan yang dilihat user
+        $url = route('reports.jawaban-survei.pdf', ['pelatihanId' => $pelatihanId]);
 
-    //     try {
-    //         $sessionCookieName = config('session.cookie');
-    //         $sessionId = request()->cookie($sessionCookieName);
+        // Jika ada filter tanggal, teruskan sebagai query string
+        if ($request->has('from') && $request->has('to')) {
+            $url .= '?from=' . $request->input('from') . '&to=' . $request->input('to');
+        }
 
-    //         $pdf = Browsershot::url($url)
-    //             // ->setChromePath('C:\Program Files\Google\Chrome\Application\chrome.exe')   // Windows/Laragon
-    //             // ->setNodeBinary('C:\Program Files\nodejs\node.exe')
-    //             // ->setPuppeteerOptions(['protocolTimeout' => 360000]) // 180s
-    //             ->timeout(60000)
-    //             ->waituntil('networkidle0')
-    //             ->setCookie($sessionCookieName, $sessionId, ['domain' => '127.0.0.1'])      // bawa sesi agar tidak redirect login
-    //             ->emulateMedia('screen')    // atau 'print' sesuai CSS
-    //             ->showBackground()
-    //             ->format('A4')
-    //             ->waitForFunction('window.__reportReady === true')
-    //             ->pdf();
+        try {
+            // Logika Browsershot Anda sebagian besar tetap sama
+            $pdf = Browsershot::url($url)
+                ->timeout(120) // Naikkan timeout jika perlu
+                ->waitUntil('networkidle0') // Tunggu sampai semua aset (gambar, chart) selesai dimuat
+                ->emulateMedia('print') // Gunakan media print agar @page CSS berfungsi
+                ->showBackground()
+                ->format('A4')
+                ->pdf();
 
+            $filename = 'laporan-pelatihan-' . $pelatihan->nama_pelatihan . '-' . now()->format('Y-m-d') . '.pdf';
 
-    //         $filename = 'laporan-pelatihan-' . $pelatihanId . '.pdf';
+            // Kirim sebagai attachment agar langsung ter-download
+            return Response::make($pdf, 200, [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            ]);
+        } catch (CouldNotTakeBrowsershot $e) {
+            // Memberikan pesan error yang lebih informatif jika gagal
+            return response("Gagal membuat PDF. Pastikan Node.js dan Puppeteer terinstal. Pesan error: <pre>{$e->getMessage()}</pre>", 500);
+        }
+    }
 
-    //         return Response::make($pdf, 200, [
-    //             'Content-Type'        => 'application/pdf',
-    //             'Content-Disposition' => 'inline; filename="' . $filename . '"',
-    //             // 'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-    //         ]);
-    //     } catch (CouldNotTakeBrowsershot $e) {
-    //         // Memberikan pesan error yang lebih informatif jika gagal
-    //         return response("Gagal membuat PDF. Pesan error: <pre>{$e->getMessage()}</pre>", 500);
-    //     }
-    // }
-
-    // snappy
-    // public function generateReportPdf($pelatihanId)
-    // {
-    //     // 1. Validasi dan ambil data Pelatihan
-    //     $pelatihan = Pelatihan::find($pelatihanId);
-    //     if (!$pelatihan) {
-    //         abort(404, 'Data Pelatihan tidak ditemukan.');
-    //     }
-
-    //     // 2. Siapkan data dengan menggunakan kembali logika dari widget Filament Anda.
-    //     // Ini adalah cara yang efisien untuk menghindari duplikasi kode.
-
-    //     // Data Chart Akumulatif
-    //     $akumulatifWidget = new JawabanAkumulatifChart();
-    //     $akumulatifWidget->pelatihanId = $pelatihanId;
-
-    //     // FIX: Panggil method 'getData' yang protected menggunakan Reflection
-    //     $reflectionAkumulatif = new ReflectionObject($akumulatifWidget);
-    //     $methodAkumulatif = $reflectionAkumulatif->getMethod('getData');
-    //     $methodAkumulatif->setAccessible(true);
-    //     $akumulatifChartData = $methodAkumulatif->invoke($akumulatifWidget);
-
-    //     // Data Chart Per Kategori
-    //     $perKategoriWidget = new JawabanPerKategoriChart();
-    //     $perKategoriWidget->pelatihanId = $pelatihanId;
-
-    //     // FIX: Panggil method 'getData' yang protected menggunakan Reflection
-    //     $reflectionKategori = new ReflectionObject($perKategoriWidget);
-    //     $methodKategori = $reflectionKategori->getMethod('getData');
-    //     $methodKategori->setAccessible(true);
-    //     $perKategoriChartData = $methodKategori->invoke($perKategoriWidget);
-
-    //     // Data Chart Per Pertanyaan
-    //     $perPertanyaanWidget = new PiePerPertanyaanWidget();
-    //     $perPertanyaanWidget->pelatihanId = $pelatihanId;
-    //     $perPertanyaanWidget->mount(); // Panggil mount() karena data disiapkan di sana
-    //     $perPertanyaanChartsData = $perPertanyaanWidget->charts;
-
-    //     // 3. Kumpulkan semua data untuk dikirim ke view PDF
-    //     $viewData = [
-    //         'title' => 'Laporan Hasil Survei',
-    //         'subtitle' => 'Evaluasi Pelatihan: ' . $pelatihan->nama,
-    //         'akumulatifChartData' => $akumulatifChartData,
-    //         'perKategoriChartData' => $perKategoriChartData,
-    //         'perPertanyaanChartsData' => $perPertanyaanChartsData,
-    //     ];
-
-    //     // 4. Muat view Blade dan teruskan data ke dalamnya
-    //     // 'pdfs.report' mengacu pada file di resources/views/pdfs/report.blade.php
-    //     // $pdf = Pdf::loadView('pdfs.report', $viewData);
-    //     // $pdf = Pdf::loadView('pdfs.report', $viewData);
-
-    //     // // 5. (Opsional) Atur opsi untuk PDF
-    //     // $pdf->setPaper('a4', 'portrait');
-    //     // $pdf->setOption('enable-javascript', true); // Penting untuk merender Chart.js
-    //     // $pdf->setOption('javascript-delay', 2000); // Beri waktu 2 detik untuk JS merender chart
-    //     // $pdf->setOption('no-stop-slow-scripts', true);
-
-    //     // // 6. Tampilkan atau download PDF
-    //     // $filename = 'laporan-survei-' . $pelatihanId . '.pdf';
-
-    //     // // Tampilkan di browser
-    //     // return $pdf->inline($filename);
-
-    //     // Atau jika ingin langsung download, gunakan:
-    //     // return $pdf->download($filename);
-    // }
-
-
-
-
-
-    /**
-     * Render halaman laporan PDF tanpa layout Filament.
-     * Menggunakan fungsi-fungsi pada trait BuildsLikertData sebagai sumber data chart.
-     */
     public function pdfView(Request $request, int $pelatihanId)
     {
         // Filter tanggal opsional
@@ -206,4 +130,74 @@ class ExportController extends Controller
             'pieCharts' => $pieCharts, // Kirim array berisi semua data pie chart ke view
         ]);
     }
+
+    // snappy
+    // public function generateReportPdf($pelatihanId)
+    // {
+    //     // 1. Validasi dan ambil data Pelatihan
+    //     $pelatihan = Pelatihan::find($pelatihanId);
+    //     if (!$pelatihan) {
+    //         abort(404, 'Data Pelatihan tidak ditemukan.');
+    //     }
+
+    //     // 2. Siapkan data dengan menggunakan kembali logika dari widget Filament Anda.
+    //     // Ini adalah cara yang efisien untuk menghindari duplikasi kode.
+
+    //     // Data Chart Akumulatif
+    //     $akumulatifWidget = new JawabanAkumulatifChart();
+    //     $akumulatifWidget->pelatihanId = $pelatihanId;
+
+    //     // FIX: Panggil method 'getData' yang protected menggunakan Reflection
+    //     $reflectionAkumulatif = new ReflectionObject($akumulatifWidget);
+    //     $methodAkumulatif = $reflectionAkumulatif->getMethod('getData');
+    //     $methodAkumulatif->setAccessible(true);
+    //     $akumulatifChartData = $methodAkumulatif->invoke($akumulatifWidget);
+
+    //     // Data Chart Per Kategori
+    //     $perKategoriWidget = new JawabanPerKategoriChart();
+    //     $perKategoriWidget->pelatihanId = $pelatihanId;
+
+    //     // FIX: Panggil method 'getData' yang protected menggunakan Reflection
+    //     $reflectionKategori = new ReflectionObject($perKategoriWidget);
+    //     $methodKategori = $reflectionKategori->getMethod('getData');
+    //     $methodKategori->setAccessible(true);
+    //     $perKategoriChartData = $methodKategori->invoke($perKategoriWidget);
+
+    //     // Data Chart Per Pertanyaan
+    //     $perPertanyaanWidget = new PiePerPertanyaanWidget();
+    //     $perPertanyaanWidget->pelatihanId = $pelatihanId;
+    //     $perPertanyaanWidget->mount(); // Panggil mount() karena data disiapkan di sana
+    //     $perPertanyaanChartsData = $perPertanyaanWidget->charts;
+
+    //     // 3. Kumpulkan semua data untuk dikirim ke view PDF
+    //     $viewData = [
+    //         'title' => 'Laporan Hasil Survei',
+    //         'subtitle' => 'Evaluasi Pelatihan: ' . $pelatihan->nama,
+    //         'akumulatifChartData' => $akumulatifChartData,
+    //         'perKategoriChartData' => $perKategoriChartData,
+    //         'perPertanyaanChartsData' => $perPertanyaanChartsData,
+    //     ];
+
+    //     // 4. Muat view Blade dan teruskan data ke dalamnya
+    //     // 'pdfs.report' mengacu pada file di resources/views/pdfs/report.blade.php
+    //     // $pdf = Pdf::loadView('pdfs.report', $viewData);
+    //     // $pdf = Pdf::loadView('pdfs.report', $viewData);
+
+    //     // // 5. (Opsional) Atur opsi untuk PDF
+    //     // $pdf->setPaper('a4', 'portrait');
+    //     // $pdf->setOption('enable-javascript', true); // Penting untuk merender Chart.js
+    //     // $pdf->setOption('javascript-delay', 2000); // Beri waktu 2 detik untuk JS merender chart
+    //     // $pdf->setOption('no-stop-slow-scripts', true);
+
+    //     // // 6. Tampilkan atau download PDF
+    //     // $filename = 'laporan-survei-' . $pelatihanId . '.pdf';
+
+    //     // // Tampilkan di browser
+    //     // return $pdf->inline($filename);
+
+    //     // Atau jika ingin langsung download, gunakan:
+    //     // return $pdf->download($filename);
+    // }
+
+
 }

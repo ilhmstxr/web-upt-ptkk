@@ -56,14 +56,22 @@
 
         .section {
             margin-top: 20px;
-            break-inside: avoid;
         }
 
+        /* ======================================================= */
+        /* REVISI CSS DI SINI */
+        /* ======================================================= */
         .card {
             border: 1px solid #e5e7eb;
             border-radius: 10px;
             padding: 16px;
+            break-inside: avoid;
+            /* KUNCI UTAMA: Mencegah card terpotong */
+            page-break-inside: avoid;
+            /* Fallback untuk browser/engine lama */
         }
+
+        /* ======================================================= */
 
         .grid {
             display: grid;
@@ -96,9 +104,7 @@
             page-break-before: always;
         }
 
-        .no-break {
-            break-inside: avoid;
-        }
+        /* Kelas .no-break bisa dihapus karena sudah diterapkan di .card */
 
         .mb-2 {
             margin-bottom: 8px
@@ -108,17 +114,12 @@
             margin-bottom: 16px
         }
 
-        /* ======================================================= */
-        /* REVISI CSS DI SINI: Satu kelas untuk semua chart */
-        /* ======================================================= */
+        /* Kelas untuk menyeragamkan tinggi chart */
         .chart-container {
             position: relative;
             height: 350px;
-            /* Tinggi seragam untuk SEMUA chart */
             width: 100%;
         }
-
-        /* ======================================================= */
     </style>
 </head>
 
@@ -140,7 +141,8 @@
         </header>
 
         @isset($ringkasan)
-            <section class="section card no-break">
+            {{-- REVISI: Hapus kelas .no-break dari section karena sudah ada di .card --}}
+            <section class="section card">
                 <h3 class="mb-2">Ringkasan</h3>
                 <table class="table">
                     <tbody>
@@ -155,14 +157,13 @@
             </section>
         @endisset
 
-        {{-- BAGIAN 1 & 2: CHART AKUMULATIF & PER KATEGORI --}}
         @if (!empty($charts))
-            <section class="section no-break">
+            <section class="section">
                 <div class="grid">
                     @foreach ($charts as $i => $chart)
+                        {{-- Aturan "break-inside: avoid" dari .card akan mencegah chart ini terpotong --}}
                         <div class="col-12 card">
                             <h4 class="mb-2">{{ $chart['title'] ?? 'Chart ' . ($i + 1) }}</h4>
-                            {{-- REVISI DI SINI: Gunakan kelas .chart-container --}}
                             <div class="chart-container">
                                 <canvas id="chart_{{ Str::slug($chart['title']) }}"></canvas>
                             </div>
@@ -172,16 +173,15 @@
             </section>
         @endif
 
-        {{-- BAGIAN 3: PIE PER PERTANYAAN --}}
         @if (!empty($pieCharts))
             <div class="page-break"></div>
-            <section class="section no-break">
+            <section class="section">
                 <h3 class="mb-2">Detail Jawaban per Pertanyaan</h3>
                 <div class="grid">
                     @foreach ($pieCharts as $i => $pie)
+                        {{-- Aturan "break-inside: avoid" dari .card akan mencegah chart ini terpotong --}}
                         <div class="col-6 card">
                             <h4 class="mb-2" style="font-size: 12px;">{{ $pie['question_label'] }}</h4>
-                            {{-- REVISI DI SINI: Gunakan kelas .chart-container --}}
                             <div class="chart-container">
                                 <canvas id="pie_chart_{{ $i }}"></canvas>
                             </div>
@@ -195,6 +195,7 @@
     {{-- JavaScript tidak perlu diubah --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // ... (seluruh blok JavaScript Anda tetap sama seperti sebelumnya)
         function getPdfChartOptions(originalOptions) {
             const options = originalOptions || {};
             options.animation = options.animation || {};
@@ -242,20 +243,14 @@
                     const pieChartConfigs = @json($pieCharts);
                     pieChartConfigs.forEach((pieConfig, idx) => {
                         const ctxPie = document.getElementById('pie_chart_' + idx).getContext('2d');
-
-                        const labelsWithPercentages = pieConfig.labels.map((label, index) => {
-                            const percentage = (pieConfig.percentages[index] || 0).toFixed(1).replace(
-                                '.', ',');
-                            return `${label} ${percentage}%`;
-                        });
                         new Chart(ctxPie, {
                             type: 'pie',
                             data: {
-                                labels: labelsWithPercentages,
+                                labels: pieConfig.labels,
                                 datasets: [{
                                     data: pieConfig.data,
-                                    backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6',
-                                        '#10B981', '#8B5CF6'
+                                    backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6', '#4dcba1',
+                                        '#8B5CF6'
                                     ],
                                 }]
                             },

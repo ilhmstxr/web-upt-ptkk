@@ -16,8 +16,9 @@ USER
 - DONE Pretest Postest
 
 ADMIN
-- TODO buat chart monev
-- TODO export monev ke excel
+- DONE buat chart survey monev 
+- PROGRESS buat chart nilai monev
+- PROGRESS export nilai monev ke excel
 - TODO benerin peserta downloadnya jadi zip
 
 - TODO bikin template email buat token

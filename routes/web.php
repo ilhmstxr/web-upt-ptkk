@@ -89,9 +89,9 @@ Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::
 //     ->get('/exports/report-jawaban-survei', [ExportController::class, 'reportJawabanSurvei'])
 //     ->name('export.report-jawaban-survei');
 
-// Route::middleware(['auth'])
-//     ->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
-//     ->name('export.report.pelatihan');
+Route::middleware(['auth'])
+    ->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
+    ->name('export.report.pelatihan');
 // routes/web.php
 Route::middleware(['auth']) // opsional
     ->get('/reports/jawaban-survei/pdf/{pelatihanId}', [ExportController::class, 'pdfView'])
