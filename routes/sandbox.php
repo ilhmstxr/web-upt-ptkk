@@ -2,11 +2,15 @@
 
 use App\Models\JawabanUser;
 use App\Models\OpsiJawaban;
+use App\Models\Pelatihan;
+use App\Models\Percobaan;
 use App\Models\Pertanyaan;
 use App\Models\Peserta;
+use App\Models\Tes;
 use Illuminate\Support\Facades\DB;
 
-function chartSurveyMonev() {
+function chartSurveyMonev()
+{
     // return view('filament.resources.jawaban-surveis.pages.report-jawaban-survei');
     // $pelatihan = App\Models\Pelatihan::findOrFail(1);
     // $pelatihanIds = \App\Models\Pelatihan::with([
@@ -212,46 +216,27 @@ function chartSurveyMonev() {
         ],
     ]);
 }
+function SurveyHasilKegiatan()
+{
+    $pelatihanId = 2;
 
-function SurveyHasilKegiatan(){
+    // Ambil data pelatihan dan semua 'percobaan' yang terkait melalui model 'Tes'
+    // Eager load juga data peserta untuk setiap percobaan
+    $pelatihan = Pelatihan::with(['tes'])->findOrFail($pelatihanId);
+    $percobaan = Percobaan::whereIn('tes_id', $pelatihan->tes->pluck('id'))
+        ->where('skor', '!=', null)
+        ->with('peserta')
+        ->select('id', 'tes_id', 'peserta_id', 'skor')
+        ->get();
 
-// Ambil semua peserta beserta percobaan mereka, 
-// tapi hanya percobaan yang terhubung ke tes yang merupakan post-test
-$pesertaDenganPostTest = Peserta::whereHas('percobaan.tes', function ($query) {
-    // Asumsi ada kolom 'is_post_test' di tabel 'tes' atau relasi yang menandakannya.
-    // Jika penanda post-test ada di tabel 'tes_pertanyaan', querynya akan sedikit berbeda.
-    // Berdasarkan skema, penanda `is_post_test` ada di `tes_pertanyaan`,
-    // mari kita asumsikan ada cara menandai `Tes` sebagai post-test, misal dari judulnya.
-    
-    // OPSI A: Jika ada kolom `jenis` atau `tipe` di tabel `tes`
-    // $query->where('jenis', 'post_test');
-    
-    // OPSI B: Jika post-test ditandai dari judulnya
-    $query->where('judul', 'like', '%Post-Test%');
-    
-})->with(['percobaan' => function ($query) {
-    // Ambil juga relasi 'percobaan' untuk setiap peserta
-    $query->with('tes')->whereHas('tes', function ($subQuery) {
-        // Lakukan filter yang sama di sini untuk memastikan hanya
-        // percobaan post-test yang di-load
-        $subQuery->where('judul', 'like', '%Post-Test%');
-    });
-}])->get();
-
-return response()->json([
-    'postTest' => $pesertaDenganPostTest
-]);
-// Sekarang Anda bisa me-looping hasilnya
-// foreach ($pesertaDenganPostTest as $peserta) {
-//     echo "Nama Peserta: " . $peserta->nama . "\n";
-//     foreach ($peserta->percobaan as $percobaan) {
-//         echo "- Skor Post-Test: " . $percobaan->skor . " (Di tes: " . $percobaan->tes->judul . ")\n";
-//     }
-//     echo "-------------------\n";
-// }
-    // return true;
+    $hp = $percobaan->count();
+    return response()->json([
+        // 'pelatihan' => $pelatihan,
+        'total_percobaan' => $hp,
+        // 'perbidang' => $perbidang,
+        'percobaan' => $percobaan,
+    ]);
 }
-
 // function (){
 
 // }

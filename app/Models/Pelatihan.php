@@ -37,4 +37,14 @@ class Pelatihan extends Model
     {
         return $this->hasMany(Tes::class);
     }
+
+    public function percobaans()
+    {
+        return $this->hasManyThrough(
+            Percobaan::class, // Model akhir yang ingin diakses
+            Tes::class,       // Model perantara/jembatan
+            'pelatihan_id', // Foreign key di tabel 'tes' (perantara)
+            'tes_id'          // Foreign key di tabel 'percobaan' (akhir)
+        );
+    }
 }

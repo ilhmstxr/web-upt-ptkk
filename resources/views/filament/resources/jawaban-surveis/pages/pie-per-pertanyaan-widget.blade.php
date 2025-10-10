@@ -88,7 +88,7 @@
                         {{-- PERUBAHAN: Legenda HTML kustom, porsinya ditambah menjadi 5/12 --}}
                         <div class="w-5/12">
                             {{-- Menambahkan kelas warna teks untuk dark mode --}}
-                            <ul class="text-xs space-y-2 text-white dark:text-white" role="list">
+                            <ul class="text-xs space-y-2 text-white dark:text-gray" role="list">
                                 <template x-for="(label, i) in labels" :key="i">
                                     <li class="flex items-center justify-between">
                                         <div class="flex items-center">
