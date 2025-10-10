@@ -293,3 +293,19 @@ SET
 WHERE
   -- Filter hanya untuk pertanyaan yang relevan
   pertanyaan_id = 191 AND opsi_jawaban_id IN (685, 686, 687, 688);
+
+
+
+<!-- rubah db -->
+ALTER TABLE percobaan
+ADD COLUMN tipe ENUM('pre-test', 'post-test', 'survey') NULL AFTER tes_id;
+
+UPDATE percobaan
+SET tipe = 'survey'
+WHERE (skor IS NULL OR skor = 0) AND tes_id IN (5, 9);
+
+UPDATE percobaan
+SET tipe = 'post-test'
+WHERE skor IS NOT NULL AND skor > 0;
+
+nambahin peserta_id otomatis

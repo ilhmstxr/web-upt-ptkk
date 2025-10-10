@@ -27,8 +27,8 @@ class AnalisisPelatihan extends Page implements HasTable
     protected function getHeaderWidgets(): array
     {
         return [
-            BidangScoresChart::class,
-            BidangSummaryTable::class,
+            // BidangScoresChart::class,
+            // BidangSummaryTable::class,
         ];
     }
 
@@ -45,7 +45,7 @@ class AnalisisPelatihan extends Page implements HasTable
                 Action::make('view_detail')
                     ->label('Lihat Detail Peserta')
                     ->icon('heroicon-o-arrow-right')
-                    ->url(fn(Bidang $record): string => ViewBidangDetail::getUrl(['record' => $record])),
+                    // ->url(fn(Bidang $record): string => ViewBidangDetail::getUrl(['record' => $record])),
             ])
             ->paginated(false);
     }

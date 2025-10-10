@@ -204,78 +204,114 @@
         }
 
         (function() {
-            if (!window.Chart) return;
+                if (!window.Chart) return;
 
-            @if (!empty($charts))
-                try {
-                    const mainChartConfigs = @json($charts);
-                    const akumulatifConfig = mainChartConfigs.find(c => c.title.includes('Akumulatif'));
-                    if (akumulatifConfig) {
-                        const ctxAkumulatif = document.getElementById('chart_jawaban-akumulatif').getContext('2d');
-                        const doughnutOptions = getPdfChartOptions(akumulatifConfig.options);
-                        doughnutOptions.maintainAspectRatio = false;
-                        new Chart(ctxAkumulatif, {
-                            type: 'pie',
-                            data: akumulatifConfig.data,
-                            options: doughnutOptions
-                        });
+                @if (!empty($charts))
+                    try {
+                        const mainChartConfigs = @json($charts);
+                        const akumulatifConfig = mainChartConfigs.find(c => c.title.includes('Akumulatif'));
+                        if (akumulatifConfig) {
+                            const ctxAkumulatif = document.getElementById('chart_jawaban-akumulatif').getContext('2d');
+                            const doughnutOptions = getPdfChartOptions(akumulatifConfig.options);
+                            doughnutOptions.maintainAspectRatio = false;
+                            new Chart(ctxAkumulatif, {
+                                type: 'pie',
+                                data: akumulatifConfig.data,
+                                options: doughnutOptions
+                            });
+                        }
+
+                        const kategoriConfig = mainChartConfigs.find(c => c.title.includes('Kategori'));
+                        if (kategoriConfig) {
+                            const ctxKategori = document.getElementById('chart_distribusi-jawaban-per-kategori').getContext(
+                                '2d');
+                            const barOptions = getPdfChartOptions(kategoriConfig.options);
+                            barOptions.maintainAspectRatio = false;
+                            new Chart(ctxKategori, {
+                                type: 'bar',
+                                data: kategoriConfig.data,
+                                options: barOptions
+                            });
+                        }
+                    } catch (e) {
+                        console.error('Error rendering main charts:', e);
                     }
+                @endif
 
-                    const kategoriConfig = mainChartConfigs.find(c => c.title.includes('Kategori'));
-                    if (kategoriConfig) {
-                        const ctxKategori = document.getElementById('chart_distribusi-jawaban-per-kategori').getContext(
-                            '2d');
-                        const barOptions = getPdfChartOptions(kategoriConfig.options);
-                        barOptions.maintainAspectRatio = false;
-                        new Chart(ctxKategori, {
-                            type: 'bar',
-                            data: kategoriConfig.data,
-                            options: barOptions
-                        });
-                    }
-                } catch (e) {
-                    console.error('Error rendering main charts:', e);
-                }
-            @endif
+                @if (!empty($pieCharts))
+                    try {
+                        const pieChartConfigs = @json($pieCharts);
+                        pieChartConfigs.forEach((pieConfig, idx) => {
+                                const ctxPie = document.getElementById('pie_chart_' + idx).getContext('2d');
+                                    new Chart(ctxPie, {
+                                        type: 'pie',
+                                        data: {
+                                            labels: pieConfig.labels,
+                                            datasets: [{
+                                                data: pieConfig.data,
+                                                backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6',
+                                                    '#10B981'
+                                                ],
+                                            }]
+                                        },
+                                        options: getPdfChartOptions({
+                                            maintainAspectRatio: false,
+                                            plugins: {
+                                                legend: {
+                                                    position: 'right',
+                                                    labels: {
+                                                        boxWidth: 12,
+                                                        font: {
+                                                            size: 10
+                                                        },
+                                                        // 🎯 FUNGSI generateLabels DIPERBARUI DI SINI
+                                                        generateLabels: function(chart) {
+                                                            const data = chart.data;
+                                                            // Pastikan data, label, dan dataset ada
+                                                            if (data.labels.length && data.datasets
+                                                                .length) {
+                                                                const percentages = pieConfig
+                                                                    .percentages; // Ambil persentase
+                                                                const meta = chart.getDatasetMeta(
+                                                                0);
 
-            @if (!empty($pieCharts))
-                try {
-                    const pieChartConfigs = @json($pieCharts);
-                    pieChartConfigs.forEach((pieConfig, idx) => {
-                        const ctxPie = document.getElementById('pie_chart_' + idx).getContext('2d');
-                        new Chart(ctxPie, {
-                            type: 'pie',
-                            data: {
-                                labels: pieConfig.labels,
-                                datasets: [{
-                                    data: pieConfig.data,
-                                    backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6', '#4dcba1',
-                                        '#8B5CF6'
-                                    ],
-                                }]
-                            },
-                            options: getPdfChartOptions({
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'right',
-                                        labels: {
-                                            boxWidth: 12,
-                                            font: {
-                                                size: 10
+                                                                // Buat ulang setiap item legenda secara manual
+                                                                return data.labels.map((label,
+                                                                i) => {
+                                                                    const style = meta
+                                                                        .controller
+                                                                        .getStyle(i);
+                                                                    return {
+                                                                        // Gabungkan label (string) dengan persentase
+                                                                        text: `${label}  ${percentages[i]}%`,
+                                                                        fillStyle: style
+                                                                            .backgroundColor,
+                                                                        strokeStyle: style
+                                                                            .borderColor,
+                                                                        lineWidth: style
+                                                                            .borderWidth,
+                                                                        hidden: !chart
+                                                                            .getDataVisibility(
+                                                                                i),
+                                                                        index: i
+                                                                    };
+                                                                });
+                                                            }
+                                                            return []; // Kembalikan array kosong jika tidak ada data
+                                                        }
+                                                    }
+                                                }
                                             }
-                                        }
-                                    }
-                                }
-                            })
-                        });
-                    });
-                } catch (e) {
-                    console.error('Error rendering pie charts:', e);
-                }
-            @endif
+                                        })
+                                    });
+                                });
+                        }
+                        catch (e) {
+                            console.error('Error rendering pie charts:', e);
+                        }
+                    @endif
 
-        })();
+                })();
     </script>
 </body>
 
