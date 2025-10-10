@@ -117,19 +117,25 @@ class ExportController extends Controller
             ['title' => 'Jawaban Akumulatif', 'type' => 'line', 'data' => $lineData, 'options' => $line['options'] ?? []],
             ['title' => 'Distribusi Jawaban per Kategori', 'type' => 'bar', 'data' => $barData, 'options' => $bar['options'] ?? []],
         ];
-        
 
+
+        $arrayCustom = [
+            "Pendapat Tentang Penyelenggaran Pelatihan",
+            "Persepsi Terhadap Program Pelatihan",
+            "Penilaian Terhadap Instruktur"
+        ];
         // return $pieCharts;
 
         // Render Blade dan kirim semua data yang dibutuhkan
         return view('filament.resources.jawaban-surveis.pages.report-pdf-view', [
-        // return $chart =  [
+            // return $chart =  [
             'title' => 'Laporan Jawaban Survei',
             'subtitle' => 'Pelatihan #' . $pelatihanId,
             'pelatihanId' => $pelatihanId,
             'ringkasan' => $ringkasan,
             'charts' => $charts,
             'pieCharts' => $pieCharts, // Kirim array berisi semua data pie chart ke view
+            'arrayCustom' => $arrayCustom,
         ]);
         // ];
 
