@@ -7,7 +7,7 @@
             @forelse ($this->charts as $c)
                 <div class="flex flex-col p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                     {{-- Teks pertanyaan dengan gaya dari versi kita --}}
-                    <h3 class="text-sm font-medium text-center text-gray-900 dark:text-gray-100 mb-4">
+                    <h3 class="text-sm font-medium text-center text-gray-900 dark:text-gray-900 mb-4">
                         {{ $c['question_label'] }}
                     </h3>
 
@@ -88,7 +88,7 @@
                         {{-- PERUBAHAN: Legenda HTML kustom, porsinya ditambah menjadi 5/12 --}}
                         <div class="w-5/12">
                             {{-- Menambahkan kelas warna teks untuk dark mode --}}
-                            <ul class="text-xs space-y-2 text-white dark:text-gray" role="list">
+                            <ul class="text-xs space-y-2 text-gray-900 dark:text-white" role="list">
                                 <template x-for="(label, i) in labels" :key="i">
                                     <li class="flex items-center justify-between">
                                         <div class="flex items-center">
