@@ -222,17 +222,20 @@ function SurveyHasilKegiatan()
 
     // Ambil data pelatihan dan semua 'percobaan' yang terkait melalui model 'Tes'
     // Eager load juga data peserta untuk setiap percobaan
-    $pelatihan = Pelatihan::with(['tes'])->findOrFail($pelatihanId);
-    $percobaan = Percobaan::whereIn('tes_id', $pelatihan->tes->pluck('id'))
+    
+    // pelatihan dengan tes apasaja
+    $pelatihan = Pelatihan::with('tes')->select('id', 'judul','bidang_id','pelatihan_id')->findOrFail($pelatihanId);
+
+    $tesId = 6;
+    $percobaan = Percobaan::where('tes_id', $tesId)
         ->where('skor', '!=', null)
-        ->with('peserta')
         ->select('id', 'tes_id', 'peserta_id', 'skor')
         ->get();
 
     $hp = $percobaan->count();
     return response()->json([
-        // 'pelatihan' => $pelatihan,
-        'total_percobaan' => $hp,
+        'pelatihan' => $pelatihan,
+        // 'total_percobaan' => $hp,
         // 'perbidang' => $perbidang,
         'percobaan' => $percobaan,
     ]);
