@@ -6,32 +6,24 @@
     Options +FollowSymLinks
     RewriteEngine On
 
-    # Pastikan base directory benar (ubah jika Laravel tidak di root)
+    # Base path (pastikan sesuai dengan posisi project)
     RewriteBase /
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Handle X-XSRF-Token Header
-    RewriteCond %{HTTP:x-xsrf-token} .
-    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
-
     # Redirect trailing slashes kecuali folder
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Kirim request ke front controller index.php
+    # Kirim semua request ke index.php
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
-
-    # Fix untuk server dengan LimitRequestBody atau timeout
-    LimitRequestBody 10485760
 </IfModule>
 
 <IfModule !mod_rewrite.c>
-    # Jika mod_rewrite tidak aktif
     ErrorDocument 404 /index.php
 </IfModule>
