@@ -1,9 +1,13 @@
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
-        Options +FollowSymLinks -MultiViews -Indexes
+        Options -MultiViews -Indexes
     </IfModule>
 
+    Options +FollowSymLinks
     RewriteEngine On
+
+    # Pastikan base directory benar (ubah jika Laravel tidak di root)
+    RewriteBase /
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -13,13 +17,21 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # Redirect trailing slashes kecuali folder
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
+    # Kirim request ke front controller index.php
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    # Fix untuk server dengan LimitRequestBody atau timeout
+    LimitRequestBody 10485760
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    # Jika mod_rewrite tidak aktif
+    ErrorDocument 404 /index.php
 </IfModule>

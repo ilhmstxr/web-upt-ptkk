@@ -9,10 +9,16 @@ use Illuminate\Support\Facades\DB;
 
 class BidangStatsOverview extends BaseWidget
 {
-    public Bidang $bidang;
+    public ?Bidang $bidang = null;
 
     protected function getStats(): array
     {
+        if (!$this->bidang) {
+            return [
+                Stat::make('Data Tidak Ditemukan', '-'),
+            ];
+        }
+
         $averages = $this->bidang->peserta()
             ->join('tes', 'tes.peserta_id', '=', 'peserta.id')
             ->join('percobaan', 'percobaan.tes_id', '=', 'tes.id')
@@ -21,7 +27,7 @@ class BidangStatsOverview extends BaseWidget
                 DB::raw('AVG(percobaan.nilai) as average_score')
             )
             ->groupBy('tes.jenis_tes')
-            ->pluck('average_score', 'jenis_tes');
+            ->pluck('average_score', 'tes.jenis_tes');
 
         return [
             Stat::make('Rata-Rata Pre-Test', number_format($averages->get('pre-test', 0), 2)),
