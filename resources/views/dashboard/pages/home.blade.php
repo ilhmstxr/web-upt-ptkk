@@ -5,6 +5,20 @@
 
 @section('content')
 
+    @php
+        // Pastikan semua variabel punya nilai default biar nggak undefined
+        $pesertaAktif   = $pesertaAktif   ?? null;
+        $preTestDone    = $preTestDone    ?? false;
+        $postTestDone   = $postTestDone   ?? false;
+        $monevDone      = $monevDone      ?? false;
+        $preTestScore   = $preTestScore   ?? null;
+        $postTestScore  = $postTestScore  ?? null;
+        $monevScore     = $monevScore     ?? null;
+        $preTestAttempts  = $preTestAttempts  ?? 0;
+        $postTestAttempts = $postTestAttempts ?? 0;
+        $monevAttempts    = $monevAttempts    ?? 0;
+    @endphp
+
     {{-- Flash messages --}}
     @if (session('success'))
         <div class="mb-4 px-4 py-3 rounded-lg bg-green-100 text-green-700 font-semibold" role="alert">
