@@ -53,6 +53,7 @@ class ImportSqlFile extends Command
             'percobaan',
             'jawaban_user',
             'pendaftaran_pelatihan',
+            'bidang_pelatihan',
         ];
 
         try {

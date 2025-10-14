@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('peserta_id')->nullable()->constrained('peserta')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('pesertaSurvei_id')->nullable()->constrained('peserta_survei')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
-            // $table->string('tipe')->nullable();
+            $table->Enum('tipe',['survey','pretest','posttest'])->nullable();
             $table->timestamp('waktu_mulai');
             $table->timestamp('waktu_selesai')->nullable();
             $table->decimal('skor', 5, 2)->nullable(); // 5 digit total, 2 di belakang koma

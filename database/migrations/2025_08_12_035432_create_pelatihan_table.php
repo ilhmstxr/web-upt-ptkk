@@ -19,6 +19,7 @@ return new class extends Migration
                   ->onUpdate('cascade')
                   ->onDelete('set null'); // Relasi ke tabel instansi
 
+            $table->Integer('angkatan');
             $table->string('nama_pelatihan');
             $table->enum('jenis_program',['reguler','akselerasi','mtu'])->default('reguler');
             $table->string('slug')->nullable()->unique();
