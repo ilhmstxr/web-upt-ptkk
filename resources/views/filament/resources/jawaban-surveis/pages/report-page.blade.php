@@ -1,4 +1,18 @@
 <x-filament::page>
+
+    {{-- Form filter akan dirender di sini --}}
+    <form wire:submit.prevent>
+        {{ $this->form }}
+    </form>
+
+    {{-- Sisipkan widget chart baru di sini (langkah selanjutnya) --}}
+    @if ($this->pelatihanId && $this->bidangId)
+        @livewire(\App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerBidangChart::class, [
+            'pelatihanId' => $this->pelatihanId,
+            'bidangId' => $this->bidangId,
+        ])
+    @endif
+    
     @if (request()->boolean('print'))
         <style>
             .fi-topbar,
@@ -82,7 +96,7 @@
             if (++window.__chartsDone >= window.__chartsExpected) {
                 window.__reportReady = true;
             }
-        }   
+        }
 
         // Chart.js: panggil event ketika render selesai
         // contoh opsi Chart.js saat inisialisasi setiap chart:
