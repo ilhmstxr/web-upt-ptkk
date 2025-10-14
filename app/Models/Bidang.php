@@ -26,4 +26,8 @@ class Bidang extends Model
             'pelatihan_id'          // Foreign key di tabel pivot untuk model Pelatihan
         );
     }
+
+    public function pelatihan(){
+        return $this->belongsToMany(Pelatihan::class, 'bidang_pelatihan');
+    }
 }

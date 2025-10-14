@@ -1,17 +1,17 @@
 <x-filament::page>
 
     {{-- Form filter akan dirender di sini --}}
-    <form wire:submit.prevent>
+    {{-- <form wire:submit.prevent>
         {{ $this->form }}
-    </form>
+    </form> --}}
 
     {{-- Sisipkan widget chart baru di sini (langkah selanjutnya) --}}
-    @if ($this->pelatihanId && $this->bidangId)
+    {{-- @if ($this->pelatihanId && $this->bidangId)
         @livewire(\App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerBidangChart::class, [
             'pelatihanId' => $this->pelatihanId,
             'bidangId' => $this->bidangId,
         ])
-    @endif
+    @endif --}}
     
     @if (request()->boolean('print'))
         <style>

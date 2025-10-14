@@ -47,4 +47,7 @@ class Pelatihan extends Model
             'tes_id'          // Foreign key di tabel 'percobaan' (akhir)
         );
     }
+    public function bidang(){
+        return $this->belongsToMany(Bidang::class, 'bidang_pelatihan');
+    }
 }
