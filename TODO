@@ -81,6 +81,11 @@ rekap all bidang per pelatihan
 
 - TODO data cleaning sesuai instansi, kelas, user agar tidak redundant 
 - TODO testing error
+
+
+- IMPROVE data di tabel jawaban_user menjadi json di tabel percobaan
+contoh json di kolom jawaban_user di tabel percobaan:
+{{pertanyaan_id(menggunakkan key), opsi_jawaban, nilai_jawaban(benar / salah),jawaban_teks}} 
 tes pertanyaan
 tes
 
