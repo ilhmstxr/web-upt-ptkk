@@ -309,3 +309,21 @@ SET tipe = 'post-test'
 WHERE skor IS NOT NULL AND skor > 0;
 
 nambahin peserta_id otomatis
+
+
+perubahan untuk asrama
+
+ASRAMA
+id 
+name
+gender
+
+
+KAMAR
+id 
+asrama
+nomor_kamar
+lantai
+status
+total_beds
+available_beds

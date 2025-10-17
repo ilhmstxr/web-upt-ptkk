@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->enum('gender', ['Laki-laki', 'Perempuan']);
-            $table->integer('total_kamar')->default(0);
+            // $table->integer('total_kamar')->default(0);
             $table->timestamps();
         });
     }
