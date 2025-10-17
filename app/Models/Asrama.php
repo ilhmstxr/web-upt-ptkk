@@ -11,4 +11,14 @@ class Asrama extends Model
     use HasFactory;
 
     protected $table = 'asrama';
+
+    protected $fillable = [
+        'name',
+        'gender',
+    ];
+
+    public function kamars()
+    {
+        return $this->hasMany(Kamar::class, 'asrama_id');
+    }
 }

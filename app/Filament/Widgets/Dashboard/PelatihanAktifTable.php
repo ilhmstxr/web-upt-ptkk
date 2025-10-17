@@ -6,58 +6,59 @@ use App\Models\Pelatihan;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Support\Facades\DB;
 
 class PelatihanAktifTable extends BaseWidget
 {
-    protected static ?string $heading = 'Daftar Semua Pelatihan';
-    protected int | string | array $columnSpan = 'full';
+    // Mengatur widget ini agar menempati 2 kolom (lebar penuh)
+    protected int | string | array $columnSpan = 2;
+
+    protected static ?int $sort = 2; // Urutan widget di dashboard
 
     public function table(Table $table): Table
     {
         return $table
+            ->heading('Daftar Pelatihan Aktif & Mendatang')
             ->query(
+                // Query disederhanakan, fokus pada pengurutan
                 Pelatihan::query()
-                    ->selectRaw("*,
+                    // Urutan: 1. Aktif, 2. Belum Mulai, 3. Selesai
+                    ->orderByRaw("
                         CASE
                             WHEN NOW() BETWEEN tanggal_mulai AND tanggal_selesai THEN 1
                             WHEN tanggal_mulai > NOW() THEN 2
                             ELSE 3
-                        END AS status_order
+                        END
                     ")
-                    ->orderBy('status_order')
-                    ->orderByRaw("CASE WHEN tanggal_mulai > NOW() THEN tanggal_mulai END ASC")
-                    ->orderByRaw("CASE WHEN tanggal_selesai < NOW() THEN tanggal_selesai END DESC")
+                    // Untuk pelatihan mendatang, urutkan berdasarkan yang paling dekat
+                    ->orderBy('tanggal_mulai', 'asc')
             )
             ->columns([
-                Tables\Columns\TextColumn::make('nama_pelatihan')->label('Nama Pelatihan'),
+                Tables\Columns\TextColumn::make('nama_pelatihan')
+                    ->label('Nama Pelatihan')
+                    ->searchable()
+                    ->limit(30),
+
+                Tables\Columns\TextColumn::make('program')
+                    ->badge(),
+
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->label('Status')
-                    ->getStateUsing(function (Pelatihan $record): string {
-                        $now = now();
-                        if ($now->between($record->tanggal_mulai, $record->tanggal_selesai)) {
-                            return 'Aktif';
-                        }
-                        if ($now->isBefore($record->tanggal_mulai)) {
-                            return 'Belum Mulai';
-                        }
-                        return 'Selesai';
-                    })
+                    // Memanggil accessor 'status' dari model Pelatihan
                     ->color(fn(string $state): string => match ($state) {
                         'Aktif' => 'success',
-                        'Belum Mulai' => 'warning',
-                        'Selesai' => 'danger',
+                        'Mendatang' => 'warning',
+                        'Selesai' => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('program')->badge(),
-                Tables\Columns\TextColumn::make('tanggal_mulai')->date('d M Y'),
-                Tables\Columns\TextColumn::make('tanggal_selesai')->date('d M Y'),
+                
+                Tables\Columns\TextColumn::make('tanggal_mulai')
+                    ->date('d M Y')
+                    ->label('Jadwal'),
+
             ])
+            ->paginated(false) // Menghilangkan paginasi agar terlihat seperti daftar
             ->actions([
-                // Action untuk melihat detail pelatihan
-                // Tables\Actions\Action::make('lihat')
-                //     ->url(fn(Pelatihan $record): string => route('filament.admin.resources.pelatihans.view', $record))
-                //     ->icon('heroicon-o-eye'),
+                // Tambahkan action jika perlu, misal lihat detail
             ]);
     }
 }

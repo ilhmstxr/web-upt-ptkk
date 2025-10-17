@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -47,7 +48,24 @@ class Pelatihan extends Model
             'tes_id'          // Foreign key di tabel 'percobaan' (akhir)
         );
     }
-    public function bidang(){
+    public function bidang()
+    {
         return $this->belongsToMany(Bidang::class, 'bidang_pelatihan');
+    }
+
+    protected function status(): Attribute
+    {
+        return Attribute::make(
+            get: function (): string {
+                $now = now();
+                if ($now->isBefore($this->tanggal_mulai)) {
+                    return 'Mendatang';
+                }
+                if ($now->between($this->tanggal_mulai, $this->tanggal_selesai)) {
+                    return 'Aktif';
+                }
+                return 'Selesai';
+            },
+        );
     }
 }
