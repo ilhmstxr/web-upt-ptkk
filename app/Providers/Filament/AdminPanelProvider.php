@@ -44,8 +44,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
-                BidangSummaryTable::class,
-                BidangScoresChart::class,
+                // BidangSummaryTable::class,
+                // BidangScoresChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,
