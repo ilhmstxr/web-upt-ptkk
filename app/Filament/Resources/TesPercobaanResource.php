@@ -31,8 +31,8 @@ class TesPercobaanResource extends Resource
     protected function getHeaderWidgets(): array
     {
         return [
-            BidangSummaryTable::class,
-            BidangScoresChart::class,
+            // BidangSummaryTable::class,
+            // BidangScoresChart::class,
         ];
     }
     public static function form(Form $form): Form
