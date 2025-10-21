@@ -2,11 +2,16 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\JawabanSurveiResource\Widgets\BuildsLikertData;
+use App\Filament\Widgets\DynamicStatsOverviewWidget;
+use App\Filament\Widgets\DynamicTableWidget;
 use App\Filament\Widgets\GlobalStatsOverview;
 use Filament\Pages\Page;
 
 class TestWidgetPage extends Page
 {
+    use BuildsLikertData;
+
     protected static ?string $navigationIcon = 'heroicon-o-breaker';
     // protected static ?string $navigationGroup = 'Hasil Kegiatan';
     // protected static ?string $navigationLabel = 'test widget';
@@ -14,7 +19,7 @@ class TestWidgetPage extends Page
     protected static string $view = 'filament.pages.test-widget-page';
 
     // 2. Ini adalah route yang Anda tentukan tadi
-    protected static ?string $slug = 'test-widget-1';
+    protected static ?string $slug = 'test-widget';
 
     // 3. Sembunyikan dari navigasi (opsional, tapi bagus untuk tes)
     protected static bool $shouldRegisterNavigation = false;
@@ -30,11 +35,20 @@ class TestWidgetPage extends Page
      *
      * @return array<class-string<\Filament\Widgets\Widget>>
      */
-    public function getWidgets(): array
+    public function getHeaderWidgets(): array
     {
+        // $pid = 1;
+        // $testStats = $this->bidang();
+        // $testStats = $this->peserta($pid);
+        // $testStats = $this->instruktur($pid);
+        $testStats = $this->pelatihan();
         return [
-            GlobalStatsOverview::class,
-            // true
+            // DynamicStatsOverviewWidget::make([
+            //     'stats' => $testStats
+            // ]),
+            DynamicTableWidget::make([
+                'stats'=>$testStats
+            ])
         ];
     }
 }

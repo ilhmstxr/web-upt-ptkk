@@ -327,3 +327,60 @@ lantai
 status
 total_beds
 available_beds
+
+
+penambahan kolom
+tabel percobaan
++ pelatihan_id 
+
+
+tabel peserta 
++ pretest
++ posttest
++ praktek
++ rata rata
++ nilai survei
++ status
+
+
+mindah nilai ke pendafaran pelatihan
+UPDATE pendaftaran_pelatihan AS pp
+LEFT JOIN (
+    -- Subquery untuk mengambil skor pre-test terbaru
+    SELECT
+        p.peserta_id,
+        p.pelatihan_id,
+        p.skor AS nilai_pre_test
+    FROM percobaan AS p
+    INNER JOIN (
+        SELECT peserta_id, pelatihan_id, MAX(id) AS max_id
+        FROM percobaan
+        WHERE tipe = 'pre-test' AND peserta_id IS NOT NULL AND pelatihan_id IS NOT NULL
+        GROUP BY peserta_id, pelatihan_id
+    ) AS latest_pre
+    ON p.id = latest_pre.max_id
+) AS pre_test_data
+ON pp.peserta_id = pre_test_data.peserta_id AND pp.pelatihan_id = pre_test_data.pelatihan_id
+
+LEFT JOIN (
+    -- Subquery untuk mengambil skor post-test terbaru dan status kelulusan
+    SELECT
+        p.peserta_id,
+        p.pelatihan_id,
+        p.skor AS nilai_post_test,
+        CASE WHEN p.lulus = 1 THEN 'Lulus' ELSE 'Belum Lulus' END AS status
+    FROM percobaan AS p
+    INNER JOIN (
+        SELECT peserta_id, pelatihan_id, MAX(id) AS max_id
+        FROM percobaan
+        WHERE tipe = 'post-test' AND peserta_id IS NOT NULL AND pelatihan_id IS NOT NULL
+        GROUP BY peserta_id, pelatihan_id
+    ) AS latest_post
+    ON p.id = latest_post.max_id
+) AS post_test_data
+ON pp.peserta_id = post_test_data.peserta_id AND pp.pelatihan_id = post_test_data.pelatihan_id
+
+SET
+    pp.nilai_pre_test = COALESCE(pre_test_data.nilai_pre_test, pp.nilai_pre_test),
+    pp.nilai_post_test = COALESCE(post_test_data.nilai_post_test, pp.nilai_post_test),
+    pp.status = COALESCE(post_test_data.status, 'Belum Lulus');

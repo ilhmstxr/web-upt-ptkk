@@ -2,9 +2,14 @@
 
 namespace App\Filament\Resources\JawabanSurveiResource\Widgets;
 
+use App\Models\Bidang;
+use App\Models\Instruktur;
 use App\Models\JawabanUser;
 use App\Models\OpsiJawaban;
+use App\Models\Pelatihan;
 use App\Models\Pertanyaan;
+use App\Models\Peserta;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -306,26 +311,8 @@ trait BuildsLikertData
             ],
         ];
     }
-    /**
-     * Pie/doughnut: komposisi skala untuk satu pertanyaan.
-     * Jika $pertanyaanId null, otomatis pakai pertanyaan Likert pertama.
-     * Menggunakan teks opsi jawaban sebagai label.
-     */
-    /**
-     * Menyiapkan data untuk SEMUA chart pie per pertanyaan untuk response JSON.
-     *
-     * @param int|null $pelatihanId
-     * @param array $range
-     * @return array
-     */
-    /**
-     * Menyiapkan data untuk SATU pie chart berdasarkan ID pertanyaan yang diberikan.
-     *
-     * @param int|null $pelatihanId
-     * @param int|null $pertanyaanId -> Parameter baru untuk ID pertanyaan spesifik
-     * @param array $range
-     * @return array -> Mengembalikan array untuk satu chart, bukan array of arrays
-     */
+
+
     public function buildPiePerPertanyaan(?int $pelatihanId, ?int $pertanyaanId, array $range = []): array
     {
         // Jika tidak ada ID pertanyaan spesifik yang diberikan, kembalikan data kosong.
@@ -436,6 +423,166 @@ trait BuildsLikertData
                     'legend'  => ['position' => 'right'],
                     'tooltip' => ['enabled' => true],
                 ],
+            ],
+        ];
+    }
+
+
+    // DATA WIDGET STATS OVERVIEW
+
+    // STATS INSTRUKTUR
+    public function instruktur(?int $pelatihan_id)
+    {
+        $jumlahInstruktur = Instruktur::where('pelatihan_id', $pelatihan_id)->count();
+        $jumlahPesertaDiajar = Peserta::where('pelatihan_id', $pelatihan_id)->count();
+
+        return [
+            [
+                'label' => 'Jumlah Instruktur Pelatihan',
+                'value' => $jumlahInstruktur,
+                'description' => 'Pelatihan yang sedang atau akan berjalan',
+                'descriptionIcon' => 'heroicon-m-arrow-trending-up',
+                'color' => 'success',
+            ],
+            // [
+            //     'label' => 'Rata - rata Pengalaman (Tahun)',
+            //     'value' => Peserta::count(),
+            //     'description' => 'Jumlah seluruh peserta terdaftar',
+            //     'descriptionIcon' => 'heroicon-m-users',
+            //     'color' => 'info',
+            // ],
+            [
+                'label' => 'Rata - rata Rating',
+                // 'value' => Instruktur::count(),
+                'value' => '90%',
+                'description' => 'Jumlah seluruh instruktur',
+                'descriptionIcon' => 'heroicon-m-user-group',
+                'color' => 'warning',
+            ],
+            [
+                'label' => 'Total Peserta Diajar',
+                'value' => $jumlahPesertaDiajar,
+                'description' => 'Jumlah bidang keahlian',
+                'descriptionIcon' => 'heroicon-m-academic-cap',
+                'color' => 'primary',
+            ],
+        ];
+    }
+
+
+    // STATS peserta
+    public function peserta(?int $pelatihan_id)
+    {
+        $peserta = Peserta::where('pelatihan_id', $pelatihan_id)->get();
+        $jumlahLulus = $peserta->where('lulus', true)->count();
+        $jumlahTidakLulus = $peserta->where('lulus', false)->count();
+        $rataNilai = $peserta->avg('nilai');
+        $rataRating = $peserta->avg('nilai'); // di jawaban user
+
+        return [
+            [
+                'label' => 'Peserta Lulus',
+                'value' => $jumlahLulus,
+                'description' => 'Pelatihan yang sedang atau akan berjalan',
+                'descriptionIcon' => 'heroicon-m-arrow-trending-up',
+                'color' => 'success',
+            ],
+            [
+                'label' => 'Peserta Tidak Lulus',
+                'value' => $jumlahTidakLulus,
+                'description' => 'Jumlah seluruh peserta terdaftar',
+                'descriptionIcon' => 'heroicon-m-users',
+                'color' => 'info',
+            ],
+            [
+                'label' => 'Rata - rata Nilai ',
+                'value' => $rataNilai ? round($rataNilai, 2) : 0,
+                'description' => 'Jumlah seluruh instruktur',
+                'descriptionIcon' => 'heroicon-m-user-group',
+                'color' => 'warning',
+            ],
+            [
+                'label' => 'Rata - rata Rating Pelatihan',
+                'value' => $rataRating ? round($rataRating, 2) : 0,
+                'description' => 'Jumlah bidang keahlian',
+                'descriptionIcon' => 'heroicon-m-academic-cap',
+                'color' => 'primary',
+            ],
+        ];
+    }
+
+    // STATS bidang
+    public function bidang()
+    {
+
+        $a = 'a';
+        $b = 'b';
+        $c = 'c';
+        $d = 'd';
+        return [
+            [
+                'label' => 'Peningkatan Tertinggi',
+                'value' => $a,
+                'description' => 'Pelatihan yang sedang atau akan berjalan',
+                'descriptionIcon' => 'heroicon-m-arrow-trending-up',
+                'color' => 'success',
+            ],
+            [
+                'label' => 'Rata - rata Peningkatan Keseluruhan',
+                'value' => $b,
+                'description' => 'Jumlah seluruh peserta terdaftar',
+                'descriptionIcon' => 'heroicon-m-users',
+                'color' => 'info',
+            ],
+            [
+                'label' => 'Rata - rata Total Nilai',
+                'value' => $c,
+                'description' => 'Jumlah seluruh instruktur',
+                'descriptionIcon' => 'heroicon-m-user-group',
+                'color' => 'warning',
+            ],
+            [
+                'label' => 'Total Peserta Seluruh Bidang',
+                'value' => $d,
+                'description' => 'Jumlah bidang keahlian',
+                'descriptionIcon' => 'heroicon-m-academic-cap',
+                'color' => 'primary',
+            ],
+        ];
+    }
+
+    // STATS dashboard
+    public function dashboard()
+    {
+        // Kembalikan sebagai array biasa
+        return [
+            [
+                'label' => 'Pelatihan Aktif',
+                'value' => Pelatihan::where('tanggal_selesai', '>=', Carbon::now())->count(),
+                'description' => 'Pelatihan yang sedang atau akan berjalan',
+                'descriptionIcon' => 'heroicon-m-arrow-trending-up',
+                'color' => 'success',
+            ],
+            [
+                'label' => 'Total Peserta',
+                'value' => Peserta::count(),
+                'description' => 'Jumlah seluruh peserta terdaftar',
+                'descriptionIcon' => 'heroicon-m-users',
+                'color' => 'info',
+            ],
+            [
+                'label' => 'Total Instruktur',
+                'value' => Instruktur::count(),
+                'description' => 'Jumlah seluruh instruktur',
+                'descriptionIcon' => 'heroicon-m-user-group',
+                'color' => 'warning',
+            ],
+            [
+                'label' => 'Total Bidang',
+                'value' => Bidang::count(),
+                'description' => 'Jumlah bidang keahlian',
+                'descriptionIcon' => 'heroicon-m-academic-cap',
+                'color' => 'primary',
             ],
         ];
     }

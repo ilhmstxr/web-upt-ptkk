@@ -15,10 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pelatihan_id')->constrained('pelatihan')->onDelete('cascade');
             $table->foreignId('bidang_id')->constrained('bidang')->onDelete('cascade');
+
             $table->string('lokasi')->nullable();
             $table->string('kota')->nullable();
+
             $table->string('kode_bidang_pelatihan')->nullable();
 
+            $table->Integer('rata_rata_peningkatan')->default(0);
+            $table->Enum('status_performa', ['tidak baik', 'kurang baik', 'baik', 'sangat baik'])->nullable();
             // Opsional, tapi sangat direkomendasikan
             $table->timestamps(); // Membuat kolom created_at dan updated_at
 

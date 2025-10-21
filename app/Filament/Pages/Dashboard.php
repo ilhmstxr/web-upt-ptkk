@@ -6,6 +6,7 @@ namespace App\Filament\Pages;
 use App\Filament\Widgets\GlobalStatsOverview;
 use App\Filament\Widgets\PelatihanAktifTable;
 use App\Filament\Widgets\AkumulasiSurveiChart;
+use App\Filament\Widgets\Dashboard\StatsOverview;
 use App\Filament\Widgets\InformasiAsramaWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Support\Facades\Filament;
@@ -21,6 +22,7 @@ class Dashboard extends BaseDashboard
     {
         return [
             GlobalStatsOverview::class,
+            // StatsOverview::class,
             PelatihanAktifTable::class,
             AkumulasiSurveiChart::class,
             InformasiAsramaWidget::class,
