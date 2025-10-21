@@ -18,7 +18,6 @@ class Peserta extends Model
     protected $fillable = [
         'pelatihan_id',
         'instansi_id',
-        'bidang_id',
         'nama',
         'nik',
         'tempat_lahir',
@@ -43,10 +42,6 @@ class Peserta extends Model
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
-    public function bidang(): BelongsTo
-    {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
-    }
 
     public function lampiran(): HasOne
     {
@@ -100,6 +95,6 @@ class Peserta extends Model
     public function pendaftaranPelatihan()
     {
         // Ubah menjadi PendaftaranPelatihan::class
-        return $this->hasOne(PendaftaranPelatihan::class);
+        return $this->hasMany(PendaftaranPelatihan::class);
     }
 }

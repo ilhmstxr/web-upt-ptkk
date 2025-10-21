@@ -41,14 +41,16 @@ class TestWidgetPage extends Page
         // $testStats = $this->bidang();
         // $testStats = $this->peserta($pid);
         // $testStats = $this->instruktur($pid);
-        $testStats = $this->pelatihan();
+        // $testStats = $this->getPesertaTableConfig();
+        $testStats = $this->getTopNilaiTableConfig();
         return [
             // DynamicStatsOverviewWidget::make([
             //     'stats' => $testStats
             // ]),
-            DynamicTableWidget::make([
-                'stats'=>$testStats
-            ])
+            DynamicTableWidget::make($testStats)
+            // DynamicTableWidget::make([
+            //     'stats' => $testStats
+            // ])
         ];
     }
 }

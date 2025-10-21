@@ -13,9 +13,16 @@ class PendaftaranPelatihan extends Model
     protected $fillable = [
         'peserta_id',
         'pelatihan_id',
-        // 'bidang_id', 
+        'bidang_id', 
         'nomor_registrasi',
         'tanggal_pendaftaran',
+
+        'nilai_pre_test',
+        'nilai_post_test',
+        'nilai_praktek',
+        'rata_rata',
+        'nilai_survey',
+        'status',
     ];
 
     public function peserta()

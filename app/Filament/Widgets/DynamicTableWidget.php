@@ -10,23 +10,26 @@ use Illuminate\Database\Eloquent\Builder;
 
 class DynamicTableWidget extends BaseWidget
 {
-    // Properti untuk menerima data dari luar
+    // ===================================================================
+    // PROPERTI BARU YANG "LIVEWIRE-FRIENDLY"
+    // ===================================================================
     public string $model;
     public array $columnDefinitions = [];
     public array $actionDefinitions = [];
-    public ?Closure $query = null;
-
-    // DIUBAH: Nama properti diganti untuk menghindari konflik dengan properti '$heading' dari parent class.
     public ?string $widgetHeading = null;
-
     public ?string $description = null;
 
-    // Sembunyikan header default statis
+    // Properti untuk membangun query
+    public ?array $with = []; // Untuk eager loading
+    public ?string $orderByColumn = null;
+    public string $orderByDirection = 'desc';
+    public ?int $limit = null;
+    // ===================================================================
+
     protected static ?string $heading = '';
 
     public function getTableHeading(): ?string
     {
-        // DIUBAH: Menggunakan properti baru yang sudah diganti namanya.
         return $this->widgetHeading;
     }
 
@@ -35,9 +38,31 @@ class DynamicTableWidget extends BaseWidget
         return $this->description;
     }
 
+    protected function getTableQuery(): Builder
+    {
+        // ===================================================================
+        // LOGIKA PEMBANGUNAN QUERY DIPINDAHKAN KE SINI
+        // ===================================================================
+        $query = $this->model::query();
+
+        if (!empty($this->with)) {
+            $query->with($this->with);
+        }
+
+        if ($this->orderByColumn) {
+            $query->orderBy($this->orderByColumn, $this->orderByDirection);
+        }
+
+        if ($this->limit) {
+            $query->limit($this->limit);
+        }
+
+        return $query;
+    }
+
     public function table(Table $table): Table
     {
-        // Bangun kolom secara dinamis
+        // Bangun kolom secara dinamis (logika ini tetap sama)
         $columns = [];
         foreach ($this->columnDefinitions as $name => $definition) {
             $type = $definition['type'] ?? 'text';
@@ -59,35 +84,29 @@ class DynamicTableWidget extends BaseWidget
             }
 
             $column->label($label);
-
-            if (isset($definition['searchable'])) {
-                $column->searchable($definition['searchable']);
-            }
-            if (isset($definition['sortable'])) {
-                $column->sortable($definition['sortable']);
-            }
-
+            if (isset($definition['searchable'])) $column->searchable($definition['searchable']);
+            if (isset($definition['sortable'])) $column->sortable($definition['sortable']);
             $columns[] = $column;
         }
 
-        // Bangun Aksi secara dinamis
+        // Bangun Aksi secara dinamis (logika ini tetap sama)
         $actions = [];
         foreach ($this->actionDefinitions as $definition) {
+            $urlCallback = $definition['url'] ?? null;
+            if (!$urlCallback || !is_callable($urlCallback)) continue;
+
             $action = Tables\Actions\Action::make($definition['name'])
                 ->label($definition['label'] ?? '')
                 ->icon($definition['icon'])
                 ->color($definition['color'] ?? 'primary')
-                ->url(fn($record): string => ($definition['url'])($record))
+                ->url(fn($record): string => $urlCallback($record))
                 ->openUrlInNewTab(isset($definition['newTab']));
-
             $actions[] = $action;
         }
 
+        // DIUBAH: Menggunakan metode getTableQuery() yang baru
         return $table
-            ->query(function () {
-                $baseQuery = ($this->query) ? call_user_func($this->query) : $this->getModel()::query();
-                return $baseQuery;
-            })
+            ->query($this->getTableQuery())
             ->columns($columns)
             ->actions($actions);
     }

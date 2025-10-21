@@ -586,4 +586,67 @@ trait BuildsLikertData
             ],
         ];
     }
+
+
+    public function getPesertaTableConfig(): array
+    {
+        return [
+            'widgetHeading' => 'Manajemen Data Peserta',
+            'description' => 'Tabel lengkap data peserta...',
+            'model' => Peserta::class, // <-- Kirim nama kelas Model
+            'with' => ['bidang'],   // <-- Kirim relasi untuk eager loading
+            'columnDefinitions' => [
+                // 'kode' akan berasal dari relasi, kita ganti
+                'pendaftaranPelatihan.nomor_registrasi' => ['label' => 'KODE', 'searchable' => true],
+                'nama' => ['label' => 'NAMA PESERTA', 'searchable' => true],
+                // 'bidang.nama' sudah benar karena ada eager loading 'bidang'
+                'bidang.nama_bidang' => ['label' => 'BIDANG', 'sortable' => true],
+                'pendaftaranPelatihan.nilai_pre_test' => ['label' => 'PRE-TEST'],
+                'pendaftaranPelatihan.nilai_post_test' => ['label' => 'POST-TEST'],
+                'pendaftaranPelatihan.nilai_praktek' => ['label' => 'PRAKTEK'],
+                'pendaftaranPelatihan.rata_rata' => ['label' => 'RATA²'],
+                'pendaftaranPelatihan.nilai_survey' => ['label' => 'SURVEI'],
+                'pendaftaranPelatihan.status' => [
+                    'label' => 'STATUS',
+                    'type' => 'badge',
+                    'colors' => [
+                        'success' => 'Lulus',
+                        'danger' => 'Tidak Lulus',
+                        'primary' => 'Belum Lulus',
+                    ],
+                ],
+            ],
+            'actionDefinitions' => [
+                [
+                    'name' => 'view',
+                    'label' => '',
+                    'icon' => 'heroicon-o-eye',
+                    'color' => 'gray',
+                    'url' => fn(Peserta $record) => '#', // Ganti dengan route Anda
+                ],
+            ],
+        ];
+    }
+
+    public function getTopNilaiTableConfig(): array
+    {
+        return [
+            'widgetHeading' => 'Top Nilai Terbaik Per Peserta',
+            'description' => 'Tabel ringkas yang menampilkan performa terbaik.',
+            'model' => Peserta::class, // <-- Kirim nama kelas Model
+            'with' => ['bidang', 'pendaftaranPelatihan'], // <-- Eager load relasi
+            'orderByColumn' => 'pendaftaranPelatihan.rata_rata', // <-- Kirim kolom untuk diurutkan
+            'orderByDirection' => 'desc',
+            'limit' => 5, // <-- Kirim limit
+            'columnDefinitions' => [
+                'pendaftaranPelatihan.nomor_registrasi' => ['label' => 'KODE PESERTA'],
+                'nama' => ['label' => 'NAMA PESERTA'],
+                'bidang.nama_bidang' => ['label' => 'BIDANG'],
+                'pendaftaranPelatihan.rata_rata' => ['label' => 'RATA-RATA NILAI'],
+                'pendaftaranPelatihan.nilai_pre_test' => ['label' => 'NILAI PRE-TEST'],
+                'pendaftaranPelatihan.nilai_post_test' => ['label' => 'NILAI POST-TEST'],
+            ],
+            'actionDefinitions' => [],
+        ];
+    }
 }
