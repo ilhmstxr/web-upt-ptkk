@@ -16,18 +16,45 @@ class Bidang extends Model
         'deskripsi',
     ];
 
-    // 🔹 Relasi many-to-many ke Pelatihan melalui pivot table bidang_pelatihan
-    public function pelatihans()
+    public function bidangPelatihan()
     {
-        return $this->belongsToMany(
-            Pelatihan::class,       // Model yang dihubungkan
-            'bidang_pelatihan',     // Nama tabel pivot
-            'bidang_id',            // Foreign key di tabel pivot untuk model ini (Bidang)
-            'pelatihan_id'          // Foreign key di tabel pivot untuk model Pelatihan
-        );
+        return $this->hasMany(BidangPelatihan::class);
     }
 
-    public function pelatihan(){
-        return $this->belongsToMany(Pelatihan::class, 'bidang_pelatihan');
-    }
+    // public function pelatihans()
+    // {
+    //     return $this->belongsToMany(
+    //         Pelatihan::class,       // Model yang dihubungkan
+    //         'bidang_pelatihan',     // Nama tabel pivot
+    //         'bidang_id',            // Foreign key di tabel pivot untuk model ini (Bidang)
+    //         'pelatihan_id'          // Foreign key di tabel pivot untuk model Pelatihan
+    //     )
+    //         // <-- TAMBAHAN: Beritahu Eloquent untuk menggunakan Model Pivot kustom Anda
+    //         ->using(BidangPelatihan::class)
+
+    //         // <-- TAMBAHAN: Tentukan kolom ekstra di pivot yang ingin Anda akses
+    //         ->withPivot([
+    //             'lokasi',
+    //             'kota',
+    //             'kode_bidang_pelatihan',
+    //             'rata_rata_peningkatan',
+    //             'status_performa',
+    //         ]);
+    // }
+
+    // public function pendaftaranPelatihan()
+    // {
+    //     return $this->hasManyThrough(
+    //         PendaftaranPelatihan::class, // Model akhir yang dituju
+    //         BidangPelatihan::class,      // Model perantara
+
+    //         // Kunci relasi Bidang -> BidangPelatihan
+    //         'bidang_pelatihan_id', // Foreign key di tabel 'bidang_pelatihan'
+    //         'id',        // Local key di tabel 'bidang'
+
+    //         // Kunci relasi BidangPelatihan -> PendaftaranPelatihan
+    //         'bidang_id', // Foreign key di tabel 'pendaftaran_pelatihan' (yang merujuk ke bidang_pelatihan.id)
+    //         'id'         // Local key di tabel 'bidang_pelatihan'
+    //     );
+    // }
 }

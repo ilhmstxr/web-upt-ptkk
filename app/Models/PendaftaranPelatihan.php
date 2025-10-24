@@ -13,7 +13,7 @@ class PendaftaranPelatihan extends Model
     protected $fillable = [
         'peserta_id',
         'pelatihan_id',
-        'bidang_id', 
+        'bidang_id',
         'nomor_registrasi',
         'tanggal_pendaftaran',
 
@@ -33,8 +33,8 @@ class PendaftaranPelatihan extends Model
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
-    public function bidang()
+    public function bidangPelatihan()
     {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
+        return $this->belongsTo(BidangPelatihan::class, 'bidang_pelatihan_id');
     }
 }

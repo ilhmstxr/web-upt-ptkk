@@ -23,6 +23,10 @@ class Pelatihan extends Model
         'deskripsi',
     ];
 
+    protected $casts = [
+        'tanggal_mulai' => 'date',
+        'tanggal_selesai' => 'date',
+    ];
 
     public function instansi()
     {
@@ -48,10 +52,51 @@ class Pelatihan extends Model
             'tes_id'          // Foreign key di tabel 'percobaan' (akhir)
         );
     }
-    public function bidang()
+
+        /**
+     * Mendapatkan semua sesi/jadwal (bidang_pelatihan) di bawah pelatihan ini.
+     */
+    public function bidangPelatihan()
     {
-        return $this->belongsToMany(Bidang::class, 'bidang_pelatihan');
+        // Terhubung ke BidangPelatihan::class melalui 'pelatihan_id'
+        return $this->hasMany(BidangPelatihan::class, 'pelatihan_id');
     }
+
+    public function pendaftaranPelatihan()
+    {
+        return $this->hasMany(PendaftaranPelatihan::class,'pelatihan_id');
+    }
+    /**
+     * Mendapatkan semua pendaftaran untuk pelatihan ini
+     * (melalui tabel perantara bidang_pelatihan).
+     */
+    // public function pendaftaranPelatihan()
+    // {
+    //     return $this->hasManyThrough(
+    //         PendaftaranPelatihan::class,      // Model Akhir
+    //         BidangPelatihan::class,         // Model Perantara
+    //         'pelatihan_id',                 // Foreign key di BidangPelatihan
+    //         'bidang_pelatihan_id',          // Foreign key di PendaftaranPelatihan
+    //         'id',                           // Local key di Pelatihan (model ini)
+    //         'id'                            // Local key di BidangPelatihan
+    //     );
+    // }
+
+    /**
+     * Mendapatkan semua bidang (materi) yang ada di pelatihan ini
+     * (melalui tabel perantara bidang_pelatihan).
+     */
+    // public function bidang()
+    // {
+    //     return $this->hasManyThrough(
+    //         Bidang::class,
+    //         BidangPelatihan::class,
+    //         'pelatihan_id', // Foreign key di BidangPelatihan
+    //         'id',           // Foreign key di Bidang
+    //         'id',           // Local key di Pelatihan (model ini)
+    //         'bidang_id'     // Local key di BidangPelatihan
+    //     );
+    // }
 
     protected function status(): Attribute
     {

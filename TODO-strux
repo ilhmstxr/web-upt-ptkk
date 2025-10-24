@@ -343,6 +343,9 @@ tabel peserta
 + status
 
 
+
+
+
 mindah nilai ke pendafaran pelatihan
 UPDATE pendaftaran_pelatihan AS pp
 LEFT JOIN (
@@ -384,3 +387,81 @@ SET
     pp.nilai_pre_test = COALESCE(pre_test_data.nilai_pre_test, pp.nilai_pre_test),
     pp.nilai_post_test = COALESCE(post_test_data.nilai_post_test, pp.nilai_post_test),
     pp.status = COALESCE(post_test_data.status, 'Belum Lulus');
+
+
+
+
+
+
+
+cek bidang_id lama ke bidang_id baru
+
+COUNT(*)
+OR
+
+SELECT
+
+pp.id AS id_pendaftaran,
+  pp.bidang_id AS id_bidang_lama,
+  bp.id AS id_bidang_baru_yang_akan_dipakai
+
+
+FROM
+  `pendaftaran_pelatihan` AS pp
+JOIN
+  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`;
+
+
+
+update bidang_id  lama ke bidang_Id baru
+UPDATE
+  `pendaftaran_pelatihan` AS pp
+JOIN
+  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`
+SET
+  pp.`bidang_id` = bp.`id`;
+
+
+
+SELECT
+pp.id AS id_pendaftaran,
+  pp.bidang_id AS id_bidang_lama,
+  bp.id AS id_bidang_baru_yang_akan_dipakai
+
+
+FROM
+  `pendaftaran_pelatihan` AS pp
+JOIN
+  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`
+  ORDER BY PP.id asc;
+
+95 ~ 114
+140 ~ 150
+180 an
+
+
+AH KOPLAK, konsistensi data yang ada di mtu & mjc di pelatihan 10 & 11 masih belum konsisten
+
+TODO, ngulik, ngecek pendaftaran_pelatihan dan diesuaikan dengan bidang_pelatihan 
+
+foto - malang
+video - magetan
+plc - nganjuk
+tptu - kediri
+tptu - tuban
+
+
+SELECT bidang_id, COUNT(*) AS jumlah_peserta
+FROM peserta
+WHERE pelatihan_id = 1
+GROUP BY bidang_id;
+
+
+
+
+SELECT bidang_id, COUNT(*) AS jumlah_peserta
+FROM pendaftaran_pelatihan
+WHERE pelatihan_id = 1
+GROUP BY bidang_id;
+
+

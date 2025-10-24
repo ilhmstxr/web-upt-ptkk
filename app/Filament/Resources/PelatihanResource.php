@@ -88,6 +88,7 @@ class PelatihanResource extends Resource
             'index' => Pages\ListPelatihans::route('/'),
             'create' => Pages\CreatePelatihan::route('/create'),
             'edit' => Pages\EditPelatihan::route('/{record}/edit'),
+            'view' => Pages\ViewPelatihan::route('/{record}/view'), // <-- Gunakan halaman kustom
         ];
     }
 }

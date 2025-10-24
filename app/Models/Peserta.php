@@ -94,7 +94,13 @@ class Peserta extends Model
 
     public function pendaftaranPelatihan()
     {
-        // Ubah menjadi PendaftaranPelatihan::class
-        return $this->hasMany(PendaftaranPelatihan::class);
+        // Terhubung ke PendaftaranPelatihan::class melalui 'peserta_id'
+        return $this->hasMany(PendaftaranPelatihan::class, 'peserta_id');
     }
+
+    /**
+     * Mendapatkan semua sesi/jadwal (bidang_pelatihan) yang pernah diikuti peserta
+     * (melalui tabel pendaftaran_pelatihan).
+     */
+
 }

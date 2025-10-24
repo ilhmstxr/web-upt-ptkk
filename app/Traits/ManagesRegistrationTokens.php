@@ -20,17 +20,15 @@ trait ManagesRegistrationTokens // <-- PASTIKAN NAMA TRAIT INI BENAR
             $kodeBidang = $bidang->kode ?? $this->akronim($bidang->nama);
 
             // Kunci baris yang relevan untuk dihitung agar akurat
-  PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-    ->where('bidang_id', $bidangId)
-    ->select('id')
-    ->lockForUpdate()
-    ->get();
+            PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+                ->select('id')
+                ->lockForUpdate()
+                ->get();
 
 
             // Hitung jumlah setelah di-lock
-$jumlah = PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-    ->where('bidang_id', $bidangId)
-    ->count();
+            $jumlah = PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+                ->count();
 
             $nextUrut = $jumlah + 1;
             $nomor    = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeBidang), $nextUrut);

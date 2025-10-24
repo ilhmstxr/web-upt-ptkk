@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Bidang;
 use App\Models\JawabanUser;
 use App\Models\OpsiJawaban;
 use App\Models\Pelatihan;
@@ -222,9 +223,9 @@ function SurveyHasilKegiatan()
 
     // Ambil data pelatihan dan semua 'percobaan' yang terkait melalui model 'Tes'
     // Eager load juga data peserta untuk setiap percobaan
-    
+
     // pelatihan dengan tes apasaja
-    $pelatihan = Pelatihan::with('tes')->select('id', 'judul','bidang_id','pelatihan_id')->findOrFail($pelatihanId);
+    $pelatihan = Pelatihan::with('tes')->select('id', 'judul', 'bidang_id', 'pelatihan_id')->findOrFail($pelatihanId);
 
     $tesId = 6;
     $percobaan = Percobaan::where('tes_id', $tesId)
@@ -239,6 +240,23 @@ function SurveyHasilKegiatan()
         // 'perbidang' => $perbidang,
         'percobaan' => $percobaan,
     ]);
+}
+function countBidang()
+{
+    // $cb1 = Bidang::all();
+    // $cb2 = Bidang::with('bidangPelatihan')->get();
+    // $cb3 = Bidang::with('bidangPelatihan.pendaftaranPelatihan')->get();
+
+    // $count = [
+    //     $cb1,
+    //     $cb2,
+    //     $cb3
+    // ];
+
+    // return $cb3;
+    // return $count;
+    // Menghitung 'JUMLAH PESERTA'
+
 }
 // function (){
 

@@ -28,15 +28,15 @@ class TopPesertaTable extends BaseWidget
                         $query->from('penilaian_tes')
                             ->whereColumn('peserta_id', 'pesertas.id')
                             ->selectRaw('AVG(nilai)');
-                    }, 'rata_rata_nilai')
-                    ->orderBy('rata_rata_nilai', 'desc')
+                    }, 'rata_rata')
+                    ->orderBy('rata_rata', 'desc')
                     ->limit(10)
             )
             ->columns([
                 Tables\Columns\TextColumn::make('kode_peserta'),
                 Tables\Columns\TextColumn::make('nama_peserta'),
                 Tables\Columns\TextColumn::make('bidang.nama_bidang')->label('Bidang'),
-                Tables\Columns\TextColumn::make('rata_rata_nilai')->numeric(2),
+                Tables\Columns\TextColumn::make('rata_rata')->numeric(2),
                 // Kolom untuk pre-test dan post-test bisa dibuat dengan custom logic
                 Tables\Columns\TextColumn::make('pre_test_score')->label('Nilai Pre-Test')->getStateUsing(fn(Peserta $record) => $record->penilaianTes->where('jenis_tes', 'pre-test')->first()?->nilai ?? '-'),
                 Tables\Columns\TextColumn::make('post_test_score')->label('Nilai Post-Test')->getStateUsing(fn(Peserta $record) => $record->penilaianTes->where('jenis_tes', 'post-test')->first()?->nilai ?? '-'),

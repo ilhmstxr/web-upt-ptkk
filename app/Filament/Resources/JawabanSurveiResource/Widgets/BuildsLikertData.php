@@ -588,6 +588,41 @@ trait BuildsLikertData
     }
 
 
+    // STATS Pelatihan
+    protected function pelatihan()
+    {
+        // Anda bisa kustomisasi query ini
+        $totalAktif = Pelatihan::where('status', 'Aktif')->count();
+        $totalPendaftar = Peserta::whereHas('pelatihan', function ($query) {
+            $query->where('status', 'Aktif');
+        })->count();
+        $totalSelesai = Pelatihan::where('status', 'Selesai')->count();
+
+        return [
+            [
+                'label' => 'Pelatihan Aktif',
+                'value' => $totalAktif,
+                'description' => 'Jumlah pelatihan yang sedang berjalan',
+                'descriptionIcon' => 'heroicon-o-academic-cap',
+                'color' => 'success',
+            ],
+            [
+                'label' => 'Total Pendaftar (Aktif)',
+                'value' => $totalPendaftar,
+                'description' => 'Jumlah peserta di pelatihan aktif',
+                'descriptionIcon' => 'heroicon-o-users',
+                'color' => 'primary',
+            ],
+            [
+                'label' => 'Pelatihan Selesai',
+                'value' => $totalSelesai,
+                'description' => 'Jumlah pelatihan yang telah selesai',
+                'descriptionIcon' => 'heroicon-o-check-badge',
+                'color' => 'gray',
+            ]
+        ];
+    }
+
     public function getPesertaTableConfig(): array
     {
         return [

@@ -47,7 +47,7 @@ class TestWidgetPage extends Page
             // DynamicStatsOverviewWidget::make([
             //     'stats' => $testStats
             // ]),
-            DynamicTableWidget::make($testStats)
+            // DynamicTableWidget::make($testStats)
             // DynamicTableWidget::make([
             //     'stats' => $testStats
             // ])
