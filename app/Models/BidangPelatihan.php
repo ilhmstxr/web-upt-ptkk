@@ -25,6 +25,7 @@ class BidangPelatihan extends Model
         return $this->belongsTo(Pelatihan::class);
     }
 
+
     public function bidang()
     {
         return $this->belongsTo(Bidang::class);

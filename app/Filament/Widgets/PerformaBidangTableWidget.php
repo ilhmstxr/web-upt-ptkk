@@ -22,13 +22,13 @@ class PerformaBidangTableWidget extends BaseWidget
                 // Kita query model Bidang dan melakukan kalkulasi agregat
                 // Ini membutuhkan relasi `pendaftaranPelatihan()` di model `Bidang`
                 Bidang::query()
-                    ->withCount('bidangPelatihan') // Menghitung 'JUMLAH PESERTA'
-                    ->withAvg('pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (RATA²)'
-                    ->withMin('pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MIN)'
-                    ->withMax('pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MAX)'
-                    ->withAvg('pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (RATA²)'
-                    ->withMin('pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
-                    ->withMax('pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MAX)'
+                    ->with('bidangPelatihan.pendaftaranPelatihan') // Menghitung 'JUMLAH PESERTA'
+                    // ->withAvg('bidangPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (RATA²)'
+                    // ->withMin('bidangPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MIN)'
+                    // ->withMax('bidangPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MAX)'
+                    // ->withAvg('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (RATA²)'
+                    // ->withMin('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
+                    // ->withMax('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MAX)'
             )
             ->columns([
                 TextColumn::make('nama_bidang')
