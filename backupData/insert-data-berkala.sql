@@ -42,43 +42,43 @@ INSERT INTO `bidang_pelatihan` (`id`, `pelatihan_id`, `bidang_id`, `lokasi`, `ko
 (19, 4, 8, 'smk negeri 1 Bondowoso', 'Bondowoso', 'MTU-TPTU-25-2-TBN', NULL, NULL),
 
 -- reg
-(1, 5, 4, 'upt-ptkk', 'Surabaya', 'REG-TPTU-25-1-SBY', NULL, NULL),
-(1, 5, 2, 'upt-ptkk', 'Surabaya', 'REG-TTBS-25-1-SBY', NULL, NULL),
-(1, 5, 1, 'upt-ptkk', 'Surabaya', 'REG-TTBG-25-1-SBY', NULL, NULL),
-(1, 5, 3, 'upt-ptkk', 'Surabaya', 'REG-KCAN-25-1-SBY', NULL, NULL),
+(20, 5, 4, 'upt-ptkk', 'Surabaya', 'REG-TPTU-25-1-SBY', NULL, NULL),
+(21, 5, 2, 'upt-ptkk', 'Surabaya', 'REG-TTBS-25-1-SBY', NULL, NULL),
+(22, 5, 1, 'upt-ptkk', 'Surabaya', 'REG-TTBG-25-1-SBY', NULL, NULL),
+(23, 5, 3, 'upt-ptkk', 'Surabaya', 'REG-KCAN-25-1-SBY', NULL, NULL),
 
 -- aksel
-(1, 6, 4, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
-(1, 6, 2, 'upt-ptkk', 'Surabaya', 'AKS-TTBS-25-1-SBY', NULL, NULL),
-(1, 6, 1, 'upt-ptkk', 'Surabaya', 'AKS-TTBG-25-1-SBY', NULL, NULL),
-(1, 6, 3, 'upt-ptkk', 'Surabaya', 'AKS-KCAN-25-1-SBY', NULL, NULL),
+(24, 6, 4, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
+(25, 6, 2, 'upt-ptkk', 'Surabaya', 'AKS-TTBS-25-1-SBY', NULL, NULL),
+(26, 6, 1, 'upt-ptkk', 'Surabaya', 'AKS-TTBG-25-1-SBY', NULL, NULL),
+(27, 6, 3, 'upt-ptkk', 'Surabaya', 'AKS-KCAN-25-1-SBY', NULL, NULL),
 
 -- aksel
-(1, 7, 5, 'upt-ptkk', 'Surabaya', 'AKS-WBDS-25-1-SBY', NULL, NULL),
-(1, 7, 6, 'upt-ptkk', 'Surabaya', 'AKS-DSGF-25-1-SBY', NULL, NULL),
-(1, 7, 7, 'upt-ptkk', 'Surabaya', 'AKS-ANMS-25-1-SBY', NULL, NULL),
-(1, 7, 11, 'upt-ptkk', 'Surabaya', 'AKS-FTPD-25-1-SBY', NULL, NULL),
-(1, 7, 9, 'upt-ptkk', 'Surabaya', 'AKS-VDGR-25-1-SBY', NULL, NULL),
+(28, 7, 5, 'upt-ptkk', 'Surabaya', 'AKS-WBDS-25-1-SBY', NULL, NULL),
+(29, 7, 6, 'upt-ptkk', 'Surabaya', 'AKS-DSGF-25-1-SBY', NULL, NULL),
+(30, 7, 7, 'upt-ptkk', 'Surabaya', 'AKS-ANMS-25-1-SBY', NULL, NULL),
+(31, 7, 11, 'upt-ptkk', 'Surabaya', 'AKS-FTPD-25-1-SBY', NULL, NULL),
+(32, 7, 9, 'upt-ptkk', 'Surabaya', 'AKS-VDGR-25-1-SBY', NULL, NULL),
 
 -- aksel
-(1, 8, 4, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
-(1, 8, 2, 'upt-ptkk', 'Surabaya', 'AKS-TTBS-25-1-SBY', NULL, NULL),
-(1, 8, 1, 'upt-ptkk', 'Surabaya', 'AKS-TTBG-25-1-SBY', NULL, NULL),
-(1, 8, 3, 'upt-ptkk', 'Surabaya', 'AKS-KCAN-25-1-SBY', NULL, NULL),
+(33, 8, 4, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
+(34, 8, 2, 'upt-ptkk', 'Surabaya', 'AKS-TTBS-25-1-SBY', NULL, NULL),
+(35, 8, 1, 'upt-ptkk', 'Surabaya', 'AKS-TTBG-25-1-SBY', NULL, NULL),
+(36, 8, 3, 'upt-ptkk', 'Surabaya', 'AKS-KCAN-25-1-SBY', NULL, NULL),
 
 -- reg
-(1, 9, 5, 'upt-ptkk', 'Surabaya', 'REG-WBDS-25-1-SBY', NULL, NULL),
-(1, 9, 6, 'upt-ptkk', 'Surabaya', 'REG-DSGF-25-1-SBY', NULL, NULL),
-(1, 9, 7, 'upt-ptkk', 'Surabaya', 'REG-ANMS-25-1-SBY', NULL, NULL),
-(1, 9, 11, 'upt-ptkk', 'Surabaya', 'REG-FTPD-25-1-SBY', NULL, NULL),
-(1, 9, 9, 'upt-ptkk', 'Surabaya', 'REG-VDGR-25-1-SBY', NULL, NULL),
+(37, 9, 5, 'upt-ptkk', 'Surabaya', 'REG-WBDS-25-1-SBY', NULL, NULL),
+(38, 9, 6, 'upt-ptkk', 'Surabaya', 'REG-DSGF-25-1-SBY', NULL, NULL),
+(39, 9, 7, 'upt-ptkk', 'Surabaya', 'REG-ANMS-25-1-SBY', NULL, NULL),
+(40, 9, 11, 'upt-ptkk', 'Surabaya', 'REG-FTPD-25-1-SBY', NULL, NULL),
+(41, 9, 9, 'upt-ptkk', 'Surabaya', 'REG-VDGR-25-1-SBY', NULL, NULL),
 
 -- reg
-(1, 10, 5, 'upt-ptkk', 'Surabaya', 'REG-WBDS-25-2-SBY', NULL, NULL),
-(1, 10, 6, 'upt-ptkk', 'Surabaya', 'REG-DSGF-25-2-SBY', NULL, NULL),
-(1, 10, 7, 'upt-ptkk', 'Surabaya', 'REG-ANMS-25-2-SBY', NULL, NULL),
-(1, 10, 11, 'upt-ptkk', 'Surabaya', 'REG-FTPD-25-2-SBY', NULL, NULL),
-(1, 10, 9, 'upt-ptkk', 'Surabaya', 'REG-VDGR-25-2-SBY', NULL, NULL),
+(42, 10, 5, 'upt-ptkk', 'Surabaya', 'REG-WBDS-25-2-SBY', NULL, NULL),
+(43, 10, 6, 'upt-ptkk', 'Surabaya', 'REG-DSGF-25-2-SBY', NULL, NULL),
+(44, 10, 7, 'upt-ptkk', 'Surabaya', 'REG-ANMS-25-2-SBY', NULL, NULL),
+(45, 10, 11, 'upt-ptkk', 'Surabaya', 'REG-FTPD-25-2-SBY', NULL, NULL),
+(46, 10, 9, 'upt-ptkk', 'Surabaya', 'REG-VDGR-25-2-SBY', NULL, NULL)
 ;
 
 --
