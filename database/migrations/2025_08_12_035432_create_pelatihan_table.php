@@ -19,15 +19,17 @@ return new class extends Migration
                   ->onUpdate('cascade')
                   ->onDelete('set null'); // Relasi ke tabel instansi
 
-            $table->Integer('angkatan');
-            $table->string('nama_pelatihan');
+            $table->Integer('angkatan')->nullable();
             $table->enum('jenis_program',['reguler','akselerasi','mtu'])->default('reguler');
+            $table->string('nama_pelatihan');
             $table->string('slug')->nullable()->unique();
             $table->string('gambar')->nullable();
             $table->string('status')->nullable()->default('belum dimulai');
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->text('deskripsi')->nullable();
+            $table->Integer('jumlah_peserta')->nullable();
+            $table->Enum('sasaran',['siswa','guru','instruktur'])->nullable();
             $table->timestamps();
         });
     }

@@ -465,3 +465,27 @@ WHERE pelatihan_id = 1
 GROUP BY bidang_id;
 
 
+nambahin data terbaru lalu ditampilkan 
+
+tata boga         v 
+tata busana       v
+tata kecantikan   v
+tptu              v
+web desain        V
+desain grafis     V
+motion animasi    V
+foto produk       V
+videografi        V
+fotografi         V
+plc               V
+
+
+injection 8 data pelatihan 
+DONE pelatihan
+DONE bidang
+DONE bidang_pelatihan 
+TODO pretest
+TODO posttest
+TODO praktek
+TODO semua nilai (tanpa nilai survei)
+TODO semua jawaban user (pretest, possttest, survey / monev)
