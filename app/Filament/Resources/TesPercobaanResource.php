@@ -80,17 +80,7 @@ class TesPercobaanResource extends Resource
                     //    dari tertinggi ke terendah (DESC).
                     ->orderBy('skor', 'desc');
             })
-            // nama v
-            // bidang v
-            // sekolah
-            // skor v
-            // pelatihan v
-
             ->columns([
-                // Tables\Columns\TextColumn::make('id')
-                //     ->label('ID')
-                //     ->sortable(),
-
                 // DIGANTI: dari 'peserta_id' menjadi 'peserta.nama'
                 Tables\Columns\TextColumn::make('peserta.nama')
                     ->label('Nama Peserta')
@@ -123,8 +113,6 @@ class TesPercobaanResource extends Resource
                     ->badge()
                     ->searchable()
                     ->sortable(),
-
-
 
                 Tables\Columns\TextColumn::make('skor')
                     ->label('Skor')
@@ -181,8 +169,10 @@ class TesPercobaanResource extends Resource
                 SelectFilter::make('tipe')
                     ->label('Tipe')
                     ->options([
+                        // Sesuaikan dengan nilai enum di ERD Anda
                         'survey' => 'Survey',
-                        'tes' => 'Tes',
+                        'pre-test' => 'Pre-test',
+                        'post-test' => 'Post-test',
                     ])
                     ->searchable(),
 
