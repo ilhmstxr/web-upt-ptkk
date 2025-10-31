@@ -70,193 +70,121 @@ class TesPercobaanResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                // Eager-load yang dipakai
-                $with = [
-                    'tes:id,judul,tipe',
-                    'peserta:id,nama,bidang_id,instansi_id',
-                    'pesertaSurvei:id,nama,bidang_id',
-                    'peserta.bidang:id,nama_bidang',
-                    'pesertaSurvei.bidang:id,nama_bidang',
-                    'peserta.instansi:id,asal_instansi',
-                ];
-
-                // Tambahkan instansi untuk PesertaSurvei hanya jika relasinya ada
-                if (method_exists(\App\Models\PesertaSurvei::class, 'instansi')) {
-                    $with[] = 'pesertaSurvei.instansi:id,asal_instansi';
-                }
-
-                $query->with($with);
+                // Terapkan default sort di sini
+                // 1. Urutkan berdasarkan "apakah skor NULL?" secara menaik (ASC).
+                //    - (skor IS NULL) akan jadi '0' (false) jika ADA NILAI.
+                //    - (skor IS NULL) akan jadi '1' (true) jika NULL.
+                //    - Jadi, yang ada nilai (0) akan tampil lebih dulu.
+                $query->orderBy(DB::raw('skor IS NULL'), 'asc')
+                    // 2. Untuk baris yang sama-sama punya nilai, urutkan skor-nya
+                    //    dari tertinggi ke terendah (DESC).
+                    ->orderBy('skor', 'desc');
             })
-            ->columns([
-                // Nomor urut di paling kiri
-                Tables\Columns\TextColumn::make('no')
-                    ->label('No')
-                    ->rowIndex()
-                    ->sortable(false),
+            // nama v
+            // bidang v
+            // sekolah
+            // skor v
+            // pelatihan v
 
-                Tables\Columns\TextColumn::make('tes.tipe')
+            ->columns([
+                // Tables\Columns\TextColumn::make('id')
+                //     ->label('ID')
+                //     ->sortable(),
+
+                // DIGANTI: dari 'peserta_id' menjadi 'peserta.nama'
+                Tables\Columns\TextColumn::make('peserta.nama')
+                    ->label('Nama Peserta')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('-'), // Tampilkan '-' jika relasi kosong
+
+                // DITAMBAHKAN: 'tes.bidang.nama_bidang'
+                Tables\Columns\TextColumn::make('tes.bidang.nama_bidang')
+                    ->label('Bidang (dari Tes)')
+                    ->badge() // Badge cocok untuk kategori
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('-'),
+
+                // instansi
+                Tables\Columns\TextColumn::make('peserta.instansi.asal_instansi')
+                    ->label('Instansi')
+                    ->badge() // Badge cocok untuk kategori
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('-'),
+
+                // Tables\Columns\TextColumn::make('tes_id')
+                //     ->label('Tes ID')
+                //     ->sortable(),
+
+                Tables\Columns\TextColumn::make('tipe')
                     ->label('Tipe')
                     ->badge()
-                    ->sortable()
-                    ->searchable(),
-
-                // Nama peserta: prioritas PesertaSurvei, fallback ke Peserta
-                Tables\Columns\TextColumn::make('peserta_display')
-                    ->label('Peserta')
-                    ->state(
-                        fn($record) =>
-                        $record->pesertaSurvei?->nama
-                            ?? $record->peserta?->nama
-                            ?? '-'
-                    )
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->where(function (Builder $nested) use ($search) {
-                            $nested->whereHas('pesertaSurvei', fn(Builder $rel) => $rel->where('nama', 'like', "%{$search}%"))
-                                ->orWhereHas('peserta', fn(Builder $rel) => $rel->where('nama', 'like', "%{$search}%"));
-                        });
-                    })
+                    ->searchable()
                     ->sortable(),
 
-                // Bidang: prioritas milik PesertaSurvei, fallback ke Peserta
-                Tables\Columns\TextColumn::make('bidang')
-                    ->label('Bidang')
-                    ->badge()
-                    ->state(
-                        fn($record) =>
-                        $record->pesertaSurvei?->bidang?->nama_bidang
-                            ?? $record->peserta?->bidang?->nama_bidang
-                            ?? '-'
-                    )
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->where(function (Builder $nested) use ($search) {
-                            $nested->whereHas('pesertaSurvei.bidang', fn(Builder $b) => $b->where('nama_bidang', 'like', "%{$search}%"))
-                                ->orWhereHas('peserta.bidang', fn(Builder $b) => $b->where('nama_bidang', 'like', "%{$search}%"));
-                        });
-                    })
-                    ->sortable(),
 
-                // Instansi: IF–ELSE untuk Survei & Tes, aman walau relasi instansi() di PesertaSurvei belum ada
-                Tables\Columns\TextColumn::make('instansi')
-                    ->label('Instansi')
-                    ->badge()
-                    ->state(function ($record) {
-                        // Coba ambil dari PesertaSurvei->instansi (jika relasi ada & data ada)
-                        $fromSurvei = null;
-                        if (isset($record->pesertaSurvei) && method_exists(\App\Models\PesertaSurvei::class, 'instansi')) {
-                            $fromSurvei = $record->pesertaSurvei?->instansi?->asal_instansi;
-                        }
-                        // Fallback: Peserta->instansi
-                        $fromPeserta = $record->peserta?->instansi?->asal_instansi;
-
-                        return $fromSurvei ?: ($fromPeserta ?: '-');
-                    })
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->where(function (Builder $nested) use ($search) {
-                            // Cari di instansi milik Peserta
-                            $nested->whereHas(
-                                'peserta.instansi',
-                                fn(Builder $rel) =>
-                                $rel->where('asal_instansi', 'like', "%{$search}%")
-                            );
-
-                            // Jika PesertaSurvei punya relasi instansi(), ikut cari juga
-                            if (method_exists(\App\Models\PesertaSurvei::class, 'instansi')) {
-                                $nested->orWhereHas(
-                                    'pesertaSurvei.instansi',
-                                    fn(Builder $rel) =>
-                                    $rel->where('asal_instansi', 'like', "%{$search}%")
-                                );
-                            }
-                        });
-                    })
-                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('skor')
                     ->label('Skor')
-                    ->formatStateUsing(fn($state) => $state ?? 'Belum dinilai'),
+                    ->placeholder('Belum dinilai')
+                    // Kita buat sortable() kustom agar saat diklik,
+                    // logikanya tetap benar
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query
+                            ->orderBy(DB::raw('skor IS NULL'), $direction === 'asc' ? 'desc' : 'asc')
+                            ->orderBy('skor', $direction);
+                    }),
+
+                Tables\Columns\IconColumn::make('lulus')
+                    ->label('Lulus')
+                    ->boolean()
+                    ->sortable(),
+
+
+                // DIGANTI: dari 'pelatihan_id' menjadi 'tes.pelatihan.nama_pelatihan'
+                Tables\Columns\TextColumn::make('tes.pelatihan.nama_pelatihan')
+                    ->label('Nama Pelatihan (dari Tes)')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('-'),
 
                 Tables\Columns\TextColumn::make('waktu_mulai')
-                    ->label('Mulai')
+                    ->label('Waktu Mulai')
                     ->dateTime('d M Y H:i')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('waktu_selesai')
-                    ->label('Selesai')
-                    ->formatStateUsing(fn($state) => $state?->format('d M Y H:i') ?? 'Belum selesai')
+                    ->label('Waktu Selesai')
+                    ->dateTime('d M Y H:i')
+                    ->placeholder('Belum selesai')
                     ->sortable(),
-
-                Tables\Columns\BadgeColumn::make('status')
-                    ->label('Status')
-                    ->getStateUsing(fn($record) => $record->waktu_selesai ? 'Selesai' : 'Proses')
-                    ->colors(['success' => 'Selesai', 'warning' => 'Proses'])
-                    ->icons(['heroicon-o-check-circle' => 'Selesai', 'heroicon-o-clock' => 'Proses']),
+                Tables\Columns\TextColumn::make('pesan_kesan')
+                    ->label('Pesan Kesan')
+                    ->searchable()
+                    ->limit(50) // Batasi teks agar tidak terlalu panjang
+                    ->tooltip(fn($record) => $record->pesan_kesan), // Tampilkan full di tooltip
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y H:i')
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Diperbarui')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
             ])
+            // HAPUS ->defaultSort() DARI SINI
             ->filters([
                 SelectFilter::make('tipe')
-                    ->label('Tipe Tes')
-                    ->options(['tes' => 'Tes', 'survei' => 'Survei'])
-                    ->searchable()
-                    ->query(
-                        fn(Builder $query, array $data) =>
-                        $query->when(
-                            $data['value'] ?? null,
-                            fn(Builder $filtered, string $value) =>
-                            $filtered->whereHas('tes', fn(Builder $tesQuery) => $tesQuery->where('tipe', $value))
-                        )
-                    ),
-
-                Filter::make('nama_peserta')
-                    ->label('Nama Peserta')
-                    ->form([
-                        TextInput::make('search_name')->placeholder('Ketik nama…')->live(debounce: 500),
+                    ->label('Tipe')
+                    ->options([
+                        'survey' => 'Survey',
+                        'tes' => 'Tes',
                     ])
-                    ->query(
-                        fn(Builder $query, array $data) =>
-                        $query->when($data['search_name'] ?? null, function (Builder $filtered, string $term) {
-                            $filtered->where(function (Builder $nested) use ($term) {
-                                $nested->whereHas('pesertaSurvei', fn(Builder $rel) => $rel->where('nama', 'like', "%{$term}%"))
-                                    ->orWhereHas('peserta', fn(Builder $rel) => $rel->where('nama', 'like', "%{$term}%"));
-                            });
-                        })
-                    ),
-
-                SelectFilter::make('bidang_id')
-                    ->label('Bidang')
-                    ->options(fn() => DB::table('bidang')->orderBy('nama_bidang')->pluck('nama_bidang', 'id')->toArray())
-                    ->multiple()
-                    ->searchable()
-                    ->query(
-                        fn(Builder $query, array $data) =>
-                        $query->when(($data['values'] ?? []) !== [], function (Builder $filtered) use ($data) {
-                            $ids = $data['values'];
-                            $filtered->where(function (Builder $nested) use ($ids) {
-                                $nested->whereHas('pesertaSurvei', fn(Builder $rel) => $rel->whereIn('bidang_id', $ids))
-                                    ->orWhereHas('peserta', fn(Builder $rel) => $rel->whereIn('bidang_id', $ids));
-                            });
-                        })
-                    ),
-
-                // Filter instansi by ID (via peserta.instansi_id). Jika PesertaSurvei punya relasi instansi(), ikutkan juga.
-                SelectFilter::make('instansi_id')
-                    ->label('Instansi')
-                    ->options(fn() => DB::table('instansi')->orderBy('asal_instansi')->pluck('asal_instansi', 'id')->toArray())
-                    ->multiple()
-                    ->searchable()
-                    ->query(function (Builder $query, array $data) {
-                        $ids = $data['values'] ?? [];
-                        if ($ids === []) return;
-
-                        $query->whereHas('peserta', fn(Builder $rel) => $rel->whereIn('instansi_id', $ids));
-
-                        if (method_exists(\App\Models\PesertaSurvei::class, 'instansi')) {
-                            $query->orWhereHas('pesertaSurvei.instansi', fn(Builder $rel) => $rel->whereIn('id', $ids));
-                        }
-                    }),
+                    ->searchable(),
 
                 Filter::make('skor_range')
                     ->label('Skor')
