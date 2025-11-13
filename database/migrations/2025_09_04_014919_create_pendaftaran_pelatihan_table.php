@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('pendaftaran_pelatihan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
-            $table->foreignId('pelatihan_id')->constrained('pelatihans')->cascadeOnDelete();
+            $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
+            $table->foreignId('pelatihan_id')->constrained('pelatihan')->cascadeOnDelete();
+            // IMPROVE: menambahkan bidang id 
+            // $table->foreignId('bidang_id')->constrained('bidang')->cascadeOnDelete();
             $table->String('nomor_registrasi')->unique();
             $table->timestamp('tanggal_pendaftaran');
             $table->timestamps();

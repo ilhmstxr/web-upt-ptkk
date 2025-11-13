@@ -9,4 +9,6 @@ class Sertifikat extends Model
 {
     /** @use HasFactory<\Database\Factories\SertifikatFactory> */
     use HasFactory;
+    protected $table = 'sertifikat';
+    
 }

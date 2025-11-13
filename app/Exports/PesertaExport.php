@@ -58,7 +58,7 @@ class PesertaExport implements WithMultipleSheets
     //             {
     //                 return Peserta::with('lampiran')->get()->map(fn ($p) => array_merge(
     //                     ['Nama' => $p->nama],
-    //                     $p->lampirans()
+    //                     $p->lampiran()
     //                 ));
     //             }
 

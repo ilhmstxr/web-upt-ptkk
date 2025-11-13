@@ -1,0 +1,15 @@
+meta {
+  name: report diagram
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://127.0.0.1:8000/admin/jawaban-surveis/report?pelatihanId=1
+  body: none
+  auth: basic
+}
+
+params:query {
+  pelatihanId: 1
+}

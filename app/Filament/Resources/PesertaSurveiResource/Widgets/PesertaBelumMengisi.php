@@ -24,18 +24,18 @@ class PesertaBelumMengisi extends BaseWidget
 
                 // --- Query yang Efisien dengan TRIM() dan LOWER() ---
                 return Peserta::query()
-                    ->select('pesertas.*')
-                    ->leftJoin('peserta_surveis as ps', function ($join) use ($pelatihanId) {
+                    ->select('peserta.*')
+                    ->leftJoin('peserta_survei as ps', function ($join) use ($pelatihanId) {
                         $join
                             // Cocokkan nama (case-insensitive dan tanpa spasi ekstra)
-                            ->on(DB::raw('LOWER(TRIM(pesertas.nama))'), '=', DB::raw('LOWER(TRIM(ps.nama))'))
+                            ->on(DB::raw('LOWER(TRIM(peserta.nama))'), '=', DB::raw('LOWER(TRIM(ps.nama))'))
                             // ATAU cocokkan email (case-insensitive dan tanpa spasi ekstra)
-                            ->orOn(DB::raw('LOWER(TRIM(pesertas.email))'), '=', DB::raw('LOWER(TRIM(ps.email))'))
+                            // ->orOn(DB::raw('LOWER(TRIM(peserta.email))'), '=', DB::raw('LOWER(TRIM(ps.email))'))
                             // Pastikan join hanya pada pelatihan yang sama
                             ->where('ps.pelatihan_id', '=', $pelatihanId);
                     })
                     // Filter utama: Hanya peserta dari pelatihan ini
-                    ->where('pesertas.pelatihan_id', $pelatihanId)
+                    ->where('peserta.pelatihan_id', $pelatihanId)
                     // Kunci Logika: Ambil hanya yang GAGAL join
                     ->whereNull('ps.id');
             })

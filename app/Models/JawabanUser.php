@@ -9,41 +9,43 @@ class JawabanUser extends Model
 {
     use HasFactory;
 
-    protected $table = 'jawaban_users';
+    protected $table = 'jawaban_user';
 
     protected $fillable = [
-        'opsi_jawabans_id', // untuk jawaban pilihan ganda
-        'pertanyaan_id',    // pertanyaan terkait
-        'percobaan_id',     // percobaan terkait (pre/post test)
-        'nilai_jawaban',    // untuk skala likert 1-5
-        'jawaban_teks',     // untuk jawaban esai / teks bebas
+        'opsi_jawaban_id',
+        'pertanyaan_id',
+        'percobaan_id',
+        'nilai_jawaban',
+        'jawaban_teks',
     ];
 
     /**
-     * Relasi ke percobaan
-     */
-    public function percobaan()
-    {
-        return $this->belongsTo(Percobaan::class, 'percobaan_id');
-    }
-
-    /**
-     * Relasi ke pertanyaan
+     * Relasi ke Pertanyaan
      */
     public function pertanyaan()
     {
-        return $this->belongsTo(Pertanyaan::class, 'pertanyaan_id');
+        return $this->belongsTo(Pertanyaan::class);
     }
 
     /**
-     * Relasi ke opsi jawaban (jika jawaban pilihan ganda)
+     * Relasi ke OpsiJawaban
      */
-    public function opsiJawabans()
+    public function opsiJawaban()
     {
-        return $this->belongsTo(OpsiJawabans::class, 'opsi_jawabans_id');
+        return $this->belongsTo(OpsiJawaban::class);
     }
 
-    public function pesertaSurvei(){
-        return $this->belongsTo(PesertaSurvei::class, 'pesertaSurvei_id');
+    /**
+     * Relasi ke Percobaan
+     */
+    public function percobaan()
+    {
+        return $this->belongsTo(Percobaan::class);
     }
+
+    public function tes()
+{
+    return $this->belongsTo(\App\Models\Tes::class, 'tes_id');
+}
+
 }

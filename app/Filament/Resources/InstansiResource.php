@@ -29,12 +29,12 @@ class InstansiResource extends Resource
                 ->columnSpanFull(),
 
             // ubah bidang_keahlian jadi Select relasi
-            Forms\Components\Select::make('bidang_keahlian_id')
-                ->label('Bidang Keahlian')
-                ->relationship('bidangKeahlian', 'nama')
-                ->searchable()
-                ->preload()
-                ->required(),
+            // Forms\Components\Select::make('bidang_keahlian_id')
+            //     ->label('Bidang Keahlian')
+            //     ->relationship('bidangKeahlian', 'nama')
+            //     ->searchable()
+            //     ->preload()
+            //     ->required(),
 
             Forms\Components\TextInput::make('kelas')
                 ->required()
@@ -55,10 +55,10 @@ class InstansiResource extends Resource
             Tables\Columns\TextColumn::make('asal_instansi')
                 ->searchable(),
 
-            Tables\Columns\TextColumn::make('bidangKeahlian.nama')
-                ->label('Bidang Keahlian')
-                ->sortable()
-                ->searchable(),
+            // Tables\Columns\TextColumn::make('bidangKeahlian.nama')
+            //     ->label('Bidang Keahlian')
+            //     ->sortable()
+            //     ->searchable(),
 
             Tables\Columns\TextColumn::make('cabangDinas.nama')
                 ->label('Cabang Dinas')

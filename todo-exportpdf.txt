@@ -1,0 +1,42 @@
+Strategi Opsi A sambil “menjiplak” desain Filament 1:1:
+
+1. Render URL halaman yang sama, bukan Blade statis
+   • Gunakan route page Anda saat ini dengan query `?pelatihanId=...&print=1`.
+   • Ini memastikan seluruh CSS/komponen Filament, Tailwind, dan JS chart ikut dieksekusi sehingga tampilan PDF identik dengan UI.
+
+2. Mode cetak yang tetap memakai layout/komponen Filament
+   • Di view page, pertahankan wrapper/komponen Filament yang sama.
+   • Saat `$print === true`, hanya sembunyikan shell panel (sidebar, topbar, breadcrumbs, header actions), bukan mengganti layout.
+   • Pakai utilitas kelas/komponen Filament untuk card, grid, spacing, tipografi yang sama agar “rasa” Filament utuh.
+
+3. Tema, warna, dan media
+   • Paksa tema terang saat `$print` agar kontras aman di PDF.
+   • Emulasikan media “screen” saat render PDF supaya styling persis seperti UI (bukan stylesheet `@media print` yang biasanya lebih minimal).
+   • Aktifkan “background graphics” agar warna latar/elemen utilitas Tailwind tersalin.
+
+4. Sinyal “siap render” untuk chart
+   • Setelah semua chart selesai menggambar (mis. event animationComplete / promise data selesai), set `window.__PDF_READY__ = true`.
+   • Generator menunggu selector/ekspresi ini sebelum mengekspor, sehingga grafik tidak terpotong atau buram.
+
+5. Endpoint ekspor
+   • Header action Anda sudah menunjuk ke `export.report-jawaban-survei`. Di endpoint ini:
+   – Bangun URL page yang sama + `print=1`.
+   – Render dengan Headless-Chrome (Spatie Browsershot/Laravel PDF) “dari URL”, bukan “dari view”, agar Livewire/JS/asset Filament berjalan.
+   – Set: ukuran (A4/Letter, portrait/landscape), margin 12–16 mm, scale 1.0–1.25, `preferCssPageSize`, `printBackground`.
+   – Naikkan device scale/DPI agar legenda/tulisan chart tajam.
+
+6. Autentikasi/akses asset
+   • Jika halaman terlindungi auth, teruskan cookie sesi ke proses Chrome atau gunakan signed URL ber-TTL pendek.
+   • Pastikan URL asset CSS/JS absolut dan dapat diakses oleh proses Chrome.
+
+7. Penataan halaman PDF tanpa mengubah “rasa” Filament
+   • Tambahkan kelas utilitas only-print untuk “menyembunyikan” elemen navigasi, tetapi biarkan card, grid, heading, divider Filament tetap tampil.
+   • Terapkan `break-inside: avoid` pada card/section agar tiap kartu/chart tidak terpecah antar-halaman.
+   • Embed font yang sama dengan panel agar tipografi identik.
+
+8. Kinerja dan reliabilitas
+   • Jalankan lewat queue untuk laporan berat, simpan file ke storage, lalu berikan tautan unduhan.
+   • Timeout cukup panjang, retry, logging durasi/ukuran file.
+   • Nama file dinamis: judul survei + periode + timestamp.
+
+Intinya: akses halaman Filament Anda sendiri dalam “print mode” via Headless-Chrome, tunggu sinyal “charts ready”, aktifkan background graphics, emulasikan media screen, dan sembunyikan hanya shell panel. Desain Filament akan tercopy apa adanya ke PDF.

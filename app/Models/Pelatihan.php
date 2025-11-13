@@ -4,45 +4,47 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pelatihan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pelatihans';
+    protected $table = 'pelatihan';
 
-    protected $fillable = [
-        'instansi_id', // diganti dari bidang_id agar sesuai migration
+    protected $guarded = [
         'nama_pelatihan',
+        'jenis_program',
         'slug',
         'gambar',
+        'status',
         'tanggal_mulai',
         'tanggal_selesai',
         'deskripsi',
     ];
 
-    protected $casts = [
-        'tanggal_mulai' => 'date',
-        'tanggal_selesai' => 'date',
-    ];
 
-    // Relasi ke instansi
-    public function instansi(): BelongsTo
+    public function instansi()
     {
         return $this->belongsTo(Instansi::class);
     }
 
-    // Relasi ke peserta
-    public function pesertas(): HasMany
+    public function peserta()
     {
-        return $this->hasMany(Peserta::class, 'pelatihan_id');
+        return $this->hasMany(Peserta::class);
     }
 
-    public function pesertaSurveis(): HasMany
+    public function tes()
     {
-        // GANTI Peserta::class menjadi PesertaSurvei::class
-        return $this->hasMany(PesertaSurvei::class, 'pelatihan_id');
-    }   
+        return $this->hasMany(Tes::class);
+    }
+
+    public function percobaans()
+    {
+        return $this->hasManyThrough(
+            Percobaan::class, // Model akhir yang ingin diakses
+            Tes::class,       // Model perantara/jembatan
+            'pelatihan_id', // Foreign key di tabel 'tes' (perantara)
+            'tes_id'          // Foreign key di tabel 'percobaan' (akhir)
+        );
+    }
 }

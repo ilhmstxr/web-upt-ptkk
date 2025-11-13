@@ -7,17 +7,16 @@
 <div class="bg-white p-6 rounded-xl shadow-md fade-in">
 
     @if(isset($pertanyaan))
-
-        {{-- Timer --}}
         @php
-            $duration = $elapsedSeconds ?? ($percobaan->waktu_mulai ? now()->diffInSeconds($percobaan->waktu_mulai) : 0);
             $jawabanCollection = $percobaan->jawabanUser ?? collect();
             $totalSoal = $pertanyaanList->count();
             $terjawab = $jawabanCollection->count();
             $progress = $totalSoal > 0 ? round(($terjawab / $totalSoal) * 100, 2) : 0;
         @endphp
+
+        {{-- Timer --}}
         <p class="text-sm text-gray-600 mb-4">
-            Waktu berjalan: <span id="timer">{{ gmdate('H:i:s', $duration) }}</span>
+            Sisa waktu: <span id="timer"></span>
         </p>
 
         {{-- Progress Bar --}}
@@ -30,39 +29,47 @@
             </p>
         </div>
 
-        {{-- Nomor Soal --}}
-        <div class="mb-4 flex flex-wrap gap-2">
-            @foreach($pertanyaanList as $p)
-                @php
-                    $answered = $jawabanCollection->contains('pertanyaan_id', $p->id);
-                    $status = $answered ? 'bg-green-500' : 'bg-red-500';
-                @endphp
-                <a href="{{ route('dashboard.pretest.show', ['tes' => $tes->id, 'q' => $loop->index]) }}"
-                   class="px-3 py-1 rounded text-white {{ $status }}">
-                    {{ $p->nomor }}
-                </a>
-            @endforeach
-        </div>
-
-        {{-- Pertanyaan --}}
-        <p class="text-gray-700 mb-4">
-            {{ $pertanyaan->nomor ?? '?' }}. {{ $pertanyaan->teks_pertanyaan ?? '-' }}
-        </p>
-
-        {{-- Gambar pertanyaan --}}
-        @if(!empty($pertanyaan->gambar))
-            <img src="{{ asset('storage/'.$pertanyaan->gambar) }}" class="mb-4 rounded shadow">
-        @endif
-
         {{-- Form Jawaban --}}
-        <form action="{{ route('dashboard.pretest.submit', ['percobaan' => $percobaan->id]) }}?q={{ $currentQuestionIndex }}" method="POST">
+        <form id="form-tes"
+              action="{{ route('dashboard.pretest.submit', ['percobaan' => $percobaan->id]) }}"
+              method="POST">
             @csrf
+
+            {{-- Nomor Soal --}}
+            <div class="mb-4 flex flex-wrap gap-2">
+                @foreach($pertanyaanList as $p)
+                    @php
+                        $answered = $jawabanCollection->contains('pertanyaan_id', $p->id);
+                        $status = $answered ? 'bg-green-500' : 'bg-red-500';
+                    @endphp
+                    <button type="submit"
+                            name="next_q"
+                            value="{{ $loop->index }}"
+                            class="px-3 py-1 rounded text-white {{ $status }}">
+                        {{ $p->nomor }}
+                    </button>
+                @endforeach
+            </div>
+
+            {{-- Pertanyaan --}}
+            <p class="text-gray-700 mb-4">
+                {{ $pertanyaan->nomor ?? '?' }}. {{ $pertanyaan->teks_pertanyaan ?? '-' }}
+            </p>
+
+            {{-- Gambar pertanyaan --}}
+            @if(!empty($pertanyaan->gambar))
+                <img src="{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}" 
+                     class="mb-4 rounded shadow cursor-pointer hover:scale-105 transition"
+                     onclick="openImageModal('{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}')">
+            @endif
+
+            {{-- Opsi Jawaban --}}
             <div class="space-y-2 mb-4">
                 @if($pertanyaan->opsiJawabans && $pertanyaan->opsiJawabans->count() > 0)
                     @foreach($pertanyaan->opsiJawabans as $opsi)
                         @php
                             $existing = $jawabanCollection->firstWhere('pertanyaan_id', $pertanyaan->id);
-                            $checked = $existing && ($existing->opsi_jawabans_id ?? 0) == $opsi->id;
+                            $checked = $existing && ($existing->opsi_jawaban_id ?? 0) == $opsi->id;
                         @endphp
                         <label class="block p-2 border rounded hover:bg-gray-100 cursor-pointer">
                             <input
@@ -74,7 +81,9 @@
                                 required
                             >
                             @if(!empty($opsi->gambar))
-                                <img src="{{ asset('storage/'.$opsi->gambar) }}" class="inline-block w-12 h-12 mr-2 rounded align-middle">
+                                <img src="{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}" 
+                                     class="inline-block w-12 h-12 mr-2 rounded align-middle cursor-pointer hover:scale-105 transition"
+                                     onclick="openImageModal('{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}')">
                             @endif
                             <span class="align-middle">{{ $opsi->teks_opsi ?? '-' }}</span>
                         </label>
@@ -84,21 +93,25 @@
                 @endif
             </div>
 
-            {{-- Hidden --}}
             <input type="hidden" name="percobaan_id" value="{{ $percobaan->id }}">
 
             {{-- Navigasi --}}
             <div class="flex justify-between">
                 @if($currentQuestionIndex > 0)
-                    <a href="{{ route('dashboard.pretest.show', ['tes' => $tes->id, 'q' => $currentQuestionIndex - 1]) }}"
-                       class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
+                    <button type="submit"
+                            name="next_q"
+                            value="{{ $currentQuestionIndex - 1 }}"
+                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
                         Sebelumnya
-                    </a>
+                    </button>
                 @else
                     <span></span>
                 @endif
 
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                <button type="submit"
+                        name="next_q"
+                        value="{{ $currentQuestionIndex + 1 }}"
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
                     {{ $currentQuestionIndex + 1 == $totalSoal ? 'Selesai' : 'Selanjutnya' }}
                 </button>
             </div>
@@ -122,29 +135,58 @@
     @endif
 </div>
 
+{{-- Modal Zoom Gambar --}}
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50" onclick="closeImageModal()">
+    <div class="relative" onclick="event.stopPropagation()">
+        <button onclick="closeImageModal()" 
+                class="absolute -top-4 -right-4 bg-white text-black rounded-full p-2 shadow hover:bg-gray-200">
+            ✕
+        </button>
+        <img id="modalImage" src="" class="max-w-full max-h-screen rounded shadow-lg">
+    </div>
+</div>
+
 {{-- Timer JS --}}
 <script>
 (function(){
-    const serverStart = "{{ $percobaan->waktu_mulai ?? now() }}";
-    const startTime = new Date(serverStart).getTime();
+    let duration = {{ $tes->durasi_menit * 60 }};
+    const serverStart = new Date("{{ $percobaan->waktu_mulai ?? now() }}").getTime();
+    const nowServer = new Date("{{ now() }}").getTime();
+    let elapsed = Math.floor((nowServer - serverStart) / 1000);
+    let remaining = duration - elapsed;
+    if (remaining < 0) remaining = 0;
 
     function pad(n){ return n.toString().padStart(2,'0'); }
 
     function updateTimer() {
-        const now = Date.now();
-        let elapsed = Math.floor((now - startTime)/1000);
-        if(elapsed < 0) elapsed = 0;
-
-        const hours = pad(Math.floor(elapsed/3600));
-        const minutes = pad(Math.floor((elapsed%3600)/60));
-        const seconds = pad(elapsed%60);
-
-        const el = document.getElementById('timer');
-        if(el) el.textContent = `${hours}:${minutes}:${seconds}`;
+        if (remaining <= 0) {
+            document.getElementById('timer').textContent = "00:00:00";
+            clearInterval(interval);
+            let form = document.getElementById("form-tes");
+            if (form) {
+                // auto-submit terakhir → skor dihitung
+                form.submit();
+            }
+            return;
+        }
+        const hours = pad(Math.floor(remaining/3600));
+        const minutes = pad(Math.floor((remaining%3600)/60));
+        const seconds = pad(remaining%60);
+        document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}`;
+        remaining--;
     }
 
     updateTimer();
-    setInterval(updateTimer, 1000);
+    const interval = setInterval(updateTimer, 1000);
 })();
+
+function openImageModal(src) {
+    document.getElementById('modalImage').src = src;
+    document.getElementById('imageModal').classList.remove('hidden');
+}
+function closeImageModal() {
+    document.getElementById('imageModal').classList.add('hidden');
+    document.getElementById('modalImage').src = '';
+}
 </script>
 @endsection

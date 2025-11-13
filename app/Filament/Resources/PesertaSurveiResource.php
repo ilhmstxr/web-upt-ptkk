@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PesertaSurveiResource extends Resource
 {
     protected static ?string $model = PesertaSurvei::class;
-
+    protected static ?string $navigationLabel   = 'Peserta Survei';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -47,10 +47,10 @@ class PesertaSurveiResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         if ($data['value'] === 'sudah') {
-                            return $query->whereHas('percobaans');
+                            return $query->whereHas('percobaan');
                         }
                         if ($data['value'] === 'belum') {
-                            return $query->whereDoesntHave('percobaans');
+                            return $query->whereDoesntHave('percobaan');
                         }
                         return $query;
                     }),

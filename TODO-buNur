@@ -1,0 +1,64 @@
+Pre-test / post test
+durasi = 30 menit
+pengerjaan = max 1x
+nilai = ditampilkan setelah submit
+
+jadwal dapat dikerjakan
+pretest = h+3 hari H dimulai pelatihan
+posttest = h-3 hari H penutupan pelatihan
+
+
+indikator keberhasilan
+pretest < posttest
+dijadikan presentase:
+- per siswa
+- per jurusan / kelas
+- per kegiatan
+
+dijadikan diagram
+dijadikan format excel agar dapat diekspor
+dijadika format pdf agar dapat diekspor
+
+dapat di ranking per skor pretest, post test, praktek, akumulasi
+
++ penambahan role atasan / kepala, yang dapat menampilkan dashboard statistik pelatihan dan data detail pelatihan tanpa bisa merubah isi pelatihan tersebut
++ data pelatihan dapat ditampilkan di web
+
+
+penataan folder / View untuk admin
+|
+|
+|- Reguler
+|	|-- Pelatihan 1 (pie/ doughnut chart kepuasan, venue kegiatan, line chart akumulasi skor per bidang, total peserta, total instruktur, tanggal pelatihan)
+|	|	|-----Angkatan I
+|	|	|	|------- bidang / jurusan A
+|	|	|	|		|------ peserta 1
+|	|	|	|		|------ peserta 2
+|	|	|	|		|------ peserta n
+|	|	|	|------- bidang / jurusan B
+|	|	|	|		|------ peserta 1
+|	|	|	|		|------ peserta 2
+|	|	|	|		|------ peserta n
+|	|	|	|------- bidang / jurusan n
+|	|	|			|------ peserta 1
+|	|	|			|------ peserta 2
+|	|	|			|------ peserta n
+|	|	|-----Angkatan II (jika ada)
+|	|		|------- bidang / jurusan A
+|	|		|		|------ peserta 1
+|	|		|		|------ peserta 2
+|	|		|		|------ peserta n
+|	|		|------- bidang / jurusan B
+|	|		|		|------ peserta 1
+|	|		|		|------ peserta 2
+|	|		|		|------ peserta n
+|	|		|------- bidang / jurusan n
+|	|				|------ peserta 1
+|	|				|------ peserta 2
+|	|				|------ peserta n
+|	|
+|	|-- Pelatihan n
+|
+|-- Aksel
+|
+|-- MTU

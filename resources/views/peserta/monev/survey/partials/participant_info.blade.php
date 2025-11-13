@@ -13,11 +13,12 @@
         </div>
         <div>
             <p class="text-gray-500">Email</p>
-            <p class="font-medium">{{ $peserta->email }}</p>
+            <p class="font-medium">{{ $peserta->user->email }}</p>
         </div>
         <div>
             <p class="text-gray-500">Angkatan</p>
-            <p class="font-medium">{{ $peserta->angkatan }}</p>
+            {{-- <p class="font-medium">{{ $peserta->angkatan }}</p> --}}
+            <p class="font-medium">II</p>
         </div>
         <div>
             <p class="text-gray-500">Kompetensi</p>

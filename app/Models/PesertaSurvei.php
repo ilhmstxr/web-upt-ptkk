@@ -4,41 +4,57 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany; // <-- Tambahkan ini
 
 class PesertaSurvei extends Model
 {
-    /** @use HasFactory<\Database\Factories\PesertaSurveiFactory> */
     use HasFactory;
 
-    // protected $table = 'peserta_survei';
+    protected $table = 'peserta_survei';
+
     protected $fillable = [
-        'email',
         'nama',
         'pelatihan_id',
         'bidang_id',
         'tes_id',
-        'angkatan'
     ];
 
-
+    /**
+     * Relasi ke jawaban user
+     */
     public function jawabanUsers()
     {
         return $this->hasMany(JawabanUser::class, 'pesertaSurvei_id');
     }
 
-    public function percobaans()
+    /**
+     * Relasi ke percobaan
+     */
+    public function percobaan()
     {
         return $this->hasMany(Percobaan::class, 'pesertaSurvei_id');
     }
 
+    /**
+     * Relasi ke pelatihan
+     */
     public function pelatihan()
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
+    /**
+     * Relasi ke bidang
+     */
     public function bidang()
     {
-        return $this->belongsTo(Bidang::class);
+        return $this->belongsTo(Bidang::class, 'bidang_id');
+    }
+
+    /**
+     * Relasi opsional ke tes
+     */
+    public function tes()
+    {
+        return $this->belongsTo(Tes::class, 'tes_id');
     }
 }

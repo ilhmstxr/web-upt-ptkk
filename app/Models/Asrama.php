@@ -9,4 +9,6 @@ class Asrama extends Model
 {
     /** @use HasFactory<\Database\Factories\AsramaFactory> */
     use HasFactory;
+
+    protected $table = 'asrama';
 }

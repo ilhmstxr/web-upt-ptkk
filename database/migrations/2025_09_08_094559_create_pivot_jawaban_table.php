@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('pivot_jawaban', function (Blueprint $table) {
             // $table->id();
-            $table->foreignId('pertanyaan_id')->constrained('pertanyaans')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('template_pertanyaan_id')->constrained('pertanyaans')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('pertanyaan_id')->constrained('pertanyaan')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('template_pertanyaan_id')->constrained('pertanyaan')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

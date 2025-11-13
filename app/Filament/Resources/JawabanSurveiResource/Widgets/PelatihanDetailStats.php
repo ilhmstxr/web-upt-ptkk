@@ -26,17 +26,17 @@ class PelatihanDetailStats extends BaseWidget
 
         // Hitung peserta yang sudah mengisi menggunakan logika JOIN yang sama
         $pesertaMengisi = Peserta::query()
-            ->join('peserta_surveis as ps', function ($join) {
+            ->join('peserta_survei as ps', function ($join) {
                 $join
                     // Cocokkan nama (case-insensitive dan tanpa spasi ekstra)
-                    ->on(DB::raw('LOWER(TRIM(pesertas.nama))'), '=', DB::raw('LOWER(TRIM(ps.nama))'))
+                    ->on(DB::raw('LOWER(TRIM(peserta.nama))'), '=', DB::raw('LOWER(TRIM(ps.nama))'))
                     // ATAU cocokkan email (case-insensitive dan tanpa spasi ekstra)
-                    ->orOn(DB::raw('LOWER(TRIM(pesertas.email))'), '=', DB::raw('LOWER(TRIM(ps.email))'))
+                    // ->orOn(DB::raw('LOWER(TRIM(peserta.email))'), '=', DB::raw('LOWER(TRIM(ps.email))'))
                     // Pastikan join hanya pada pelatihan yang sama
                     ->where('ps.pelatihan_id', '=', $this->pelatihan->id);
             })
             // Filter utama: Hanya peserta dari pelatihan ini
-            ->where('pesertas.pelatihan_id', $this->pelatihan->id)
+            ->where('peserta.pelatihan_id', $this->pelatihan->id)
             ->count();
 
         $pesertaBelumMengisi = $totalPeserta - $pesertaMengisi;

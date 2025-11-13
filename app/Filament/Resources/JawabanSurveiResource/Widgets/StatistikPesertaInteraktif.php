@@ -30,7 +30,7 @@ class StatistikPesertaInteraktif extends Widget
         if (is_null($this->pelatihan)) return;
 
         $this->totalPeserta = Peserta::where('pelatihan_id', $this->pelatihan->id)->count();
-        $this->pesertaMengisi = PesertaSurvei::where('pelatihan_id', $this->pelatihan->id)->whereHas('percobaans')->count();
+        $this->pesertaMengisi = PesertaSurvei::where('pelatihan_id', $this->pelatihan->id)->whereHas('percobaan')->count();
         $this->pesertaBelumMengisi = $this->totalPeserta - $this->pesertaMengisi;
         $this->persentase = $this->totalPeserta > 0 ? round(($this->pesertaMengisi / $this->totalPeserta) * 100) . '%' : '0%';
     }
@@ -42,7 +42,7 @@ class StatistikPesertaInteraktif extends Widget
             ->label('Lihat Daftar')
             ->modalHeading('Peserta yang Sudah Mengisi')
             ->modalContent(function () {
-                $peserta = PesertaSurvei::where('pelatihan_id', $this->pelatihan->id)->whereHas('percobaans')->get();
+                $peserta = PesertaSurvei::where('pelatihan_id', $this->pelatihan->id)->whereHas('percobaan')->get();
                 return view('modals.daftar-peserta', ['peserta' => $peserta]);
             })
             // Sembunyikan tombol submit/cancel
@@ -57,7 +57,7 @@ class StatistikPesertaInteraktif extends Widget
             ->label('Lihat Daftar')
             ->modalHeading('Peserta yang Belum Mengisi')
             ->modalContent(function () {
-                $peserta = PesertaSurvei::where('pelatihan_id', $this->pelatihan->id)->whereDoesntHave('percobaans')->get();
+                $peserta = PesertaSurvei::where('pelatihan_id', $this->pelatihan->id)->whereDoesntHave('percobaan')->get();
                 return view('modals.daftar-peserta', ['peserta' => $peserta]);
             })
             ->modalSubmitAction(false)

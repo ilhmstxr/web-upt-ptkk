@@ -9,4 +9,5 @@ class Alumni extends Model
 {
     /** @use HasFactory<\Database\Factories\AlumniFactory> */
     use HasFactory;
+    protected $table = 'alumni';
 }

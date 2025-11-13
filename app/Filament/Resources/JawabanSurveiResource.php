@@ -3,30 +3,48 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\JawabanSurveiResource\Pages;
-use App\Filament\Resources\JawabanSurveiResource\RelationManagers;
-use App\Models\JawabanSurvei;
-use App\Models\JawabanUser;
-use App\Models\PesertaSurvei;
+use App\Models\JawabanUser; // <-- pakai JawabanUser
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\Widgets\JawabanPerPertanyaanChart;
 
 class JawabanSurveiResource extends Resource
 {
-    protected static ?string $model = PesertaSurvei::class;
+    // ganti model ke JawabanUser
+    protected static ?string $model = JawabanUser::class;
 
-    protected static ?string $navigationGroup = 'Survei Monev';
+    protected static ?string $navigationGroup = 'Hasil Kegiatan';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Jawaban Survei';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('pertanyaan_id')
+                    ->relationship('pertanyaan', 'teks_pertanyaan')
+                    ->label('Pertanyaan')
+                    ->required(),
+
+                Forms\Components\Select::make('opsi_jawaban_id')
+                    ->relationship('opsiJawaban', 'teks_opsi')
+                    ->label('Opsi Jawaban'),
+
+                Forms\Components\Select::make('percobaan_id')
+                    ->relationship('percobaan', 'id')
+                    ->label('Percobaan'),
+
+                Forms\Components\TextInput::make('nilai_jawaban')
+                    ->numeric()
+                    ->label('Nilai'),
+
+                Forms\Components\Textarea::make('jawaban_teks')
+                    ->label('Jawaban Teks')
+                    ->rows(3)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -34,14 +52,33 @@ class JawabanSurveiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama')->limit(50),
-                Tables\Columns\TextColumn::make('email')->limit(50),
+                Tables\Columns\TextColumn::make('pertanyaan.teks_pertanyaan')
+                    ->label('Pertanyaan')
+                    ->limit(50)
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('opsiJawaban.teks_opsi')
+                    ->label('Opsi Jawaban')
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('jawaban_teks')
+                    ->label('Jawaban Teks')
+                    ->limit(80),
+
+                Tables\Columns\TextColumn::make('nilai_jawaban')
+                    ->label('Nilai')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dijawab Pada')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -52,9 +89,7 @@ class JawabanSurveiResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -63,8 +98,14 @@ class JawabanSurveiResource extends Resource
             'index' => Pages\ListJawabanSurveis::route('/'),
             'create' => Pages\CreateJawabanSurvei::route('/create'),
             'edit' => Pages\EditJawabanSurvei::route('/{record}/edit'),
-            'report' => Pages\PelatihanReport::route('/{pelatihanId}/report'),
-            'belum-mengisi' => Pages\DaftarPesertaBelumMengisi::route('/belum-mengisi'),
+            'report' => Pages\ReportJawabanSurvei::route('/report'), // ini
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerPertanyaanChart::class,
         ];
     }
 }

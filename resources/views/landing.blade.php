@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UPT PTKK Dinas Pendidikan Jawa Timur</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo-upt-ptkk.png') }} " class="w-4">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-upt-ptkk.jpg') }} " class="w-4">
     <style>
         /* ====== CSS dari desain kamu ====== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,16 +44,17 @@
         @media (max-width: 1200px) { .programs-section { gap: 20px; } .program-card { width: 260px; } }
     </style>
 </head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-circle circle-1"></div>
+        <div class="floating-circle circle-2"></div>
+        <div class="floating-circle circle-3"></div>
+    </div>
 
-<body class="bg-gray-100 min-h-screen">
-
-    <!-- Header -->
-    <header class="bg-white shadow-sm p-4 sticky top-0 z-50">
-        <div class="container mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <img src="{{ asset('images/logo-upt-ptkk.png') }}" alt="Logo" class="w-8">
-                <h1 class="text-xl font-bold text-gray-800">UPT PTKK Dinas Pendidikan Jawa Timur</h1>
-            </div>
+    <header class="header">
+        <div class="logo">
+            <img src="{{ asset('images/logo-upt-ptkk.jpg') }}" alt="Logo UPT PTKK" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="logo-fallback" style="display: none">UPT<br>PTKK</div>
         </div>
         <h1 class="header-title">UPT PTKK Dinas Pendidikan Jawa Timur</h1>
     </header>
@@ -66,13 +67,26 @@
                     UPT Pengembangan Teknis Dan Keterampilan Kejuruan sebagai salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur, bertugas dalam kegiatan dan pengembangan teknis dan keterampilan kejuruan, ketatausahaan, dan pelayanan masyarakat.
                 </p>
             </div>
+            <div class="hero-image-container">
+                <div class="hero-image">
+                    <img src="{{ asset('images/pelatihan.jpg') }}" alt="Professional Team" onerror="this.style.display='none'" />
+                </div>
             <div class="lg:w-1/2 mt-8 lg:mt-0 flex justify-center">
-                <img src="{{ asset('images/pelatihan.jpg') }}" 
+                <img src="{{ asset('images/pelatihan.jpg') }}"
                     alt="Pelatihan"
                     class="rounded-lg shadow-lg w-full h-auto">
             </div>
         </section>
 
+        <section class="programs-section">
+            <a href="{{ route('detail-pelatihan', 'tata-boga') }}" class="program-card">
+                <div class="arrow-icon">→</div>
+                <div class="program-image">
+                    <img src="{{ asset('images/tata-boga.jpg') }}" alt="Tata Boga" onerror="this.src='{{ asset('images/placeholder.jpg') }}'" />
+                </div>
+                <div class="program-content">
+                    <h3 class="program-title">Tata Boga</h3>
+                    <span class="program-date">25 - 30 Agustus 2025</span>
         <!-- Pelatihan Tersedia Section -->
         <section class="mt-16 text-center">
             <h3 class="text-3xl font-bold text-gray-800">Pelatihan Tersedia</h3>
@@ -84,7 +98,7 @@
             <!-- Card 1 -->
             <a href="/pelatihan/tata-boga"
                 class="block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 card-hover-effect fade-in-up">
-                <img src="{{ asset('images/tata-boga.jpg') }}" 
+                <img src="{{ asset('images/tata-boga.jpg') }}"
                     alt="Tata Boga"
                     class="w-full h-48 object-cover rounded-lg shadow-md">
                 <div class="p-4">
@@ -96,51 +110,36 @@
                 </div>
             </a>
 
-            <!-- Card 2 -->
-            <a href="/pelatihan/tata-busana"
-                class="block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 card-hover-effect fade-in-up"
-                style="animation-delay: 0.1s;">
-                <img src="{{ asset('images/tata-busana.jpg') }}" 
-                    alt="Tata Busana"
-                    class="w-full h-48 object-cover rounded-lg shadow-md">
-                <div class="p-4">
-                    <h4 class="font-semibold text-lg text-gray-800">Tata Busana</h4>
-                    <p class="text-sm text-gray-500 mt-1">25 - 30 Agustus 2025</p>
-                    <button class="mt-3 px-4 py-2 bg-[#5c76c1] text-white rounded-lg hover:bg-blue-600 transition">
-                        Lihat Detail
-                    </button>
+            <a href="{{ route('detail-pelatihan', 'tata-busana') }}" class="program-card">
+                <div class="arrow-icon">→</div>
+                <div class="program-image">
+                    <img src="{{ asset('images/tata-busana.jpg') }}" alt="Tata Busana" onerror="this.src='{{ asset('images/placeholder.jpg') }}'" />
+                </div>
+                <div class="program-content">
+                    <h3 class="program-title">Tata Busana</h3>
+                    <span class="program-date">25 - 30 Agustus 2025</span>
                 </div>
             </a>
 
-            <!-- Card 3 -->
-            <a href="/pelatihan/tata-kecantikan"
-                class="block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 card-hover-effect fade-in-up"
-                style="animation-delay: 0.2s;">
-                <img src="{{ asset('images/tata-kecantikan.jpg') }}" 
-                    alt="Tata Kecantikan"
-                    class="w-full h-48 object-cover rounded-lg shadow-md">
-                <div class="p-4">
-                    <h4 class="font-semibold text-lg text-gray-800">Tata Kecantikan</h4>
-                    <p class="text-sm text-gray-500 mt-1">25 - 30 Agustus 2025</p>
-                    <button class="mt-3 px-4 py-2 bg-[#5c76c1] text-white rounded-lg hover:bg-blue-600 transition">
-                        Lihat Detail
-                    </button>
+            <a href="{{ route('detail-pelatihan', 'tata-kecantikan') }}" class="program-card">
+                <div class="arrow-icon">→</div>
+                <div class="program-image">
+                    <img src="{{ asset('images/tata-kecantikan.jpg') }}" alt="Tata Kecantikan" onerror="this.src='{{ asset('images/placeholder.jpg') }}'" />
+                </div>
+                <div class="program-content">
+                    <h3 class="program-title">Tata Kecantikan</h3>
+                    <span class="program-date">25 - 30 Agustus 2025</span>
                 </div>
             </a>
 
-            <!-- Card 4 -->
-            <a href="/pelatihan/teknik-pendingin"
-                class="block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 card-hover-effect fade-in-up"
-                style="animation-delay: 0.3s;">
-                <img src="{{ asset('images/tata-udara.jpg') }}" 
-                    alt="Teknik Pendingin dan Tata Udara"
-                    class="w-full h-48 object-cover rounded-lg shadow-md">
-                <div class="p-4">
-                    <h4 class="font-semibold text-lg text-gray-800">Teknik Pendingin dan Tata Udara</h4>
-                    <p class="text-sm text-gray-500 mt-1">25 - 30 Agustus 2025</p>
-                    <button class="mt-3 px-4 py-2 bg-[#5c76c1] text-white rounded-lg hover:bg-blue-600 transition">
-                        Lihat Detail
-                    </button>
+            <a href="{{ route('detail-pelatihan', 'teknik-pendingin-dan-tata-udara') }}" class="program-card">
+                <div class="arrow-icon">→</div>
+                <div class="program-image">
+                    <img src="{{ asset('images/tata-udara.jpg') }}" alt="Teknik Pendingin dan Tata Udara" onerror="this.src='{{ asset('images/placeholder.jpg') }}'" />
+                </div>
+                <div class="program-content">
+                    <h3 class="program-title">Teknik Pendingin dan Tata Udara</h3>
+                    <span class="program-date">25 - 30 Agustus 2025</span>
                 </div>
             </a>
         </section>
