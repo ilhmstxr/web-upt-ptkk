@@ -2,7 +2,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
 
 {{-- TOP BAR (padding responsif, font Montserrat) --}}
-<div class="w-full bg-white/90 backdrop-blur-sm relative z-50" style="font-family: 'Montserrat', sans-serif;">
+<div class="w-full bg-[#F1F9FC]/90 backdrop-blur-sm relative z-50" style="font-family: 'Montserrat', sans-serif;">
  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px] py-2 flex items-center justify-between">
 
     {{-- Dropdown Bahasa --}}

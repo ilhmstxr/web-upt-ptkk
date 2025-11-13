@@ -47,7 +47,7 @@
 @endphp
 
 <header id="siteHeader"
-  class="sticky top-0 z-50 bg-[#FFFFFF] border-b border-slate-200/40 transition-shadow"
+  class="sticky top-0 z-50 bg-[#F1F9FC] border-b border-slate-200/40 transition-shadow"
   role="navigation" aria-label="Site">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="h-[64px] md:h-[72px] flex items-center justify-between gap-4">
