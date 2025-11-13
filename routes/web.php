@@ -19,7 +19,6 @@ use App\Mail\TestMail;
 use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
-use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\DB;
@@ -36,13 +35,28 @@ use Spatie\Browsershot\Browsershot;
 |--------------------------------------------------------------------------
 | Web Routes Final
 |--------------------------------------------------------------------------
-| Gabungan antara file versi pertama & kedua.
-| Sudah mencakup: dashboard publik (guest-friendly), pre/post test, survey, export,
-| route fix, dan tambahan resource survey.
-|--------------------------------------------------------------------------
 */
 
-Route::get('/', fn() => view('landing'))->name('landing');
+/* ======= BERANDA & HOME ======= */
+Route::get('/', fn () => view('pages.landing'))->name('landing');
+
+// ======= PROFIL (dropdown di navbar) =======
+// ⬇️ S E S U A I K A N  D I S I N I
+Route::view('/cerita-kami',           'pages.profil.cerita-kami')->name('story');
+Route::view('/program-pelatihan',     'pages.profil.program-pelatihan')->name('programs');
+Route::view('/kompetensi-pelatihan',  'pages.profil.kompetensi-pelatihan')->name('kompetensi');
+
+// Legacy redirect (biar link lama tidak 404)
+Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
+
+// Menu lain yang dipakai navbar
+Route::view('/berita', 'pages.berita')->name('news');
+
+// ⬇️ Tambahkan Panduan (buat view sesuai strukturmu, contoh: resources/views/pages/panduan/index.blade.php)
+Route::view('/panduan',  'pages.panduan')->name('panduan');
+
+
+/* ===== end BERANDA & HOME ===== */
 
 Route::get('/home', function () {
     if (auth()->check()) {
@@ -51,14 +65,12 @@ Route::get('/home', function () {
     return redirect()->route('landing');
 })->name('home');
 
-
 /*
 |--------------------------------------------------------------------------
 | Pendaftaran
 |--------------------------------------------------------------------------
 */
 Route::resource('pendaftaran', PendaftaranController::class);
-// Route::get('pendaftaran-selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('pendaftaran/selesai/{id}', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('pendaftaran-testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
 Route::get('pendaftaran/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download');
@@ -68,10 +80,7 @@ Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pen
 Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 
-// ==========================================================================
-// EXPORT
-// ==========================================================================
-// Cetak Massal
+// Cetak Massal & Exports
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
 Route::get('/exports/pendaftaran/{pelatihan}/bulk',   [PendaftaranController::class, 'exportBulk'])
@@ -117,33 +126,27 @@ Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 // Dashboard (guest-friendly untuk pre/post test)
 // ============================
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
-    // Dashboard utama
     Route::get('/', [DashboardController::class, 'home'])->name('home');
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::get('/materi', [DashboardController::class, 'materi'])->name('materi');
     Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
     Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 
-    // ===== PERBAIKAN PATH: gunakan path relatif (tanpa 'dashboard/') =====
-    // Set/Unset Peserta
     Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
     Route::post('unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
 
     Route::get('ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
         ->name('ajax.peserta.instansiByNama');
 
-    // Logout (pilih salah satu, saran: POST)
     Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
-    // HAPUS ini bila pakai POST saja:
-    // Route::match(['get','post'], 'logout', [DashboardController::class, 'logout'])->name('logout');
 
     Route::prefix('pretest')->name('pretest.')->group(function () {
         Route::get('/', [DashboardController::class, 'pretest'])->name('index');
-        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result'); // spesifik dulu
+        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
         Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
         Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
         Route::post('{tes}/begin', [DashboardController::class, 'pretestBegin'])->name('begin');
-        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show'); // dinamis terakhir
+        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
     });
 
     Route::prefix('posttest')->name('posttest.')->group(function () {
@@ -155,19 +158,16 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
     });
 
-
-    // Feedback (survey)
     Route::get('survey', [DashboardController::class, 'survey'])->name('survey');
     Route::post('survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
 });
-// routes/web.php
+
+// Upload admin
 Route::post('/admin/uploads', [UploadController::class, 'store'])
     ->middleware(['web', 'auth'])
     ->name('admin.uploads.store');
 
-route::resource('pertanyaan', PertanyaanController::class);
-
-
+Route::resource('pertanyaan', PertanyaanController::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -185,18 +185,15 @@ Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
     return view('detail-pelatihan', compact('kompetensi'));
 })->name('detail-pelatihan');
 
-
 /*
 |--------------------------------------------------------------------------
-| Survey / Monev (resources & flows)
+| Survey / Monev
 |--------------------------------------------------------------------------
-| NOTE: keep resource if you use all CRUD; otherwise remove duplicates.
 */
 Route::get('/survey', [SurveyController::class, 'index'])->name('survey.index');
 Route::get('/survey/create', [SurveyController::class, 'create'])->name('survey.create');
 Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
 
-// Participant-facing survey routes (flows)
 Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
 Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
 Route::post('/survey/check-credentials', [SurveyController::class, 'checkCredentials'])->name('survey.checkCredentials');
@@ -204,8 +201,7 @@ Route::post('/survey/check-credentials', [SurveyController::class, 'checkCredent
 Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.step');
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
 
-// If you also want resource routes for admin CRUD, keep this line. Be aware of duplication.
-Route::resource('/survey', SurveyController::class)->except(['index', 'create', 'store']); // avoid duplicate index/create/store
+Route::resource('/survey', SurveyController::class)->except(['index', 'create', 'store']);
 
 /*
 |--------------------------------------------------------------------------
@@ -228,7 +224,6 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-
 /*
 |--------------------------------------------------------------------------
 | Mail Testing
@@ -243,15 +238,13 @@ Route::get('/send', fn() => Mail::to('23082010166@student.upnjatim.ac.id')->send
 */
 Route::get('api/peserta', fn() => Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')->get());
 
-
 /*
 |--------------------------------------------------------------------------
-| Route tambahan / fix (duplikat kecil diperbaiki)
+| Route tambahan / fix
 |--------------------------------------------------------------------------
 */
 Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
-// Route::get('pendaftaran_selesai', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
 Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');

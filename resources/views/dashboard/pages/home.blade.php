@@ -1,5 +1,4 @@
 @extends('dashboard.layouts.main')
-
 @section('title', 'Home')
 @section('page-title', 'Dashboard Home')
 
