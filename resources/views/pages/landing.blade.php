@@ -689,10 +689,9 @@
 {{-- SECTION: Sorotan Pelatihan --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <style>
-    /* Gerakan halus horizontal seperti icons Jatim Bangkit */
     @keyframes sorotan-scroll-x {
       from { transform: translateX(0); }
-      to   { transform: translateX(-50%); } /* konten digandakan, cukup geser 50% */
+      to   { transform: translateX(-50%); } /* karena konten digandakan 2x */
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -728,19 +727,43 @@
           'key'   => 'mtu',
           'label' => 'Mobil Training Unit',
           'desc'  => 'Mobil Keliling UPT. PTKK Dindik Jatim adalah sebuah program unggulan yang dirancang khusus untuk menjangkau sekolah di pelosok-pelosok Jawa Timur.',
-          'files' => ['mtu-1.jpg','mtu-2.jpg','mtu-3.jpg','mtu-4.jpg','mtu-5.jpg','mtu-6.jpg'],
+          // MTU di images/profil
+          'files' => [
+            'profil/MTU1.svg',
+            'profil/MTU2.svg',
+            'profil/MTU3.svg',
+            'profil/MTU4.svg',
+            'profil/MTU5.svg',
+            'profil/MTU6.svg',
+          ],
         ],
         [
           'key'   => 'reguler',
           'label' => 'Pelatihan Reguler',
           'desc'  => 'Proses peningkatan kompetensi di UPT. PTKK dipandu oleh para asesor kompetensi profesional yang tersertifikasi.',
-          'files' => ['reg-1.jpg','reg-2.jpg','reg-3.jpg','reg-4.jpg','reg-5.jpg','reg-6.jpg'],
+          // reguler di images/sorotan/reguler
+          'files' => [
+            'sorotan/reguler/reg-1.jpg',
+            'sorotan/reguler/reg-2.jpg',
+            'sorotan/reguler/reg-3.jpg',
+            'sorotan/reguler/reg-4.jpg',
+            'sorotan/reguler/reg-5.jpg',
+            'sorotan/reguler/reg-6.jpg',
+          ],
         ],
         [
           'key'   => 'akselerasi',
           'label' => 'Pelatihan Akselerasi',
           'desc'  => 'UPT. PTKK memiliki 6 kompetensi yang tersertifikasi oleh Kemendikdasmen sebagai tempat uji kompetensi yang memiliki fasilitas mumpuni.',
-          'files' => ['acc-1.jpg','acc-2.jpg','acc-3.jpg','acc-4.jpg','acc-5.jpg','acc-6.jpg'],
+          // akselerasi di images/sorotan/akselerasi
+          'files' => [
+            'sorotan/akselerasi/acc-1.jpg',
+            'sorotan/akselerasi/acc-2.jpg',
+            'sorotan/akselerasi/acc-3.jpg',
+            'sorotan/akselerasi/acc-4.jpg',
+            'sorotan/akselerasi/acc-5.jpg',
+            'sorotan/akselerasi/acc-6.jpg',
+          ],
         ],
       ];
     @endphp
@@ -748,7 +771,6 @@
     {{-- NAMA PELATIHAN + DESKRIPSI --}}
     <div id="sorotan-top"
          class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
-      {{-- Nama Pelatihan --}}
       <div class="shrink-0">
         <button type="button"
                 class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
@@ -758,7 +780,6 @@
         </button>
       </div>
 
-      {{-- Deskripsi --}}
       <p id="sorotan-desc"
          class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px]
                 font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">
@@ -766,61 +787,43 @@
       </p>
     </div>
 
-    {{-- SLIDER FOTO: auto jalan sendiri (marquee), tanpa panah --}}
-    <div class="w-full mb-8 md:mb-10 lg:mb-12">
-      @foreach($sorotan as $i => $cat)
-        @php $files = $cat['files']; @endphp
-        <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
-          <div class="relative">
-            <div class="overflow-hidden">
-              <div
-                class="sorotan-track sorotan-marquee flex w-[200%]
-                       animate-[sorotan-scroll-x_linear_infinite] [animation-duration:26s]"
-                data-key="{{ $cat['key'] }}"
-              >
-                {{-- Bagian 1 --}}
-                <div class="flex w-1/2 gap-4 md:gap-5 lg:gap-6">
-                  @foreach($files as $fname)
-                    <div
-                      class="relative h-[130px] md:h-[150px] lg:h-[170px]
-                             rounded-2xl overflow-hidden shrink-0 group
-                             w-[220px] md:w-[260px] lg:w-[280px]">
-                      <img src="{{ asset('images/sorotan/'.$cat['key'].'/'.$fname) }}"
-                           alt="{{ $cat['label'] }}" loading="lazy"
-                           class="w-full h-full object-cover">
-                      <div class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100 group-hover:opacity-0"
-                           style="background: linear-gradient(180deg, rgba(219,231,247,0.45) 0%, rgba(21,36,175,0.75) 100%);"></div>
-                    </div>
-                  @endforeach
-                </div>
+  {{-- SLIDER FOTO: auto jalan sendiri, 6 foto rapi --}}
+<div class="w-full mb-8 md:mb-10 lg:mb-12">
+  @foreach($sorotan as $i => $cat)
+    @php $files = $cat['files']; @endphp
 
-                {{-- Bagian 2 (duplikat, untuk loop tanpa putus) --}}
-                <div class="flex w-1/2 gap-4 md:gap-5 lg:gap-6" aria-hidden="true">
-                  @foreach($files as $fname)
-                    <div
-                      class="relative h-[130px] md:h-[150px] lg:h-[170px]
-                             rounded-2xl overflow-hidden shrink-0 group
-                             w-[220px] md:w-[260px] lg:w-[280px]">
-                      <img src="{{ asset('images/sorotan/'.$cat['key'].'/'.$fname) }}"
-                           alt="" loading="lazy"
-                           class="w-full h-full object-cover">
-                      <div class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100 group-hover:opacity-0"
-                           style="background: linear-gradient(180deg, rgba(219,231,247,0.45) 0%, rgba(21,36,175,0.75) 100%);"></div>
-                    </div>
-                  @endforeach
+    <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
+      <div class="relative">
+        <div class="overflow-hidden">
+          {{-- Track: isi digandakan 2x untuk loop mulus --}}
+          <div
+            class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]"
+            data-key="{{ $cat['key'] }}"
+          >
+            @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
+              @foreach($files as $fname)
+                <div
+                  class="relative h-[130px] md:h-[150px] lg:h-[170px]
+                         w-[220px] md:w-[260px] lg:w-[280px]
+                         rounded-2xl overflow-hidden shrink-0">
+                  <img src="{{ asset('images/'.$fname) }}"
+                       alt="{{ $cat['label'] }}" loading="lazy"
+                       class="w-full h-full object-cover">
                 </div>
-              </div>
-
-              {{-- Fade kiri–kanan --}}
-              <div class="pointer-events-none absolute inset-0
-                          [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
-            </div>
+              @endforeach
+            @endfor
           </div>
-        </div>
-      @endforeach
-    </div>
 
-    {{-- KONTROL KATEGORI (panah hanya pindah kategori, bukan foto) --}}
+          {{-- Fade kiri–kanan --}}
+          <div class="pointer-events-none absolute inset-0
+                      [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
+        </div>
+      </div>
+    </div>
+  @endforeach
+</div>
+
+    {{-- KONTROL KATEGORI (panah hanya pindah kategori) --}}
     <div class="mt-2 flex items-center justify-center gap-6">
       <button id="tabPrev"
               class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6] text-[#0E2A7B]
@@ -845,7 +848,7 @@
 
   </div>
 
-  {{-- SCRIPT: hanya untuk ganti kategori + dots, tanpa slider foto JS --}}
+  {{-- SCRIPT: hanya untuk ganti kategori + dots --}}
   <script>
     (function(){
       const tabOrder = ['mtu','reguler','akselerasi'];
@@ -903,8 +906,41 @@
       // Init pertama
       setActive(tabOrder[0]);
     })();
+
+
+  // Auto-scroll untuk setiap sorotan-track (infinite loop halus)
+  (function(){
+    const tracks = document.querySelectorAll('.sorotan-track');
+    const SPEED = 0.8; // px per frame (ubah kalau mau lebih cepat / pelan)
+
+    tracks.forEach((track) => {
+      let offset = 0;
+
+      function animate() {
+        const halfWidth = track.scrollWidth / 2; // lebar 6 foto pertama
+
+        // Geser ke kiri
+        offset -= SPEED;
+
+        // Kalau sudah lewat satu deret (6 foto), reset supaya loop mulus
+        if (Math.abs(offset) >= halfWidth) {
+          offset += halfWidth;
+        }
+
+        track.style.transform = `translateX(${offset}px)`;
+        requestAnimationFrame(animate);
+      }
+
+      // Mulai animasi
+      requestAnimationFrame(animate);
+    });
+  })();
+
   </script>
+
+
 </section>
+
 
 
 {{-- SECTION: Kompetensi Pelatihan (gambar SVG lokal) --}}

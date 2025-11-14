@@ -174,16 +174,19 @@ section + section {
 
       {{-- KOLOM KIRI: VISI + MISI --}}
       <div class="flex flex-col gap-[20px] w-full">
-        {{-- VISI --}}
-        <div class="w-full rounded-2xl ring-1 ring-black/5 bg-white">
-          <div class="p-6 flex flex-col">
-            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">Visi</h3>
-            <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
-              Profesional dalam pelayanan guna meningkatkan kualitas SDM dalam pelatihan yang berintegritas
-              dan berkompeten sesuai kebutuhan perkembangan pasar global.
-            </p>
-          </div>
-        </div>
+       {{-- VISI --}}
+<div class="w-full rounded-2xl ring-1 ring-black/5 bg-white"
+     style="background-image: url('{{ asset('images/profil/visi.svg') }}');
+            background-size: cover;
+            background-position: center;">
+  <div class="p-6 flex flex-col bg-white/80 rounded-2xl">
+    <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">Visi</h3>
+    <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
+      Profesional dalam pelayanan guna meningkatkan kualitas SDM dalam pelatihan yang berintegritas
+      dan berkompeten sesuai kebutuhan perkembangan pasar global.
+    </p>
+  </div>
+</div>
 
         {{-- MISI (warna DBE7F7 & tinggi disesuaikan agar sejajar dengan Sasaran) --}}
         <div class="w-full rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7] h-[325px] flex flex-col">
@@ -210,20 +213,23 @@ section + section {
           </div>
         </div>
 
-        {{-- SASARAN --}}
-        <div class="w-full rounded-2xl ring-1 ring-black/5 bg-white flex flex-col">
-          <div class="p-6 flex flex-col">
-            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">Sasaran</h3>
-            <ul class="list-disc pl-5 space-y-2 font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
-              <li>Meningkatkan kompetensi siswa dan guru SMK/SMA di wilayah Jawa Timur.</li>
-              <li>Mengembangkan kurikulum pembelajaran.</li>
-              <li>Meningkatkan jejaring kerja UPT. PTKK.</li>
-              <li>Meningkatkan kualitas program pendidikan dan pelatihan.</li>
-              <li>Meningkatkan koordinasi dengan cabdin dan lembaga sekolah di Jawa Timur.</li>
-              <li>Mengetahui tingkat penyerapan alumni di masyarakat atau DU/DI.</li>
-            </ul>
-          </div>
-        </div>
+       {{-- SASARAN --}}
+<div class="w-full rounded-2xl ring-1 ring-black/5 bg-white flex flex-col"
+     style="background-image: url('{{ asset('images/profil/sasaran.svg') }}');
+            background-size: cover;
+            background-position: center;">
+  <div class="p-6 flex flex-col bg-white/80 rounded-2xl">
+    <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">Sasaran</h3>
+    <ul class="list-disc pl-5 space-y-2 font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
+      <li>Meningkatkan kompetensi siswa dan guru SMK/SMA di wilayah Jawa Timur.</li>
+      <li>Mengembangkan kurikulum pembelajaran.</li>
+      <li>Meningkatkan jejaring kerja UPT. PTKK.</li>
+      <li>Meningkatkan kualitas program pendidikan dan pelatihan.</li>
+      <li>Meningkatkan koordinasi dengan cabdin dan lembaga sekolah di Jawa Timur.</li>
+      <li>Mengetahui tingkat penyerapan alumni di masyarakat atau DU/DI.</li>
+    </ul>
+  </div>
+</div>
       </div>
 
     </div>
@@ -279,86 +285,105 @@ section + section {
         </div>
       </div>
 
-      {{-- 1978 --}}
-      <div class="absolute top-[23%] left-1/2 w-full -translate-x-1/2">
-        <div class="mx-auto max-w-7xl px-6 md:px-12 lg:px-[80px]">
-          <div class="grid md:grid-cols-2 gap-x-[100px] items-start">
-            <div class="mt-2 text-right pr-[40px]">
-              <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">1978</h4>
-              <p class="font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
-                Melalui Keputusan Menteri Pendidikan dan Kebudayaan Nomor: 0271/0/1978 tentang Susunan Organisasi dan Tata Kerja
-          Balai Latihan Pendidikan Teknis, nama lembaga ini diubah menjadi
-          Balai Latihan Pendidikan Teknis (BLPT) dan operasionalnya diserahkan kepada
-          Kantor Wilayah Departemen Pendidikan dan Kebudayaan Provinsi Jawa Timur.
-              </p>
-            </div>
-            <div class="flex justify-center md:justify-start items-center -mt-10 md:pl-[40px] lg:pl-[48px]">
-              <img src="{{ asset('images/profil/sejarah1978.svg') }}" alt="Sejarah 1978" class="w-[280px] md:w-[320px]" loading="lazy">
-            </div>
-          </div>
-        </div>
-      </div>
+    {{-- 1978 --}}
+<div class="absolute top-[23%] left-1/2 w-full -translate-x-1/2">
+  <div class="grid md:grid-cols-2 gap-x-[100px] items-start">
+
+    <!-- TEKS (dibuat rata kiri sesuai padding grid, sama seperti 1974) -->
+    <div class="mt-2 text-right pr-[40px]">
+      <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">1978</h4>
+      <p class="font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
+        Melalui Keputusan Menteri Pendidikan dan Kebudayaan Nomor: 0271/0/1978 tentang Susunan Organisasi dan Tata Kerja
+        Balai Latihan Pendidikan Teknis, nama lembaga ini diubah menjadi
+        Balai Latihan Pendidikan Teknis (BLPT) dan operasionalnya diserahkan kepada
+        Kantor Wilayah Departemen Pendidikan dan Kebudayaan Provinsi Jawa Timur.
+      </p>
+    </div>
+
+    <!-- GAMBAR -->
+    <div class="flex justify-center md:justify-start items-center -mt-10 md:pl-[40px] lg:pl-[48px]">
+      <img src="{{ asset('images/profil/sejarah1978.svg') }}" alt="Sejarah 1978" class="w-[280px] md:w-[320px]" loading="lazy">
+    </div>
+
+  </div>
+</div>
+
 
       {{-- 2008 --}}
-      <div class="absolute top-[47%] left-1/2 w-full -translate-x-1/2">
-        <div class="mx-auto max-w-7xl px-6 md:px-12 lg:px-[80px]">
-          <div class="grid md:grid-cols-2 gap-x-[100px] items-start">
-            <div class="flex justify-center md:justify-end items-center -mt-10 pr-[40px]">
-              <img src="{{ asset('images/profil/sejarah2008.svg') }}" alt="Sejarah 2008" class="w-[280px] md:w-[320px]" loading="lazy">
-            </div>
-            <div class="mt-14 md:pl-[32px] lg:pl-[40px]">
-              <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2008</h4>
-              <p class="font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
-                Diterbitkannya Peraturan Gubernur Jawa Timur Nomor 120 Tahun 2008
-          tentang Organisasi dan Tata Kerja UPT Dinas Pendidikan Provinsi Jawa Timur,
-          nama lembaga ini diubah menjadi
-          Unit Pelaksana Teknis Pelatihan dan Pengembangan Pendidikan Kejuruan (UPT. PPPK).
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="absolute top-[47%] left-1/2 w-full max-w-7xl -translate-x-1/2">
+  <div class="grid md:grid-cols-2 gap-x-[100px] items-start">
 
-      {{-- 2016 --}}
-      <div class="absolute top-[75%] left-1/2 w-full -translate-x-1/2">
-        <div class="mx-auto max-w-7xl px-6 md:px-12 lg:px-[80px]">
-          <div class="grid md:grid-cols-2 gap-x-[100px] items-start">
-            <div class="mt-2 text-right pr-[40px]">
-              <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2016</h4>
-              <p class="font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
-                Terjadi perubahan Peraturan Gubernur Jawa Timur Nomor 95 Tahun 2016 tentang Nomenklatur,
-          Susunan Organisasi, Tugas Pokok dan Fungsi serta Tata Kerja UPT Dinas Pendidikan Provinsi Jawa Timur.
-          Nama lembaga diubah menjadi Unit Pelaksana Teknis Pengembangan Pendidikan Kejuruan (UPT. PPK).
-              </p>
-            </div>
-            <div class="flex justify-center md:justify-start items-center -mt-10 md:pl-[40px] lg:pl-[48px]">
-              <img src="{{ asset('images/profil/sejarah2016.svg') }}" alt="Sejarah 2016" class="w-[280px] md:w-[320px]" loading="lazy">
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Gambar kiri -->
+    <div class="flex justify-center md:justify-end items-center -mt-10 pr-[40px]">
+      <img src="{{ asset('images/profil/sejarah2008.svg') }}" alt="Sejarah 2008"
+           class="w-[280px] md:w-[320px]" loading="lazy">
+    </div>
 
-      {{-- 2019 (sejajar titik bawah + aman dari Tujuan) --}}
-      <div class="absolute top-[100%] left-1/2 w-full -translate-x-1/2 -translate-y-1/2 translate-y-[0px]">
-        <div class="mx-auto max-w-7xl px-6 md:px-12 lg:px-[80px]">
-          <div class="grid md:grid-cols-2 gap-x-[100px] items-start">
-            <div class="flex justify-center md:justify-end items-start pr-[40px]">
-              <img src="{{ asset('images/profil/sejarah2019.svg') }}" alt="Sejarah 2019" class="w-[280px] md:w-[320px]" loading="lazy">
-            </div>
-            <div class="md:pl-[32px] lg:pl-[40px]">
-              <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2019</h4>
-              <p class="font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
-                Sesuai dengan Peraturan Gubernur Jawa Timur Nomor 1 Tahun 2019
-          tentang Perubahan atas Peraturan Gubernur Jawa Timur Nomor 43 Tahun 2018
-          mengenai Nomenklatur, Susunan Organisasi, Uraian Tugas dan Fungsi serta Tata Kerja
-          UPT Dinas Pendidikan Provinsi Jawa Timur, nama lembaga ini diubah menjadi
-          Unit Pelaksana Teknis Pengembangan Teknis dan Keterampilan Kejuruan (UPT. PTKK).
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      {{-- /2019 --}}
+    <!-- TEKS kanan: sekarang sejajar pojok padding kanan seperti 1974 -->
+    <div class="mt-14 md:pl-[32px] lg:pl-[40px]">
+      <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2008</h4>
+      <p class="font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
+        Diterbitkannya Peraturan Gubernur Jawa Timur Nomor 120 Tahun 2008
+        tentang Organisasi dan Tata Kerja UPT Dinas Pendidikan Provinsi Jawa Timur,
+        nama lembaga ini diubah menjadi
+        Unit Pelaksana Teknis Pelatihan dan Pengembangan Pendidikan Kejuruan (UPT. PPPK).
+      </p>
+    </div>
+
+  </div>
+</div>
+
+{{-- 2016 --}}
+<div class="absolute top-[75%] left-1/2 w-full max-w-7xl -translate-x-1/2">
+  <div class="grid md:grid-cols-2 gap-x-[100px] items-start">
+
+    <!-- TEKS (sesuai pola 1978) -->
+    <div class="mt-2 text-right pr-[40px]">
+      <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2016</h4>
+      <p class="font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
+        Terjadi perubahan Peraturan Gubernur Jawa Timur Nomor 95 Tahun 2016 tentang Nomenklatur,
+        Susunan Organisasi, Tugas Pokok dan Fungsi serta Tata Kerja UPT Dinas Pendidikan Provinsi Jawa Timur.
+        Nama lembaga diubah menjadi Unit Pelaksana Teknis Pengembangan Pendidikan Kejuruan (UPT. PPK).
+      </p>
+    </div>
+
+    <!-- GAMBAR -->
+    <div class="flex justify-center md:justify-start items-center -mt-10 md:pl-[40px] lg:pl-[48px]">
+      <img src="{{ asset('images/profil/sejarah2016.svg') }}" alt="Sejarah 2016"
+           class="w-[280px] md:w-[320px]" loading="lazy">
+    </div>
+
+  </div>
+</div>
+
+
+{{-- 2019 --}}
+<div class="absolute top-[100%] left-1/2 w-full max-w-7xl
+            -translate-x-1/2 -translate-y-1/2 translate-y-[0px]">
+  <div class="grid md:grid-cols-2 gap-x-[100px] items-start">
+
+    <!-- Gambar kiri -->
+    <div class="flex justify-center md:justify-end items-start pr-[40px]">
+      <img src="{{ asset('images/profil/sejarah2019.svg') }}" alt="Sejarah 2019"
+           class="w-[300px] md:w-[340px]" loading="lazy">
+    </div>
+
+    <!-- Teks kanan -->
+    <div class="md:pl-[32px] lg:pl-[40px]">
+      <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2019</h4>
+      <p class="font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
+        Sesuai dengan Peraturan Gubernur Jawa Timur Nomor 1 Tahun 2019
+        tentang Perubahan atas Peraturan Gubernur Jawa Timur Nomor 43 Tahun 2018
+        mengenai Nomenklatur, Susunan Organisasi, Uraian Tugas dan Fungsi serta Tata Kerja
+        UPT Dinas Pendidikan Provinsi Jawa Timur, nama lembaga ini diubah menjadi
+        Unit Pelaksana Teknis Pengembangan Teknis dan Keterampilan Kejuruan (UPT. PTKK).
+      </p>
+    </div>
+
+  </div>
+</div>
+{{-- /2019 --}}
+
     </div>
     {{-- /Timeline container --}}
   </div>

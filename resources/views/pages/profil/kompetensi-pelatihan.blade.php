@@ -74,6 +74,7 @@
   height="h-[368px]"              {{-- Tinggi hero --}}
 />
 {{-- /HERO --}}
+
 {{-- SECTION: Bidang Pelatihan (menu kiri sticky, konten kanan scrollable tanpa scrollbar) --}}
 <section id="kelas-keterampilan" class="w-full bg-[#F5FBFF] py-8 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
@@ -125,57 +126,56 @@
           {{-- ===== TAB: KETERAMPILAN (7 kartu, satu kolom ke bawah) ===== --}}
 <div id="tab-ktr" class="grid grid-cols-1 gap-8">
   @foreach ([
-    ['tata-busana.svg',      'Tata Busana', 'Kelas Tata Busana membekali peserta dengan keterampilan dasar menjahit, pengenalan bahan dan alat, pembuatan pola, serta finishing profesional.'],
-    ['tata-boga.svg',        'Tata Boga',   'Menguasai teknik pengolahan makanan, higienitas, dekorasi, dan penyajian standar industri.'],
-    ['tata-kecantikan.svg',  'Tata Kecantikan', 'Makeup dasar–lanjutan, skincare, hair-do, dan etika layanan.'],
-    ['teknik-pemesinan.svg', 'Teknik Pemesinan', 'Pengoperasian mesin, alat ukur, CNC dasar, serta K3.'],
-    ['teknik-pendingin.svg', 'Teknik Pendingin dan Tata Udara', 'Sistem AC/kulkas, instalasi, perawatan, dan perbaikan.'],
-    ['teknik-otomotif.svg',  'Teknik Otomotif', 'Sistem kendaraan, perawatan mesin, kelistrikan, dan injeksi.'],
-    ['teknik-pengelasan.svg','Teknik Pengelasan', 'Las SMAW, GMAW, GTAW dan keselamatan kerja.'],
+    ['tata-busana.svg',      'Tata Busana', 'Kelas Tata Busana dirancang untuk membekali peserta dengan beberapa keterampilan mulai dari pengenalan bahan dan alat, dasar-dasar menjahit, mendesain pakaian, teknik pembuatan pola, hingga finishing yang rapi dan profesional. Peserta juga akan mempelajari tren mode, perpaduan warna, dan kreativitas desain agar mampu menghasilkan karya busana yang unik dan berkualitas.'],
+    ['tata-boga.svg',        'Tata Boga',   'Kelas Tata Boga dirancang untuk membekali peserta dengan pengetahuan dan keterampilan mengolah berbagai jenis masakan. Peserta akan mempelajari teknik dasar seperti persiapan bahan, pemotongan, pengolahan, penyajian, hingga dekorasi hidangan. Peserta juga akan dibekali pengetahuan tentang keamanan pangan, pengaturan porsi, dan inovasi menu, sehingga dapat menghasilkan hidangan yang sehat, higienis, dan bercita rasa tinggi.'],
+    ['tata-kecantikan.svg',  'Tata Kecantikan', 'Kelas Tata Kecantikan dirancang untuk membekali peserta dengan keterampilan dasar dan lanjutan di bidang perawatan wajah, tata rias (make-up), hingga perawatan rambut. Kegiatan ini peserta diharapkan mampu mengembangkan kreativitas, menjaga etika profesi, dan memanfaatkan peluang usaha.'],
+    ['teknik-pemesinan.svg', 'Teknik Pemesinan', 'Peserta pelatihan akan diperkenalkan pada berbagai mesin vital seperti mesin bubut untuk membentuk benda silinder, mesin frais untuk membuat permukaan datar dan alur, untuk menghasilkan produk yang sangat presisi. Peserta pelatihan juga akan mengasah kemampuan dalam membaca gambar teknik, dan merancang komponen, mulai dari mur dan baut hingga bagian-bagian rumit dari sebuah mesin besar.'],
+    ['teknik-pendingin.svg', 'Teknik Pendingin dan Tata Udara', 'Kelas TPTU ini dirancang untuk membekali peserta dengan pengetahuan dan keterampilan teknis mulai dari prinsip kerja sistem pendingin, komponen utama, teknik instalasi, hingga perawatan dan perbaikan peralatan pendingin. Peserta juga akan diajarkan cara mendiagnosis kerusakan, menghitung beban pendingin, serta memahami prosedur keselamatan kerja dan penggunaan alat ukur khusus.'],
+    ['teknik-otomotif.svg',  'Teknik Otomotif', 'Kelas otomotif mempelajari segala hal, mulai dari bagaimana bensin diubah menjadi tenaga, hingga bagaimana sensor-sensor canggih pada mobil modern bekerja. Di sini, tidak hanya duduk mendengarkan teori, melainkan langsung turun ke bengkel, memegang kunci pas, dan merasakan langsung setiap komponen.'],
+    ['teknik-pengelasan.svg','Teknik Pengelasan', 'Peserta akan mempelajari cara menggunakan berbagai teknik las, mulai dari Las SMAW (Shielded Metal Arc Welding) yang paling umum, Las GMAW (Gas Metal Arc Welding) untuk kecepatan dan efisiensi, hingga Las GTAW (Gas Tungsten Arc Welding) yang dikenal karena hasilnya yang sangat rapi. Peserta juga akan diajarkan cara mempersiapkan material, memilih kawat las yang sesuai, mengatur arus listrik dengan benar, serta memastikan keselamatan saat bekerja.'],
   ] as [$img, $judul, $desc])
 
 <figure
   class="group relative overflow-hidden rounded-2xl
          opacity-0 translate-y-4 transition-all duration-700 ease-out"
   data-reveal>
-  <button type="button" class="absolute inset-0 z-10" aria-label="Tampilkan deskripsi"></button>
 
-  {{-- Frame gambar: border biru tebal tipis + padding kecil (gambar tampak lebih kecil, layout tetap) --}}
   <div class="aspect-[16/9] w-full relative overflow-hidden rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF]">
-  {{-- Gambar bidang --}}
-  <img src="{{ asset('images/profil/' . $img) }}"
-       alt="{{ $judul }}"
-       class="w-full h-full object-cover select-none transition-transform duration-500 group-hover:scale-[1.02]" />
 
-  {{-- Nama bidang (stroke biru & fill kuning) --}}
-  <span class="absolute bottom-4 left-8 font-[Volkhov] font-bold text-[22px] md:text-[26px] leading-none select-none">
-    <span class="absolute inset-0 text-[#1524AF]"
-          style="-webkit-text-stroke:2px #1524AF; color:transparent;">
-      {{ $judul }}
-    </span>
-    <span class="relative text-[#FFDE59]"
-          style="text-shadow:
-            0 0 2px #1524AF,
-            0 0 4px #1524AF,
-            0 0 8px rgba(255,222,89,0.85),
-            0 0 16px rgba(255,222,89,0.7);">
-      {{ $judul }}
-    </span>
-  </span>
-</div>
+    {{-- Gambar --}}
+    <img src="{{ asset('images/profil/' . $img) }}"
+         alt="{{ $judul }}"
+         class="w-full h-full object-cover select-none transition-transform duration-500 group-hover:scale-[1.02]" />
 
+     {{-- Blok judul + deskripsi dinamis di dalam gambar --}}
+  <div class="absolute inset-x-0 bottom-6 md:bottom-8 px-8">
+    <div class="max-w-[82%]">
+      {{-- Judul (stroke 1524AF, fill FFDE59) --}}
+      <div class="relative font-[Volkhov] font-bold text-[22px] md:text-[26px] leading-tight select-none">
+        <span class="absolute inset-0 text-[#1524AF]"
+              style="-webkit-text-stroke:2px #1524AF; color:transparent;">
+          {{ $judul }}
+        </span>
+        <span class="relative text-[#FFDE59]"
+              style="text-shadow:
+                0 0 2px #1524AF,
+                0 0 4px #1524AF,
+                0 0 8px rgba(255,222,89,0.85),
+                0 0 16px rgba(255,222,89,0.7);">
+          {{ $judul }}
+        </span>
+      </div>
 
-  {{-- Overlay deskripsi --}}
-  <figcaption
-    class="pointer-events-none absolute inset-x-0 bottom-0 m-3 md:m-4 bg-[#1524AF] text-white
-           rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg
-           translate-y-6 md:translate-y-8 opacity-0
-           transition-all duration-500 ease-out
-           group-hover:translate-y-0 group-hover:opacity-100"
-    data-overlay>
-    <h3 class="font-[Volkhov] text-[20px] md:text-[22px] font-bold text-[#FFDE59] mb-2">{{ $judul }}</h3>
-    <p class="font-[Montserrat] text-[14px] md:text-[15px] leading-relaxed text-white/95">{{ $desc }}</p>
-  </figcaption>
+      {{-- Teks penjelasan (Montserrat medium, putih) --}}
+      <p class="mt-3 font-[Montserrat] font-medium
+                text-[14px] md:text-[15px] leading-relaxed text-white
+                drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
+        {{ $desc }}
+      </p>
+    </div>
+  </div>
+
+  </div>
 </figure>
 
   @endforeach
@@ -184,52 +184,53 @@
 {{-- ===== TAB: MJC (5 kartu, satu kolom ke bawah) ===== --}}
 <div id="tab-mjc" class="grid grid-cols-1 gap-8 hidden">
   @foreach ([
-    ['mjc-fotografi.svg',    'Fotografi',      'Komposisi, pencahayaan, kamera & lensa, hingga dasar editing.'],
-    ['mjc-videografi.svg',   'Videografi',     'Sinematografi, framing, audio, basic editing & storytelling.'],
-    ['mjc-desain-grafis.svg','Desain Grafis',  'Tipografi, warna, layout, dan praktik desain untuk media digital.'],
-    ['mjc-animasi.svg',      'Animasi',        'Prinsip animasi, storyboard, motion dasar, dan asset simple.'],
-    ['mjc-web-desain.svg',   'Web Desain',     'Grid, UI dasar, responsif, dan prototyping antarmuka.'],
+    ['mjc-fotografi.svg',    'Fotografi',      'Kelas Fotografi dirancang untuk memberikan pemahaman menyeluruh mulai dari teknik dasar pengambilan gambar, pengeturan kamera, komposisi, hingga pencahayaan. Selain itu, peserta juga akan mempelajari proses editing menggunakan software seperti Adobe Lightroom atau Photoshop, untuk memaksimalkan hasil foto agar terlihat lebih tajam, indah, dan profesional.'],
+    ['mjc-videografi.svg',   'Videografi',     'Kelas videografi menjadi tempat ideal untuk mengubah minat menjadi keahlian profesional. Di dalamnya, peserta tidak hanya belajar teori, tetapi juga praktik langsung untuk menguasai setiap tahapan produksi video. Dengan bimbingan mentor dan praktik langsung, peserta bisa mengubah ide menjadi karya video yang tidak hanya indah, tetapi juga mampu menyentuh hati penonton.'],
+    ['mjc-desain-grafis.svg','Desain Grafis',  'Kelas Desain Grafis dirancang untuk membekali peserta dengan pengetahuan dan keterampilan mulai dari konsep dasar desain, teori warna, tipografi, hingga teknik layout yang menarik. Peserta akan diperkenalkan pada berbagai software desain populer seperti Adobe Photoshop, Illustrator, dan aplikasi desain berbasis web seperti Canva atau Figma, sehingga dapat menghasilkan karya yang profesional.'],
+    ['mjc-animasi.svg',      'Animasi',        'Kelas animasi adalah tempat di mana peserta bisa belajar membuat gambar bergerak, mulai dari konsep dasar hingga teknik profesional. Kelas ini bisa membantu peserta mewujudkan ide menjadi sebuah karya visual, baik untuk film, video game, iklan, maupun media lainnya.'],
+    ['mjc-web-desain.svg',   'Web Desain',     'Pelatihan ini dirancang untuk memberikan pemahaman menyeluruh mengenai prinsip desain web, mulai dari dasar-dasar HTML, CSS, dan JavaScript hingga penerapan desain responsif yang ramah pengguna. Peserta juga akan diajak untuk menguasai tools pendukung seperti Figma atau Canva, serta teknik optimasi website agar lebih cepat, menarik, dan mudah ditemukan di mesin pencari.'],
   ] as [$img, $judul, $desc])
- <figure
+<figure
   class="group relative overflow-hidden rounded-2xl
          opacity-0 translate-y-4 transition-all duration-700 ease-out"
   data-reveal>
-  <button type="button" class="absolute inset-0 z-10" aria-label="Tampilkan deskripsi"></button>
 
- <div class="aspect-[16/9] w-full relative overflow-hidden rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF]">
-  {{-- Gambar bidang --}}
-  <img src="{{ asset('images/profil/' . $img) }}"
-       alt="{{ $judul }}"
-       class="w-full h-full object-cover select-none transition-transform duration-500 group-hover:scale-[1.02]" />
+  <div class="aspect-[16/9] w-full relative overflow-hidden rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF]">
 
-  {{-- Nama bidang (stroke biru & fill kuning) --}}
-  <span class="absolute bottom-4 left-8 font-[Volkhov] font-bold text-[22px] md:text-[26px] leading-none select-none">
-    <span class="absolute inset-0 text-[#1524AF]"
-          style="-webkit-text-stroke:2px #1524AF; color:transparent;">
-      {{ $judul }}
-    </span>
-    <span class="relative text-[#FFDE59]"
-          style="text-shadow:
-            0 0 2px #1524AF,
-            0 0 4px #1524AF,
-            0 0 8px rgba(255,222,89,0.85),
-            0 0 16px rgba(255,222,89,0.7);">
-      {{ $judul }}
-    </span>
-  </span>
-</div>
+    {{-- Gambar --}}
+    <img src="{{ asset('images/profil/' . $img) }}"
+         alt="{{ $judul }}"
+         class="w-full h-full object-cover select-none transition-transform duration-500 group-hover:scale-[1.02]" />
 
+      {{-- Blok judul + deskripsi dinamis di dalam gambar --}}
+  <div class="absolute inset-x-0 bottom-6 md:bottom-8 px-8">
+    <div class="max-w-[82%]">
+      {{-- Judul (stroke 1524AF, fill FFDE59) --}}
+      <div class="relative font-[Volkhov] font-bold text-[22px] md:text-[26px] leading-tight select-none">
+        <span class="absolute inset-0 text-[#1524AF]"
+              style="-webkit-text-stroke:2px #1524AF; color:transparent;">
+          {{ $judul }}
+        </span>
+        <span class="relative text-[#FFDE59]"
+              style="text-shadow:
+                0 0 2px #1524AF,
+                0 0 4px #1524AF,
+                0 0 8px rgba(255,222,89,0.85),
+                0 0 16px rgba(255,222,89,0.7);">
+          {{ $judul }}
+        </span>
+      </div>
 
-  <figcaption
-    class="pointer-events-none absolute inset-x-0 bottom-0 m-3 md:m-4 bg-[#1524AF] text-white
-           rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg
-           translate-y-6 md:translate-y-8 opacity-0
-           transition-all duration-500 ease-out
-           group-hover:translate-y-0 group-hover:opacity-100"
-    data-overlay>
-    <h3 class="font-[Volkhov] text-[20px] md:text-[22px] font-bold text-[#FFDE59] mb-2">{{ $judul }}</h3>
-    <p class="font-[Montserrat] text-[14px] md:text-[15px] leading-relaxed text-white/95">{{ $desc }}</p>
-  </figcaption>
+      {{-- Teks penjelasan (Montserrat medium, putih) --}}
+      <p class="mt-3 font-[Montserrat] font-medium
+                text-[14px] md:text-[15px] leading-relaxed text-white
+                drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
+        {{ $desc }}
+      </p>
+    </div>
+  </div>
+
+  </div>
 </figure>
 
   @endforeach
