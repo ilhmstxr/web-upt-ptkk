@@ -137,7 +137,8 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::post('survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
 });
 
-// Upload admin
+
+// routes/web.php
 Route::post('/admin/uploads', [UploadController::class, 'store'])
     ->middleware(['web', 'auth'])
     ->name('admin.uploads.store');
