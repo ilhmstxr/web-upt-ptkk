@@ -331,10 +331,12 @@ class TesPercobaanResource extends Resource
         return [];
     }
 
-     public static function getPages(): array
+    public static function getPages(): array
     {
         return [
-            'dashboard' => Pages\DashboardTesPercobaan::route('/'),
+            // tambahkan 'index' supaya Filament membuat route 'filament.admin.resources.tes-percobaans.index'
+            'index'     => Pages\ListTesPercobaan::route('/'),
+            'dashboard' => Pages\DashboardTesPercobaan::route('/dashboard'),
             'angkatan'  => Pages\AngkatanTesPage::route('/angkatan/{pelatihan}'),
             'bidang'    => Pages\BidangTesPage::route('/angkatan/{pelatihan}/{angkatan}'),
             'peserta'   => Pages\PesertaTesPage::route('/angkatan/{pelatihan}/{angkatan}/{bidang}'),
