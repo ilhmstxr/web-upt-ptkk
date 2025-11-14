@@ -37,7 +37,7 @@ class TesPercobaanResource extends Resource
             BidangScoresChart::class,
         ];
     }
-    public static function form(Form $form): Form
+    public static function form(FilamentForm $form): FilamentForm
     {
         return $form->schema([
             Forms\Components\Select::make('peserta_id')
