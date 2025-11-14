@@ -10923,13 +10923,13 @@ INSERT INTO `opsi_jawaban` (`id`, `pertanyaan_id`, `teks_opsi`, `gambar`, `apaka
 --
 
 INSERT INTO `pelatihan` (`id`, `instansi_id`, `angkatan`, `jenis_program`,`nama_pelatihan`,  `slug`, `gambar`, `status`, `tanggal_mulai`, `tanggal_selesai`, `deskripsi`, `jumlah_peserta`, `sasaran`, `created_at`, `updated_at`) VALUES
-(1, NULL, 2, 'reguler','Kegiatan Pengembangan dan Pelatihan Kompetensi Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 (Kelas Keterampilan) Angkatan II Tahun 2025', NULL, NULL, 'selesai', '2025-08-25', '2025-08-30', NULL, NULL, NULL, NULL, NULL),
+(1, NULL, 2, 'reguler','Kegiatan Pengembangan dan Pelatihan Kompetensi Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. II(Teknik & Keterampilan)  Tahun 2025', NULL, NULL, 'selesai', '2025-08-25', '2025-08-30', NULL, NULL, NULL, NULL, NULL),
 (2, NULL, 2, 'mtu','Kegiatan Pelatihan Kompetensi Vokasi bagi Siswa SMK / SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan II  Tahun 2025', NULL, NULL, 'aktif', '2025-09-22', '2025-09-27', NULL, NULL, NULL, NULL, NULL),
 (3, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Guru SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-02-19', '2025-02-25', NULL, NULL, 'guru', NULL, NULL),
-(4, NULL, 1,'mtu', 'Pengembangan Kompetensi  Vokasi bagi Siswa SMK/SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan I Tahun 2025', NULL, NULL, 'selesai', '2025-03-10', '2025-03-15', NULL, NULL, 'siswa', NULL, NULL),
+(4, NULL, 1,'mtu', 'Pengembangan Kompetensi Vokasi bagi Siswa SMK/SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan I Tahun 2025', NULL, NULL, 'selesai', '2025-03-10', '2025-03-15', NULL, NULL, 'siswa', NULL, NULL),
 (5, NULL, 1,'reguler', 'Pengembangan dan peningkatan Kompetensi Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. I (Teknik & Keterampilan) Th. 2025', NULL, NULL, 'selesai', '2025-04-21', '2025-04-26', NULL, NULL, 'siswa', NULL, NULL),
-(6, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Siswa SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-05-05', '2025-05-11', NULL, NULL, 'siswa', NULL, NULL),
-(7, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Siswa SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI bertaraf Nasional Tahun 2026',  NULL, NULL, 'selesai', '2025-05-19', '2025-05-25', NULL, NULL, 'siswa', NULL, NULL),
+(6, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Siswa SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI (Teknik & Keterampilan) bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-05-05', '2025-05-11', NULL, NULL, 'siswa', NULL, NULL),
+(7, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Siswa SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI (MJC) bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-05-19', '2025-05-25', NULL, NULL, 'siswa', NULL, NULL),
 (8, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Guru SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-06-18', '2025-06-24', NULL, NULL, 'guru', NULL, NULL),
 (9, NULL, 1,'reguler', 'Pengembangan dan peningkatan Kompetensi Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. I (MJC) Th. 2025', NULL, NULL, 'selesai', '2025-07-21', '2025-07-26', NULL, NULL, 'siswa', NULL, NULL),
 (10, NULL, 2,'reguler', 'Pengembangan dan peningkatan Kompetensi Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. II (MJC) Th. 2025', NULL, NULL, 'selesai', '2025-07-31', '2025-08-05', NULL, NULL, 'siswa', NULL, NULL);
@@ -12146,15 +12146,186 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 --
 
 INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
-(1, 'Teknik Pendingin', 'Tes akhir untuk mengukur pemahaman materi Teknik Pendingin dan Tata Udara.', 'tes', 4, 1, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
-(2, 'Kecantikan', 'Tes akhir untuk mengukur pemahaman materi Kecantikan (Perawatan Rambut).', 'tes', 3, 1, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
-(3, 'Tata Boga', 'Tes akhir untuk mengukur pemahaman materi Produk Bakery dan Pastry.', 'tes', 1, 1, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
-(4, 'Tata Busana', 'Tes akhir untuk mengukur pemahaman materi Menjahit dan Pola.', 'tes', 2, 2, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
+
+-- asli
+-- TEKNIK ANG. 2
+(1, 'Teknik Pendingin', 'Tes akhir untuk mengukur pemahaman materi Teknik Pendingin dan Tata Udara.', 'pre-test', 4, 1, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
+(2, 'Kecantikan', 'Tes akhir untuk mengukur pemahaman materi Kecantikan (Perawatan Rambut).', 'pre-test', 3, 1, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
+(3, 'Tata Boga', 'Tes akhir untuk mengukur pemahaman materi Produk Bakery dan Pastry.', 'pre-test', 1, 1, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
+(4, 'Tata Busana', 'Tes akhir untuk mengukur pemahaman materi Menjahit dan Pola.', 'pre-test', 2, 2, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
 (5, 'Survei Kepuasan Pelatihan', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', 1, 1, NULL, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
-(6, 'Videografi', 'Tes akhir untuk mengukur pemahaman materi Videografi.', 'tes', 9, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
-(7, 'PLC', 'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).', 'tes', 10, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
-(8, 'Fotografi', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'tes', 8, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
-(9, 'Survei Kepuasan Pelatihan - MTU', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', 1, 2, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53');
+
+-- MTU 2
+(6, 'Videografi posttest', 'Tes akhir untuk mengukur pemahaman materi Videografi.', 'post-test', 9, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(7, 'PLC posttest', 'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).', 'post-test', 10, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(8, 'Fotografi posttest', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'post-test', 8, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(98, 'Teknik Pendingin posttest', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'post-test', 8, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- pretest
+(99, 'Videografi pretest', 'Tes akhir untuk mengukur pemahaman materi Videografi.', 'pre-test', 9, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(100, 'PLC pretest', 'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).', 'pre-test', 10, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(101, 'Fotografi pretest', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'pre-test', 8, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(102, 'Teknik Pendingin pretest', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'pre-test', 8, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- dirubah
+-- TEKNIK ANG. 2
+-- (1, 'Teknik Pendingin', 'Tes akhir untuk mengukur pemahaman materi Teknik Pendingin dan Tata Udara.', 'pre-test', 4, 1, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
+-- (2, 'Kecantikan', 'Tes akhir untuk mengukur pemahaman materi Kecantikan (Perawatan Rambut).', 'pre-test', 3, 1, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
+-- (3, 'Tata Boga', 'Tes akhir untuk mengukur pemahaman materi Produk Bakery dan Pastry.', 'pre-test', 1, 1, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
+-- (4, 'Tata Busana', 'Tes akhir untuk mengukur pemahaman materi Menjahit dan Pola.', 'pre-test', 2, 2, 30, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
+-- (5, 'Survei Kepuasan Pelatihan', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', 1, 1, NULL, '2025-08-28 23:03:02', '2025-08-28 23:03:02'),
+
+-- MTU 2
+-- (1, 'Videografi posttest', 'Tes akhir untuk mengukur pemahaman materi Videografi.', 'post-test', 9, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (2, 'PLC posttest', 'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).', 'post-test', 10, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (3, 'Fotografi posttest', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'post-test', 8, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (4, 'Teknik Pendingin posttest', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'post-test', 8, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- pretest
+-- (5, 'Videografi pretest', 'Tes akhir untuk mengukur pemahaman materi Videografi.', 'pre-test', 9, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (6, 'PLC pretest', 'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).', 'pre-test', 10, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (7, 'Fotografi pretest', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'pre-test', 8, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (8, 'Teknik Pendingin pretest', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'pre-test', 8, 2, 30, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- TEKNIK ANG. 2
+-- (40, 'Pretest tata boga reguler teknik 2 siswa','pretest', 'pre-test', 1, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (41, 'Pretest tata busana reguler teknik 2 siswa','pretest', 'pre-test', 2, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (42, 'Pretest tata kecantikan reguler teknik 2 siswa','pretest', 'pre-test', 3, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (43, 'Pretest tata pendingin dan tata udara reguler teknik 2 siswa','pretest', 'pre-test', 4, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+(103, 'Survei Kepuasan Pelatihan', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 2, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+
+
+(9, 'Survei Kepuasan Pelatihan - MTU', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 2, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(10, 'Survei Monev Akselerasi Guru','survei aksel guru', 'survei', NULL, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(11, 'Survei Monev Akselerasi Teknik Guru','survei aksel teknik guru', 'survei', NULL, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(12, 'Survei Monev aksel teknik siswa','survei aksel teknik siswa', 'survei', NULL, 5, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(13, 'Survei Monev aksel mjc','survei aksel mjc', 'survei', NULL, 6, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(14, 'Survei Monev reguler siswa 1','survei reguler siswa 1', 'survei', NULL, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(15, 'Survei Monev reguler mjc siswa 1','survei reguler mjc siswa 1', 'survei', NULL, 8, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(16, 'Survei Monev reguler mjc siswa 2','survei reguler mjc siswa 2', 'survei', NULL, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(17, 'Survei Monev mtu siswa 1','survei mtu siswa 1', 'survei', NULL, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- 1
+(18, 'Pretest Animasi Aksel guru','pretest', 'pre-test', 7, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(19, 'Pretest Desain Grafis Aksel guru','pretest', 'pre-test', 6, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(20, 'Pretest Fotografi Aksel guru','pretest', 'pre-test', 8, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(21, 'Pretest Videografi Aksel guru','pretest', 'pre-test', 9, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(22, 'Pretest Web Desain Aksel guru','pretest', 'pre-test', 5, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- 2
+(23, 'Pretest tata boga Aksel teknik guru','pretest', 'pre-test', 1, 8, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(24, 'Pretest tata busana Aksel teknik guru','pretest', 'pre-test', 2, 8, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(25, 'Pretest tata kecantikan Aksel teknik guru','pretest', 'pre-test', 3, 8, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(26, 'Pretest tata pendingin dan tata udara Aksel teknik guru','pretest', 'pre-test', 4, 8, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- 3
+(27, 'Pretest tata boga Aksel teknik siswa','pretest', 'pre-test', 1, 6, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(28, 'Pretest tata busana Aksel teknik siswa','pretest', 'pre-test', 2, 6, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(29, 'Pretest tata kecantikan Aksel teknik siswa','pretest', 'pre-test', 3, 6, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(30, 'Pretest tata pendingin dan tata udara Aksel teknik siswa','pretest', 'pre-test', 4, 6, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- 4
+(31, 'Pretest web desain Aksel mjc 1 siswa','pretest', 'pre-test', 5, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(32, 'Pretest videografi Aksel mjc 1 siswa','pretest', 'pre-test', 9, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(33, 'Pretest fotografi Aksel mjc 1 siswa','pretest', 'pre-test', 8, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(34, 'Pretest desain grafis Aksel mjc 1 siswa','pretest', 'pre-test', 6, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(35, 'Pretest animasi Aksel mjc 1 siswa','pretest', 'pre-test', 7, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- 5
+(36, 'Pretest tata boga reguler teknik 1 siswa','pretest', 'pre-test', 1, 5, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(37, 'Pretest tata busana reguler teknik 1 siswa','pretest', 'pre-test', 2, 5, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(38, 'Pretest tata kecantikan reguler teknik 1 siswa','pretest', 'pre-test', 3, 5, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(39, 'Pretest tata pendingin dan tata udara reguler teknik 1 siswa','pretest', 'pre-test', 4, 5, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- 6  sudah ada di atas teknik ang 2
+(40, 'Pretest tata boga reguler teknik 2 siswa','pretest', 'pre-test', 1, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(41, 'Pretest tata busana reguler teknik 2 siswa','pretest', 'pre-test', 2, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(42, 'Pretest tata kecantikan reguler teknik 2 siswa','pretest', 'pre-test', 3, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(43, 'Pretest tata pendingin dan tata udara reguler teknik 2 siswa','pretest', 'pre-test', 4, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- 7
+(44, 'Pretest animasi reguler mjc 1 siswa','pretest', 'pre-test', 7, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(45, 'Pretest desain grafis reguler mjc 1 siswa','pretest', 'pre-test', 6, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(46, 'Pretest fotografi reguler mjc 1 siswa','pretest', 'pre-test', 8, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(47, 'Pretest videografi reguler mjc 1 siswa','pretest', 'pre-test', 9, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(48, 'Pretest web desain reguler mjc 1 siswa','pretest', 'pre-test', 5, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- 8
+(49, 'Pretest animasi reguler mjc 2 siswa','pretest', 'pre-test', 7, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(50, 'Pretest desain grafis reguler mjc 2 siswa','pretest', 'pre-test', 6, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(51, 'Pretest fotografi reguler mjc 2 siswa','pretest', 'pre-test', 8, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(52, 'Pretest videografi reguler mjc 2 siswa','pretest', 'pre-test', 9, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(53, 'Pretest web desain reguler mjc 2 siswa','pretest', 'pre-test', 5, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- 9
+(54, 'Pretest plc mtu 1 siswa','pretest', 'pre-test', 10, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(55, 'Pretest videografi mtu 1 siswa','pretest', 'pre-test', 9, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(56, 'Pretest fotografi mtu 1 siswa','pretest', 'pre-test', 8, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(57, 'Pretest tata pendingin dan tata udara mtu 1 siswa','pretest', 'pre-test', 4, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+
+
+-- posttest
+(58, 'Posttest Animasi Aksel guru','Posttest', 'post-test', 7, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(59, 'Posttest Desain Grafis Aksel guru','Posttest', 'post-test', 6, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(60, 'Posttest Fotografi Aksel guru','Posttest', 'post-test', 8, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(61, 'Posttest Videografi Aksel guru','Posttest', 'post-test', 9, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(62, 'Posttest Web Desain Aksel guru','Posttest', 'post-test', 5, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+(63, 'Posttest tata boga Aksel teknik guru','Posttest', 'post-test', 1, 8, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(64, 'Posttest tata busana Aksel teknik guru','Posttest', 'post-test', 2, 8, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(65, 'Posttest tata kecantikan Aksel teknik guru','Posttest', 'post-test', 3, 8, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(66, 'Posttest tata pendingin dan tata udara Aksel teknik guru','Posttest', 'post-test', 4, 8, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+(67, 'Posttest tata boga Aksel teknik siswa','Posttest', 'post-test', 1, 6, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(68, 'Posttest tata busana Aksel teknik siswa','Posttest', 'post-test', 2, 6, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(69, 'Posttest tata kecantikan Aksel teknik siswa','Posttest', 'post-test', 3, 6, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(70, 'Posttest tata pendingin dan tata udara Aksel teknik siswa','Posttest', 'post-test', 4, 6, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+(71, 'Posttest web desain Aksel mjc 1 siswa','Posttest', 'post-test', 5, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(72, 'Posttest videografi Aksel mjc 1 siswa','Posttest', 'post-test', 9, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(73, 'Posttest fotografi Aksel mjc 1 siswa','Posttest', 'post-test', 8, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(74, 'Posttest desain grafis Aksel mjc 1 siswa','Posttest', 'post-test', 6, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(75, 'Posttest animasi Aksel mjc 1 siswa','Posttest', 'post-test', 7, 7, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+(76, 'Posttest tata boga reguler teknik 1 siswa','Posttest', 'post-test', 1, 5, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(77, 'Posttest tata busana reguler teknik 1 siswa','Posttest', 'post-test', 2, 5, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(78, 'Posttest tata kecantikan reguler teknik 1 siswa','Posttest', 'post-test', 3, 5, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(79, 'Posttest tata pendingin dan tata udara reguler teknik 1 siswa','Posttest', 'post-test', 4, 5, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+-- sudah ada di atas teknik ang 2
+(80, 'Posttest tata boga reguler teknik 2 siswa','Posttest', 'post-test', 1, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(81, 'Posttest tata busana reguler teknik 2 siswa','Posttest', 'post-test', 2, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(82, 'Posttest tata kecantikan reguler teknik 2 siswa','Posttest', 'post-test', 3, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(83, 'Posttest tata pendingin dan tata udara reguler teknik 2 siswa','Posttest', 'post-test', 4, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+(84, 'Posttest animasi reguler mjc 1 siswa','Posttest', 'post-test', 7, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(85, 'Posttest desain grafis reguler mjc 1 siswa','Posttest', 'post-test', 6, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(86, 'Posttest fotografi reguler mjc 1 siswa','Posttest', 'post-test', 8, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(87, 'Posttest videografi reguler mjc 1 siswa','Posttest', 'post-test', 9, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(88, 'Posttest web desain reguler mjc 1 siswa','Posttest', 'post-test', 5, 9, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+(89, 'Posttest animasi reguler mjc 2 siswa','Posttest', 'post-test', 7, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(90, 'Posttest desain grafis reguler mjc 2 siswa','Posttest', 'post-test', 6, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(91, 'Posttest fotografi reguler mjc 2 siswa','Posttest', 'post-test', 8, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(92, 'Posttest videografi reguler mjc 2 siswa','Posttest', 'post-test', 9, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(93, 'Posttest web desain reguler mjc 2 siswa','Posttest', 'post-test', 5, 10, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+
+(94, 'Posttest fotografi mtu 1 siswa','Posttest', 'post-test', 8, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(95, 'Posttest videografi mtu 1 siswa','Posttest', 'post-test', 9, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(96, 'Posttest plc mtu 1 siswa','Posttest', 'post-test', 10, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+(97, 'Posttest tata pendingin dan tata udara mtu 1 siswa','Posttest', 'post-test', 4, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53')
+
+
+-- (94, 'Posttest fotografi mtu 1 siswa','pretest', 'tes', 11, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (95, 'Posttest plc mtu 1 siswa','pretest', 'tes', 11, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (96, 'Posttest videografi mtu 1 siswa','pretest', 'tes', 11, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
+-- (97, 'Posttest tata pendingin dan tata udara mtu 1 siswa','pretest', 'tes', 11, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53')
+
+
+;
 
 --
 -- Dumping data for table `users`

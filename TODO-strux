@@ -489,3 +489,87 @@ TODO posttest
 TODO praktek
 TODO semua nilai (tanpa nilai survei)
 TODO semua jawaban user (pretest, possttest, survey / monev)
+
+
+
+
+masukkin data pretest
+dari pretest posttest  -> jadikan diagram (ambil dari survey)
+
+
+MONEV
+monev aksel guru
+monev aksel Teknik guru
+monev aksel Teknik siswa
+monev siswa aksel mjc 
+monev siswa regular Teknik 1
+monev siswa regular mjc 1
+monev siswa regular mjc 2
+monev siswa mtu 1
+
+
+sudah di database
+monev siswa regular Teknik 2
+monev siswa mtu 2
+
+
+PRETEST
+⦁	pretest aksel guru 			5 done
+⦁	pretest aksel Teknik guru		4 done
+⦁	pretest aksel Teknik siswa		4 done
+⦁	pretest siswa aksel mjc 		5 done
+⦁	pretest siswa regular Teknik 1	4 done
+⦁	pretest siswa regular Teknik 2	4 done
+⦁	pretest siswa regular mjc 1		5 done
+⦁	pretest siswa regular mjc 2		5 done
+⦁	pretest siswa mtu 1			4 done (5 actually)
+
+
+sudah di database (cek ulang)
+⦁	pretest siswa regular Teknik 2	v
+⦁	pretest siswa mtu 2			v
+
+
+
+
+POSTTEST
+⦁	posttest aksel guru			      5 done
+⦁	posttest aksel Teknik guru		4 done
+⦁	posttest aksel Teknik siswa		4 done
+⦁	posttest siswa aksel mjc 		  5 done
+⦁	posttest siswa regular Teknik 1	4 done
+⦁	posttest siswa regular Teknik 2	4 done
+⦁	posttest siswa regular mjc 1		5 done
+⦁	posttest siswa regular mjc 2		5 done
+⦁	posttest siswa mtu 1			4 done (actualy 5)
+
+
+sudah di database
+⦁	posttest siswa regular Teknik 2	x
+⦁	posttest siswa mtu 2			x
+
+CREATE TABLE id_mapping(
+  `old_id` bigint(20) unsigned NOT NULL,
+  `new_id` bigint(20) unsigned NOT NULL,
+
+  PRIMARY KEY (`old_id`),
+  UNIQUE KEY `new_id` ( `new_id`)
+)
+
+
+INSERT INTO `id_mapping` (`old_id`,`new_id`)
+VALUES
+(1,43),
+(2,42),
+(3,40),
+(4,41),
+(5,103),
+(6,1),
+(7,2),
+(8,3),
+(98,4),
+(99,5),
+(100,6),
+(101,7),
+(102,8);
+

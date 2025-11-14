@@ -12,7 +12,10 @@ class ReportJawabanSurvei extends Page
 {
     protected static string $resource = JawabanSurveiResource::class;
     protected static string $view = 'filament.resources.jawaban-surveis.pages.report-page';
-    protected static ?string $title = 'Report Jawaban Survei';
+    protected static ?string $title = 'Report Jawaban survey';
+
+    #[Url(as: 'tipe')]
+    public ?string $tipe = 'survey';
 
     #[Url(as: 'pelatihanId')]
     public ?int $pelatihanId = null;
@@ -27,11 +30,20 @@ class ReportJawabanSurvei extends Page
         $this->pelatihanId ??= request()->integer('pelatihanId');
         $this->print = request()->boolean('print');
 
+        $this->tipe = request()->string('tipe', $this->tipe ?? 'survey');
+
         $nama = $this->pelatihanId
             ? Pelatihan::whereKey($this->pelatihanId)->value('nama_pelatihan')
             : null;
 
         $this->subtitle = $nama ? "Pelatihan: {$nama}" : null;
+
+        static::$title = 'Report ' . match ($this->tipe) {
+            'pre-test' => 'Pre-Test',
+            'post-test' => 'Post-Test',
+            'survey' => 'survey',
+            default => 'Jawaban survey',
+        };
     }
 
     protected function getHeaderActions(): array

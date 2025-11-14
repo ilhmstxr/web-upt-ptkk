@@ -98,6 +98,7 @@ class JawabanSurveiResource extends Resource
             'index' => Pages\ListJawabanSurveis::route('/'),
             'create' => Pages\CreateJawabanSurvei::route('/create'),
             'edit' => Pages\EditJawabanSurvei::route('/{record}/edit'),
+            'select' => Pages\SelectReportType::route('/select'),
             'report' => Pages\ReportJawabanSurvei::route('/report'), // ini
         ];
     }

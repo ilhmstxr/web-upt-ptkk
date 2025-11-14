@@ -36,8 +36,9 @@ class ImportSqlFile extends Command
             return 1;
         }
 
+
         // 1. Tentukan urutan eksekusi tabel yang benar
-        $tableOrder = [
+        $tableOrder1 = [
             'bidang',
             'cabang_dinas',
             'instansi',
@@ -56,6 +57,10 @@ class ImportSqlFile extends Command
             'pendaftaran_pelatihan',
         ];
 
+        $tableOrder2 = [
+            'inject_data',
+            'inject_data_details'
+        ];
         try {
             $this->info('Reading and parsing SQL file...');
             $groupedInserts = [];
@@ -79,10 +84,33 @@ class ImportSqlFile extends Command
                 }
             }
 
+            // --- LOGIKA PEMILIHAN tableOrder ADA DI SINI ---
+
+            // 1. Dapatkan semua nama tabel yang ADA di file SQL
+            $foundTablesInSql = array_keys($groupedInserts);
+
+            // 2. Cek apakah ada tabel dari $tableOrder1 yang ditemukan di file SQL
+            $intersection = array_intersect($tableOrder1, $foundTablesInSql);
+
+            if (!empty($intersection)) {
+                // 3. JIKA DITEMUKAN: Kita gunakan $tableOrder1
+                $this->info('Main tables (Order 1) detected. Using Main Order.');
+                $tableOrder = $tableOrder1;
+            } else {
+                // 4. JIKA TIDAK: Kita asumsikan ini adalah $tableOrder2
+                $this->info('Main tables not found. Using Inject Order (Order 2).');
+                $tableOrder = $tableOrder2;
+            }
+            
+            // --- AKHIR DARI LOGIKA PEMILIHAN ---
+
+
             DB::transaction(function () use ($tableOrder, $groupedInserts) {
                 $this->info('Starting database import...');
 
-                foreach ($tableOrder as $tableName) {
+                // $tableOrder sekarang berisi $tableOrder1 atau $tableOrder2
+                // sesuai hasil deteksi di atas.
+                foreach ($tableOrder as $tableName) { 
                     if (isset($groupedInserts[$tableName])) {
                         $this->line(" - Inserting data for table: {$tableName}");
                         foreach ($groupedInserts[$tableName] as $insertQuery) {
@@ -99,5 +127,8 @@ class ImportSqlFile extends Command
         }
 
         return 0;
+    
+
     }
+
 }

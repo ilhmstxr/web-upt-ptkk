@@ -16,15 +16,21 @@ use Illuminate\Support\Facades\DB;
 trait BuildsLikertData
 {
     /** Ambil pertanyaan_id berbasis pelatihan → tes(survei) → pertanyaan(skala_likert). */
-    protected function collectPertanyaanIds(?int $pelatihanId): Collection
+    // protected function collectPertanyaanIds(?int $pelatihanId, ?string $tipe = 'survei'): Collection
+    protected function collectPertanyaanIds(?int $pelatihanId, ?string $tipe = 'survei'): Collection
     {
+        $localTipe = $tipe ?? 'survei';
+
         return JawabanUser::query()
             ->from('jawaban_user as ju')
             ->join('percobaan as pr', 'pr.id', '=', 'ju.percobaan_id')
             ->join('tes as t', 't.id', '=', 'pr.tes_id')
             ->join('pertanyaan as p', 'p.id', '=', 'ju.pertanyaan_id')
-            ->where('t.tipe', 'survei')
-            ->where('p.tipe_jawaban', 'skala_likert')
+            ->where('t.tipe', $localTipe)
+            // --- LOGIKA KONDISIONAL: Filter skala_likert HANYA jika 'survei' ---
+            ->when($localTipe === 'survei', function ($query) {
+                return $query->where('p.tipe_jawaban', 'skala_likert');
+            })
             ->when($pelatihanId, fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
             ->distinct()
             ->pluck('ju.pertanyaan_id')
@@ -136,10 +142,24 @@ trait BuildsLikertData
      * Dataset label digabung dengan persentase kumulatif antar semua kategori.
      * Asumsi kolom kategori tersedia pada tabel `pertanyaan` (ubah jika berbeda).
      */
-    public function buildPerKategori(?int $pelatihanId, array $range = []): array
+    public function buildPerKategori(?int $pelatihanId, array $range = [], ?string $tipe = 'survei'): array
     {
-        // Bagian awal untuk mengambil data mentah tetap sama
-        $ids = $this->collectPertanyaanIds($pelatihanId);
+        $localTipe = $tipe ?? 'survei';
+
+        // --- INI ADALAH LOGIKA BARU YANG ANDA MINTA ---
+        // Jika tipenya BUKAN 'survei', maka chart "Per Kategori" ini tidak relevan
+        // karena Pre-test/Post-test tidak memiliki kategori kompleks.
+        // Kita kembalikan data kosong agar chart tidak ditampilkan.
+        if ($localTipe !== 'survei') {
+            return ['labels' => [], 'datasets' => []];
+        }
+        // --- AKHIR LOGIKA BARU ---
+
+        // Jika kita sampai di sini, berarti $localTipe === 'survei'.
+        // Kita jalankan semua logika kompleks khusus untuk survei.
+
+        // 1. Ambil data dasar (ini sudah dinamis)
+        $ids = $this->collectPertanyaanIds($pelatihanId, $localTipe);
         if ($ids->isEmpty()) {
             return ['labels' => [], 'datasets' => []];
         }
@@ -147,50 +167,11 @@ trait BuildsLikertData
         [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($ids);
         $answers = $this->normalizedAnswers($pelatihanId, $ids, $pivot, $opsiIdToSkala, $opsiTextToId);
 
-        // Bagian untuk memetakan pertanyaan ke kategori dinamis juga tetap sama
-        $tesIds = DB::table('percobaan as pr')
-            ->join('tes as t', 't.id', '=', 'pr.tes_id')
-            ->when($pelatihanId, fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
-            ->pluck('t.id')->unique()->values();
+        // 2. Panggil helper untuk memetakan kategori berdasarkan tipe
+        // (Ini adalah bagian yang kita refactor, dan sekarang HANYA berjalan untuk survei)
+        $mapKategori = $this->buildKategoriMap($pelatihanId, $localTipe);
 
-        $pertanyaanAll = Pertanyaan::whereIn('tes_id', $tesIds)
-            ->orderBy('tes_id')->orderBy('nomor')
-            ->get(['id', 'tes_id', 'tipe_jawaban', 'teks_pertanyaan']);
-
-        $mapKategori = [];
-        // Pastikan properti $arrayCustom ada di class Anda
-        $categoryNames = $this->arrayCustom ?? [];
-
-        foreach ($pertanyaanAll->groupBy('tes_id') as $questions) {
-            $groupKey = 1;
-            $tempQuestions = [];
-            foreach ($questions as $q) {
-                $tempQuestions[] = $q;
-                $isBoundary = $q->tipe_jawaban === 'teks_bebas'
-                    && str_starts_with(strtolower(trim($q->teks_pertanyaan)), 'pesan dan kesan');
-
-                if ($isBoundary) {
-                    $category = $categoryNames[$groupKey - 1] ?? ('Kategori ' . $groupKey);
-                    foreach ($tempQuestions as $item) {
-                        if ($item->tipe_jawaban === 'skala_likert') {
-                            $mapKategori[$item->id] = $category;
-                        }
-                    }
-                    $tempQuestions = [];
-                    $groupKey++;
-                }
-            }
-            if (!empty($tempQuestions)) {
-                $category = $categoryNames[$groupKey - 1] ?? ('Kategori ' . $groupKey);
-                foreach ($tempQuestions as $item) {
-                    if ($item->tipe_jawaban === 'skala_likert') {
-                        $mapKategori[$item->id] = $category;
-                    }
-                }
-            }
-        }
-
-        // Hitung jawaban per kategori untuk setiap skala
+        // 3. Hitung jawaban per kategori untuk setiap skala (Logika ini umum)
         $countsMatrix = [];
         foreach ($answers as $a) {
             $pertanyaanId = $a['pertanyaan_id'];
@@ -211,10 +192,10 @@ trait BuildsLikertData
             return ['labels' => [], 'datasets' => []];
         }
 
-        // Susun label kategori (sumbu X)
+        // 4. Susun label kategori (sumbu X)
         $labels = array_keys($countsMatrix);
 
-        // Siapkan data untuk setiap dataset (setiap skala akan menjadi satu dataset)
+        // 5. Siapkan data untuk setiap dataset (Logika ini umum)
         $C1 = [];
         $C2 = [];
         $C3 = [];
@@ -226,7 +207,7 @@ trait BuildsLikertData
             $C4[] = $countsMatrix[$cat][4] ?? 0;
         }
 
-        // Hitung persentase total untuk setiap skala (untuk legenda)
+        // 6. Hitung persentase total untuk setiap skala (Logika ini umum)
         $t1 = array_sum($C1);
         $t2 = array_sum($C2);
         $t3 = array_sum($C3);
@@ -240,10 +221,7 @@ trait BuildsLikertData
 
         $fmt = fn(float $v) => str_replace('.', ',', number_format($v, 1));
 
-        // =================================================================
-        // AWAL DARI STRUKTUR OUTPUT BARU
-        // =================================================================
-
+        // 7. Kembalikan struktur chart (Logika ini umum)
         return [
             'labels' => $labels,
             'datasets' => [
@@ -312,7 +290,71 @@ trait BuildsLikertData
         ];
     }
 
+    /**
+     * FUNGSI HELPER BARU
+     * Fungsi ini berisi logika spesifik untuk memetakan pertanyaan ke kategori
+     * berdasarkan tipe laporannya (survey vs pre/post-test).
+     */
+    protected function buildKategoriMap(?int $pelatihanId, string $localTipe): array
+    {
+        $tesIds = DB::table('percobaan as pr')
+            ->join('tes as t', 't.id', '=', 'pr.tes_id')
+            ->when($pelatihanId, fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
+            ->where('t.tipe', $localTipe) // Filter $localTipe
+            ->pluck('t.id')->unique()->values();
 
+        $pertanyaanAll = Pertanyaan::whereIn('tes_id', $tesIds)
+            ->orderBy('tes_id')->orderBy('nomor')
+            ->get(['id', 'tes_id', 'tipe_jawaban', 'teks_pertanyaan']);
+
+        $mapKategori = [];
+        $categoryNames = $this->arrayCustom ?? [];
+
+        foreach ($pertanyaanAll->groupBy('tes_id') as $questions) {
+            $groupKey = 1;
+            $tempQuestions = [];
+            foreach ($questions as $q) {
+                $tempQuestions[] = $q;
+                $isBoundary = $q->tipe_jawaban === 'teks_bebas'
+                    && str_starts_with(strtolower(trim($q->teks_pertanyaan)), 'pesan dan kesan');
+
+                if ($isBoundary) {
+                    $category = $categoryNames[$groupKey - 1] ?? ('Kategori ' . $groupKey);
+                    foreach ($tempQuestions as $item) {
+                        // --- LOGIKA KONDISIONAL di sini ---
+                        if ($localTipe === 'survei') {
+                            if ($item->tipe_jawaban === 'skala_likert') {
+                                $mapKategori[$item->id] = $category;
+                            }
+                        } else {
+                            if ($item->tipe_jawaban !== 'teks_bebas') {
+                                $mapKategori[$item->id] = $category;
+                            }
+                        }
+                    }
+                    $tempQuestions = [];
+                    $groupKey++;
+                }
+            }
+            if (!empty($tempQuestions)) {
+                $category = $categoryNames[$groupKey - 1] ?? ('Kategori ' . $groupKey);
+                foreach ($tempQuestions as $item) {
+                    // --- LOGIKA KONDISIONAL di sini (duplikat) ---
+                    if ($localTipe === 'survei') {
+                        if ($item->tipe_jawaban === 'skala_likert') {
+                            $mapKategori[$item->id] = $category;
+                        }
+                    } else {
+                        if ($item->tipe_jawaban !== 'teks_bebas') {
+                            $mapKategori[$item->id] = $category;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $mapKategori;
+    }
     public function buildPiePerPertanyaan(?int $pelatihanId, ?int $pertanyaanId, array $range = []): array
     {
         // Jika tidak ada ID pertanyaan spesifik yang diberikan, kembalikan data kosong.
@@ -685,3 +727,51 @@ trait BuildsLikertData
         ];
     }
 }
+
+
+
+
+
+
+// Bagian untuk memetakan pertanyaan ke kategori dinamis juga tetap sama
+// $tesIds = DB::table('percobaan as pr')
+//     ->join('tes as t', 't.id', '=', 'pr.tes_id')
+//     ->when($pelatihanId, fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
+//     ->pluck('t.id')->unique()->values();
+
+// $pertanyaanAll = Pertanyaan::whereIn('tes_id', $tesIds)
+//     ->orderBy('tes_id')->orderBy('nomor')
+//     ->get(['id', 'tes_id', 'tipe_jawaban', 'teks_pertanyaan']);
+
+// $mapKategori = [];
+// // Pastikan properti $arrayCustom ada di class Anda
+// $categoryNames = $this->arrayCustom ?? [];
+
+// foreach ($pertanyaanAll->groupBy('tes_id') as $questions) {
+//     $groupKey = 1;
+//     $tempQuestions = [];
+//     foreach ($questions as $q) {
+//         $tempQuestions[] = $q;
+//         $isBoundary = $q->tipe_jawaban === 'teks_bebas'
+//             && str_starts_with(strtolower(trim($q->teks_pertanyaan)), 'pesan dan kesan');
+
+//         if ($isBoundary) {
+//             $category = $categoryNames[$groupKey - 1] ?? ('Kategori ' . $groupKey);
+//             foreach ($tempQuestions as $item) {
+//                 if ($item->tipe_jawaban === 'skala_likert') {
+//                     $mapKategori[$item->id] = $category;
+//                 }
+//             }
+//             $tempQuestions = [];
+//             $groupKey++;
+//         }
+//     }
+//     if (!empty($tempQuestions)) {
+//         $category = $categoryNames[$groupKey - 1] ?? ('Kategori ' . $groupKey);
+//         foreach ($tempQuestions as $item) {
+//             if ($item->tipe_jawaban === 'skala_likert') {
+//                 $mapKategori[$item->id] = $category;
+//             }
+//         }
+//     }
+// }
