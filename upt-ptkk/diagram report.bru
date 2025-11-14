@@ -1,7 +1,7 @@
 meta {
-  name: report diagram
+  name: diagram report
   type: http
-  seq: 3
+  seq: 4
 }
 
 get {
@@ -12,4 +12,9 @@ get {
 
 params:query {
   pelatihanId: 1
+}
+
+auth:basic {
+  username: admin@admin
+  password: admin
 }

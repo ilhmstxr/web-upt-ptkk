@@ -52,7 +52,8 @@ class JawabanAkumulatifChart extends ChartWidget
             "{$base[3]} — {$fmt($pct[3])}%",
         ];
 
-        return [
+        return [ 
+        // $finalData =  [
             'labels' => $labels,
             'datasets' => [[
                 'label' => 'Jumlah Jawaban',
@@ -68,6 +69,8 @@ class JawabanAkumulatifChart extends ChartWidget
                 ],
             ],
         ];
+
+        // dd($finalData);
     }
 
     protected function getType(): string

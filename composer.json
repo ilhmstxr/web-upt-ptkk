@@ -8,7 +8,7 @@
     "require": {
         "php": "^8.2",
         "alperenersoy/filament-export": "^3.0",
-        "barryvdh/laravel-dompdf": "^3.1",
+        "barryvdh/laravel-snappy": "*",
         "blade-ui-kit/blade-heroicons": "^2.5",
         "blade-ui-kit/blade-icons": "^1.8",
         "filament/filament": "^3.3",
@@ -24,6 +24,7 @@
         "phpoffice/phpword": "^1.4",
         "saade/filament-fullcalendar": "^3.2",
         "spatie/browsershot": "^5.0",
+        "spatie/laravel-pdf": "^1.8",
         "spatie/laravel-permission": "^6.21"
     },
     "require-dev": {

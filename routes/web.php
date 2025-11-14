@@ -21,6 +21,15 @@ use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
+use Illuminate\Support\Facades\DB;
+
+
+use App\Models\Pertanyaan;
+use App\Models\OpsiJawaban;
+use App\Models\JawabanUser;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Response;
+use Spatie\Browsershot\Browsershot;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,9 +82,34 @@ Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk
 
 // Cetak Massal & Exports
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
-Route::get('/exports/pendaftaran/{pelatihan}/bulk',   [PendaftaranController::class, 'exportBulk'])->name('exports.pendaftaran.bulk');
-Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::class, 'exportSample'])->name('exports.pendaftaran.sample');
-Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])->name('exports.pendaftaran.single');
+Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
+Route::get('/exports/pendaftaran/{pelatihan}/bulk',   [PendaftaranController::class, 'exportBulk'])
+    ->name('exports.pendaftaran.bulk');
+
+Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::class, 'exportSample'])
+    ->name('exports.pendaftaran.sample');
+
+Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
+    ->name('exports.pendaftaran.single');
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/reports/jawaban-akumulatif/pdf', [ExportController::class, 'jawabanAkumulatifPdf'])
+//         ->name('reports.jawaban-akumulatif.pdf');
+// });
+// Route::middleware(['auth']) // opsional, sesuai kebutuhan
+//     ->get('/exports/report-jawaban-survei', [ExportController::class, 'reportJawabanSurvei'])
+//     ->name('export.report-jawaban-survei');
+
+Route::middleware(['auth'])
+    ->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
+    ->name('export.report.pelatihan');
+// routes/web.php
+Route::middleware(['auth']) // opsional
+    ->get('/reports/jawaban-survei/pdf/{pelatihanId}', [ExportController::class, 'pdfView'])
+    ->name('reports.jawaban-survei.pdf');
+
+// Tambahkan middleware jika halaman ini hanya boleh diakses oleh user yang login
+
+
 
 // Step View
 Route::prefix('pendaftaran/step')->group(function () {
@@ -217,4 +251,58 @@ Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBul
 
 Route::get('/cek_icon', fn() => view('cek_icon'));
 
+/*
+|--------------------------------------------------------------------------
+| Auth (login, register, dll.)
+|--------------------------------------------------------------------------
+*/
+
+
+//     // return view("welcome");
+// });
 require __DIR__ . '/auth.php';
+
+
+
+/*
+|--------------------------------------------------------------------------
+| TESTING
+|--------------------------------------------------------------------------
+*/
+
+route::get('test-pdf', function () {
+    return view('test-pdf');
+});
+
+// Route::get('testing-export-pdf', function ($pelatihanId) {
+//     $view = view('filament.resources.jawaban-surveis.pages.report-page', ['pelatihanId' => $pelatihanId])->render();
+//     // $view = view('test-pdf')->render();
+//     $pdf = Browsershot::html($view)->pdf();
+//     // $pdfContent = Browsershot::url('https://example.com')->pdf();
+//     // $pdfContent = Browsershot::url('http://127.0.0.1:8000/exports/report-jawaban-survei?pelatihanId=1')->pdf();
+
+//     return Response::make($pdf, 200, [
+//         'Content-Type' => 'application/pdf',
+//         'Content-Disposition' => 'inline; filename="laporan.pdf"',
+//     ]);
+
+
+if (App::isLocal()) {
+
+    // Muat semua fungsi dari file playground kita
+    require_once __DIR__ . '/sandbox.php';
+
+    // Ini adalah satu-satunya route yang Anda butuhkan untuk semua testing
+    Route::get('/test', function () {
+
+        // CUKUP GANTI NAMA FUNGSI DI BAWAH INI
+        // UNTUK MENGETES LOGIKA YANG BERBEDA.
+
+        $result = SurveyHasilKegiatan();
+        // $result = testCreateDummyUser();
+        // $result = testSomethingElse();
+
+        // Tampilkan hasilnya
+        return response()->json($result);
+    });
+}

@@ -93,15 +93,16 @@ class TesPercobaanResource extends Resource
 
                 TextColumn::make('peserta_display')
                     ->label('Peserta')
-                    ->state(fn ($record) =>
+                    ->state(
+                        fn($record) =>
                         $record->pesertaSurvei?->nama
                             ?? $record->peserta?->nama
                             ?? '-'
                     )
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->where(function (Builder $nested) use ($search) {
-                            $nested->whereHas('pesertaSurvei', fn (Builder $rel) => $rel->where('nama', 'like', "%{$search}%"))
-                                   ->orWhereHas('peserta', fn (Builder $rel) => $rel->where('nama', 'like', "%{$search}%"));
+                            $nested->whereHas('pesertaSurvei', fn(Builder $rel) => $rel->where('nama', 'like', "%{$search}%"))
+                                ->orWhereHas('peserta', fn(Builder $rel) => $rel->where('nama', 'like', "%{$search}%"));
                         });
                     })
                     ->sortable(),
@@ -109,7 +110,8 @@ class TesPercobaanResource extends Resource
                 TextColumn::make('bidang')
                     ->label('Bidang')
                     ->badge()
-                    ->state(fn ($record) =>
+                    ->state(
+                        fn($record) =>
                         $record->pesertaSurvei?->bidang?->nama_bidang
                             ?? $record->peserta?->bidang?->nama_bidang
                             ?? '-'
@@ -210,43 +212,45 @@ class TesPercobaanResource extends Resource
                     ->form([
                         TextInput::make('search_name')->placeholder('Ketik nama…')->live(debounce: 500),
                     ])
-                    ->query(fn (Builder $query, array $data) =>
+                    ->query(
+                        fn(Builder $query, array $data) =>
                         $query->when($data['search_name'] ?? null, function (Builder $filtered, string $term) {
                             $filtered->where(function (Builder $nested) use ($term) {
-                                $nested->whereHas('pesertaSurvei', fn (Builder $rel) => $rel->where('nama', 'like', "%{$term}%"))
-                                       ->orWhereHas('peserta', fn (Builder $rel) => $rel->where('nama', 'like', "%{$term}%"));
+                                $nested->whereHas('pesertaSurvei', fn(Builder $rel) => $rel->where('nama', 'like', "%{$term}%"))
+                                    ->orWhereHas('peserta', fn(Builder $rel) => $rel->where('nama', 'like', "%{$term}%"));
                             });
                         })
                     ),
 
                 SelectFilter::make('bidang_id')
                     ->label('Bidang')
-                    ->options(fn () => DB::table('bidang')->orderBy('nama_bidang')->pluck('nama_bidang', 'id')->toArray())
+                    ->options(fn() => DB::table('bidang')->orderBy('nama_bidang')->pluck('nama_bidang', 'id')->toArray())
                     ->multiple()
                     ->searchable()
-                    ->query(fn (Builder $query, array $data) =>
+                    ->query(
+                        fn(Builder $query, array $data) =>
                         $query->when(($data['values'] ?? []) !== [], function (Builder $filtered) use ($data) {
                             $ids = $data['values'];
                             $filtered->where(function (Builder $nested) use ($ids) {
-                                $nested->whereHas('pesertaSurvei', fn (Builder $rel) => $rel->whereIn('bidang_id', $ids))
-                                       ->orWhereHas('peserta', fn (Builder $rel) => $rel->whereIn('bidang_id', $ids));
+                                $nested->whereHas('pesertaSurvei', fn(Builder $rel) => $rel->whereIn('bidang_id', $ids))
+                                    ->orWhereHas('peserta', fn(Builder $rel) => $rel->whereIn('bidang_id', $ids));
                             });
                         })
                     ),
 
                 SelectFilter::make('instansi_id')
                     ->label('Instansi')
-                    ->options(fn () => DB::table('instansi')->orderBy('asal_instansi')->pluck('asal_instansi', 'id')->toArray())
+                    ->options(fn() => DB::table('instansi')->orderBy('asal_instansi')->pluck('asal_instansi', 'id')->toArray())
                     ->multiple()
                     ->searchable()
                     ->query(function (Builder $query, array $data) {
                         $ids = $data['values'] ?? [];
                         if ($ids === []) return;
 
-                        $query->whereHas('peserta', fn (Builder $rel) => $rel->whereIn('instansi_id', $ids));
+                        $query->whereHas('peserta', fn(Builder $rel) => $rel->whereIn('instansi_id', $ids));
 
                         if (method_exists(\App\Models\PesertaSurvei::class, 'instansi')) {
-                            $query->orWhereHas('pesertaSurvei.instansi', fn (Builder $rel) => $rel->whereIn('id', $ids));
+                            $query->orWhereHas('pesertaSurvei.instansi', fn(Builder $rel) => $rel->whereIn('id', $ids));
                         }
                     }),
 
@@ -274,9 +278,10 @@ class TesPercobaanResource extends Resource
                         DatePicker::make('from')->label('Dari'),
                         DatePicker::make('until')->label('Sampai'),
                     ])
-                    ->query(fn (Builder $query, array $data) =>
-                        $query->when($data['from'] ?? null, fn (Builder $filtered, $from) => $filtered->whereDate('waktu_mulai', '>=', $from))
-                              ->when($data['until'] ?? null, fn (Builder $filtered, $until) => $filtered->whereDate('waktu_mulai', '<=', $until))
+                    ->query(
+                        fn(Builder $query, array $data) =>
+                        $query->when($data['from'] ?? null, fn(Builder $filtered, $from) => $filtered->whereDate('waktu_mulai', '>=', $from))
+                            ->when($data['until'] ?? null, fn(Builder $filtered, $until) => $filtered->whereDate('waktu_mulai', '<=', $until))
                     ),
 
                 TernaryFilter::make('status')
@@ -284,9 +289,9 @@ class TesPercobaanResource extends Resource
                     ->trueLabel('Selesai')
                     ->falseLabel('Proses')
                     ->queries(
-                        true:  fn (Builder $query) => $query->whereNotNull('waktu_selesai'),
-                        false: fn (Builder $query) => $query->whereNull('waktu_selesai'),
-                        blank: fn (Builder $query) => $query,
+                        true: fn(Builder $query) => $query->whereNotNull('waktu_selesai'),
+                        false: fn(Builder $query) => $query->whereNull('waktu_selesai'),
+                        blank: fn(Builder $query) => $query,
                     ),
             ])
             ->filtersFormColumns(3)
@@ -326,10 +331,12 @@ class TesPercobaanResource extends Resource
         return [];
     }
 
-     public static function getPages(): array
+    public static function getPages(): array
     {
         return [
-            'dashboard' => Pages\DashboardTesPercobaan::route('/'),
+            // tambahkan 'index' supaya Filament membuat route 'filament.admin.resources.tes-percobaans.index'
+            'index'     => Pages\ListTesPercobaan::route('/'),
+            'dashboard' => Pages\DashboardTesPercobaan::route('/dashboard'),
             'angkatan'  => Pages\AngkatanTesPage::route('/angkatan/{pelatihan}'),
             'bidang'    => Pages\BidangTesPage::route('/angkatan/{pelatihan}/{angkatan}'),
             'peserta'   => Pages\PesertaTesPage::route('/angkatan/{pelatihan}/{angkatan}/{bidang}'),

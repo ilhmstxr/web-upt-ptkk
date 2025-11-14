@@ -15,9 +15,28 @@ USER
 - CHECK Di form MTU ada perbedaan dengan aksel dan reguler yaitu ga ada surat sehat (segera bedakan data masuk jika buat pendaftaran mtu ya masuk mtu dan reguler masuk reguler dst)
 - DONE Pretest Postest
 
+RESTRUCTURING DATABASE
+- percobaan table
+- tes_pertanyaan_table
+
+
+
 ADMIN
-- TODO buat chart monev
-- TODO export monev ke excel
+- DONE buat chart survey monev 
+fetching pelatihan
+per pelatihan nanti di fetch lagi tabel percobaan
+lalu tabel percobaan di join dengan jawaban user lalu dihitung untuk survey monev berdasarkan
+1. akumulasi totall
+2. jawaban per kategori
+3. jawaban per pertanyaan
+
+
+- PROGRESS buat chart nilai monev
+fetching pelatihan
+fetching skor dari percobaan
+fetching tabel per 
+
+- PROGRESS export nilai monev ke excel
 - TODO benerin peserta downloadnya jadi zip
 
 - TODO bikin template email buat token
@@ -25,7 +44,7 @@ ADMIN
 - TODO bikin hasil monev
 - TODO bikin hasil post-test pretest
 - TODO bikin dokumen
--
+
 
 tes pertanyaan
 tes
@@ -55,3 +74,15 @@ SKEMA TABEL INJECTION
 - percobaan             xv
 - jawaban user          xv
 - pendaftaran_pelatihan xv
+
+
+user_id bermasalah
+11 amelta aulia subarko
+49 syaiful bahri
+muhammad nazar qoirun nazmi
+12 lutfi hidaya turrohim
+54 dayinta suryaning
+
+SELECT * from peserta WHERE nama LIKE "%AMELTA%";
+MUHAMMAD NAZAR QOIRUN NAZMI
+mnazar.qn18@gmail.com

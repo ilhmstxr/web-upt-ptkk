@@ -24,6 +24,9 @@ class PiePerPertanyaanWidget extends Widget
     protected static bool $isLazy = false; // penting
     public array $charts = [];
 
+    // REVISI TIDAK DIPERLUKAN DI FILE INI.
+    // Logika pengambilan dan pemrosesan data di backend sudah benar.
+    // Masalah ukuran chart ada di bagian frontend (file .blade.php).
     public function mount(): void
     {
         $pelatihanId = $this->pelatihanId ?? request()->integer('pelatihanId');
@@ -39,63 +42,63 @@ class PiePerPertanyaanWidget extends Widget
         [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIds);
         $rows = $this->normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId);
 
-        $matrix = [];
-        foreach ($pertanyaanIds as $pid) {
-            $matrix[$pid] = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
-        }
+        $answersByQuestion = [];
         foreach ($rows as $r) {
-            if (!empty($r['skala'])) {
-                $matrix[(int) $r['pertanyaan_id']][(int) $r['skala']]++;
+            $pid = (int) ($r['pertanyaan_id'] ?? 0);
+            $scale = (int) ($r['skala'] ?? 0);
+
+            if ($pid === 0 || $scale === 0) {
+                continue;
             }
+
+            $answersByQuestion[$pid][$scale] = ($answersByQuestion[$pid][$scale] ?? 0) + 1;
         }
-        
-        $labels = ['Tidak Memuaskan', 'Kurang Memuaskan', 'Cukup Memuaskan', 'Sangat Memuaskan'];
-
-        // $questions = Pertanyaan::whereIn('id', $pertanyaanIds)->where('tipe_jawaban', 'skala_likert')
-        //     ->orderBy('tes_id')->orderBy('nomor')
-        //     ->get(['id', 'nomor', 'teks_pertanyaan']);
-
-
-        // $this->charts = $questions->map(function (Pertanyaan $q) use ($matrix, $labels) {
-        //     $data = $matrix[$q->id] ?? [1 => 0, 2 => 0, 3 => 0, 4 => 0];
-        //     $counts = [$data[1] ?? 0, $data[2] ?? 0, $data[3] ?? 0, $data[4] ?? 0];
-        //     $total = array_sum($counts);
-
-        //     $percentages = $total > 0
-        //         ? array_map(fn($count) => round(($count / $total) * 100, 1), $counts)
-        //         : [0, 0, 0, 0];
-
-        //     return [
-        //         'question_id'    => $q->id,
-        //         'question_label' => ($q->nomor ? "Q{$q->nomor}. " : "Q{$q->id}. ") . $q->teks_pertanyaan,
-        //         'labels'         => $labels,
-        //         'data'           => $counts,       // Data jumlah/total
-        //         'percentages'    => $percentages,  // Data persentase
-        //     ];
 
         $questions = Pertanyaan::whereIn('id', $pertanyaanIds)
             ->where('tipe_jawaban', 'skala_likert')
-            ->orderBy('tes_id')->orderBy('nomor')
-            ->get(['id', 'nomor', 'teks_pertanyaan'])
+            ->with([
+                'opsiJawabans:id,pertanyaan_id,teks_opsi',
+                'templates.opsiJawabans:id,pertanyaan_id,teks_opsi',
+            ])
+            ->orderBy('tes_id')
+            ->orderBy('nomor')
+            ->get(['id', 'tes_id', 'nomor', 'teks_pertanyaan'])
             ->values(); // reindex 0..N-1
 
-        $this->charts = $questions->map(function (Pertanyaan $q, int $i) use ($matrix, $labels) {
-            $data  = $matrix[$q->id] ?? [1 => 0, 2 => 0, 3 => 0, 4 => 0];
-            $counts = [$data[1] ?? 0, $data[2] ?? 0, $data[3] ?? 0, $data[4] ?? 0];
-            $total  = array_sum($counts);
+        $this->charts = $questions->map(function (Pertanyaan $q, int $i) use ($answersByQuestion) {
+            $labels = $q->opsiJawabans?->pluck('teks_opsi')->values()->all() ?? [];
+
+            if (empty($labels) && isset($answersByQuestion[$q->id])) {
+                $maxScale = (int) max(array_keys($answersByQuestion[$q->id]));
+                $labels = array_map(fn(int $idx) => "Skala {$idx}", range(1, $maxScale));
+            }
+
+            $counts = [];
+            $labelCount = count($labels);
+            if ($labelCount > 0) {
+                for ($idx = 1; $idx <= $labelCount; $idx++) {
+                    $counts[] = $answersByQuestion[$q->id][$idx] ?? 0;
+                }
+            } else {
+                $counts = array_values($answersByQuestion[$q->id] ?? []);
+            }
+
+            $total   = array_sum($counts);
             $percentages = $total > 0
                 ? array_map(fn($c) => round(($c / $total) * 100, 1), $counts)
-                : [0, 0, 0, 0];
+                : array_fill(0, count($counts), 0);
 
             $displayNo = $i + 1;
 
             return [
+            // $data = [
                 'question_id'    => $q->id,
                 'question_label' => "Q{$displayNo}. " . $q->teks_pertanyaan,
                 'labels'         => $labels,
                 'data'           => $counts,
                 'percentages'    => $percentages,
             ];
+            // dd($data);
         })->values()->all();
     }
 }

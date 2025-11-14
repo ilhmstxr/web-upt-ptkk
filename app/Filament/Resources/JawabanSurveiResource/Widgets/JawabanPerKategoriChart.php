@@ -141,6 +141,7 @@ class JawabanPerKategoriChart extends ChartWidget
 
         // ---- return chart config ----
         return [
+        // $data =  [
             'labels' => $labels,
             'datasets' => [
                 [
@@ -206,6 +207,8 @@ class JawabanPerKategoriChart extends ChartWidget
                 ],
             ],
         ];
+
+        // dd($data);
     }
 
     protected function getType(): string

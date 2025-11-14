@@ -16,7 +16,7 @@ class JawabanSurveiResource extends Resource
     // ganti model ke JawabanUser
     protected static ?string $model = JawabanUser::class;
 
-    protected static ?string $navigationGroup = 'Survei Monev';
+    protected static ?string $navigationGroup = 'Hasil Kegiatan';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Jawaban Survei';
 
