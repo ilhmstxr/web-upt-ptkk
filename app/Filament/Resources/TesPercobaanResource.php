@@ -7,11 +7,10 @@ use App\Filament\Widgets\BidangScoresChart;
 use App\Filament\Widgets\BidangSummaryTable;
 use App\Models\Percobaan;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
+use Filament\Forms\Form as FilamentForm;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
+use Filament\Tables\Table as FilamentTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -19,14 +18,17 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BadgeColumn;
 
 class TesPercobaanResource extends Resource
 {
     protected static ?string $model = Percobaan::class;
 
-    protected static ?string $navigationIcon  = 'heroicon-o-clipboard';
+    protected static ?string $navigationIcon  = 'heroicon-o-document-check';
     protected static ?string $navigationGroup = 'Hasil Kegiatan';
-    protected static ?string $navigationLabel = 'Nilai Peserta';
+    protected static ?string $navigationLabel = 'Tes Percobaan / Nilai';
 
     protected function getHeaderWidgets(): array
     {
@@ -35,7 +37,7 @@ class TesPercobaanResource extends Resource
             // BidangScoresChart::class,
         ];
     }
-    public static function form(Form $form): Form
+    public static function form(FilamentForm $form): FilamentForm
     {
         return $form->schema([
             Forms\Components\Select::make('peserta_id')
@@ -45,7 +47,7 @@ class TesPercobaanResource extends Resource
                 ->required(),
 
             Forms\Components\Select::make('tes_id')
-                ->label('Tes')
+                ->label('Tes (pre/post/praktek/survei)')
                 ->relationship('tes', 'judul')
                 ->searchable()
                 ->required(),
@@ -66,7 +68,7 @@ class TesPercobaanResource extends Resource
         ]);
     }
 
-    public static function table(Table $table): Table
+    public static function table(FilamentTable $table): FilamentTable
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
@@ -154,7 +156,7 @@ class TesPercobaanResource extends Resource
                     ->limit(50) // Batasi teks agar tidak terlalu panjang
                     ->tooltip(fn($record) => $record->pesan_kesan), // Tampilkan full di tooltip
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y H:i')
                     ->sortable(),
@@ -220,11 +222,31 @@ class TesPercobaanResource extends Resource
             ->persistFiltersInSession()
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+
+                Tables\Actions\EditAction::make()
+                    ->visible(fn() => auth()->user()?->hasRole('admin')),
+
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn() => auth()->user()?->hasRole('admin')),
+
+                Tables\Actions\Action::make('export_excel')
+                    ->label('Export Excel')
+                    ->icon('heroicon-o-document-download')
+                    ->action(function () {
+                        $query = static::getModel()::query();
+                        return Excel::download(new TesPercobaanExport($query), 'tes_percobaan.xlsx');
+                    })
+                    ->requiresConfirmation()
+                    ->visible(fn() => auth()->user()?->can('export percobaan')),
+
+                Tables\Actions\Action::make('export_pdf')
+                    ->label('Export PDF')
+                    ->icon('heroicon-o-document-text')
+                    ->visible(fn() => auth()->user()?->can('export percobaan')),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make()
+                    ->visible(fn() => auth()->user()?->hasRole('admin')),
             ]);
     }
 
@@ -233,12 +255,15 @@ class TesPercobaanResource extends Resource
         return [];
     }
 
-    public static function getPages(): array
+     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListTesPercobaan::route('/'),
-            'create' => Pages\CreateTesPercobaan::route('/create'),
-            'edit'   => Pages\EditTesPercobaan::route('/{record}/edit'),
+            'dashboard' => Pages\DashboardTesPercobaan::route('/'),
+            'angkatan'  => Pages\AngkatanTesPage::route('/angkatan/{pelatihan}'),
+            'bidang'    => Pages\BidangTesPage::route('/angkatan/{pelatihan}/{angkatan}'),
+            'peserta'   => Pages\PesertaTesPage::route('/angkatan/{pelatihan}/{angkatan}/{bidang}'),
+            'create'    => Pages\CreateTesPercobaan::route('/create'),
+            'edit'      => Pages\EditTesPercobaan::route('/{record}/edit'),
         ];
     }
 }
