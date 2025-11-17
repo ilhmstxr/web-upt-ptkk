@@ -255,15 +255,18 @@ class TesPercobaanResource extends Resource
         return [];
     }
 
-     public static function getPages(): array
+    public static function getPages(): array
     {
         return [
-            'dashboard' => Pages\DashboardTesPercobaan::route('/'),
-            'angkatan'  => Pages\AngkatanTesPage::route('/angkatan/{pelatihan}'),
-            'bidang'    => Pages\BidangTesPage::route('/angkatan/{pelatihan}/{angkatan}'),
-            'peserta'   => Pages\PesertaTesPage::route('/angkatan/{pelatihan}/{angkatan}/{bidang}'),
-            'create'    => Pages\CreateTesPercobaan::route('/create'),
-            'edit'      => Pages\EditTesPercobaan::route('/{record}/edit'),
+            'index'  => Pages\ListTesPercobaan::route('/'),
+            'create' => Pages\CreateTesPercobaan::route('/create'),
+            'edit'   => Pages\EditTesPercobaan::route('/{record}/edit'),
+            // 'dashboard' => Pages\DashboardTesPercobaan::route('/'),
+            // 'angkatan'  => Pages\AngkatanTesPage::route('/angkatan/{pelatihan}'),
+            // 'bidang'    => Pages\BidangTesPage::route('/angkatan/{pelatihan}/{angkatan}'),
+            // 'peserta'   => Pages\PesertaTesPage::route('/angkatan/{pelatihan}/{angkatan}/{bidang}'),
+            // 'create'    => Pages\CreateTesPercobaan::route('/create'),
+            // 'edit'      => Pages\EditTesPercobaan::route('/{record}/edit'),
         ];
     }
 }
