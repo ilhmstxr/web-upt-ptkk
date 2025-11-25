@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Asrama - Maintenance</title>
+    <title>Manajemen Asrama - SIM-PELATIHAN</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
@@ -22,421 +23,421 @@
         }
     </script>
     <style>
-        /* Custom scrollbar for modals */
-        .modal-scroll::-webkit-scrollbar { width: 6px; }
-        .modal-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
-        .modal-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        /* Animation for modals */
-        .modal-enter { animation: fade-in 0.2s ease-out forwards; }
+        .bed-icon {
+            transition: all 0.2s;
+        }
+
+        .bed-card:hover .bed-icon {
+            transform: scale(1.1);
+        }
+
+        .modal-enter {
+            animation: fade-in 0.2s ease-out forwards;
+        }
+
         @keyframes fade-in {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-slate-800 font-sans min-h-screen pb-20 relative">
 
-    <!-- TOP NAVIGATION -->
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center gap-4">
-                    <div class="flex-shrink-0 flex items-center gap-2 text-primary font-bold text-xl">
-                        <i class="fa-solid fa-shapes"></i> LMS Admin
-                    </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Dashboard</a>
-                        <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Pelatihan</a>
-                        <a href="#" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Fasilitas & Asrama</a>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold animate-pulse border border-red-200">
-                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> 3 Laporan Kerusakan Baru
-                    </button>
-                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin+GA&background=random" alt="Admin">
-                </div>
-            </div>
+<body class="bg-gray-50 text-slate-800 font-sans h-screen flex overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-gray-900 text-gray-300 flex flex-col shadow-xl z-20 overflow-y-auto">
+        <div
+            class="h-16 flex items-center px-6 bg-gray-950 text-white font-bold text-xl tracking-wider border-b border-gray-800">
+            <i class="fa-solid fa-layer-group text-amber-500 mr-2"></i> SIM-LAT
         </div>
-    </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <nav class="flex-1 px-2 py-4 space-y-6">
 
-        <!-- HEADER -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <!-- Group: Main -->
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Monitoring Kondisi Asrama</h1>
-                <p class="text-sm text-gray-500 mt-1">Pantau ketersediaan, jadwal renovasi, dan laporan kerusakan kamar.</p>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Utama</div>
+                <a href="dashoard-old.html"
+                    class="sidebar-item flex items-center px-4 py-2.5 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-chart-pie w-6 text-center mr-2"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
             </div>
-            <div class="flex gap-2 flex-wrap">
-                <button onclick="openAddRoomModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-door-closed"></i> Tambah Kamar
+
+            <!-- Group: Manajemen Pelatihan -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Akademik & Pelatihan
+                </div>
+                <a href="manajemen-pelatihan2.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-chalkboard-user w-6 text-center mr-2"></i>
+                    <span>Pelatihan (Training)</span>
+                </a>
+                <a href="#"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-book-open w-6 text-center mr-2"></i>
+                    <span>Materi Pembelajaran</span>
+                </a>
+                <a href="bidang-pelatihan2.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-shapes w-6 text-center mr-2"></i>
+                    <span>Bidang Kejuruan</span>
+                </a>
+            </div>
+
+            <!-- Group: Kesiswaan -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Kesiswaan</div>
+                <a href="pendaftaran_pelatihan.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors justify-between">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-clipboard-check w-6 text-center mr-2"></i>
+                        <span>Verifikasi Pendaftaran</span>
+                    </div>
+                    <span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">5</span>
+                </a>
+                <a href="pendaftaran_pelatihan.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-users w-6 text-center mr-2"></i>
+                    <span>Data Peserta</span>
+                </a>
+                <a href="data-instansi.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-building w-6 text-center mr-2"></i>
+                    <span>Data Instansi</span>
+                </a>
+            </div>
+
+            <!-- Group: Ujian & Evaluasi -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">CBT & Evaluasi</div>
+                <a href="setup-soal.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-laptop-code w-6 text-center mr-2"></i>
+                    <span>Bank Soal & Ujian</span>
+                </a>
+                <a href="analisis-tes.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-poll w-6 text-center mr-2"></i>
+                    <span>Survei & Monev</span>
+                </a>
+                <a href="analisis-tes.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-square-poll-vertical w-6 text-center mr-2"></i>
+                    <span>Hasil Nilai Peserta</span>
+                </a>
+            </div>
+
+            <!-- Group: Sarana -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Fasilitas</div>
+                <a href="manajemen-asrama.html"
+                    class="sidebar-item active flex items-center px-4 py-2 rounded-lg text-white group transition-colors">
+                    <i class="fa-solid fa-bed w-6 text-center mr-2 text-amber-500"></i>
+                    <span>Manajemen Asrama</span>
+                </a>
+            </div>
+
+            <!-- Group: System -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pengaturan</div>
+                <a href="#"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-user-shield w-6 text-center mr-2"></i>
+                    <span>User & Roles</span>
+                </a>
+                <a href="#"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-envelope w-6 text-center mr-2"></i>
+                    <span>Template Email</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="p-4 bg-gray-950 border-t border-gray-800">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-gray-900 font-bold">
+                    A</div>
+                <div>
+                    <div class="text-sm font-medium text-white">Administrator</div>
+                    <div class="text-xs text-gray-500">admin@simpel.com</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
+        <!-- Topbar -->
+        <header class="bg-white shadow-sm h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+            <div class="text-xl font-bold text-gray-800">Manajemen Asrama</div>
+            <div class="flex items-center gap-4">
+                <button class="p-2 text-gray-400 hover:text-gray-600 relative">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
                 </button>
-                <button onclick="openLogModal()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm">
-                    <i class="fa-solid fa-clipboard-list mr-1"></i> Log Perbaikan
-                </button>
-                <button onclick="openReportModal()" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm">
-                    <i class="fa-solid fa-plus mr-1"></i> Input Laporan Kerusakan
+                <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
+                    <i class="fa-solid fa-calendar-day mr-2"></i> Nov 2025
                 </button>
             </div>
-        </div>
+        </header>
 
-        <!-- SUMMARY STATS -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                <p class="text-xs text-gray-500 font-bold uppercase">Total Kamar</p>
-                <div class="flex items-end gap-2 mt-1">
-                    <span class="text-3xl font-bold text-gray-900">48</span>
-                    <span class="text-sm text-gray-400 mb-1">Unit</span>
-                </div>
-            </div>
-            <div class="bg-green-50 p-5 rounded-xl border border-green-100 shadow-sm">
-                <p class="text-xs text-green-700 font-bold uppercase">Siap Huni (Available)</p>
-                <div class="flex items-end gap-2 mt-1">
-                    <span class="text-3xl font-bold text-green-700">40</span>
-                    <span class="text-sm text-green-600 mb-1">Kamar</span>
-                </div>
-            </div>
-            <div class="bg-yellow-50 p-5 rounded-xl border border-yellow-100 shadow-sm">
-                <p class="text-xs text-yellow-700 font-bold uppercase">Sedang Renovasi</p>
-                <div class="flex items-end gap-2 mt-1">
-                    <span class="text-3xl font-bold text-yellow-700">5</span>
-                    <span class="text-sm text-yellow-600 mb-1">Kamar</span>
-                </div>
-            </div>
-            <div class="bg-red-50 p-5 rounded-xl border border-red-100 shadow-sm">
-                <p class="text-xs text-red-700 font-bold uppercase">Rusak / Tidak Layak</p>
-                <div class="flex items-end gap-2 mt-1">
-                    <span class="text-3xl font-bold text-red-700">3</span>
-                    <span class="text-sm text-red-600 mb-1">Kamar</span>
-                </div>
-            </div>
-        </div>
+        <div class="p-8 max-w-7xl mx-auto space-y-8">
 
-        <!-- FILTERS & SORTING -->
-        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 flex flex-wrap gap-4 items-center justify-between">
-            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                <div class="flex items-center gap-2 mr-2">
-                    <i class="fa-solid fa-filter text-gray-400"></i>
-                    <span class="text-sm font-medium text-gray-700">Filter:</span>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Status Okupansi Asrama</h1>
+                    <p class="text-sm text-gray-500 mt-1">Pantau ketersediaan kamar, check-in/out peserta, dan status
+                        kebersihan.</p>
                 </div>
-                <select id="filterGedung" class="py-2 px-3 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary bg-white">
-                    <option value="all">Semua Gedung</option>
-                    <option value="melati">Gedung Melati</option>
-                    <option value="anggrek">Gedung Anggrek</option>
-                </select>
-                <select id="filterStatus" class="py-2 px-3 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary bg-white">
-                    <option value="all">Semua Status</option>
-                    <option value="ready">Siap Huni</option>
-                    <option value="renovasi">Sedang Renovasi</option>
-                    <option value="rusak">Rusak</option>
-                </select>
+                <div class="flex gap-2">
+                    <button onclick="openModal('modalCheckIn')"
+                        class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-key"></i> Check-In Peserta
+                    </button>
+                    <button
+                        class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm transition-all">
+                        <i class="fa-solid fa-print mr-1"></i> Laporan
+                    </button>
+                </div>
             </div>
 
-            <!-- Sorting Dropdown -->
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <div class="flex items-center gap-2 mr-2">
-                    <i class="fa-solid fa-arrow-down-short-wide text-gray-400"></i>
-                    <span class="text-sm font-medium text-gray-700">Urutkan:</span>
-                </div>
-                <select id="sortBy" class="py-2 px-3 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary bg-white w-full md:w-auto">
-                    <option value="nomor_asc">Nomor Kamar (A-Z)</option>
-                    <option value="nomor_desc">Nomor Kamar (Z-A)</option>
-                    <option value="status_prio">Prioritas Masalah (Rusak > Reno)</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- MAIN CONTENT: DORMITORY GRID -->
-        <div class="space-y-10" id="mainContainer">
-
-            <!-- GEDUNG MELATI -->
-            <div class="gedung-section" data-gedung="melati">
-                <div class="flex items-center gap-3 mb-4 pb-2 border-b border-gray-200">
-                    <div class="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600">
-                        <i class="fa-solid fa-building"></i>
+            <!-- STATS OVERVIEW -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Total Kapasitas</p>
+                            <h3 class="text-2xl font-bold text-gray-900 mt-1">120 <span
+                                    class="text-sm font-normal text-gray-400">Bed</span></h3>
+                        </div>
+                        <div class="p-2 bg-gray-100 text-gray-600 rounded-lg">
+                            <i class="fa-solid fa-building text-lg"></i>
+                        </div>
                     </div>
-                    <h2 class="text-xl font-bold text-gray-800">Gedung Melati <span class="text-sm font-normal text-gray-500">(Asrama Wanita)</span></h2>
                 </div>
 
-                <!-- Melati Lantai 1 -->
-                <div class="mb-6">
-                    <h3 class="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider pl-1 border-l-4 border-pink-400">Lantai 1</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 room-grid" id="melati-lt1">
-                        
-                        <!-- Melati 1 - Normal -->
-                        <div class="room-card bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" data-status="ready" data-room="M1-01">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
-                            <div class="flex justify-between items-start mb-2 pl-2">
-                                <h4 class="font-bold text-lg text-gray-800">Kamar M1-01</h4>
-                                <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-200">SIAP HUNI</span>
-                            </div>
-                            <div class="pl-2 space-y-2">
-                                <p class="text-xs text-gray-500 flex items-center gap-2"><i class="fa-solid fa-bed"></i> 4 Bed (Kosong)</p>
-                                <p class="text-xs text-gray-500 flex items-center gap-2"><i class="fa-solid fa-wind"></i> AC Berfungsi</p>
-                            </div>
-                            <div class="mt-4 pl-2 pt-3 border-t border-gray-100 flex gap-2">
-                                <button onclick="openDetailModal('M1-01', 'ready')" class="flex-1 text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 py-1.5 rounded border border-gray-200">Detail</button>
-                                <button class="text-xs text-gray-400 hover:text-red-500 p-1.5" title="Lapor Kerusakan"><i class="fa-solid fa-triangle-exclamation"></i></button>
-                                <button onclick="deleteRoom(this)" class="text-xs text-gray-300 hover:text-red-600 p-1.5" title="Hapus Kamar"><i class="fa-solid fa-trash"></i></button>
-                            </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Terisi (Okupansi)</p>
+                            <h3 class="text-2xl font-bold text-blue-600 mt-1">85 <span
+                                    class="text-sm font-normal text-gray-400">Bed</span></h3>
                         </div>
-
-                        <!-- Melati 2 - Renovasi -->
-                        <div class="room-card bg-yellow-50 border border-yellow-200 rounded-xl p-4 shadow-sm relative overflow-hidden" data-status="renovasi" data-room="M1-02">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-yellow-400"></div>
-                            <div class="flex justify-between items-start mb-2 pl-2">
-                                <h4 class="font-bold text-lg text-gray-800">Kamar M1-02</h4>
-                                <span class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-yellow-200">RENOVASI</span>
-                            </div>
-                            <div class="pl-2 space-y-2 mb-3">
-                                <div class="bg-white/60 p-2 rounded border border-yellow-100">
-                                    <p class="text-xs font-bold text-yellow-800 mb-1"><i class="fa-solid fa-paint-roller mr-1"></i> Pengecatan Dinding</p>
-                                    <p class="text-[10px] text-gray-600">Est. Selesai: 30 Nov 2024</p>
-                                </div>
-                            </div>
-                            <div class="pl-2 flex gap-2">
-                                <button onclick="openProgressModal('M1-02')" class="w-full text-xs bg-white text-yellow-700 border border-yellow-300 hover:bg-yellow-100 py-1.5 rounded font-medium">Update Progress</button>
-                                <button onclick="deleteRoom(this)" class="text-xs text-yellow-300 hover:text-red-600 p-1.5" title="Hapus Kamar"><i class="fa-solid fa-trash"></i></button>
-                            </div>
+                        <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                            <i class="fa-solid fa-users text-lg"></i>
                         </div>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-1.5 mt-3">
+                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 70%"></div>
+                    </div>
+                </div>
 
-                         <!-- Melati 3 - Rusak -->
-                         <div class="room-card bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm relative overflow-hidden" data-status="rusak" data-room="M1-03">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
-                            <div class="absolute top-2 right-2 animate-pulse text-red-500"><i class="fa-solid fa-circle-exclamation"></i></div>
-                            <div class="flex justify-between items-start mb-2 pl-2 pr-4">
-                                <h4 class="font-bold text-lg text-gray-800">Kamar M1-03</h4>
-                            </div>
-                             <div class="pl-2 mb-1">
-                                <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded border border-red-200">RUSAK BERAT</span>
-                            </div>
-                            <div class="pl-2 space-y-2 mb-3 mt-3">
-                                <div class="bg-white/60 p-2 rounded border border-red-100">
-                                    <p class="text-xs font-bold text-red-800 mb-1">Masalah:</p>
-                                    <ul class="list-disc list-inside text-[10px] text-gray-700">
-                                        <li>Pipa Air Pecah</li>
-                                        <li>Plafon Jebol</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="pl-2 flex gap-2">
-                                <button onclick="openRepairModal('M1-03')" class="w-full text-xs bg-red-600 text-white hover:bg-red-700 py-1.5 rounded font-medium shadow-sm">Jadwalkan Perbaikan</button>
-                                <button onclick="deleteRoom(this)" class="text-xs text-red-300 hover:text-red-600 p-1.5" title="Hapus Kamar"><i class="fa-solid fa-trash"></i></button>
-                            </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Tersedia</p>
+                            <h3 class="text-2xl font-bold text-green-600 mt-1">35 <span
+                                    class="text-sm font-normal text-gray-400">Bed</span></h3>
                         </div>
+                        <div class="p-2 bg-green-50 text-green-600 rounded-lg">
+                            <i class="fa-solid fa-door-open text-lg"></i>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Melati 4 - Normal -->
-                        <div class="room-card bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" data-status="ready" data-room="M1-04">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
-                            <div class="flex justify-between items-start mb-2 pl-2">
-                                <h4 class="font-bold text-lg text-gray-800">Kamar M1-04</h4>
-                                <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-200">SIAP HUNI</span>
-                            </div>
-                            <div class="pl-2 space-y-2">
-                                <p class="text-xs text-gray-500 flex items-center gap-2"><i class="fa-solid fa-bed"></i> 4 Bed (Kosong)</p>
-                                <p class="text-xs text-gray-500 flex items-center gap-2"><i class="fa-solid fa-wind"></i> AC Berfungsi</p>
-                            </div>
-                            <div class="mt-4 pl-2 pt-3 border-t border-gray-100 flex gap-2">
-                                <button onclick="openDetailModal('M1-04', 'ready')" class="flex-1 text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 py-1.5 rounded border border-gray-200">Detail</button>
-                                <button class="text-xs text-gray-400 hover:text-red-500 p-1.5" title="Lapor Kerusakan"><i class="fa-solid fa-triangle-exclamation"></i></button>
-                                <button onclick="deleteRoom(this)" class="text-xs text-gray-300 hover:text-red-600 p-1.5" title="Hapus Kamar"><i class="fa-solid fa-trash"></i></button>
-                            </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Maintenance</p>
+                            <h3 class="text-2xl font-bold text-red-500 mt-1">0 <span
+                                    class="text-sm font-normal text-gray-400">Kamar</span></h3>
+                        </div>
+                        <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+                            <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- GEDUNG ANGGREK -->
-            <div class="gedung-section" data-gedung="anggrek">
-                <div class="flex items-center gap-3 mb-4 pb-2 border-b border-gray-200 pt-4">
-                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
-                        <i class="fa-solid fa-building"></i>
-                    </div>
-                    <h2 class="text-xl font-bold text-gray-800">Gedung Anggrek <span class="text-sm font-normal text-gray-500">(Asrama Pria)</span></h2>
-                </div>
-
-                <!-- Anggrek Lantai 1 -->
-                <div class="mb-6">
-                    <h3 class="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider pl-1 border-l-4 border-blue-400">Lantai 1</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 room-grid" id="anggrek-lt1">
-                         <!-- Anggrek 1.01 - Renovasi -->
-                         <div class="room-card bg-yellow-50 border border-yellow-200 rounded-xl p-4 shadow-sm relative overflow-hidden" data-status="renovasi" data-room="A1-01">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-yellow-400"></div>
-                            <div class="flex justify-between items-start mb-2 pl-2">
-                                <h4 class="font-bold text-lg text-gray-800">Kamar A1-01</h4>
-                                <span class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-yellow-200">RENOVASI</span>
-                            </div>
-                            <div class="pl-2 space-y-2 mb-3">
-                                <div class="bg-white/60 p-2 rounded border border-yellow-100">
-                                    <p class="text-xs font-bold text-yellow-800 mb-1"><i class="fa-solid fa-hammer mr-1"></i> Ganti Keramik</p>
-                                    <p class="text-[10px] text-gray-600">Est. Selesai: 05 Des 2024</p>
-                                </div>
-                            </div>
-                            <div class="pl-2 flex gap-2">
-                                <button onclick="openProgressModal('A1-01')" class="w-full text-xs bg-white text-yellow-700 border border-yellow-300 hover:bg-yellow-100 py-1.5 rounded font-medium">Update Progress</button>
-                                <button onclick="deleteRoom(this)" class="text-xs text-yellow-300 hover:text-red-600 p-1.5" title="Hapus Kamar"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
-
-                        <!-- Anggrek 1.02 - Normal -->
-                        <div class="room-card bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" data-status="ready" data-room="A1-02">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
-                            <div class="flex justify-between items-start mb-2 pl-2">
-                                <h4 class="font-bold text-lg text-gray-800">Kamar A1-02</h4>
-                                <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-200">SIAP HUNI</span>
-                            </div>
-                            <div class="pl-2 space-y-2">
-                                <p class="text-xs text-gray-500 flex items-center gap-2"><i class="fa-solid fa-bed"></i> 4 Bed (Kosong)</p>
-                            </div>
-                            <div class="mt-4 pl-2 pt-3 border-t border-gray-100 flex gap-2">
-                                <button onclick="openDetailModal('A1-02', 'ready')" class="flex-1 text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 py-1.5 rounded border border-gray-200">Detail</button>
-                                <button onclick="deleteRoom(this)" class="text-xs text-gray-300 hover:text-red-600 p-1.5" title="Hapus Kamar"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
+            <!-- ROOM MAP / LIST -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">Denah Kamar - Gedung A (Lantai 1)</h3>
+                    <div class="flex gap-2 text-xs">
+                        <span class="flex items-center gap-1"><span
+                                class="w-3 h-3 rounded-full bg-green-100 border border-green-300"></span> Kosong</span>
+                        <span class="flex items-center gap-1"><span
+                                class="w-3 h-3 rounded-full bg-blue-100 border border-blue-300"></span> Terisi</span>
+                        <span class="flex items-center gap-1"><span
+                                class="w-3 h-3 rounded-full bg-red-100 border border-red-300"></span> Rusak</span>
                     </div>
                 </div>
 
-                <!-- Anggrek Lantai 2 -->
-                <div class="mb-6">
-                    <h3 class="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider pl-1 border-l-4 border-blue-400">Lantai 2</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 room-grid">
-                        <!-- Anggrek 2.01 - Normal -->
-                        <div class="room-card bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" data-status="ready" data-room="A2-01">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
-                            <div class="flex justify-between items-start mb-2 pl-2">
-                                <h4 class="font-bold text-lg text-gray-800">Kamar A2-01</h4>
-                                <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-200">SIAP HUNI</span>
-                            </div>
-                            <div class="pl-2 space-y-2">
-                                <p class="text-xs text-gray-500 flex items-center gap-2"><i class="fa-solid fa-bed"></i> 4 Bed (Kosong)</p>
-                            </div>
-                             <div class="mt-4 pl-2 pt-3 border-t border-gray-100 flex gap-2">
-                                <button onclick="openDetailModal('A2-01', 'ready')" class="flex-1 text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 py-1.5 rounded border border-gray-200">Detail</button>
-                                <button onclick="deleteRoom(this)" class="text-xs text-gray-300 hover:text-red-600 p-1.5" title="Hapus Kamar"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
+                <div class="p-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <!-- Room 101 (Full) -->
+                    <div
+                        class="bed-card border border-blue-200 bg-blue-50 rounded-lg p-3 text-center cursor-pointer hover:shadow-md transition-all relative group">
+                        <div class="text-xs font-bold text-blue-800 mb-2">Kamar 101</div>
+                        <i class="fa-solid fa-bed text-3xl text-blue-400 bed-icon mb-2"></i>
+                        <div class="text-xs text-blue-600 font-medium">2/2 Terisi</div>
 
-                         <!-- Anggrek 2.02 - Rusak Ringan -->
-                         <div class="room-card bg-white border border-red-200 rounded-xl p-4 shadow-sm relative overflow-hidden" data-status="rusak" data-room="A2-02">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-300"></div>
-                            <div class="flex justify-between items-start mb-2 pl-2">
-                                <h4 class="font-bold text-lg text-gray-800">Kamar A2-02</h4>
-                                <span class="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-100">RUSAK RINGAN</span>
-                            </div>
-                            <div class="pl-2 space-y-2 mb-3">
-                                <div class="bg-red-50 p-2 rounded border border-red-100 text-xs">
-                                    <span class="font-bold text-red-700"><i class="fa-solid fa-droplet mr-1"></i> AC Bocor</span>
-                                    <p class="text-gray-600 mt-1">Dilaporkan: Kemarin</p>
-                                </div>
-                            </div>
-                            <div class="pl-2 flex gap-2">
-                                <button class="w-full text-xs bg-white text-red-600 border border-red-300 hover:bg-red-50 py-1.5 rounded font-medium">Tandai Diperbaiki</button>
-                                <button onclick="deleteRoom(this)" class="text-xs text-gray-300 hover:text-red-600 p-1.5" title="Hapus Kamar"><i class="fa-solid fa-trash"></i></button>
-                            </div>
+                        <!-- Tooltip -->
+                        <div
+                            class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-gray-900 text-white text-xs rounded p-2 hidden group-hover:block z-10">
+                            <p>1. Ahmad (Web Dev)</p>
+                            <p>2. Budi (Web Dev)</p>
                         </div>
                     </div>
-                </div>
 
+                    <!-- Room 102 (Partial) -->
+                    <div
+                        class="bed-card border border-blue-200 bg-blue-50 rounded-lg p-3 text-center cursor-pointer hover:shadow-md transition-all relative group">
+                        <div class="text-xs font-bold text-blue-800 mb-2">Kamar 102</div>
+                        <i class="fa-solid fa-bed text-3xl text-blue-400 bed-icon mb-2"></i>
+                        <div class="text-xs text-blue-600 font-medium">1/2 Terisi</div>
+                    </div>
+
+                    <!-- Room 103 (Empty) -->
+                    <div
+                        class="bed-card border border-green-200 bg-green-50 rounded-lg p-3 text-center cursor-pointer hover:shadow-md transition-all relative group">
+                        <div class="text-xs font-bold text-green-800 mb-2">Kamar 103</div>
+                        <i class="fa-solid fa-bed text-3xl text-green-400 bed-icon mb-2"></i>
+                        <div class="text-xs text-green-600 font-medium">0/2 Kosong</div>
+                    </div>
+
+                    <!-- Room 104 (Maintenance) -->
+                    <div
+                        class="bed-card border border-red-200 bg-red-50 rounded-lg p-3 text-center cursor-pointer hover:shadow-md transition-all relative group">
+                        <div class="text-xs font-bold text-red-800 mb-2">Kamar 104</div>
+                        <i class="fa-solid fa-screwdriver-wrench text-3xl text-red-400 bed-icon mb-2"></i>
+                        <div class="text-xs text-red-600 font-medium">Perbaikan AC</div>
+                    </div>
+
+                    <!-- More Rooms (Generated for visual) -->
+                    <div
+                        class="bed-card border border-blue-200 bg-blue-50 rounded-lg p-3 text-center cursor-pointer hover:shadow-md transition-all">
+                        <div class="text-xs font-bold text-blue-800 mb-2">Kamar 105</div>
+                        <i class="fa-solid fa-bed text-3xl text-blue-400 bed-icon mb-2"></i>
+                        <div class="text-xs text-blue-600 font-medium">2/2 Terisi</div>
+                    </div>
+                    <div
+                        class="bed-card border border-green-200 bg-green-50 rounded-lg p-3 text-center cursor-pointer hover:shadow-md transition-all">
+                        <div class="text-xs font-bold text-green-800 mb-2">Kamar 106</div>
+                        <i class="fa-solid fa-bed text-3xl text-green-400 bed-icon mb-2"></i>
+                        <div class="text-xs text-green-600 font-medium">0/2 Kosong</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESIDENT LIST TABLE -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">Daftar Penghuni Asrama</h3>
+                    <div class="relative w-64">
+                        <input type="text" placeholder="Cari nama / kamar..."
+                            class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none">
+                        <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                    </div>
+                </div>
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-4">Nama Peserta</th>
+                            <th class="px-6 py-4">Pelatihan</th>
+                            <th class="px-6 py-4">Kamar</th>
+                            <th class="px-6 py-4">Check-In</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-medium text-gray-900">Ahmad Fauzi</td>
+                            <td class="px-6 py-4">Web Development</td>
+                            <td class="px-6 py-4"><span
+                                    class="bg-gray-100 text-gray-700 px-2 py-1 rounded font-mono text-xs">101-A</span>
+                            </td>
+                            <td class="px-6 py-4">10 Nov 2025</td>
+                            <td class="px-6 py-4"><span class="text-green-600 font-medium text-xs">Active</span></td>
+                            <td class="px-6 py-4 text-right">
+                                <button
+                                    class="text-red-500 hover:text-red-700 text-xs font-medium border border-red-200 px-2 py-1 rounded hover:bg-red-50">Check-Out</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-medium text-gray-900">Budi Santoso</td>
+                            <td class="px-6 py-4">Web Development</td>
+                            <td class="px-6 py-4"><span
+                                    class="bg-gray-100 text-gray-700 px-2 py-1 rounded font-mono text-xs">101-B</span>
+                            </td>
+                            <td class="px-6 py-4">10 Nov 2025</td>
+                            <td class="px-6 py-4"><span class="text-green-600 font-medium text-xs">Active</span></td>
+                            <td class="px-6 py-4 text-right">
+                                <button
+                                    class="text-red-500 hover:text-red-700 text-xs font-medium border border-red-200 px-2 py-1 rounded hover:bg-red-50">Check-Out</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
         </div>
+    </main>
 
-    </div>
-
-    <!-- MODALS SECTION -->
-    
-    <!-- 1. DETAIL MODAL -->
-    <div id="modalDetail" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <!-- MODAL CHECK-IN -->
+    <div id="modalCheckIn" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+        aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal('modalDetail')"></div>
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                onclick="closeModal('modalCheckIn')"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full modal-enter">
+            <div
+                class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full modal-enter">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fa-solid fa-door-open text-blue-600"></i>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="detailModalTitle">Detail Kamar</h3>
-                            <div class="mt-2">
-                                <div class="border-b border-gray-200">
-                                    <nav class="-mb-px flex space-x-4" aria-label="Tabs">
-                                        <button class="border-blue-500 text-blue-600 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">Fasilitas</button>
-                                        <button class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">Penghuni</button>
-                                        <button class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">Riwayat</button>
-                                    </nav>
-                                </div>
-                                <div class="mt-4 space-y-3 text-sm text-gray-600">
-                                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                        <h4 class="font-bold text-gray-800 mb-2">Inventaris:</h4>
-                                        <ul class="grid grid-cols-2 gap-2">
-                                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> 4 Tempat Tidur</li>
-                                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> 4 Lemari</li>
-                                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> 1 AC Split</li>
-                                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> 2 Meja Belajar</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 mb-2">Status Terakhir:</h4>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Kondisi Baik
-                                        </span>
-                                        <p class="mt-1 text-xs">Diperiksa terakhir: 24 Nov 2024 oleh GA</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-xl font-bold text-gray-900" id="modal-title">Check-In Peserta</h3>
+                        <button onclick="closeModal('modalCheckIn')" class="text-gray-400 hover:text-gray-500">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
                     </div>
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Cari Peserta</label>
+                            <input type="text"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary outline-none"
+                                placeholder="Ketik nama peserta...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Kamar</label>
+                            <select
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary outline-none bg-white">
+                                <option>Kamar 102 (Sisa 1 Bed)</option>
+                                <option>Kamar 103 (Kosong)</option>
+                                <option>Kamar 106 (Kosong)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Check-In</label>
+                            <input type="date"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary outline-none"
+                                value="2025-11-25">
+                        </div>
+                    </form>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal('modalDetail')">
-                        Tutup
+                    <button type="button"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">
+                        Proses Check-In
                     </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. PROGRESS UPDATE MODAL -->
-    <div id="modalProgress" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal('modalProgress')"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full modal-enter">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fa-solid fa-bars-progress text-yellow-600"></i>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="progressModalTitle">Update Renovasi Kamar</h3>
-                            <div class="mt-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Progres Pengerjaan (%)</label>
-                                <div class="flex items-center gap-3">
-                                    <input type="range" min="0" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-yellow-500" oninput="document.getElementById('progVal').innerText = this.value + '%'">
-                                    <span id="progVal" class="text-sm font-bold text-yellow-600 w-10">50%</span>
-                                </div>
-                                <div class="mt-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Catatan Pengerjaan</label>
-                                    <textarea rows="3" class="shadow-sm focus:ring-yellow-500 focus:border-yellow-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md" placeholder="Contoh: Pengecatan lapisan pertama selesai..."></textarea>
-                                </div>
-                                <div class="mt-4">
-                                    <label class="flex items-center gap-2 text-sm text-gray-700">
-                                        <input type="checkbox" class="rounded text-yellow-600 focus:ring-yellow-500 border-gray-300">
-                                        Tandai sebagai Selesai (Siap Huni)
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white hover:bg-yellow-700 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal('modalProgress')">
-                        Simpan Update
-                    </button>
-                    <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal('modalProgress')">
+                    <button type="button" onclick="closeModal('modalCheckIn')"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                         Batal
                     </button>
                 </div>
@@ -444,347 +445,15 @@
         </div>
     </div>
 
-    <!-- 3. REPAIR SCHEDULE MODAL -->
-    <div id="modalRepair" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal('modalRepair')"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full modal-enter">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fa-solid fa-screwdriver-wrench text-red-600"></i>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="repairModalTitle">Jadwalkan Perbaikan</h3>
-                            <div class="mt-4 space-y-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kerusakan</label>
-                                    <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md">
-                                        <option>Pipa & Saluran Air</option>
-                                        <option>Kelistrikan / Lampu</option>
-                                        <option>Fisik Bangunan (Plafon/Dinding)</option>
-                                        <option>Fasilitas (AC/Furniture)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Ditugaskan Kepada</label>
-                                    <input type="text" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Nama Teknisi / Vendor">
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
-                                        <input type="date" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Prioritas</label>
-                                        <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md">
-                                            <option>Tinggi (Segera)</option>
-                                            <option>Sedang</option>
-                                            <option>Rendah</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Catatan Tambahan</label>
-                                    <textarea rows="2" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal('modalRepair')">
-                        Buat Jadwal
-                    </button>
-                    <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal('modalRepair')">
-                        Batal
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4. REPORT DAMAGE MODAL (NEW) -->
-    <div id="modalReportDamage" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal('modalReportDamage')"></div>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full modal-enter">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">Input Laporan Kerusakan</h3>
-                            <div class="mt-4 space-y-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi / Kamar</label>
-                                    <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md">
-                                        <option value="" disabled selected>Pilih Kamar...</option>
-                                        <option value="M1-01">M1-01</option>
-                                        <option value="M1-02">M1-02</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kategori Masalah</label>
-                                    <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md">
-                                        <option>Kelistrikan</option>
-                                        <option>Perpipaan / Air</option>
-                                        <option>Bangunan (Pintu/Jendela)</option>
-                                        <option>Lainnya</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Kerusakan</label>
-                                    <textarea rows="3" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border border-gray-300 rounded-md" placeholder="Jelaskan detail kerusakan..."></textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Foto Bukti (Opsional)</label>
-                                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                        <div class="space-y-1 text-center">
-                                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                            <div class="flex text-sm text-gray-600">
-                                                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                                                    <span>Upload a file</span>
-                                                    <input id="file-upload" name="file-upload" type="file" class="sr-only">
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal('modalReportDamage')">
-                        Kirim Laporan
-                    </button>
-                    <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal('modalReportDamage')">
-                        Batal
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 5. REPAIR LOG MODAL (NEW) -->
-    <div id="modalRepairLog" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal('modalRepairLog')"></div>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl w-full modal-enter">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg leading-6 font-bold text-gray-900">Log Riwayat Perbaikan</h3>
-                        <button onclick="closeModal('modalRepairLog')" class="text-gray-400 hover:text-gray-500"><i class="fa-solid fa-xmark text-xl"></i></button>
-                    </div>
-                    <div class="overflow-x-auto modal-scroll max-h-96">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kamar</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masalah</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teknisi</th>
-                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200 text-sm">
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">24 Nov 2024</td>
-                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">M1-02</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Cat Dinding</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Pak Joko</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">In Progress</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">20 Nov 2024</td>
-                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">A1-05</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Kran Bocor</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Pak Slamet</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Selesai</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">18 Nov 2024</td>
-                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">M1-04</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Ganti Lampu</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Pak Joko</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Selesai</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
-                    <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:text-sm" onclick="closeModal('modalRepairLog')">
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 6. ADD ROOM MODAL (NEW) -->
-    <div id="modalAddRoom" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal('modalAddRoom')"></div>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full modal-enter">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fa-solid fa-plus text-green-600"></i>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">Tambah Kamar Baru</h3>
-                            <div class="mt-4 space-y-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Gedung</label>
-                                    <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-                                        <option value="melati">Melati (Wanita)</option>
-                                        <option value="anggrek">Anggrek (Pria)</option>
-                                    </select>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Lantai</label>
-                                        <input type="number" min="1" class="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="1">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Kamar</label>
-                                        <input type="text" class="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="05">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kapasitas Bed</label>
-                                    <input type="number" value="4" class="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Status Awal</label>
-                                    <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-                                        <option value="ready">Siap Huni</option>
-                                        <option value="renovasi">Dalam Renovasi</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal('modalAddRoom')">
-                        Simpan
-                    </button>
-                    <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal('modalAddRoom')">
-                        Batal
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Filtering Logic
-        const filterGedung = document.getElementById('filterGedung');
-        const filterStatus = document.getElementById('filterStatus');
-        const sortBy = document.getElementById('sortBy');
-
-        function applyFilters() {
-            const gedungVal = filterGedung.value;
-            const statusVal = filterStatus.value;
-            const sortVal = sortBy.value;
-
-            // 1. Show/Hide Sections based on Building
-            document.querySelectorAll('.gedung-section').forEach(sec => {
-                if (gedungVal === 'all' || sec.dataset.gedung === gedungVal) {
-                    sec.style.display = 'block';
-                } else {
-                    sec.style.display = 'none';
-                }
-            });
-
-            // 2. Filter & Sort Cards within visible sections
-            document.querySelectorAll('.room-grid').forEach(grid => {
-                let cards = Array.from(grid.children);
-
-                // Filter
-                cards.forEach(card => {
-                    const matchStatus = statusVal === 'all' || card.dataset.status === statusVal;
-                    card.style.display = matchStatus ? 'block' : 'none';
-                });
-
-                // Sort
-                cards.sort((a, b) => {
-                    const roomA = a.dataset.room;
-                    const roomB = b.dataset.room;
-                    const statusA = getStatusPriority(a.dataset.status);
-                    const statusB = getStatusPriority(b.dataset.status);
-
-                    if (sortVal === 'nomor_asc') return roomA.localeCompare(roomB);
-                    if (sortVal === 'nomor_desc') return roomB.localeCompare(roomA);
-                    if (sortVal === 'status_prio') return statusB - statusA; // Higher priority first
-                    return 0;
-                });
-
-                // Re-append sorted cards
-                cards.forEach(card => grid.appendChild(card));
-            });
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
         }
 
-        function getStatusPriority(status) {
-            // Rusak > Renovasi > Ready
-            if (status === 'rusak') return 3;
-            if (status === 'renovasi') return 2;
-            return 1;
-        }
-
-        filterGedung.addEventListener('change', applyFilters);
-        filterStatus.addEventListener('change', applyFilters);
-        sortBy.addEventListener('change', applyFilters);
-
-        // Modal Logic
-        function openDetailModal(roomName, status) {
-            document.getElementById('detailModalTitle').innerText = 'Detail Kamar ' + roomName;
-            document.getElementById('modalDetail').classList.remove('hidden');
-        }
-
-        function openProgressModal(roomName) {
-            document.getElementById('progressModalTitle').innerText = 'Update Renovasi ' + roomName;
-            document.getElementById('modalProgress').classList.remove('hidden');
-        }
-
-        function openRepairModal(roomName) {
-            document.getElementById('repairModalTitle').innerText = 'Jadwalkan Perbaikan ' + roomName;
-            document.getElementById('modalRepair').classList.remove('hidden');
-        }
-
-        function openReportModal() {
-            document.getElementById('modalReportDamage').classList.remove('hidden');
-        }
-
-        function openLogModal() {
-            document.getElementById('modalRepairLog').classList.remove('hidden');
-        }
-
-        function openAddRoomModal() {
-            document.getElementById('modalAddRoom').classList.remove('hidden');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        function deleteRoom(btn) {
-            if(confirm("Apakah Anda yakin ingin menghapus kamar ini?")) {
-                // Find the closest room card and remove it
-                const card = btn.closest('.room-card');
-                if(card) {
-                    card.remove();
-                }
-            }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
         }
     </script>
 </body>
+
 </html>
