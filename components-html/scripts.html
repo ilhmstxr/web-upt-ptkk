@@ -1,0 +1,43 @@
+<!-- Script Chart.js untuk Dummy Data -->
+<script>
+    // Chart Pendaftaran
+    const ctxReg = document.getElementById('registrationChart').getContext('2d');
+    new Chart(ctxReg, {
+        type: 'bar',
+        data: {
+            labels: ['Tata Boga', 'Otomotif', 'IT/Web', 'Las', 'Menjahit', 'Listrik'],
+            datasets: [{
+                label: 'Pendaftar Bulan Ini',
+                data: [12, 19, 25, 10, 15, 8],
+                backgroundColor: '#3b82f6',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+        }
+    });
+
+    // Chart Asrama
+    const ctxDorm = document.getElementById('dormChart').getContext('2d');
+    new Chart(ctxDorm, {
+        type: 'doughnut',
+        data: {
+            labels: ['Laki-laki', 'Perempuan', 'Kosong'],
+            datasets: [{
+                data: [45, 30, 15],
+                backgroundColor: ['#3b82f6', '#ec4899', '#e5e7eb'],
+                borderWidth: 0,
+                cutout: '75%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>

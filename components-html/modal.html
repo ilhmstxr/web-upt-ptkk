@@ -1,0 +1,22 @@
+<!-- Generic Modal Structure -->
+<div id="modalTemplate" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 modal-enter">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-900" id="modalTitle">Modal Title</h3>
+            <button onclick="closeModal('modalTemplate')" class="text-gray-400 hover:text-gray-600"><i
+                    class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div id="modalContent">
+            <!-- Content goes here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+</script>
