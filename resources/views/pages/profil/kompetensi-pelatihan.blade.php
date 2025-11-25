@@ -54,7 +54,7 @@
   </style>
 </head>
 
-<body class="bg-[#FEFEFE] antialiased">
+<body class="bg-[#F1F9FC] antialiased">
 
   {{-- TOPBAR --}}
   @include('components.layouts.app.topbar')
@@ -76,7 +76,7 @@
 {{-- /HERO --}}
 
 {{-- SECTION: Bidang Pelatihan (menu kiri sticky, konten kanan scrollable tanpa scrollbar) --}}
-<section id="kelas-keterampilan" class="w-full bg-[#F5FBFF] py-8 md:py-10">
+<section id="kelas-keterampilan" class="w-full bg-[#F1F9FC] py-8 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     @php($active = request('tab','keterampilan')) {{-- 'keterampilan' | 'mjc' --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start"

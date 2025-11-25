@@ -78,115 +78,196 @@
 {{-- HERO: Slider dengan infinite loop dan scale effect --}}
 <header class="w-full bg-[#F1F9FC]">
   <div class="w-full px-6 md:px-12 lg:px-[80px] py-4 md:py-6">
-
     <div id="hero" class="relative">
+
       {{-- TRACK: beri padding horizontal supaya slide next/prev kelihatan (peek) --}}
-      <div id="hero-track"
-           class="flex items-center gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none py-8"
-           style="scrollbar-width:none;-ms-overflow-style:none;">
+      <div
+        id="hero-track"
+        class="flex items-center gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none py-8"
+        style="scrollbar-width:none;-ms-overflow-style:none;"
+      >
 
         <!-- LEFT GUTTER (untuk centering) -->
-        <div aria-hidden="true"
-             class="shrink-0 snap-none pointer-events-none
-                    w-[15%] md:w-[12%] lg:w-[10%]"></div>
+        <div
+          aria-hidden="true"
+          class="shrink-0 snap-none pointer-events-none w-[15%] md:w-[12%] lg:w-[10%]"
+        ></div>
 
         <!-- CLONES KIRI (untuk unlimited scroll kiri) -->
-        <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="1">
-          <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                      rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
-            <img src="{{ asset('images/beranda/slide2.jpg') }}"
-                 alt="Slide 2" class="w-full h-full object-cover select-none" draggable="false">
+        <div
+          class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          data-real="1"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ asset('images/beranda/slide2.jpg') }}"
+              alt="Slide 2"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
           </div>
         </div>
 
-        <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="2">
-          <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                      rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
-            <img src="{{ asset('images/beranda/slide3.jpg') }}"
-                 alt="Slide 3" class="w-full h-full object-cover select-none" draggable="false">
+        <div
+          class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          data-real="2"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ asset('images/beranda/slide3.jpg') }}"
+              alt="Slide 3"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
           </div>
         </div>
 
         <!-- SLIDE ASLI -->
-        <div class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="0">
-          <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                      rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
-            <img src="{{ asset('images/beranda/slide1.jpg') }}"
-                 alt="Slide 1" class="w-full h-full object-cover select-none" draggable="false">
+        <div
+          class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          data-real="0"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ asset('images/beranda/slide1.jpg') }}"
+              alt="Slide 1"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
           </div>
         </div>
 
-        <div class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="1">
-          <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                      rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
-            <img src="{{ asset('images/beranda/slide2.jpg') }}"
-                 alt="Slide 2" class="w-full h-full object-cover select-none" draggable="false">
+        <div
+          class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          data-real="1"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ asset('images/beranda/slide2.jpg') }}"
+              alt="Slide 2"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
           </div>
         </div>
 
-        <div class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="2">
-          <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                      rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
-            <img src="{{ asset('images/beranda/slide3.jpg') }}"
-                 alt="Slide 3" class="w-full h-full object-cover select-none" draggable="false">
+        <div
+          class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          data-real="2"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ asset('images/beranda/slide3.jpg') }}"
+              alt="Slide 3"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
           </div>
         </div>
 
         <!-- CLONES KANAN (untuk unlimited scroll kanan) -->
-        <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="0">
-          <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                      rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
-            <img src="{{ asset('images/beranda/slide1.jpg') }}"
-                 alt="Slide 1" class="w-full h-full object-cover select-none" draggable="false">
+        <div
+          class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          data-real="0"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ asset('images/beranda/slide1.jpg') }}"
+              alt="Slide 1"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
           </div>
         </div>
 
-        <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="1">
-          <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                      rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
-            <img src="{{ asset('images/beranda/slide2.jpg') }}"
-                 alt="Slide 2" class="w-full h-full object-cover select-none" draggable="false">
+        <div
+          class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          data-real="1"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ asset('images/beranda/slide2.jpg') }}"
+              alt="Slide 2"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
           </div>
         </div>
 
         <!-- RIGHT GUTTER (untuk centering) -->
-        <div aria-hidden="true"
-             class="shrink-0 snap-none pointer-events-none
-                    w-[15%] md:w-[12%] lg:w-[10%]"></div>
+        <div
+          aria-hidden="true"
+          class="shrink-0 snap-none pointer-events-none w-[15%] md:w-[12%] lg:w-[10%]"
+        ></div>
       </div>
 
       {{-- Controls + dots --}}
       <div class="mt-4 flex items-center justify-center gap-4">
-        <button id="hero-prev"
-                class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors"
-                aria-label="Sebelumnya">
-          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        <button
+          id="hero-prev"
+          class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors"
+          aria-label="Sebelumnya"
+        >
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor">
+            <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+          </svg>
         </button>
 
         <div id="hero-dots" class="flex items-center gap-3">
-          <button class="w-2.5 h-2.5 rounded-full bg-[#1524AF] transition-colors" aria-label="Slide 1"></button>
-          <button class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors" aria-label="Slide 2"></button>
-          <button class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors" aria-label="Slide 3"></button>
+          <button
+            class="w-2.5 h-2.5 rounded-full bg-[#1524AF] transition-colors"
+            aria-label="Slide 1"
+          ></button>
+          <button
+            class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors"
+            aria-label="Slide 2"
+          ></button>
+          <button
+            class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors"
+            aria-label="Slide 3"
+          ></button>
         </div>
 
-        <button id="hero-next"
-                class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors"
-                aria-label="Berikutnya">
-          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="m8.59 16.59 1.41 1.41 6-6-6-6L8.59 6.41 13.17 11z"/></svg>
+        <button
+          id="hero-next"
+          class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors"
+          aria-label="Berikutnya"
+        >
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor">
+            <path d="m8.59 16.59 1.41 1.41 6-6-6-6L8.59 6.41 13.17 11z" />
+          </svg>
         </button>
       </div>
-    </div>
 
+    </div>
   </div>
 </header>
 
 <style>
-  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   .hero-slide {
     transform: scale(0.85);
     opacity: 0.5;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
+
   .hero-slide.active {
     transform: scale(1);
     opacity: 1;
@@ -194,358 +275,326 @@
 </style>
 
 <script>
-(function () {
-  const track = document.getElementById('hero-track');
-  const slides = Array.from(track.querySelectorAll('.hero-slide')); // hanya slide (tanpa gutter)
-  const dots = Array.from(document.getElementById('hero-dots').children);
-  const prev = document.getElementById('hero-prev');
-  const next = document.getElementById('hero-next');
+  (function () {
+    const track = document.getElementById('hero-track');
+    const slides = Array.from(track.querySelectorAll('.hero-slide')); // hanya slide (tanpa gutter)
+    const dots = Array.from(document.getElementById('hero-dots').children);
+    const prev = document.getElementById('hero-prev');
+    const next = document.getElementById('hero-next');
 
-  // Urutan di DOM (tanpa gutter):
-  // 0: clone(real1) | 1: clone(real2) | 2: real0 | 3: real1 | 4: real2 | 5: clone(real0) | 6: clone(real1)
-  const FIRST_REAL = 2;            // real0
-  const LAST_REAL  = 4;            // real2
-  const LEFT_CLONE_BEFORE_FIRST  = 1; // clone real2
-  const RIGHT_CLONE_AFTER_LAST   = 5; // clone real0
-  const REAL_COUNT = 3;
+    // Urutan di DOM (tanpa gutter):
+    // 0: clone(real1) | 1: clone(real2) | 2: real0 | 3: real1 | 4: real2 | 5: clone(real0) | 6: clone(real1)
+    const FIRST_REAL = 2; // real0
+    const LAST_REAL = 4; // real2
+    const LEFT_CLONE_BEFORE_FIRST = 1; // clone real2
+    const RIGHT_CLONE_AFTER_LAST = 5; // clone real0
+    const REAL_COUNT = 3;
+    const ANIM = 300,
+      BUF = 40; // durasi + buffer
 
-  const ANIM = 300, BUF = 40; // durasi + buffer
-  let currentIndex = FIRST_REAL;
-  let isTransitioning = false;
+    let currentIndex = FIRST_REAL;
+    let isTransitioning = false;
 
-  // ===== Util dasar =====
-  const realOf = (idx) => (idx >= FIRST_REAL && idx <= LAST_REAL)
-    ? (idx - FIRST_REAL)
-    : parseInt(slides[idx].dataset.real, 10);
+    // ===== Util dasar =====
+    const realOf = (idx) =>
+      idx >= FIRST_REAL && idx <= LAST_REAL
+        ? idx - FIRST_REAL
+        : parseInt(slides[idx].dataset.real, 10);
 
-  const setDots = (r) => dots.forEach((d,i)=>{
-    d.className = 'w-2.5 h-2.5 rounded-full transition-colors ' + (i===r?'bg-[#1524AF]':'bg-gray-300');
-  });
+    const setDots = (r) =>
+      dots.forEach((d, i) => {
+        d.className =
+          'w-2.5 h-2.5 rounded-full transition-colors ' +
+          (i === r ? 'bg-[#1524AF]' : 'bg-gray-300');
+      });
 
-  const setActive = (idx) => slides.forEach((s,i)=> s.classList.toggle('active', i===idx));
+    const setActive = (idx) =>
+      slides.forEach((s, i) => s.classList.toggle('active', i === idx));
 
-  const centerOffset = (idx) =>
-    slides[idx].offsetLeft - (track.clientWidth - slides[idx].clientWidth)/2;
+    const centerOffset = (idx) =>
+      slides[idx].offsetLeft -
+      (track.clientWidth - slides[idx].clientWidth) / 2;
 
-  // Scroll ke index tertentu (center) dengan behavior pilihan
-  const scrollToIndex = (idx, smooth=true) =>
-    track.scrollTo({ left: centerOffset(idx), behavior: smooth ? 'smooth' : 'auto' });
+    // Scroll ke index tertentu (center) dengan behavior pilihan
+    const scrollToIndex = (idx, smooth = true) =>
+      track.scrollTo({
+        left: centerOffset(idx),
+        behavior: smooth ? 'smooth' : 'auto',
+      });
 
-  // Menunggu sampai posisi scroll benar-benar mencapai target (lebih stabil dari setTimeout)
-  function smoothScrollToIndex(idx, cb){
-    const prevSnap = track.style.scrollSnapType;
-    track.style.scrollSnapType = 'none';            // hindari snap melawan arah
-    const target = centerOffset(idx);
-    track.scrollTo({ left: target, behavior: 'smooth' });
+    // Menunggu sampai posisi scroll benar-benar mencapai target (lebih stabil dari setTimeout)
+    function smoothScrollToIndex(idx, cb) {
+      const prevSnap = track.style.scrollSnapType;
+      track.style.scrollSnapType = 'none'; // hindari snap melawan arah
 
-    const t0 = performance.now(), MAX = ANIM + 300, EPS = 1;
-    function tick(){
-      const atTarget = Math.abs(track.scrollLeft - target) <= EPS;
-      const overtime = (performance.now() - t0) > MAX;
-      if (atTarget || overtime) {
-        track.style.scrollSnapType = prevSnap;
-        cb && cb();
-        return;
+      const target = centerOffset(idx);
+
+      track.scrollTo({ left: target, behavior: 'smooth' });
+
+      const t0 = performance.now(),
+        MAX = ANIM + 300,
+        EPS = 1;
+
+      function tick() {
+        const atTarget = Math.abs(track.scrollLeft - target) <= EPS;
+        const overtime = performance.now() - t0 > MAX;
+
+        if (atTarget || overtime) {
+          track.style.scrollSnapType = prevSnap;
+          cb && cb();
+          return;
+        }
+
+        requestAnimationFrame(tick);
       }
+
       requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
-  }
 
-  // rAF ganda untuk memastikan eksekusi setelah browser menyelesaikan paint terakhir
-  function rafSwap(fn){ requestAnimationFrame(()=>requestAnimationFrame(fn)); }
-
-  // Tukar posisi clone→real secara relatif (delta) tanpa gerakan tambahan (side-peek tetap)
-  function seamlessSwapByDelta(fromCloneIdx, toRealIdx){
-    const prevBehavior = track.style.scrollBehavior;
-    const prevSnap = track.style.scrollSnapType;
-    track.style.scrollBehavior = 'auto';
-    track.style.scrollSnapType = 'none';
-
-    const delta = centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
-    track.scrollLeft += delta;                        // geser relatif → tidak terlihat loncat
-
-    track.style.scrollBehavior = prevBehavior || '';
-    track.style.scrollSnapType = prevSnap || '';
-    currentIndex = toRealIdx;
-    setActive(currentIndex);
-    setDots(realOf(currentIndex));
-  }
-
-  // ===== Panah NEXT: kanan satu langkah; 3→1 halus (via clone kanan) =====
-  function goNext() {
-    if (isTransitioning) return;
-    isTransitioning = true;
-
-    if (currentIndex === LAST_REAL) {
-      // target akhir = real0; kunci visual aktif ke tujuan supaya scale/opacity konsisten
-      setActive(FIRST_REAL);
-      setDots(0);
-
-      const cloneIdx = RIGHT_CLONE_AFTER_LAST; // index clone kanan
-      smoothScrollToIndex(cloneIdx, () => {
-        // setelah benar-benar di clone, swap delta ke real tanpa gerakan tambahan
-        rafSwap(() => {
-          seamlessSwapByDelta(cloneIdx, FIRST_REAL);
-          isTransitioning = false;
-        });
-      });
-    } else {
-      const target = currentIndex + 1;
-      setActive(target);
-      setDots(realOf(target));
-      smoothScrollToIndex(target, () => {
-        currentIndex = target;
-        isTransitioning = false;
-      });
+    // rAF ganda untuk memastikan eksekusi setelah browser menyelesaikan paint terakhir
+    function rafSwap(fn) {
+      requestAnimationFrame(() => requestAnimationFrame(fn));
     }
-  }
 
-  // ===== Panah PREV: kiri satu langkah; 1→3 halus (via clone kiri) =====
-  function goPrev() {
-    if (isTransitioning) return;
-    isTransitioning = true;
+    // Tukar posisi clone→real secara relatif (delta) tanpa gerakan tambahan (side-peek tetap)
+    function seamlessSwapByDelta(fromCloneIdx, toRealIdx) {
+      const prevBehavior = track.style.scrollBehavior;
+      const prevSnap = track.style.scrollSnapType;
 
-    if (currentIndex === FIRST_REAL) {
-      // target akhir = real2
-      setActive(LAST_REAL);
-      setDots(2);
+      track.style.scrollBehavior = 'auto';
+      track.style.scrollSnapType = 'none';
 
-      const cloneIdx = LEFT_CLONE_BEFORE_FIRST; // index clone kiri
-      smoothScrollToIndex(cloneIdx, () => {
-        rafSwap(() => {
-          seamlessSwapByDelta(cloneIdx, LAST_REAL);
-          isTransitioning = false;
-        });
-      });
-    } else {
-      const target = currentIndex - 1;
-      setActive(target);
-      setDots(realOf(target));
-      smoothScrollToIndex(target, () => {
-        currentIndex = target;
-        isTransitioning = false;
-      });
+      const delta =
+        centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
+
+      track.scrollLeft += delta; // geser relatif → tidak terlihat loncat
+
+      track.style.scrollBehavior = prevBehavior || '';
+      track.style.scrollSnapType = prevSnap || '';
+
+      currentIndex = toRealIdx;
+      setActive(currentIndex);
+      setDots(realOf(currentIndex));
     }
-  }
 
-  // ===== Dots: pilih jarak terdekat, tetap step 1 berulang (arah konsisten) =====
-  function step(dir, times) {
-    if (times<=0) return;
-    const tick = () => { (dir>0?goNext():goPrev()); times--; if (times>0) setTimeout(tick, ANIM+BUF+10); };
-    tick();
-  }
-  dots.forEach((d, targetReal) => {
-    d.addEventListener('click', () => {
+    // ===== Panah NEXT: kanan satu langkah; 3→1 halus (via clone kanan) =====
+    function goNext() {
       if (isTransitioning) return;
-      const curReal = realOf(currentIndex);
-      if (targetReal === curReal) return;
-      const r = (targetReal - curReal + 3) % 3;
-      const l = (curReal - targetReal + 3) % 3;
-      if (r <= l) step(1, r); else step(-1, l);
-    });
-  });
+      isTransitioning = true;
 
-  // ===== Sinkron ketika user swipe manual; normalisasi bila mendarat di clone =====
-  let debounce = null;
-  track.addEventListener('scroll', () => {
-    if (isTransitioning) return;
-    clearTimeout(debounce);
-    debounce = setTimeout(() => {
-      const mid = track.scrollLeft + track.clientWidth/2;
-      let nearest = currentIndex, best = Infinity;
-      for (let i=0;i<slides.length;i++) {
-        const center = slides[i].offsetLeft + slides[i].clientWidth/2;
-        const d = Math.abs(center - mid);
-        if (d < best) { best = d; nearest = i; }
-      }
-      // Jika user berhenti di clone, swap delta ke real padanannya agar loop mulus
-      if (nearest < FIRST_REAL) {
-        // clone kiri → real terakhir
-        rafSwap(() => seamlessSwapByDelta(nearest, LAST_REAL));
-      } else if (nearest > LAST_REAL) {
-        // clone kanan → real pertama
-        rafSwap(() => seamlessSwapByDelta(nearest, FIRST_REAL));
+      if (currentIndex === LAST_REAL) {
+        // target akhir = real0; kunci visual aktif ke tujuan supaya scale/opacity konsisten
+        setActive(FIRST_REAL);
+        setDots(0);
+
+        const cloneIdx = RIGHT_CLONE_AFTER_LAST; // index clone kanan
+
+        smoothScrollToIndex(cloneIdx, () => {
+          // setelah benar-benar di clone, swap delta ke real tanpa gerakan tambahan
+          rafSwap(() => {
+            seamlessSwapByDelta(cloneIdx, FIRST_REAL);
+            isTransitioning = false;
+          });
+        });
       } else {
-        currentIndex = nearest;
-        setActive(currentIndex);
-        setDots(realOf(currentIndex));
+        const target = currentIndex + 1;
+        setActive(target);
+        setDots(realOf(target));
+
+        smoothScrollToIndex(target, () => {
+          currentIndex = target;
+          isTransitioning = false;
+        });
       }
-    }, 80);
-  }, { passive:true });
+    }
 
-  // ===== Init awal: center di real0, set indikator =====
-  scrollToIndex(FIRST_REAL, false);
-  setActive(FIRST_REAL);
-  setDots(0);
+    // ===== Panah PREV: kiri satu langkah; 1→3 halus (via clone kiri) =====
+    function goPrev() {
+      if (isTransitioning) return;
+      isTransitioning = true;
 
-  // ===== Event tombol =====
-  next.addEventListener('click', goNext);
-  prev.addEventListener('click', goPrev);
-})();
+      if (currentIndex === FIRST_REAL) {
+        // target akhir = real2
+        setActive(LAST_REAL);
+        setDots(2);
+
+        const cloneIdx = LEFT_CLONE_BEFORE_FIRST; // index clone kiri
+
+        smoothScrollToIndex(cloneIdx, () => {
+          rafSwap(() => {
+            seamlessSwapByDelta(cloneIdx, LAST_REAL);
+            isTransitioning = false;
+          });
+        });
+      } else {
+        const target = currentIndex - 1;
+        setActive(target);
+        setDots(realOf(target));
+
+        smoothScrollToIndex(target, () => {
+          currentIndex = target;
+          isTransitioning = false;
+        });
+      }
+    }
+
+    // ===== Dots: pilih jarak terdekat, tetap step 1 berulang (arah konsisten) =====
+    function step(dir, times) {
+      if (times <= 0) return;
+
+      const tick = () => {
+        dir > 0 ? goNext() : goPrev();
+        times--;
+
+        if (times > 0) setTimeout(tick, ANIM + BUF + 10);
+      };
+
+      tick();
+    }
+
+    dots.forEach((d, targetReal) => {
+      d.addEventListener('click', () => {
+        if (isTransitioning) return;
+
+        const curReal = realOf(currentIndex);
+        if (targetReal === curReal) return;
+
+        const r = (targetReal - curReal + 3) % 3;
+        const l = (curReal - targetReal + 3) % 3;
+
+        if (r <= l) step(1, r);
+        else step(-1, l);
+      });
+    });
+
+    // ===== Sinkron ketika user swipe manual; normalisasi bila mendarat di clone =====
+    let debounce = null;
+
+    track.addEventListener(
+      'scroll',
+      () => {
+        if (isTransitioning) return;
+
+        clearTimeout(debounce);
+
+        debounce = setTimeout(() => {
+          const mid = track.scrollLeft + track.clientWidth / 2;
+          let nearest = currentIndex,
+            best = Infinity;
+
+          for (let i = 0; i < slides.length; i++) {
+            const center =
+              slides[i].offsetLeft + slides[i].clientWidth / 2;
+            const d = Math.abs(center - mid);
+
+            if (d < best) {
+              best = d;
+              nearest = i;
+            }
+          }
+
+          // Jika user berhenti di clone, swap delta ke real padanannya agar loop mulus
+          if (nearest < FIRST_REAL) {
+            // clone kiri → real terakhir
+            rafSwap(() => seamlessSwapByDelta(nearest, LAST_REAL));
+          } else if (nearest > LAST_REAL) {
+            // clone kanan → real pertama
+            rafSwap(() => seamlessSwapByDelta(nearest, FIRST_REAL));
+          } else {
+            currentIndex = nearest;
+            setActive(currentIndex);
+            setDots(realOf(currentIndex));
+          }
+        }, 80);
+      },
+      { passive: true }
+    );
+
+    // ===== Init awal: center di real0, set indikator =====
+    scrollToIndex(FIRST_REAL, false);
+    setActive(FIRST_REAL);
+    setDots(0);
+
+    // ===== Event tombol =====
+    next.addEventListener('click', goNext);
+    prev.addEventListener('click', goPrev);
+  })();
 </script>
 
-  {{-- SECTION: Cerita Kami --}}
-<section class="relative bg-[#F1F9FC] py-4 md:py-6 px-6 md:px-12 lg:px-[80px]">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-[60px] items-center">
 
-        {{-- Kolom Kiri: Foto + badges --}}
-<div class="relative md:pl-[16px] lg:pl-[24px]">
+{{-- SECTION: Cerita Kami --}}
+<section class="relative bg-[#F1F9FC] py-6 md:py-10">
+  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start md:items-center">
 
-  {{-- Wrapper frame + avatar (relative) --}}
-  <div class="relative inline-block">
-    {{-- Frame foto --}}
-    <div class="rounded-2xl overflow-hidden shadow-xl ring-2 ring-[#1524AF]">
-      <img src="{{ asset('images/cerita-kami.svg') }}"
-           alt="Kegiatan UPT PTKK"
-           class="w-full h-auto object-cover">
-    </div>
-
-    {{-- AVATAR: pojok kiri bawah, turun 0.5rem agar match -bottom-2 --}}
-    <div class="hidden md:block absolute left-0 top-full translate-y-4">
-      <img src="{{ asset('images/icons/avatar.svg') }}" alt="Avatar"
-           class="w-[134px] h-[30px] object-contain drop-shadow-md">
-    </div>
-  </div>
-
-          {{-- BADGES (desktop) --}}
-          <div class="hidden md:block">
-            {{-- Cabang Dinas (kiri atas) --}}
-            <div class="absolute -top-7 -left-2">
-              <div class="flex items-center bg-white rounded-xl h-[56px] pl-[10px] pr-[10px] shadow-lg ring-1 ring-black/5">
-                <span class="inline-flex w-[30px] h-[30px] rounded-full bg-[#BCE9F5] items-center justify-center mr-[9px]">
-                  <img src="{{ asset('images/icons/cabdin.svg') }}" alt="Cabang Dinas" class="w-[25px] h-[25px]">
-                </span>
-                <div class="font-[Montserrat] flex flex-col justify-center">
-                  <div class="font-medium text-[#081526] px-[10px] py-[3px]" style="font-size:16px;">Cabang Dinas</div>
-                  <div class="font-bold text-[#00A4F9] tracking-tight px-[10px] py-[3px]" style="font-size:20px;">24</div>
-                </div>
-              </div>
-            </div>
-
-            {{-- Alumni (kanan atas) --}}
-            <div class="absolute top-5 -right-11">
-              <div class="flex items-center bg-white rounded-xl w-[124px] h-[56px] pl-[10px] pr-[10px] shadow-lg ring-1 ring-black/5">
-                <span class="inline-flex flex-none shrink-0 items-center justify-center
-                             w-[30px] h-[30px] aspect-square rounded-full bg-[#BCE9F5] mr-[9px] overflow-hidden">
-                  <img src="{{ asset('images/icons/alumni.svg') }}"
-                       alt="Cabang Dinas"
-                       class="w-[22px] h-[22px] object-contain">
-                </span>
-                <div class="font-[Montserrat] flex flex-col justify-center leading-tight">
-                  <div class="font-medium text-[#081526] px-[10px] py-[3px]" style="font-size:16px;">Alumni</div>
-                  <div class="font-bold text-[#00A4F9] tracking-tight px-[10px] py-[3px]" style="font-size:20px;">500+</div>
-                </div>
-              </div>
-            </div>
-
-            {{-- Bidang Pelatihan (kanan bawah) --}}
-            <div class="absolute -bottom-2 -right-6">
-              <div class="flex items-center bg-white rounded-xl w-[205px] h-[56px]
-                          pl-[10px] pr-[10px] shadow-lg ring-1 ring-black/5">
-                <span class="inline-flex flex-none shrink-0 items-center justify-center
-                             w-[30px] h-[30px] aspect-square rounded-full bg-[#BCE9F5] mr-[9px] overflow-hidden">
-                  <img src="{{ asset('images/icons/bidang-pelatihan.svg') }}"
-                       alt="Bidang Pelatihan"
-                       class="w-[22px] h-[22px] object-contain">
-                </span>
-                <div class="font-[Montserrat] flex flex-col justify-center leading-tight">
-                  <div class="font-medium text-[#081526] px-[10px] py-[3px] whitespace-nowrap" style="font-size:16px;">
-                    Bidang Pelatihan
-                  </div>
-                  <div class="font-bold text-[#00A4F9] tracking-tight px-[10px] py-[3px]" style="font-size:20px;">
-                    10+
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {{-- MOBILE badges --}}
-          <div class="mt-5 md:hidden space-y-3">
-            <div>
-              <img src="{{ asset('images/icons/avatar.svg') }}" alt="Avatar"
-                   class="w-[134px] h-[30px] object-contain drop-shadow-md">
-            </div>
-            <div class="flex flex-wrap gap-3">
-              <div class="flex items-center bg-white rounded-xl h-[48px] pl-[10px] pr-[10px] shadow-md ring-1 ring-black/5">
-                <span class="inline-flex w-[28px] h-[28px] rounded-full bg-[#BCE9F5] items-center justify-center mr-[9px]">
-                  <img src="{{ asset('images/icons/cabdin.svg') }}" alt="Cabang Dinas" class="w-[22px] h-[22px]">
-                </span>
-                <div class="font-[Montserrat]">
-                  <div class="font-medium text-[#081526] px-[8px] py-[2px]" style="font-size:14px;">Cabang Dinas</div>
-                  <div class="font-bold text-[#00A4F9] tracking-tight px-[8px] py-[2px]" style="font-size:16px;">24</div>
-                </div>
-              </div>
-              <div class="flex items-center bg-white rounded-xl h-[48px] pl-[10px] pr-[10px] shadow-md ring-1 ring-black/5">
-                <span class="inline-flex w-[28px] h-[28px] rounded-full bg-[#BCE9F5] items-center justify-center mr-[9px]">
-                  <img src="{{ asset('images/icons/cabdin.svg') }}" alt="Alumni" class="w-[22px] h-[22px]">
-                </span>
-                <div class="font-[Montserrat]">
-                  <div class="font-medium text-[#081526] px-[8px] py-[2px]" style="font-size:14px;">Alumni</div>
-                  <div class="font-bold text-[#00A4F9] tracking-tight px-[8px] py-[2px]" style="font-size:16px;">500+</div>
-                </div>
-              </div>
-              <div class="flex items-center bg-white rounded-xl h-[48px] pl-[10px] pr-[10px] shadow-md ring-1 ring-black/5">
-                <span class="inline-flex w-[28px] h-[28px] rounded-full bg-[#BCE9F5] items-center justify-center mr-[9px]">
-                  <img src="{{ asset('images/icons/bidang-pelatihan.svg') }}" alt="Bidang Pelatihan" class="w-[22px] h-[22px]">
-                </span>
-                <div class="font-[Montserrat]">
-                  <div class="font-medium text-[#081526] px-[8px] py-[2px]" style="font-size:14px;">Bidang Pelatihan</div>
-                  <div class="font-bold text-[#00A4F9] tracking-tight px-[8px] py-[2px]" style="font-size:16px;">10+</div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {{-- Kolom Kiri: Foto --}}
+      <div class="w-full flex justify-center md:justify-start md:pl-2 lg:pl-4">
+        <div class="rounded-2xl overflow-hidden shadow-xl ring-2 ring-[#1524AF] max-w-[420px] md:max-w-[480px] lg:max-w-[520px]">
+          <img src="{{ asset('images/cerita-kami.svg') }}"
+               alt="Kegiatan UPT PTKK"
+               class="w-full h-auto object-cover">
         </div>
-        {{-- /Kolom Kiri --}}
+      </div>
 
-        {{-- Kolom Kanan --}}
-<div class="flex flex-col">
+      {{-- Kolom Kanan: Teks --}}
+      <div class="flex flex-col">
 
-  <!-- Badge -->
-  <div class="inline-flex self-start items-center justify-center mb-[20px] px-1 py-2 bg-[#F3E8E9] rounded-md">
-    <span class="font-['Volkhov'] font-bold text-[#861D23] text-[24px] leading-none">Cerita Kami</span>
-  </div>
+        {{-- Badge Cerita Kami --}}
+        <div class="inline-flex self-start items-center justify-center mb-[20px] px-2 py-2 bg-[#F3E8E9] rounded-md">
+          <span class="font-['Volkhov'] font-bold text-[#861D23] text-[22px] md:text-[24px] leading-none">
+            Cerita Kami
+          </span>
+        </div>
 
-  <!-- Heading -->
-  <h2 class="mb-[20px] md:mb-[24px] font-['Volkhov'] font-bold text-[24px] md:text-[28px] lg:text-[32px]
-             leading-tight text-[#1524AF] heading-stroke max-w-[36ch]">
-    UPT Pengembangan Teknis Dan<br class="hidden md:block" />
-    Keterampilan Kejuruan
-  </h2>
+        {{-- Heading --}}
+        <h2 class="mb-[20px] md:mb-[24px]
+                   font-['Volkhov'] font-bold
+                   text-[24px] md:text-[30px] lg:text-[34px]
+                   leading-tight text-[#1524AF] heading-stroke
+                   max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch]">
+          UPT Pengembangan Teknis
+          <br class="hidden lg:block" />
+          Dan Keterampilan Kejuruan
+        </h2>
 
-  <!-- Paragraf -->
-  <p class="mb-[24px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526]
-         leading-7 text-[14px] md:text-[14px] lg:text-[16px] text-justify max-w-prose">
-    Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur
-    yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi
-    dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK)
-    di beberapa bidang keahlian strategis. Sebagai pelopor pelatihan vokasi, UPT PTKK terus memperkuat posisinya
-    dengan menghadirkan program yang relevan, progresif, dan berdampak nyata.
-    Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil
-    sehingga mampu berkontribusi pada kemajuan pendidikan di Jawa Timur.
-  </p>
+        {{-- Paragraf --}}
+        <p class="mb-[24px] md:mb-[28px]
+               font-['Montserrat'] font-medium text-[#081526]
+               leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
+         Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur
+         yang mempunyai tugas dan fungsi  memberikan fasilitas melalui pelatihan berbasis kompetensi
+         dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK)
+         di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi, UPT PTKK terus memperkuat
+        posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata. Melalui upaya tersebut,
+        UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada kemajuan pendidikan di Jawa Timur.
+        </p>
 
-  <!-- Button -->
-  <a href="#"
-     class="inline-flex items-center justify-center gap-2 w-max px-8 py-3 rounded-xl bg-[#1524AF]
-            text-white font-['Montserrat'] font-medium text-[18px] tracking-tight shadow-md hover:bg-[#0F1D8F]
-            active:scale-[.99] transition-all duration-200 ease-out">
-    <span class="leading-none">Cari tahu lebih</span>
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none"
-         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
-    </svg>
-  </a>
-</div>
-{{-- /Kolom Kanan --}}
+      {{-- Button --}}
+<a href="#"
+   class="inline-flex items-center justify-center gap-2 w-max
+          px-5 py-2           {{-- HP kecil --}}
+          sm:px-6 sm:py-2.5   {{-- Sedikit naik untuk screen > 640px --}}
+          md:px-8 md:py-3     {{-- Kembali besar di tablet & desktop --}}
+          rounded-xl bg-[#1524AF]
+          text-white font-['Montserrat'] font-medium
+          text-[14px] sm:text-[16px] md:text-[18px]   {{-- HP lebih kecil --}}
+          shadow-md hover:bg-[#0F1D8F]
+          active:scale-[.99] transition-all duration-200 ease-out">
+  <span class="leading-none">Cari tahu lebih</span>
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px]"
+       viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+  </svg>
+</a>
 
       </div>
+
     </div>
-  </section>
-  {{-- /SECTION: Cerita Kami --}}
+  </div>
+</section>
+{{-- /SECTION: Cerita Kami --}}
+
 
 {{-- SECTION: Jatim Bangkit (oval slim, bigger icons, tighter gap) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
@@ -575,28 +624,38 @@
 
             {{-- Bagian 1 --}}
             <div class="flex w-1/2 items-center justify-between
-                        px-8 md:px-12 lg:px-16
-                        gap-5 md:gap-7 lg:gap-8">
+                        px-6 md:px-10 lg:px-16
+                        gap-4 md:gap-6 lg:gap-8">
 
-              <img src="{{ asset('images/icons/cetar.svg') }}"     class="h-[34px] md:h-[38px] lg:h-[42px]">
-              <img src="{{ asset('images/icons/dindik.svg') }}"    class="h-[34px] md:h-[38px] lg:h-[42px]">
-              <img src="{{ asset('images/icons/jatim.svg') }}"     class="h-[34px] md:h-[38px] lg:h-[42px]">
-              <img src="{{ asset('images/icons/berakhlak.svg') }}" class="h-[34px] md:h-[38px] lg:h-[42px]">
-              <img src="{{ asset('images/icons/optimis.svg') }}"   class="h-[34px] md:h-[38px] lg:h-[42px]">
+              <img src="{{ asset('images/icons/cetar.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Cetar">
+              <img src="{{ asset('images/icons/dindik.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Dindik">
+              <img src="{{ asset('images/icons/jatim.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Jatim">
+              <img src="{{ asset('images/icons/berakhlak.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Berakhlak">
+              <img src="{{ asset('images/icons/optimis.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Optimis">
 
             </div>
 
             {{-- Bagian 2 (duplikat) --}}
             <div class="flex w-1/2 items-center justify-between
-                        px-8 md:px-12 lg:px-16
-                        gap-5 md:gap-7 lg:gap-8"
+                        px-6 md:px-10 lg:px-16
+                        gap-4 md:gap-6 lg:gap-8"
                  aria-hidden="true">
 
-              <img src="{{ asset('images/icons/cetar.svg') }}"     class="h-[34px] md:h-[38px] lg:h-[42px]">
-              <img src="{{ asset('images/icons/dindik.svg') }}"    class="h-[34px] md:h-[38px] lg:h-[42px]">
-              <img src="{{ asset('images/icons/jatim.svg') }}"     class="h-[34px] md:h-[38px] lg:h-[42px]">
-              <img src="{{ asset('images/icons/berakhlak.svg') }}" class="h-[34px] md:h-[38px] lg:h-[42px]">
-              <img src="{{ asset('images/icons/optimis.svg') }}"   class="h-[34px] md:h-[38px] lg:h-[42px]">
+              <img src="{{ asset('images/icons/cetar.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+              <img src="{{ asset('images/icons/dindik.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+              <img src="{{ asset('images/icons/jatim.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+              <img src="{{ asset('images/icons/berakhlak.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+              <img src="{{ asset('images/icons/optimis.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
 
             </div>
 
@@ -616,43 +675,58 @@
 </section>
 {{-- /SECTION --}}
 
-
-
-{{-- SECTION: Berita Terbaru (hover efek interaktif) --}}
+{{-- SECTION: Berita Terbaru --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
 
     {{-- HEADER --}}
-    <div class="grid grid-rows-[auto_auto] md:[grid-template-columns:1fr_auto] gap-y-2 mb-10 items-center">
+    <div class="grid gap-y-2 mb-10">
 
-      {{-- Baris 1 kiri: Badge --}}
-      <div class="row-start-1 col-start-1">
-        <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23]
-                     font-[Volkhov] font-bold text-sm rounded-md leading-none
-                     px-[10px] py-[4px] whitespace-nowrap">
-          Berita Terbaru
-        </span>
+      {{-- Badge --}}
+      <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23]
+                   font-[Volkhov] font-bold text-[15px] md:text-[16px]
+                   rounded-md leading-none px-3 py-1 shadow-sm w-fit">
+        Berita Terbaru
+      </span>
+
+      {{-- Judul + CTA --}}
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+
+        {{-- Judul --}}
+        <h2 class="heading-stroke font-[Volkhov] font-bold
+                   text-[18px] sm:text-[20px] md:text-[24px] lg:text-[28px]
+                   leading-snug">
+          Jangan lewatkan kabar terbaru dari UPT PTKK
+        </h2>
+
+      {{-- CTA --}}
+<a href="#"
+   class="inline-flex items-center justify-center gap-2
+          bg-[#1524AF] hover:bg-[#0E1E8B]
+          text-white font-['Montserrat'] font-medium
+          text-[12px] sm:text-[13px] md:text-[14px]
+          px-[12px] py-[6px] sm:px-[14px] sm:py-[7px] md:px-[16px] md:py-[8px]
+          rounded-xl shadow-md transition-all duration-200
+          self-start md:self-center active:scale-[.98]">
+
+  <span class="leading-none">Cari tahu lebih</span>
+
+  {{-- Ikon panah sama seperti CTA Cerita Kami --}}
+  <svg xmlns="http://www.w3.org/2000/svg"
+       class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px]"
+       viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+  </svg>
+
+</a>
+
       </div>
-
-      {{-- Baris 2 kiri: Judul --}}
-      <h2 class="row-start-2 col-start-1 heading-stroke font-[Volkhov] font-bold
-                 text-[20px] md:text-[24px] lg:text-[28px] leading-snug">
-        Jangan lewatkan kabar terbaru dari UPT PTKK
-      </h2>
-
-      {{-- Baris 2 kanan: Tombol CTA --}}
-      <a href="#"
-         class="row-start-2 md:col-start-2 justify-self-start md:justify-self-end
-                inline-flex items-center gap-1.5 bg-[#1524AF] hover:bg-[#0E1E8B]
-                text-[#FFFFFF] font-[Volkhov] font-bold text-[14px]
-                px-[14px] md:px-[16px] py-[6px] md:py-[7px]
-                rounded-md transition-all duration-200">
-        Cari tahu lebih →
-      </a>
     </div>
 
     {{-- GRID BERITA --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
       @for ($i = 0; $i < 3; $i++)
       <article
         class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4
@@ -661,7 +735,8 @@
         <div class="w-full h-[160px] bg-[#E7ECF3] rounded-lg mb-4"></div>
 
         <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
@@ -941,8 +1016,6 @@
 
 </section>
 
-
-
 {{-- SECTION: Kompetensi Pelatihan (gambar SVG lokal) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
@@ -1013,11 +1086,11 @@
 
       </div>
 
-     {{-- BUTTONS & CTA sejajar di bawah slider --}}
-<div class="flex items-center justify-between mt-6">
+        {{-- BUTTONS & CTA sejajar di bawah slider --}}
+<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mt-6">
 
   {{-- Tombol navigasi (kiri) --}}
-  <div class="flex gap-3">
+  <div class="flex gap-3 justify-center md:justify-start">
     <button id="prevBtn" type="button"
             class="w-8 h-8 flex items-center justify-center bg-white rounded-full border border-[#B6BBE6]
                    text-[#0E2A7B] hover:bg-[#1524AF] hover:text-white transition">
@@ -1037,15 +1110,15 @@
   {{-- CTA (kanan) --}}
   <a href="#"
      class="inline-flex items-center gap-2 bg-[#1524AF] hover:bg-[#0E1F73]
-            text-white text-sm font-medium px-5 py-2.5 rounded-md transition">
+            text-white text-sm font-medium px-5 py-2.5 rounded-md transition
+            self-center md:self-auto">
     Lihat Semua Kompetensi
     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
     </svg>
   </a>
 </div>
-    </div>
-  </div>
+
 
   {{-- Script: geser 1 kartu per klik (hitung lebar + gap dinamis) --}}
   <script>
@@ -1071,9 +1144,6 @@
     })();
   </script>
 </section>
-
-
-
 
 <!-- SECTION: Data Statistik -->
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
@@ -1132,30 +1202,43 @@
         </a>
       </div>
 <!-- Right Column (Chart) -->
-<div class="lg:col-span-8">
-  <div class="grid grid-cols-3 gap-4 mb-4">
-    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-4 text-center">
-      <div class="text-[28px] font-[Volkhov] font-bold text-[#081526]">63.48</div>
-      <div class="text-xs font-[Montserrat] font-medium text-[#081526]">Rata-Rata Pre-Test</div>
+<div class="lg:col-span-8 mt-6 lg:mt-0">
+  <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
+      <div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">
+        63.48
+      </div>
+      <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
+        Rata-Rata Pre-Test
+      </div>
     </div>
 
-    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-4 text-center">
-      <div class="text-[28px] font-[Volkhov] font-bold text-[#081526]">90</div>
-      <div class="text-xs font-[Montserrat] font-medium text-[#081526]">Praktek</div>
+    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
+      <div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">
+        90
+      </div>
+      <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
+        Praktek
+      </div>
     </div>
 
-    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-4 text-center">
-      <div class="text-[28px] font-[Volkhov] font-bold text-[#081526]">80.76</div>
-      <div class="text-xs font-[Montserrat] font-medium text-[#081526]">Rata-Rata Post-Test</div>
+    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
+      <div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">
+        80.76
+      </div>
+      <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
+        Rata-Rata Post-Test
+      </div>
     </div>
   </div>
 
- <div class="rounded-2xl bg-white border-2 border-[#1524AF] p-4 md:p-5">
+  <div class="rounded-2xl bg-white border-2 border-[#1524AF] p-4 md:p-5">
     <div class="relative w-full h-[320px]">
       <canvas id="statistikChart"></canvas>
     </div>
   </div>
 </div>
+
     </div>
   </div>
 </section>
@@ -1341,65 +1424,95 @@
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="relative rounded-2xl overflow-hidden">
 
-      <!-- BG foto full -->
-      <div class="w-full h-[280px] md:h-[340px] lg:h-[380px] bg-cover bg-center relative"
-           style="background-image: url('{{ asset('images/bgvideo.svg') }}');">
-        <!-- Overlay gradient dari kanan ke kiri -->
+      {{-- BG foto full --}}
+      <div
+        class="w-full h-[220px] sm:h-[240px] md:h-[300px] lg:h-[380px] bg-cover bg-center relative"
+        style="background-image: url('{{ asset('images/bgvideo.svg') }}');"
+      >
+       {{-- Overlay gradient: muncul di semua device (HP, tablet, desktop) --}}
 <div class="absolute inset-0"
      style="background: linear-gradient(270deg,
         rgba(21,36,175,1) 29%,
         rgba(21,36,175,0.34) 66%,
         rgba(21,36,175,0) 100%);">
 </div>
-
       </div>
 
-      <!-- Overlay grid 2 kolom -->
-      <div class="absolute inset-0 grid grid-cols-1 lg:grid-cols-2">
-        <!-- KIRI: Tombol Play -->
-        <div class="relative flex items-center justify-center p-6">
-         <!-- Tombol Play: ikon saja, tanpa background -->
-<!-- Tombol Play: hanya icon, diperbesar -->
-<a href="https://www.youtube.com/watch?v=JZXEx5i6U9o" target="_blank" rel="noopener"
-   class="absolute inset-0 flex items-center justify-center">
-  <img src="{{ asset('images/icons/play.svg') }}"
-       alt="Play Icon"
-       class="w-16 h-16 md:w-20 md:h-20 object-contain select-none pointer-events-none">
-</a>
+      {{-- Overlay grid konten --}}
+      <div
+        class="absolute inset-0 grid grid-cols-2
+               gap-x-3 md:gap-x-4 lg:gap-x-8
+               px-3 sm:px-5 md:px-8 lg:px-10
+               py-5 md:py-6 lg:py-0"
+      >
+
+        {{-- KIRI: Tombol Play - posisi tengah area kiri --}}
+        <div class="relative flex items-center justify-center">
+          <a href="https://www.youtube.com/watch?v=JZXEx5i6U9o"
+             target="_blank" rel="noopener"
+             class="flex items-center justify-center
+                    translate-x-2 sm:translate-x-4 md:translate-x-6 lg:translate-x-0">
+            <img src="{{ asset('images/icons/play.svg') }}"
+                 alt="Play Icon"
+                 class="w-9 h-9 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-20 lg:h-20
+                        object-contain select-none">
+          </a>
         </div>
 
-        <!-- KANAN: Shape persegi panjang warna DBE7F7 -->
-        <div class="relative flex items-center justify-end p-6">
-          <div class="bg-[#DBE7F7] text-[#0E2A7B] rounded-2xl shadow-md
-                      w-full lg:max-w-[540px] p-6 md:p-8 lg:p-10">
-           <h2 class="heading-stroke text-center text-[18px] md:text-[22px] lg:text-[24px]
-           font-[Volkhov] font-bold leading-snug mb-3">
-  Bersama, Kita Cetak Pendidikan<br>
-   Vokasi yang Unggul
-</h2>
-            <p class="text-[15px] md:text-[16px] text-[#000000] leading-relaxed mb-6">
+        {{-- KANAN: Card panduan --}}
+        <div class="relative flex items-center justify-end">
+          <div
+            class="bg-[#DBE7F7]/95 text-[#0E2A7B] rounded-xl shadow-md
+                   w-full
+                   max-w-[200px] sm:max-w-[260px] md:max-w-[360px] lg:max-w-[540px]
+                   p-3 sm:p-4 md:p-5 lg:p-10
+                   backdrop-blur-sm
+                   md:translate-y-0 lg:translate-y-0"
+          >
+            <h2
+              class="heading-stroke
+                     text-left
+                     text-[12px] sm:text-[14px] md:text-[18px] lg:text-[24px]
+                     font-[Volkhov] font-bold leading-snug
+                     mb-2 sm:mb-2.5 md:mb-3"
+            >
+              Bersama, Kita Cetak Pendidikan
+              <br class="hidden md:block">
+              Vokasi yang Unggul
+            </h2>
+
+            <p
+              class="text-[11px] sm:text-[12px] md:text-[13px] lg:text-[16px]
+                     text-[#000000] leading-relaxed
+                     mb-3 sm:mb-4 md:mb-5 lg:mb-6"
+            >
               Pahami alur permohonan peserta untuk mengikuti program pelatihan di UPT PTKK
               guna memastikan kelancaran proses.
             </p>
-           <a href="#panduan"
-   class="mx-auto flex items-center justify-center gap-2
-          bg-[#1524AF] text-white px-8 md:px-10 py-2.5 rounded-md
-          font-medium hover:opacity-90 transition w-fit">
-  Lihat Panduan
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
-       stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-  </svg>
-</a>
 
+         <a href="#panduan"
+   class="flex items-center justify-start gap-1.5
+          bg-[#1524AF] text-white
+          px-3 sm:px-4 md:px-6 lg:px-10
+          py-1.5 sm:py-2 md:py-2.5
+          rounded-md
+          text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px]
+          font-medium hover:opacity-90 transition w-fit
+          ml-0">
+              Lihat Panduan
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                   stroke-width="2" viewBox="0 0 24 24" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
           </div>
         </div>
+
       </div>
 
     </div>
   </div>
 </section>
-
 
   {{-- FOOTER --}}
   @include('components.layouts.app.footer')

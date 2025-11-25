@@ -103,7 +103,7 @@ section + section {
   </style>
 </head>
 
-<body class="bg-[#FEFEFE] antialiased">
+<body class="bg-[#F1F9FC] antialiased">
   {{-- TOPBAR --}}
   @include('components.layouts.app.topbar')
 

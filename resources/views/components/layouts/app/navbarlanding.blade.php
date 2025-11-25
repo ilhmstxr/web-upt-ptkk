@@ -40,8 +40,8 @@
       $nav[] = $resolve($it);
     }
   }
-  $beranda = collect($nav)->firstWhere('label', 'Beranda');
-  $others  = collect($nav)->reject(fn($i) => $i['label'] === 'Beranda')->values();
+  $beranda   = collect($nav)->firstWhere('label', 'Beranda');
+  $others    = collect($nav)->reject(fn($i) => $i['label'] === 'Beranda')->values();
   $loginHref  = Route::has('login') ? route('login') : url('/login');
   $daftarHref = Route::has('register') ? route('register') : url('/daftar');
 @endphp
@@ -50,27 +50,27 @@
   class="sticky top-0 z-50 bg-[#F1F9FC] border-b border-slate-200/40 transition-shadow"
   role="navigation" aria-label="Site">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="h-[64px] md:h-[72px] flex items-center justify-between gap-4">
+    <div class="h-[56px] md:h-[64px] lg:h-[72px] flex items-center justify-between gap-3 md:gap-4">
 
       {{-- KIRI: Logo + identitas --}}
       <a href="{{ Route::has('home') ? route('home') : url('/') }}"
-         class="flex items-center gap-3 flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1524AF]/30 rounded">
+         class="flex items-center gap-2 md:gap-3 flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1524AF]/30 rounded">
         <img src="{{ asset('images/logo-provinsi-jawa-timur.png') }}"
              alt="Logo Provinsi Jawa Timur"
-             class="w-[42px] h-[50px] object-contain" />
+             class="w-[32px] h-[38px] md:w-[38px] md:h-[46px] lg:w-[42px] lg:h-[50px] object-contain" />
         <div class="leading-tight">
-          <div class="font-[Volkhov] font-bold text-slate-900 text-[20px] tracking-tight">
+          <div class="font-[Volkhov] font-bold text-slate-900 text-[16px] md:text-[18px] lg:text-[20px] tracking-tight">
             UPT. PTKK
           </div>
-          <div class="font-[Montserrat] text-[16px] text-slate-800 -mt-[2px]">
+          <div class="font-[Montserrat] text-[11px] md:text-[13px] lg:text-[16px] text-slate-800 -mt-[2px]">
             Dinas Pendidikan Prov. Jawa Timur
           </div>
         </div>
       </a>
 
-      {{-- MENU DESKTOP --}}
-      <div class="hidden md:flex items-center gap-6 font-[Montserrat]">
-        <nav class="flex items-center gap-8 text-[18px]" aria-label="Main">
+      {{-- MENU DESKTOP/TABLET (md ke atas) --}}
+      <div class="hidden md:flex items-center gap-4 lg:gap-6 font-[Montserrat]">
+        <nav class="flex items-center gap-4 lg:gap-8 text-[14px] md:text-[15px] lg:text-[18px]" aria-label="Main">
           {{-- Beranda --}}
           @if($beranda)
             <a href="{{ $beranda['href'] }}"
@@ -84,7 +84,7 @@
             </a>
           @endif
 
-          {{-- Profil (dropdown click, vanilla JS) --}}
+          {{-- Profil (dropdown desktop/tablet) --}}
           <div class="relative">
             <button id="btnProfil"
               aria-expanded="false" aria-haspopup="menu"
@@ -102,7 +102,7 @@
                  class="absolute left-0 mt-2 w-64 rounded-xl border border-slate-200 bg-white shadow-lg p-2 z-40 hidden">
               @foreach ($profile['children'] as $c)
                 <a href="{{ $c['href'] }}"
-                   class="block rounded-md px-3 py-2 text-[15px] transition
+                   class="block rounded-md px-3 py-2 text-[14px] md:text-[15px] transition
                           focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1524AF]/30
                           {{ $c['active'] ? 'text-[#1524AF] bg-[#F5FBFF]' : 'text-slate-900 hover:text-[#1524AF] hover:bg-slate-50' }}"
                    @if($c['active']) aria-current="page" @endif>
@@ -126,17 +126,18 @@
           @endforeach
         </nav>
 
-        {{-- Tombol kanan --}}
-        <div class="flex items-center gap-3">
+        {{-- Tombol kanan (md ke atas) --}}
+        <div class="flex items-center gap-2 md:gap-3">
           <a href="{{ $loginHref }}"
-             class="inline-flex items-center justify-center h-10 px-4 rounded-xl
+             class="inline-flex items-center justify-center h-8 md:h-9 lg:h-10 px-3 md:px-4 rounded-xl
                     border border-[#1524AF] text-[#1524AF] hover:bg-white/50
-                    font-[Montserrat] text-[16px] transition">
+                    font-[Montserrat] text-[13px] md:text-[14px] lg:text-[16px] transition">
             Masuk
           </a>
           <a href="{{ $daftarHref }}"
-             class="inline-flex items-center justify-center h-10 px-5 rounded-xl
-                    bg-[#1524AF] hover:opacity-90 text-white font-[Montserrat] text-[16px] gap-2 transition">
+             class="inline-flex items-center justify-center h-8 md:h-9 lg:h-10 px-4 lg:px-5 rounded-xl
+                    bg-[#1524AF] hover:opacity-90 text-white font-[Montserrat]
+                    text-[13px] md:text-[14px] lg:text-[16px] gap-2 transition">
             Daftar
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -145,7 +146,7 @@
         </div>
       </div>
 
-      {{-- HAMBURGER MOBILE --}}
+      {{-- HAMBURGER MOBILE (hanya < md) --}}
       <button id="navBtn"
               class="md:hidden w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-white/50 transition
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1524AF]/30"
@@ -157,9 +158,9 @@
     </div>
   </div>
 
-  {{-- DRAWER MOBILE --}}
-  <div id="navDrawer" class="md:hidden hidden border-t border-slate-200 bg-[#FFFFFF]">
-    <div class="px-6 py-4 flex flex-col gap-3 font-[Montserrat] text-[16px]">
+  {{-- DRAWER MOBILE (hanya < md) --}}
+  <div id="navDrawer" class="md:hidden hidden border-t border-slate-200 bg-[#F1F9FC]">
+    <div class="px-6 py-4 flex flex-col gap-3 font-[Montserrat] text-[14px]">
       @if($beranda)
         <a href="{{ $beranda['href'] }}"
            @class([
@@ -217,7 +218,8 @@
            class="flex-1 inline-flex items-center justify-center h-10 px-5 rounded-xl
                   bg-[#1524AF] hover:opacity-90 text-white gap-2 transition">
           Daftar
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
     </div>
@@ -227,8 +229,8 @@
 @push('scripts')
 <script>
   (function () {
-    const header = document.getElementById('siteHeader');
-    const navBtn = document.getElementById('navBtn');
+    const header    = document.getElementById('siteHeader');
+    const navBtn    = document.getElementById('navBtn');
     const navDrawer = document.getElementById('navDrawer');
 
     // Drawer mobile
@@ -244,17 +246,24 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !navDrawer.classList.contains('hidden')) toggleDrawer(false); }, { passive: true });
 
     // Shadow saat scroll
-    function onScroll(){ if (window.scrollY > 4) header.classList.add('shadow-[0_6px_20px_rgba(0,0,0,.08)]'); else header.classList.remove('shadow-[0_6px_20px_rgba(0,0,0,.08)]'); }
-    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    function onScroll(){
+      if (window.scrollY > 4) header.classList.add('shadow-[0_6px_20px_rgba(0,0,0,.08)]');
+      else header.classList.remove('shadow-[0_6px_20px_rgba(0,0,0,.08)]');
+    }
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
 
     // CSS var --header-h untuk offset sticky lain
-    function setHeaderH(){ document.documentElement.style.setProperty('--header-h', header.getBoundingClientRect().height + 'px'); }
-    setHeaderH(); new ResizeObserver(setHeaderH).observe(header);
+    function setHeaderH(){
+      document.documentElement.style.setProperty('--header-h', header.getBoundingClientRect().height + 'px');
+    }
+    setHeaderH();
+    new ResizeObserver(setHeaderH).observe(header);
 
-    // Dropdown Profil (desktop)
-    const btnProfil = document.getElementById('btnProfil');
+    // Dropdown Profil (desktop/tablet)
+    const btnProfil   = document.getElementById('btnProfil');
     const panelProfil = document.getElementById('panelProfil');
-    const chevProfil = document.getElementById('chevronProfil');
+    const chevProfil  = document.getElementById('chevronProfil');
 
     function setProfilOpen(open) {
       if (!btnProfil || !panelProfil || !chevProfil) return;
@@ -263,11 +272,13 @@
       chevProfil.classList.toggle('rotate-180', open);
     }
     setProfilOpen(false);
+
     btnProfil && btnProfil.addEventListener('click', (e) => {
       e.stopPropagation();
       const willOpen = panelProfil.classList.contains('hidden');
       setProfilOpen(willOpen);
     });
+
     document.addEventListener('click', (e) => {
       if (!panelProfil || panelProfil.classList.contains('hidden')) return;
       if (!panelProfil.contains(e.target) && !btnProfil.contains(e.target)) setProfilOpen(false);

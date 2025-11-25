@@ -72,7 +72,7 @@
   </style>
 </head>
 
-<body class="bg-[#FEFEFE] antialiased">
+<body class="bg-[#F1F9FC] antialiased">
 
   {{-- TOPBAR --}}
   @include('components.layouts.app.topbar')
@@ -94,7 +94,7 @@
 {{-- /HERO --}}
 
 {{-- SECTION: Mobil Training Unit --}}
-<section id="mobil-training-unit" class="relative bg-[#F8FAFC]">
+<section id="mobil-training-unit" class="relative bg-[#F1F9FC]">
   <div class="section-container">
 
     {{-- 2 Kolom Atas: Judul + Deskripsi (kiri) & Gambar Utama (kanan) --}}
@@ -137,9 +137,8 @@
 </section>
 
 {{-- SECTION: Diklat Peningkatan Kompetensi --}}
-<section id="diklat-peningkatan-kompetensi" class="relative bg-[#F8FAFC]">
+<section id="diklat-peningkatan-kompetensi" class="relative bg-[#F1F9FC]">
   <div class="section-container">
-
     {{-- 2 Kolom Atas: Gambar (kiri) & Judul + Deskripsi (kanan) --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center mb-8">
 
@@ -181,7 +180,7 @@
 </section>
 
 {{-- SECTION: Sertifikasi Berbasis KKNI Bertaraf Nasional --}}
-<section id="sertifikasi-kkni" class="relative bg-[#F8FAFC]">
+<section id="sertifikasi-kkni" class="relative bg-[#F1F9FC]">
   <div class="section-container">
 
    {{-- 2 Kolom Atas: Kiri (logo + teks sejajar) & Kanan (gambar utama) --}}

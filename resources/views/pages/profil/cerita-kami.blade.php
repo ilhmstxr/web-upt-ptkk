@@ -49,14 +49,104 @@
     }
 
     /* Kartu Tujuan & Manfaat */
-    .tujuan-card{
-      background: #FEFEFE;
-      box-shadow:
-        0 2px 4px rgba(0,0,0,.06),
-        0 12px 24px rgba(0,0,0,.08),
-        0 40px 80px rgba(0,0,0,.08);
-      border-radius: 1rem; /* rounded-2xl */
-    }
+   /* Kartu Tujuan – dasar */
+.tujuan-card{
+  position: relative;
+  background: #F1F9FC;
+  border-radius: 1rem;
+  border: 1px solid #E0E7FF;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.04),
+    0 10px 20px rgba(0,0,0,.08);
+  overflow: visible;  /* biarkan lingkaran keluar 1/4 */
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease;
+}
+
+/* SHAPE biru di DALAM kartu, cuma bagian bawah */
+/* SHAPE biru full di bawah, ngikut bentuk kartu */
+.tujuan-card::after{
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10px;
+  background: linear-gradient(90deg,#0E65CC 0%,#01A0F6 50%,#0C69CF 100%);
+  border-radius: 0 0 1rem 1rem;   /* sudut bawah ikut kartu */
+  opacity: 0;
+  transform: translateY(100%);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.tujuan-card:hover{
+  transform: translateY(-6px);
+  border-color: #0E65CC;
+  background-color: #E8F3FF;
+  box-shadow:
+    0 4px 8px rgba(0,0,0,.05),
+    0 22px 45px rgba(0,0,0,.14);
+}
+
+.tujuan-card:hover::after{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Badge angka – membesar sedikit saat hover */
+/* Posisi default: agak masuk ke dalam */
+.tujuan-badge{
+  position: absolute;
+  top: 0;          /* tepat di tepi atas */
+  right: 0;        /* tepat di tepi kanan */
+  width: 45px;
+  height: 45px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,#0E65CC 0%,#01A0F6 49%,#0C69CF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.18);
+  z-index: 20;
+  transform: translate(35%, -35%);  /* 3/4 di dalam, 1/4 di luar */
+  transition:
+    transform 240ms cubic-bezier(0.19, 1, 0.22, 1),
+    box-shadow 240ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+
+/* Hover: sedikit membesar dan “masuk” ke dalam dikit */
+.tujuan-card:hover .tujuan-badge{
+  transform: translate(35%, -35%) scale(1.16);  /* tetap di pojok yang sama, cuma membesar */
+  box-shadow: 0 8px 18px rgba(0,0,0,.25);
+}
+
+
+
+/* Icon – miring dikit ke kanan */
+.tujuan-icon{
+  transition: transform 220ms ease;
+}
+.tujuan-card:hover .tujuan-icon{
+  transform: rotate(7deg) translateY(-2px);
+}
+
+.tujuan-text{
+  transition: transform 220ms ease;
+}
+.tujuan-card:hover .tujuan-text{
+  transform: scale(1.03);
+}
+
     .card-manfaat{
       background: var(--card-manfaat);
       height: 300px;
@@ -103,7 +193,7 @@ section + section {
   </style>
 </head>
 
-<body class="bg-[#FEFEFE] antialiased">
+<body class="bg-[#F1F9FC] antialiased">
 
   {{-- TOPBAR --}}
   @include('components.layouts.app.topbar')
@@ -123,7 +213,7 @@ section + section {
   {{-- /HERO --}}
 
   {{-- SECTION: Sambutan Kepala UPT --}}
-   <section class="section-compact relative bg-[#F8FAFC]">
+   <section class="section-compact relative bg-[#F1F9FC]">
    <div class="section-container">
 
 
@@ -166,7 +256,7 @@ section + section {
   </section>
 
 {{-- SECTION: Visi, Misi, Motto, Sasaran (Misi ditinggikan & warna DBE7F7) --}}
-<section class="section-compact relative bg-[#F8FAFC]">
+<section class="section-compact relative bg-[#F1F9FC]">
   <div class="section-container">
 
     {{-- Grid 2 kolom, tinggi otomatis --}}
@@ -237,7 +327,7 @@ section + section {
 </section>
 
 {{-- SECTION: Sejarah (garis tengah + 5 titik sejajar, subjudul stroke kuning) --}}
-<section class="relative bg-[#FEFEFE] pt-20 pb-[300px]">
+<section class="relative bg-[#F1F9FC] pt-20 pb-[300px]">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
 
     {{-- Heading --}}
@@ -390,9 +480,10 @@ section + section {
 </section>
 
 
-  {{-- SECTION: Tujuan --}}
- <section id="tujuan" class="section-compact w-full bg-white">
-    <div class="section-container">
+ {{-- SECTION: Tujuan --}}
+<section id="tujuan" class="section-compact w-full bg-[#F1F9FC]">
+  <div class="section-container">
+
 
 {{-- Badge --}}
 <div class="w-full flex justify-center mb-[15px]">
@@ -412,37 +503,39 @@ section + section {
       {{-- Grid cards --}}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-x-[72px] lg:gap-y-[72px]">
 
-        @for ($i = 1; $i <= 6; $i++)
-          <div class="tujuan-card relative w-full min-h-[236px] p-6">
-            <span class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2
-                         flex items-center justify-center w-[45px] h-[45px] rounded-full
-                         text-[#FEFEFE] font-[Montserrat] font-medium text-[16px]"
-                  style="background:linear-gradient(90deg,#0E65CC 0%,#01A0F6 49%,#0C69CF 100%);">
-              {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
-            </span>
-            <div class="flex flex-col gap-4 h-full justify-center">
-              <img src='{{ asset("images/icons/tujuan-{$i}.svg") }}' alt="Ikon Tujuan {{ $i }}"
-                   class="w-[50px] h-[50px]" loading="lazy" decoding="async" />
-              <p class="font-[Montserrat] font-medium text-[20px] leading-snug text-gray-800">
-                @switch($i)
-                  @case(1) Membangun Sumber Daya Manusia (SDM) yang kreatif, kompetitif, dan adaptif. @break
-                  @case(2) Membentuk mindset tangguh berbasis literasi dan kolaborasi. @break
-                  @case(3) Mendorong transformasi edukasi vokasi yang relevan dan inklusif. @break
-                  @case(4) Meningkatkan pengakuan kompetensi melalui sertifikasi nasional. @break
-                  @case(5) Memperkuat konektivitas antara dunia pendidikan dan dunia industri. @break
-                  @case(6) Mewujudkan generasi muda yang mandiri dan berjiwa wirausaha. @break
-                @endswitch
-              </p>
-            </div>
-          </div>
-        @endfor
+       @for ($i = 1; $i <= 6; $i++)
+  <div class="tujuan-card relative w-full min-h-[236px] p-6">
+  <span class="tujuan-badge">
+  {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+</span>
+
+    <div class="flex flex-col gap-4 h-full justify-center">
+      <img src='{{ asset("images/icons/tujuan-{$i}.svg") }}'
+           alt="Ikon Tujuan {{ $i }}"
+           class="tujuan-icon w-[50px] h-[50px]" loading="lazy" decoding="async" />
+
+      <p class="tujuan-text font-[Montserrat] font-medium text-[20px] leading-snug text-gray-800">
+        @switch($i)
+          @case(1) Membangun Sumber Daya Manusia (SDM) yang kreatif, kompetitif, dan adaptif. @break
+          @case(2) Membentuk mindset tangguh berbasis literasi dan kolaborasi. @break
+          @case(3) Mendorong transformasi edukasi vokasi yang relevan dan inklusif. @break
+          @case(4) Meningkatkan pengakuan kompetensi melalui sertifikasi nasional. @break
+          @case(5) Memperkuat konektivitas antara dunia pendidikan dan dunia industri. @break
+          @case(6) Mewujudkan generasi muda yang mandiri dan berjiwa wirausaha. @break
+        @endswitch
+      </p>
+    </div>
+  </div>
+@endfor
+
+
 
       </div>
     </div>
   </section>
 
   {{-- SECTION: Manfaat --}}
- <section class="section-compact relative bg-[#F8FAFC]">
+ <section class="section-compact relative bg-[#F1F9FC]">
    <div class="section-container">
 
       {{-- Label Manfaat --}}
@@ -486,7 +579,7 @@ section + section {
   </section>
 
 {{-- SECTION: Mandat dan Tanggung Jawab UPT PTKK --}}
-<section class="section-compact bg-[#F8FAFC]">
+<section class="section-compact bg-[#F1F9FC]">
   <div class="section-container">
 
 {{-- Judul --}}
