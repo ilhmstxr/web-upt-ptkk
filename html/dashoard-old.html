@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konsep Dashboard Admin SIM-PELATIHAN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-item:hover {
+            background-color: #1f2937;
+        }
+
+        .sidebar-item.active {
+            background-color: #1f2937;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            transition: all 0.2s;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- 1. SIDEBAR (Solusi Pengelompokkan Menu) -->
+        <div>
+            <div class="text-sm font-medium text-white">Administrator</div>
+            <div class="text-xs text-gray-500">admin@simpel.com</div>
+        </div>
+    </div>
+    </div>
+    </aside>
+
+    <!-- 2. MAIN CONTENT (Dashboard Redesign) -->
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
+
+        <!-- Topbar -->
+        <header class="bg-white shadow-sm h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+            <div class="text-xl font-bold text-gray-800">Dashboard Overview</div>
+            <div class="flex items-center gap-4">
+                <button class="p-2 text-gray-400 hover:text-gray-600 relative">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
+                <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
+                    <i class="fa-solid fa-calendar-day mr-2"></i> Nov 2025
+                </button>
+            </div>
+        </header>
+
+        <div class="p-8 max-w-7xl mx-auto space-y-8">
+
+            <!-- Section A: Key Metrics (Stats Widget) -->
+            <!-- Lebih informatif dari sekadar teks, menggunakan ikon dan warna -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 card-hover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Total Pelatihan Aktif</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-2">12</h3>
+                        </div>
+                        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                            <i class="fa-solid fa-person-chalkboard text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm text-green-600">
+                        <i class="fa-solid fa-arrow-trend-up mr-1"></i>
+                        <span class="font-medium">2 Baru</span>
+                        <span class="text-gray-400 ml-1">bulan ini</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 card-hover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Peserta Terdaftar</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-2">450</h3>
+                        </div>
+                        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
+                            <i class="fa-solid fa-users text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">
+                            <i class="fa-solid fa-circle-exclamation mr-1 text-xs"></i> 15 Verifikasi
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 card-hover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Rata-rata Kelulusan</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-2">88%</h3>
+                        </div>
+                        <div class="p-3 bg-green-50 text-green-600 rounded-lg">
+                            <i class="fa-solid fa-graduation-cap text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm text-gray-500">
+                        <span>Pre-test avg: <b class="text-gray-700">45</b></span>
+                    </div>
+                </div>
+
+                <!-- Card 4 (Monev) -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 card-hover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Indeks Kepuasan</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-2">4.7<span
+                                    class="text-lg text-gray-400 font-normal">/5</span></h3>
+                        </div>
+                        <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
+                            <i class="fa-solid fa-star text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 w-full bg-gray-200 rounded-full h-1.5">
+                        <div class="bg-amber-500 h-1.5 rounded-full" style="width: 92%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section B: Charts & Analytics (Visualisasi Data) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <!-- Chart 1: Pendaftaran vs Bidang (Demografi Kompetensi) -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-gray-800">Tren Pendaftaran per Bidang</h3>
+                        <button class="text-sm text-blue-600 hover:underline">Lihat Detail</button>
+                    </div>
+                    <!-- Placeholder Chart -->
+                    <div class="relative h-64 w-full">
+                        <canvas id="registrationChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Monev / Status Asrama -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col">
+                    <h3 class="font-bold text-gray-800 mb-2">Ketersediaan Asrama</h3>
+                    <p class="text-sm text-gray-500 mb-6">Real-time status okupansi kamar.</p>
+
+                    <div class="flex-1 flex flex-col justify-center items-center relative">
+                        <canvas id="dormChart" width="200" height="200"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span class="text-3xl font-bold text-gray-800">75%</span>
+                            <span class="text-xs text-gray-500 uppercase">Terisi</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="flex items-center"><span
+                                    class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>Laki-laki</span>
+                            <span class="font-semibold">45 Org</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="flex items-center"><span
+                                    class="w-3 h-3 rounded-full bg-pink-500 mr-2"></span>Perempuan</span>
+                            <span class="font-semibold">30 Org</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="flex items-center"><span
+                                    class="w-3 h-3 rounded-full bg-gray-200 mr-2"></span>Kosong</span>
+                            <span class="font-semibold text-green-600">15 Bed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section C: Tables & Action Items -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <!-- Table: Pelatihan Berjalan (Pengganti sketsa "Daftar Pelatihan") -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 lg:col-span-2 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">Pelatihan Sedang Berjalan</h3>
+                        <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">3
+                            Aktif</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-50 text-gray-500 font-medium">
+                                <tr>
+                                    <th class="px-6 py-4">Pelatihan</th>
+                                    <th class="px-6 py-4">Instruktur</th>
+                                    <th class="px-6 py-4">Progress</th>
+                                    <th class="px-6 py-4 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4">
+                                        <div class="font-semibold text-gray-800">Web Programming</div>
+                                        <div class="text-xs text-gray-500">Batch 12 • 10 Okt - 10 Nov</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full bg-gray-200 mr-2"></div>
+                                            <span>Budi Santoso</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1">
+                                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: 70%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500">Minggu 3 dari 4</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-gray-400 hover:text-blue-600"><i
+                                                class="fa-solid fa-eye"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4">
+                                        <div class="font-semibold text-gray-800">Desain Grafis</div>
+                                        <div class="text-xs text-gray-500">Akselerasi • 15 Okt - 25 Okt</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full bg-gray-200 mr-2"></div>
+                                            <span>Siti Aminah</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1">
+                                            <div class="bg-green-500 h-1.5 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500">Final Test</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-gray-400 hover:text-blue-600"><i
+                                                class="fa-solid fa-eye"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 border-t border-gray-100 text-center">
+                        <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Lihat Semua Pelatihan
+                            &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Widget: Action Required / Verifikasi Pendaftaran -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="font-bold text-gray-800 mb-4">Butuh Tindakan</h3>
+                    <div class="space-y-4">
+                        <!-- Item 1 -->
+                        <div class="flex items-start p-3 bg-amber-50 rounded-lg border border-amber-100">
+                            <div class="mt-1 mr-3 text-amber-600">
+                                <i class="fa-solid fa-file-signature"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800">5 Pendaftar Baru</h4>
+                                <p class="text-xs text-gray-600 mt-1">Menunggu verifikasi berkas administrasi.</p>
+                                <button
+                                    class="mt-2 text-xs bg-white border border-amber-200 text-amber-700 px-3 py-1 rounded shadow-sm hover:bg-amber-100">Verifikasi
+                                    Sekarang</button>
+                            </div>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div class="flex items-start p-3 bg-red-50 rounded-lg border border-red-100">
+                            <div class="mt-1 mr-3 text-red-600">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800">Laporan Asrama</h4>
+                                <p class="text-xs text-gray-600 mt-1">Kamar 102 dilaporkan AC rusak.</p>
+                                <button
+                                    class="mt-2 text-xs bg-white border border-red-200 text-red-700 px-3 py-1 rounded shadow-sm hover:bg-red-100">Lihat
+                                    Laporan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+    </div>
+
+    <!-- Script Chart.js untuk Dummy Data -->
+    <script>
+        // Chart Pendaftaran
+        const ctxReg = document.getElementById('registrationChart').getContext('2d');
+        new Chart(ctxReg, {
+            type: 'bar',
+            data: {
+                labels: ['Tata Boga', 'Otomotif', 'IT/Web', 'Las', 'Menjahit', 'Listrik'],
+                datasets: [{
+                    label: 'Pendaftar Bulan Ini',
+                    data: [12, 19, 25, 10, 15, 8],
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+            }
+        });
+
+        // Chart Asrama
+        const ctxDorm = document.getElementById('dormChart').getContext('2d');
+        new Chart(ctxDorm, {
+            type: 'doughnut',
+            data: {
+                labels: ['Laki-laki', 'Perempuan', 'Kosong'],
+                datasets: [{
+                    data: [45, 30, 15],
+                    backgroundColor: ['#3b82f6', '#ec4899', '#e5e7eb'],
+                    borderWidth: 0,
+                    cutout: '75%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    </script>
+</body>
+
+</html>

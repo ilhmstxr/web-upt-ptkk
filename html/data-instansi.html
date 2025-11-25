@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Instansi - LMS Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#475569',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Modal Animation */
+        .modal-enter {
+            animation: scaleIn 0.2s ease-out forwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Toast Notification */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .toast {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
+    <p class="text-sm text-gray-500 mt-1">Kelola data kementerian, lembaga, pemda, atau perusahaan mitra pelatihan.</p>
+    </div>
+    <div class="flex gap-3">
+        <button onclick="showToast('Mengekspor Data Instansi...')"
+            class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm flex items-center gap-2 transition-colors">
+            <i class="fa-solid fa-file-export text-green-600"></i> Export Excel
+        </button>
+        <button onclick="openModal('modalAddInstansi')"
+            class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center gap-2 transition-colors">
+            <i class="fa-solid fa-plus"></i> Tambah Instansi
+        </button>
+    </div>
+    </div>
+
+    <!-- SUMMARY STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg"><i class="fa-solid fa-building text-xl"></i></div>
+            <div>
+                <p class="text-xs text-gray-500 font-medium uppercase">Total Instansi</p>
+                <p class="text-2xl font-bold text-gray-900" id="stat-total">24</p>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-green-50 text-green-600 rounded-lg"><i class="fa-solid fa-handshake text-xl"></i></div>
+            <div>
+                <p class="text-xs text-gray-500 font-medium uppercase">MoU Aktif</p>
+                <p class="text-2xl font-bold text-gray-900">18</p>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-yellow-50 text-yellow-600 rounded-lg"><i
+                    class="fa-solid fa-clock-rotate-left text-xl"></i></div>
+            <div>
+                <p class="text-xs text-gray-500 font-medium uppercase">MoU Akan Habis</p>
+                <p class="text-2xl font-bold text-gray-900">2</p>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-purple-50 text-purple-600 rounded-lg"><i
+                    class="fa-solid fa-users-viewfinder text-xl"></i></div>
+            <div>
+                <p class="text-xs text-gray-500 font-medium uppercase">Total Peserta</p>
+                <p class="text-2xl font-bold text-gray-900">450</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTER & SEARCH BAR -->
+    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <!-- Search -->
+            <div class="md:col-span-5">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Cari Instansi</label>
+                <div class="relative">
+                    <input type="text" id="searchInput" onkeyup="renderTable()"
+                        placeholder="Nama instansi, kode, atau alamat..."
+                        class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary">
+                    <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                </div>
+            </div>
+
+            <!-- Filter Jenis -->
+            <div class="md:col-span-3">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Jenis Instansi</label>
+                <select id="filterType" onchange="renderTable()"
+                    class="w-full py-2 px-3 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary bg-white">
+                    <option value="">Semua Jenis</option>
+                    <option value="Pemerintah Pusat">Pemerintah Pusat</option>
+                    <option value="Pemerintah Daerah">Pemerintah Daerah</option>
+                    <option value="BUMN/BUMD">BUMN/BUMD</option>
+                    <option value="Swasta">Swasta</option>
+                    <option value="Pendidikan">Pendidikan</option>
+                </select>
+            </div>
+
+            <!-- Filter Status -->
+            <div class="md:col-span-3">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Status Kerja Sama</label>
+                <select id="filterStatus" onchange="renderTable()"
+                    class="w-full py-2 px-3 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary bg-white">
+                    <option value="">Semua Status</option>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Non-Aktif">Non-Aktif</option>
+                    <option value="Kadaluarsa">Kadaluarsa</option>
+                </select>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="md:col-span-1">
+                <button onclick="resetFilters()"
+                    class="w-full py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200"
+                    title="Reset Filter">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN DATA TABLE -->
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">
+                            No</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama
+                            Instansi</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Alamat & Kontak</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status MoU</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="bg-white divide-y divide-gray-200 text-sm">
+                    <!-- Data will be populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Menampilkan <span class="font-medium" id="showingStart">1</span> sampai <span
+                            class="font-medium" id="showingEnd">5</span> dari <span class="font-medium"
+                            id="showingTotal">24</span> hasil
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <button
+                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Previous</span>
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button
+                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600 hover:bg-blue-100">1</button>
+                        <button
+                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
+                        <button
+                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Next</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    </main>
+    </div>
+
+    <!-- MODAL: TAMBAH/EDIT INSTANSI -->
+    <div id="modalAddInstansi"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-900 bg-opacity-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 modal-enter">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900" id="modalTitle">Tambah Instansi Baru</h3>
+                <button onclick="closeModal('modalAddInstansi')" class="text-gray-400 hover:text-gray-600"><i
+                        class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="formInstansi" onsubmit="event.preventDefault(); saveInstansi();">
+                <input type="hidden" id="inputId">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Instansi</label>
+                        <input type="text" id="inputName" required
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary"
+                            placeholder="Contoh: Dinas Kominfo Jawa Barat">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Instansi</label>
+                            <select id="inputType"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                                <option value="Pemerintah Pusat">Pemerintah Pusat</option>
+                                <option value="Pemerintah Daerah">Pemerintah Daerah</option>
+                                <option value="BUMN/BUMD">BUMN/BUMD</option>
+                                <option value="Swasta">Swasta</option>
+                                <option value="Pendidikan">Pendidikan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status Kerja Sama</label>
+                            <select id="inputStatus"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                                <option value="Aktif">Aktif</option>
+                                <option value="Non-Aktif">Non-Aktif</option>
+                                <option value="Kadaluarsa">Kadaluarsa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label>
+                        <textarea id="inputAddress" rows="2"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary"
+                            placeholder="Jl. ..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Resmi</label>
+                            <input type="email" id="inputEmail"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">No. Telepon</label>
+                            <input type="tel" id="inputPhone"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('modalAddInstansi')"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 text-sm shadow-sm">Simpan
+                        Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- MOCK DATA ---
+        let agencies = [
+            { id: 1, name: "Kementerian Komunikasi dan Informatika", type: "Pemerintah Pusat", address: "Jl. Medan Merdeka Barat No. 9, Jakarta", email: "humas@kominfo.go.id", phone: "021-3456789", status: "Aktif" },
+            { id: 2, name: "Dinas Kominfo Provinsi Jawa Timur", type: "Pemerintah Daerah", address: "Jl. A. Yani No. 242-244, Surabaya", email: "diskominfo@jatimprov.go.id", phone: "031-8294608", status: "Aktif" },
+            { id: 3, name: "PT Telkom Indonesia (Persero) Tbk", type: "BUMN/BUMD", address: "Jl. Japati No. 1, Bandung", email: "corporate@telkom.co.id", phone: "022-4521511", status: "Aktif" },
+            { id: 4, name: "Universitas Indonesia", type: "Pendidikan", address: "Kampus UI Depok", email: "humas-ui@ui.ac.id", phone: "021-7867222", status: "Kadaluarsa" },
+            { id: 5, name: "PT Gojek Indonesia", type: "Swasta", address: "Pasaraya Blok M, Jakarta", email: "info@gojek.com", phone: "021-29182987", status: "Non-Aktif" }
+        ];
+
+        let isEditing = false;
+
+        // --- RENDER FUNCTIONS ---
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filterType = document.getElementById('filterType').value;
+            const filterStatus = document.getElementById('filterStatus').value;
+
+            tbody.innerHTML = '';
+
+            const filteredData = agencies.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(search) || item.address.toLowerCase().includes(search);
+                const matchType = filterType === '' || item.type === filterType;
+                const matchStatus = filterStatus === '' || item.status === filterStatus;
+                return matchSearch && matchType && matchStatus;
+            });
+
+            document.getElementById('showingTotal').innerText = agencies.length;
+            document.getElementById('stat-total').innerText = agencies.length;
+            document.getElementById('showingEnd').innerText = Math.min(5, filteredData.length);
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">Tidak ada data instansi yang ditemukan.</td></tr>';
+                return;
+            }
+
+            filteredData.forEach((item, index) => {
+                let statusBadge = '';
+                if (item.status === 'Aktif') statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">Aktif</span>';
+                else if (item.status === 'Non-Aktif') statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 border border-gray-200">Non-Aktif</span>';
+                else statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 border border-red-200">Kadaluarsa</span>';
+
+                // Type Badge Color
+                let typeColor = 'bg-gray-50 text-gray-600';
+                if (item.type.includes('Pemerintah')) typeColor = 'bg-blue-50 text-blue-700 border-blue-100';
+                if (item.type.includes('Swasta')) typeColor = 'bg-purple-50 text-purple-700 border-purple-100';
+                if (item.type.includes('BUMN')) typeColor = 'bg-orange-50 text-orange-700 border-orange-100';
+
+                const row = `
+                    <tr class="hover:bg-gray-50 transition-colors border-b border-gray-100 animate-[scaleIn_0.2s]">
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-center">${index + 1}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-xs uppercase border border-gray-300">
+                                    ${item.name.substring(0, 2)}
+                                </div>
+                                ${item.name}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2.5 py-0.5 inline-flex text-xs font-medium rounded border ${typeColor}">${item.type}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900 line-clamp-1" title="${item.address}">${item.address}</div>
+                            <div class="text-xs text-gray-500 flex gap-3 mt-1">
+                                <span title="Email"><i class="fa-solid fa-envelope mr-1"></i> ${item.email}</span>
+                                <span title="Telepon"><i class="fa-solid fa-phone mr-1"></i> ${item.phone}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            ${statusBadge}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="editInstansi(${item.id})" class="text-blue-600 hover:text-blue-900 mr-3" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteInstansi(${item.id})" class="text-red-600 hover:text-red-900" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        // --- CRUD ACTIONS ---
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'modalAddInstansi' && !isEditing) {
+                document.getElementById('formInstansi').reset();
+                document.getElementById('modalTitle').innerText = "Tambah Instansi Baru";
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            isEditing = false; // Reset edit state
+        }
+
+        function saveInstansi() {
+            const id = document.getElementById('inputId').value;
+            const name = document.getElementById('inputName').value;
+            const type = document.getElementById('inputType').value;
+            const status = document.getElementById('inputStatus').value;
+            const address = document.getElementById('inputAddress').value;
+            const email = document.getElementById('inputEmail').value;
+            const phone = document.getElementById('inputPhone').value;
+
+            if (isEditing) {
+                // Update Existing
+                const index = agencies.findIndex(x => x.id == id);
+                if (index !== -1) {
+                    agencies[index] = { id: parseInt(id), name, type, address, email, phone, status };
+                    showToast(`Data <b>${name}</b> berhasil diperbarui.`);
+                }
+            } else {
+                // Create New
+                const newId = agencies.length > 0 ? Math.max(...agencies.map(a => a.id)) + 1 : 1;
+                agencies.unshift({ id: newId, name, type, address, email, phone, status });
+                showToast(`Instansi <b>${name}</b> berhasil ditambahkan.`);
+            }
+
+            closeModal('modalAddInstansi');
+            renderTable();
+        }
+
+        function editInstansi(id) {
+            isEditing = true;
+            const item = agencies.find(x => x.id === id);
+            if (item) {
+                document.getElementById('inputId').value = item.id;
+                document.getElementById('inputName').value = item.name;
+                document.getElementById('inputType').value = item.type;
+                document.getElementById('inputStatus').value = item.status;
+                document.getElementById('inputAddress').value = item.address;
+                document.getElementById('inputEmail').value = item.email;
+                document.getElementById('inputPhone').value = item.phone;
+
+                document.getElementById('modalTitle').innerText = "Edit Data Instansi";
+                openModal('modalAddInstansi');
+            }
+        }
+
+        function deleteInstansi(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data instansi ini?')) {
+                const item = agencies.find(x => x.id === id);
+                agencies = agencies.filter(x => x.id !== id);
+                renderTable();
+                showToast(`Instansi <b>${item.name}</b> telah dihapus.`);
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterStatus').value = '';
+            renderTable();
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast show bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 text-sm min-w-[250px]';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-green-400 text-lg"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        renderTable();
+    </script>
+    </body>
+
+</html>
