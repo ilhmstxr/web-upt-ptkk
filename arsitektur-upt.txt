@@ -1,0 +1,168 @@
+Blueprint Arsitektur SIM-PELATIHAN (Filament v3)
+
+Dokumen ini merinci struktur Resource, Schema Database, dan Logika UI berdasarkan mockup HTML yang telah diberikan. Kita akan menggunakan struktur Cluster untuk mengelompokkan fitur.
+
+1. Cluster: Pelatihan (Academic & Training)
+
+Fokus: Manajemen siklus hidup pelatihan, dari persiapan hingga jadwal.
+
+A. PelatihanResource (Core)
+
+Referensi: setup-pelatihan.html
+Fitur ini cukup kompleks di HTML (menggunakan Stepper/Wizard), jadi kita akan menggunakan komponen Wizard di Filament.
+
+Model: Pelatihan
+
+Form UI (Wizard 3 Langkah):
+
+Informasi Dasar:
+
+name (Text): Nama Program.
+
+batch (Number): Batch ke berapa.
+
+quota (Number): Kuota peserta.
+
+method (Select): Online/Offline/Hybrid.
+
+cover_image (FileUpload).
+
+Kurikulum (Sesi):
+
+Menggunakan Repeater (HasMany Relation) untuk membuat daftar sesi pertemuan dinamis.
+
+Field: topic, method (Teori/Praktek), module_file (Upload PDF).
+
+Jadwal & Pengajar:
+
+Melengkapi data sesi di atas dengan start_time dan instructor_id.
+
+Table UI:
+
+List pelatihan dengan status (Draft/Published/Archived).
+
+Indikator jumlah sesi dan total peserta.
+
+B. BidangResource
+
+Referensi: bidang-pelatihan2.html
+
+Model: Bidang (Category/Sector)
+
+Fungsi: Master data untuk mengelompokkan pelatihan (misal: IT, Bisnis, Las, Otomotif).
+
+2. Cluster: Kesiswaan (Student Affairs)
+
+Fokus: Penerimaan peserta dan manajemen fasilitas.
+
+A. RegistrationResource
+
+Referensi: pendaftaran_pelatihan.html
+
+Model: Registration
+
+Fungsi: Memverifikasi calon peserta.
+
+Workflow:
+
+Status awal: Pending.
+
+Action: Approve (Pindah ke tabel Peserta Aktif) atau Reject.
+
+Fitur: Export Excel (menggunakan pxl/filament-excel).
+
+B. AsramaResource
+
+Referensi: manajemen-asrama.html
+
+Model: AsramaRoom & AsramaResident
+
+UI Khusus:
+
+HTML referensi menunjukkan Denah Visual (kotak warna merah/hijau).
+
+Solusi Filament: Kita akan menggunakan Custom Content Widget atau Layout View di dalam Resource untuk merender grid kamar, sedangkan tabel standar digunakan untuk list penghuni.
+
+Action: Check-in (Modal form pilih kamar) dan Check-out.
+
+3. Cluster: Evaluasi (CBT & Assessment)
+
+Fokus: Bank soal, ujian online, dan analisis nilai.
+
+A. TesResource (Bank Soal)
+
+Referensi: setup-soal.html & pertanyaan.html
+
+Model: Tes (Header Ujian) & Question (Detail Soal).
+
+Form UI:
+
+Bagian Atas: Judul Ujian, Durasi (Menit), KKM, Acak Soal (Toggle).
+
+Bagian Bawah: Repeater bertingkat untuk membuat soal.
+
+Soal (Text/RichEditor + Image).
+
+Tipe Soal (Pilihan Ganda / Essay).
+
+Opsi Jawaban (Repeater di dalam Repeater Soal).
+
+Kenapa Repeater? Agar admin bisa membuat ujian dan soalnya sekaligus dalam satu halaman tanpa bolak-balik pindah halaman resource.
+
+B. TesResultResource (Analisis)
+
+Referensi: analisis-tes.html
+
+Model: TesResult / TesAttempt
+
+Fungsi: Hanya View (Read Only).
+
+Konten:
+
+Melihat nilai peserta.
+
+Statistik butir soal (Berapa % menjawab benar/salah) -> Menggunakan ChartWidget Filament.
+
+4. Cluster: Alumni
+
+Fokus: Penelusuran lulusan.
+
+A. TracerStudyResource
+
+Referensi: tracer-study.html
+
+Model: TracerStudy
+
+Fungsi: CRUD data karir alumni.
+
+Fields:
+
+status: Bekerja / Wirausaha / Mencari Kerja.
+
+company: Nama perusahaan.
+
+salary: Range pendapatan (untuk statistik).
+
+waiting_period: Lama waktu tunggu mendapatkan kerja.
+
+Widgets: Chart Donat untuk sebaran status alumni (Bekerja vs Menganggur).
+
+5. Cluster: Pengaturan (System)
+
+UserResource: Manajemen Admin, Instruktur, dan Staff.
+
+RoleResource: Hak akses (menggunakan filament-shield atau spatie-permission).
+
+Strategi Implementasi Code
+
+Database Migration: Kita harus memastikan tabel-tabel (pelatihans, sessions, tests, questions, tracer_studies) sudah ada kolom-kolom pendukungnya.
+
+Filament Generators: Kita akan generate resource menggunakan perintah CLI yang sudah dimodifikasi Namespace-nya agar masuk ke folder Cluster.
+
+Custom Logic:
+
+Implementasi Wizard di Pelatihan.
+
+Implementasi logika Repeater Soal di Tes.
+
+Pembuatan Widget Chart untuk Dashboard & Alumni.

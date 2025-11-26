@@ -13,12 +13,12 @@ class Kamar extends Model
     protected $table = 'kamar';
 
     protected $fillable = [
+        'asrama_id',
         'nomor_kamar',
         'lantai',
-        'asrama_id',
+        'status',
         'total_beds',
         'available_beds',
-        'status',
     ];
 
     public function asrama()
