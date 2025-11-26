@@ -573,4 +573,15 @@ VALUES
 (101,7),
 (102,8);
 
+web-content
+- upload banner (hero)
+- Berita
+- Sorotan pelatihan (judul, keterangan, foto-foto)
+- kompetensi bidang pelatihan
+- statistik (iki sg rata rata pretest post test)
+- edit kepala upt (foto, nama)
+- text pelatihan (syarat ketentuan, lokasi, jadwal)
 
+ga wajib
+- foto di cerita kami 
+- foto foto di program pelatihan
