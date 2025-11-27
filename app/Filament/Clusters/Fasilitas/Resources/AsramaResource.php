@@ -44,21 +44,33 @@ class AsramaResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Asrama')
+                Tables\Columns\TextColumn::make('nomor_kamar')
+                    ->label('Kamar')
+                    ->weight('bold')
+                    ->icon('heroicon-o-home')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('gender')
+                Tables\Columns\TextColumn::make('lantai')
+                    ->label('Lantai')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('kapasitas')
+                    ->label('Kapasitas')
+                    ->numeric()
+                    ->suffix(' Bed'),
+                Tables\Columns\TextColumn::make('penghuni_count')
+                    ->counts('penghuni')
+                    ->label('Terisi')
+                    ->badge()
+                    ->color(fn ($state, $record) => $state >= $record->kapasitas ? 'danger' : ($state > 0 ? 'warning' : 'success')),
+                Tables\Columns\TextColumn::make('status_ketersediaan')
+                    ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Laki-laki' => 'info',
-                        'Perempuan' => 'pink',
-                        'Campur' => 'warning',
+                        'Tersedia' => 'success',
+                        'Penuh' => 'danger',
+                        'Perbaikan' => 'warning',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('kamars_count')
-                    ->counts('kamars')
-                    ->label('Jumlah Kamar'),
             ])
             ->filters([
                 //

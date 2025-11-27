@@ -86,25 +86,34 @@ class TesResultResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('peserta.name')
-                    ->label('Peserta')
+                    ->label('Nama Siswa')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tes.judul')
-                    ->label('Tes')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('skor')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('lulus')
-                    ->badge()
-                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn (bool $state): string => $state ? 'Lulus' : 'Tidak Lulus'),
-                Tables\Columns\TextColumn::make('waktu_selesai')
-                    ->dateTime()
                     ->sortable()
-                    ->label('Selesai'),
+                    ->weight('medium'),
+                
+                Tables\Columns\TextColumn::make('skor')
+                    ->label('Nilai Akhir')
+                    ->numeric()
+                    ->sortable()
+                    ->alignCenter()
+                    ->weight('bold')
+                    ->color(fn ($state) => $state >= 75 ? 'success' : 'warning'), // Assuming 75 is KKM
+
+                Tables\Columns\TextColumn::make('lulus')
+                    ->label('Status')
+                    ->badge()
+                    ->alignCenter()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'warning') // HTML uses warning for Remedial
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Lulus' : 'Remedial'),
+
+                Tables\Columns\TextColumn::make('durasi_pengerjaan')
+                    ->label('Waktu Pengerjaan')
+                    ->alignRight()
+                    ->getStateUsing(fn ($record) => $record->waktu_mulai && $record->waktu_selesai 
+                        ? \Carbon\Carbon::parse($record->waktu_mulai)->diffInMinutes(\Carbon\Carbon::parse($record->waktu_selesai)) . ' Menit'
+                        : '-'),
             ])
+
             ->filters([
                 Tables\Filters\SelectFilter::make('tes')
                     ->relationship('tes', 'judul'),

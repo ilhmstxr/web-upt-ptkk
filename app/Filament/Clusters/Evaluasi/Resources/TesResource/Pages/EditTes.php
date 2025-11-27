@@ -10,6 +10,8 @@ class EditTes extends EditRecord
 {
     protected static string $resource = TesResource::class;
 
+    protected static string $view = 'filament.clusters.evaluasi.resources.tes-resource.pages.edit-tes';
+
     protected function getHeaderActions(): array
     {
         return [

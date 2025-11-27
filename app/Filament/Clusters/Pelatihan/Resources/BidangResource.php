@@ -38,17 +38,32 @@ class BidangResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
+            ])
             ->columns([
-                Tables\Columns\TextColumn::make('nama_bidang')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\Layout\Stack::make([
+                    Tables\Columns\TextColumn::make('nama_bidang')
+                        ->weight('bold')
+                        ->size('lg')
+                        ->icon('heroicon-o-academic-cap')
+                        ->color('primary')
+                        ->extraAttributes(['class' => 'mb-2']),
+                    
+                    Tables\Columns\TextColumn::make('deskripsi')
+                        ->limit(100)
+                        ->color('gray')
+                        ->size('sm'),
+                    
+                    Tables\Columns\Layout\Split::make([
+                        Tables\Columns\TextColumn::make('created_at')
+                            ->date()
+                            ->icon('heroicon-o-calendar')
+                            ->color('gray')
+                            ->size('xs'),
+                    ])->extraAttributes(['class' => 'mt-4 pt-4 border-t border-gray-200']),
+                ])->space(3),
             ])
             ->filters([
                 //

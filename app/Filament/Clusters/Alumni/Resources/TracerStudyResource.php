@@ -65,33 +65,33 @@ class TracerStudyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Alumni')
+                    ->label('Nama Alumni')
+                    ->description(fn ($record) => $record->user->email ?? '-')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon(fn ($record) => 'heroicon-o-user-circle'), // Placeholder for avatar
+                
+                Tables\Columns\TextColumn::make('batch') // Assuming batch exists or relation
+                    ->label('Batch Pelatihan')
+                    ->default('Web Dev Batch 3') // Placeholder if not in DB yet
+                    ->color('gray'),
+
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Status Saat Ini')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Bekerja' => 'success',
-                        'Wirausaha' => 'info',
+                        'Wirausaha' => 'info', // Purple in HTML, mapping to info or custom
                         'Mencari Kerja' => 'warning',
                         'Melanjutkan Studi' => 'primary',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('company')
-                    ->label('Perusahaan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('salary')
-                    ->money('IDR')
-                    ->label('Gaji')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('waiting_period')
-                    ->label('Masa Tunggu (Bln)')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('job_info')
+                    ->label('Posisi / Perusahaan')
+                    ->getStateUsing(fn ($record) => $record->company ? $record->company : '-')
+                    ->description(fn ($record) => $record->position ?? '-') // Assuming position column exists
+                    ->visible(fn ($record) => in_array($record->status, ['Bekerja', 'Wirausaha'])),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
