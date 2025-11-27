@@ -41,7 +41,7 @@
         <div class="border-b border-gray-200 px-6 overflow-x-auto">
             <nav class="-mb-px flex space-x-8">
                 <button onclick="switchTab('setup')" id="tab-setup"
-                    class="tab-btn active border-primary text-primary py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors whitespace-nowrap">
+                    class="tab-btn active border-primary-600 text-primary-600 py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors whitespace-nowrap">
                     <x-heroicon-o-list-bullet class="w-5 h-5 mr-2" /> Setup Soal
                 </button>
                 <button onclick="switchTab('analisis')" id="tab-analisis"
@@ -81,7 +81,7 @@
             <div class="lg:col-span-2 space-y-6">
                 <div class="flex justify-between items-center">
                     <h3 class="font-bold text-gray-800">Daftar Pertanyaan</h3>
-                    <button type="button" class="text-sm text-primary hover:underline font-medium">
+                    <button type="button" class="text-sm text-primary-600 hover:underline font-medium">
                         <x-heroicon-o-eye class="w-4 h-4 inline mr-1" /> Preview Ujian
                     </button>
                 </div>
@@ -162,12 +162,12 @@
             document.getElementById('content-' + tabId).classList.add('active');
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'border-primary', 'text-primary');
+                btn.classList.remove('active', 'border-primary-600', 'text-primary-600');
                 btn.classList.add('border-transparent', 'text-gray-500');
             });
             const activeBtn = document.getElementById('tab-' + tabId);
             activeBtn.classList.remove('border-transparent', 'text-gray-500');
-            activeBtn.classList.add('active', 'border-primary', 'text-primary');
+            activeBtn.classList.add('active', 'border-primary-600', 'text-primary-600');
         }
     </script>
 </x-filament-panels::page>

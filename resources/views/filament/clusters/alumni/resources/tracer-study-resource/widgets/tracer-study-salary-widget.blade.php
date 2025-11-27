@@ -8,13 +8,13 @@
             </select>
         </div>
         <div class="grid grid-cols-2 gap-6">
-            <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <p class="text-xs text-blue-600 font-bold uppercase mb-2">Rata-rata Waktu Tunggu</p>
+            <div class="p-4 bg-primary-50 rounded-lg border border-primary-100">
+                <p class="text-xs text-primary-600 font-bold uppercase mb-2">Rata-rata Waktu Tunggu</p>
                 <div class="flex items-end gap-2">
-                    <span class="text-3xl font-bold text-blue-800">{{ $avgWaitingPeriod }}</span>
-                    <span class="text-sm text-blue-600 mb-1">Bulan</span>
+                    <span class="text-3xl font-bold text-primary-800">{{ $avgWaitingPeriod }}</span>
+                    <span class="text-sm text-primary-600 mb-1">Bulan</span>
                 </div>
-                <p class="text-xs text-blue-500 mt-2">Dari lulus pelatihan hingga dapat kerja.</p>
+                <p class="text-xs text-primary-500 mt-2">Dari lulus pelatihan hingga dapat kerja.</p>
             </div>
             <div class="p-4 bg-green-50 rounded-lg border border-green-100">
                 <p class="text-xs text-green-600 font-bold uppercase mb-2">Rata-rata Gaji Pertama</p>

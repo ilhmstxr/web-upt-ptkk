@@ -104,33 +104,33 @@ class PelatihanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('gambar')
-                    ->circular(),
+                    ->label('Cover')
+                    ->square()
+                    ->defaultImageUrl('https://via.placeholder.com/150'),
+                
                 Tables\Columns\TextColumn::make('nama_pelatihan')
+                    ->label('Nama Pelatihan')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('jenis_program')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('batch')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('quota')
-                    ->numeric()
-                    ->label('Kuota'),
-                Tables\Columns\TextColumn::make('bidang_pelatihan_count')
-                    ->counts('bidangPelatihan')
-                    ->label('Sesi'),
+                    ->sortable()
+                    ->description(fn ($record) => $record->jenis_program . ' • ' . $record->batch),
+
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Mendatang' => 'warning',
-                        'Aktif' => 'success',
+                        'Sedang Berjalan' => 'success',
+                        'Pendaftaran Buka' => 'info',
                         'Selesai' => 'gray',
+                        default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('tanggal_mulai')
-                    ->date()
+
+                Tables\Columns\TextColumn::make('kuota_peserta')
+                    ->label('Kuota')
+                    ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_selesai')
-                    ->date()
+
+                Tables\Columns\TextColumn::make('tanggal_mulai')
+                    ->label('Jadwal')
+                    ->date('d M Y')
                     ->sortable(),
             ])
             ->filters([
@@ -138,6 +138,7 @@ class PelatihanResource extends Resource
                     ->relationship('instansi', 'asal_instansi'),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -160,7 +161,9 @@ class PelatihanResource extends Resource
         return [
             'index' => Pages\ListPelatihans::route('/'),
             'create' => Pages\CreatePelatihan::route('/create'),
+            'view' => Pages\ViewPelatihan::route('/{record}'),
             'edit' => Pages\EditPelatihan::route('/{record}/edit'),
+            'view-bidang' => Pages\ViewBidangPelatihan::route('/{record}/bidang/{bidang_id}'),
         ];
     }
 }
