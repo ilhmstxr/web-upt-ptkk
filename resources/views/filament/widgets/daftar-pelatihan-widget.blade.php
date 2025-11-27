@@ -68,7 +68,7 @@
         <div class="mt-6 text-center">
             <x-filament::button
                 {{-- Arahkan ke halaman resource Anda --}}
-                :href="\App\Filament\Resources\PelatihanResource::getUrl('index')"
+                :href="\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('index')"
                 tag="a"
                 icon="heroicon-m-arrow-right"
                 icon-position="after"

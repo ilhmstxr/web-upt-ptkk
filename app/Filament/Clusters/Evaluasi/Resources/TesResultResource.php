@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Clusters\Evaluasi\Resources\TesResultResource\Widgets\TesResultChart;
 
 class TesResultResource extends Resource
 {
@@ -22,11 +23,61 @@ class TesResultResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Section::make('Hasil Tes')
+                    ->schema([
+                        Forms\Components\TextInput::make('peserta_name')
+                            ->label('Peserta')
+                            ->formatStateUsing(fn ($record) => $record->peserta->name ?? '-')
+                            ->disabled(),
+                        Forms\Components\TextInput::make('tes_judul')
+                            ->label('Judul Tes')
+                            ->formatStateUsing(fn ($record) => $record->tes->judul ?? '-')
+                            ->disabled(),
+                        Forms\Components\TextInput::make('skor')
+                            ->numeric()
+                            ->disabled(),
+                        Forms\Components\TextInput::make('lulus')
+                            ->formatStateUsing(fn ($state) => $state ? 'Lulus' : 'Tidak Lulus')
+                            ->disabled(),
+                        Forms\Components\DateTimePicker::make('waktu_mulai')
+                            ->disabled(),
+                        Forms\Components\DateTimePicker::make('waktu_selesai')
+                            ->disabled(),
+                    ])->columns(3),
+
+                Forms\Components\Section::make('Detail Jawaban')
+                    ->schema([
+                        Forms\Components\Repeater::make('jawabanUser')
+                            ->relationship()
+                            ->schema([
+                                Forms\Components\Textarea::make('pertanyaan_teks')
+                                    ->label('Pertanyaan')
+                                    ->formatStateUsing(fn ($record) => $record->pertanyaan->teks_pertanyaan ?? '-')
+                                    ->disabled()
+                                    ->columnSpanFull(),
+                                Forms\Components\TextInput::make('jawaban_user')
+                                    ->label('Jawaban Peserta')
+                                    ->formatStateUsing(fn ($record) => $record->opsiJawaban->teks_opsi ?? '-')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('status_jawaban')
+                                    ->label('Status')
+                                    ->formatStateUsing(fn ($record) => ($record->opsiJawaban->apakah_benar ?? false) ? 'Benar' : 'Salah')
+                                    ->disabled(),
+                            ])
+                            ->columns(2)
+                            ->addable(false)
+                            ->deletable(false)
+                            ->reorderable(false),
+                    ]),
             ]);
     }
 
@@ -34,13 +85,35 @@ class TesResultResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('peserta.name')
+                    ->label('Peserta')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tes.judul')
+                    ->label('Tes')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('skor')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('lulus')
+                    ->badge()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Lulus' : 'Tidak Lulus'),
+                Tables\Columns\TextColumn::make('waktu_selesai')
+                    ->dateTime()
+                    ->sortable()
+                    ->label('Selesai'),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('tes')
+                    ->relationship('tes', 'judul'),
+                Tables\Filters\TernaryFilter::make('lulus')
+                    ->label('Status Kelulusan'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -53,6 +126,14 @@ class TesResultResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+
+    public static function getWidgets(): array
+    {
+        return [
+            TesResultChart::class,
         ];
     }
 

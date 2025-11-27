@@ -26,7 +26,17 @@ class AsramaResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->label('Nama Asrama')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('gender')
+                    ->options([
+                        'Laki-laki' => 'Laki-laki',
+                        'Perempuan' => 'Perempuan',
+                        'Campur' => 'Campur',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -34,13 +44,28 @@ class AsramaResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Asrama')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('gender')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Laki-laki' => 'info',
+                        'Perempuan' => 'pink',
+                        'Campur' => 'warning',
+                        default => 'gray',
+                    }),
+                Tables\Columns\TextColumn::make('kamars_count')
+                    ->counts('kamars')
+                    ->label('Jumlah Kamar'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -52,7 +77,7 @@ class AsramaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\KamarRelationManager::class,
         ];
     }
 

@@ -23,6 +23,7 @@ class PendaftaranPelatihan extends Model
         'rata_rata',
         'nilai_survey',
         'status',
+        'status_pendaftaran',
     ];
 
     public function peserta()

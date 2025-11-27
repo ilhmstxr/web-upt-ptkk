@@ -16,4 +16,11 @@ class EditAsrama extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            \App\Filament\Clusters\Fasilitas\Resources\AsramaResource\Widgets\AsramaDenahWidget::class,
+        ];
+    }
 }

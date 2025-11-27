@@ -6,8 +6,8 @@ use Filament\Clusters\Cluster;
 
 class Kesiswaan extends Cluster
 {
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
-        protected static ?string $cluster = Kesiswaan::class;
+    protected static ?int $navigationSort = 2;
 
 }

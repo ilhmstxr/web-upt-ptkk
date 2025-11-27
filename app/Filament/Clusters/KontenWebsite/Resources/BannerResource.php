@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Clusters\Pelatihan\Resources;
+namespace App\Filament\Clusters\KontenWebsite\Resources;
 
-use App\Filament\Clusters\Pelatihan;
-use App\Filament\Clusters\Pelatihan\Resources\BidangResource\Pages;
-use App\Filament\Clusters\Pelatihan\Resources\BidangResource\RelationManagers;
-use App\Models\Bidang;
+use App\Filament\Clusters\KontenWebsite;
+use App\Filament\Clusters\KontenWebsite\Resources\BannerResource\Pages;
+use App\Filament\Clusters\KontenWebsite\Resources\BannerResource\RelationManagers;
+use App\Models\Banner;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,11 +14,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class BidangResource extends Resource
+class BannerResource extends Resource
 {
-    protected static ?string $model = Bidang::class;
+    protected static ?string $model = Banner::class;
 
-    protected static ?string $cluster = Pelatihan::class;
+    protected static ?string $cluster = KontenWebsite::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -26,12 +26,22 @@ class BidangResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_bidang')
+                Forms\Components\FileUpload::make('image')
+                    ->image()
                     ->required()
+                    ->directory('banners')
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('title')
                     ->maxLength(255),
-                Forms\Components\Textarea::make('deskripsi')
+                Forms\Components\Textarea::make('description')
                     ->maxLength(65535)
                     ->columnSpanFull(),
+                Forms\Components\Toggle::make('is_active')
+                    ->required()
+                    ->default(true),
+                Forms\Components\TextInput::make('sort_order')
+                    ->numeric()
+                    ->default(0),
             ]);
     }
 
@@ -39,13 +49,14 @@ class BidangResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama_bidang')
+                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\TextColumn::make('title')
                     ->searchable(),
+                Tables\Columns\ToggleColumn::make('is_active'),
+                Tables\Columns\TextColumn::make('sort_order')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -74,9 +85,9 @@ class BidangResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBidangs::route('/'),
-            'create' => Pages\CreateBidang::route('/create'),
-            'edit' => Pages\EditBidang::route('/{record}/edit'),
+            'index' => Pages\ListBanners::route('/'),
+            'create' => Pages\CreateBanner::route('/create'),
+            'edit' => Pages\EditBanner::route('/{record}/edit'),
         ];
     }
 }

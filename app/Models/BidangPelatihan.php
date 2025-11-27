@@ -62,4 +62,8 @@ class BidangPelatihan extends Model
         );
     }
 
+    public function instruktur()
+    {
+        return $this->belongsTo(Instruktur::class);
+    }
 }
