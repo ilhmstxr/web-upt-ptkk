@@ -29,6 +29,11 @@ class BidangResource extends Resource
                 Forms\Components\TextInput::make('nama_bidang')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('kode')
+                    ->label('Kode Bidang')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('kelas_keterampilan')
+                    ->maxLength(255),
                 Forms\Components\Textarea::make('deskripsi')
                     ->maxLength(65535)
                     ->columnSpanFull(),
@@ -51,6 +56,11 @@ class BidangResource extends Resource
                         ->color('primary')
                         ->extraAttributes(['class' => 'mb-2']),
                     
+                    Tables\Columns\TextColumn::make('kelas_keterampilan')
+                        ->icon('heroicon-o-tag')
+                        ->size('sm')
+                        ->color('gray'),
+
                     Tables\Columns\TextColumn::make('deskripsi')
                         ->limit(100)
                         ->color('gray')

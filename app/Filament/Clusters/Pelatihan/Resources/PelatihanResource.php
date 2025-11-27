@@ -29,27 +29,25 @@ class PelatihanResource extends Resource
                 Forms\Components\Wizard::make([
                     Forms\Components\Wizard\Step::make('Informasi Dasar')
                         ->schema([
+                            Forms\Components\Select::make('jenis_program')
+                                ->options([
+                                    'reguler' => 'Reguler',
+                                    'mtu' => 'MTU',
+                                    'akselerasi' => 'Akselerasi',
+                                ])
+                                ->required(),
                             Forms\Components\TextInput::make('nama_pelatihan')
                                 ->required()
                                 ->maxLength(255),
-                            Forms\Components\TextInput::make('jenis_program')
-                                ->required()
-                                ->maxLength(255),
                             Forms\Components\TextInput::make('batch')
+                                ->label('Angkatan')
                                 ->numeric()
+                                ->default(1)
                                 ->required(),
-                            Forms\Components\TextInput::make('quota')
-                                ->numeric()
-                                ->label('Kuota Peserta')
+                            Forms\Components\DatePicker::make('tanggal_mulai')
                                 ->required(),
-                            Forms\Components\Select::make('instansi_id')
-                                ->relationship('instansi', 'asal_instansi')
+                            Forms\Components\DatePicker::make('tanggal_selesai')
                                 ->required(),
-                            Forms\Components\FileUpload::make('gambar')
-                                ->image()
-                                ->directory('pelatihan-images'),
-                            Forms\Components\RichEditor::make('deskripsi')
-                                ->columnSpanFull(),
                         ]),
                     Forms\Components\Wizard\Step::make('Kurikulum & Jadwal')
                         ->schema([
@@ -60,40 +58,21 @@ class PelatihanResource extends Resource
                                         ->relationship('bidang', 'nama_bidang')
                                         ->required()
                                         ->label('Materi / Bidang'),
-                                    Forms\Components\Select::make('metode')
-                                        ->options([
-                                            'Online' => 'Online',
-                                            'Offline' => 'Offline',
-                                            'Hybrid' => 'Hybrid',
-                                        ])
-                                        ->required(),
-                                    Forms\Components\FileUpload::make('file_modul')
-                                        ->directory('modul-pelatihan')
-                                        ->acceptedFileTypes(['application/pdf'])
-                                        ->label('Modul (PDF)'),
-                                    Forms\Components\DatePicker::make('tanggal')
-                                        ->required(),
-                                    Forms\Components\TimePicker::make('jam_mulai')
-                                        ->required(),
-                                    Forms\Components\TimePicker::make('jam_selesai')
-                                        ->required(),
+                                    // Forms\Components\FileUpload::make('file_modul')
+                                    //     ->directory('modul-pelatihan')
+                                    //     ->acceptedFileTypes(['application/pdf'])
+                                    //     ->label('Modul (PDF)'),
                                     Forms\Components\Select::make('instruktur_id')
-                                        ->relationship('instruktur', 'nama_instruktur') // Assuming 'nama_instruktur' exists
+                                        ->relationship('instruktur', 'nama_instruktur')
                                         ->label('Instruktur')
                                         ->searchable(),
                                     Forms\Components\TextInput::make('lokasi')
-                                        ->label('Lokasi / Ruangan'),
+                                        ->label('Lokasi / Ruangan')
+                                        ->default('UPT-PTKK'),
                                 ])
                                 ->columns(2)
                                 ->defaultItems(1)
                                 ->addActionLabel('Tambah Sesi'),
-                        ]),
-                    Forms\Components\Wizard\Step::make('Durasi Pelatihan')
-                        ->schema([
-                            Forms\Components\DatePicker::make('tanggal_mulai')
-                                ->required(),
-                            Forms\Components\DatePicker::make('tanggal_selesai')
-                                ->required(),
                         ]),
                 ])->columnSpanFull(),
             ]);

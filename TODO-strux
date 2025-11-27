@@ -585,3 +585,25 @@ web-content
 ga wajib
 - foto di cerita kami 
 - foto foto di program pelatihan
+
+
+
+pelatihan
+1. informasi dasar 
+jenis program diganti dropdown reguler, mtu, mjc
+batch diganti angkatan
+kuota dihapus
+instansi dihapus
+gambar dihapus
+deskripsi dihapus
+tambahkan tanggal mulai ~ tanggal selesai pelatihan
+
+2. kurikulum & jadwal
+bidang awalnya disediakan 1 card saja
+modul di komen terlebih dahulu
+tanggal mulai dihapus
+jam mulai selesai dihapus
+default lokasi di upt-ptkk
+metode dihapus
+
+3. durasi pelatihan dihapus
