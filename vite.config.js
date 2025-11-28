@@ -18,6 +18,7 @@ export default defineConfig({
     ],
     css: {
         postcss: {
+            
             plugins: {
                 "tailwindcss/nesting": "postcss-nesting",
                 tailwindcss: {},
