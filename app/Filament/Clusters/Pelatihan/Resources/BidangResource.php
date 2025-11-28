@@ -21,21 +21,45 @@ class BidangResource extends Resource
     protected static ?string $cluster = Pelatihan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    
+    // Hide from sidebar navigation (accessed via tabs only)
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\FileUpload::make('gambar')
+                    ->label('Gambar/Icon Bidang')
+                    ->image()
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        '1:1',
+                        '4:3',
+                        '16:9',
+                    ])
+                    ->maxSize(2048) // 2MB
+                    ->directory('bidang-images')
+                    ->visibility('public')
+                    ->columnSpanFull(),
+                    
                 Forms\Components\TextInput::make('nama_bidang')
+                    ->label('Nama Bidang')
                     ->required()
                     ->maxLength(255),
+                    
                 Forms\Components\TextInput::make('kode')
                     ->label('Kode Bidang')
                     ->maxLength(255),
+                    
                 Forms\Components\TextInput::make('kelas_keterampilan')
+                    ->label('Kelas Keterampilan')
                     ->maxLength(255),
+                    
                 Forms\Components\Textarea::make('deskripsi')
+                    ->label('Deskripsi')
                     ->maxLength(65535)
+                    ->rows(4)
                     ->columnSpanFull(),
             ]);
     }
@@ -49,6 +73,12 @@ class BidangResource extends Resource
             ])
             ->columns([
                 Tables\Columns\Layout\Stack::make([
+                    // Image at top
+                    Tables\Columns\ImageColumn::make('gambar')
+                        ->height(150)
+                        ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->nama_bidang) . '&size=300&background=random')
+                        ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3']),
+                    
                     Tables\Columns\TextColumn::make('nama_bidang')
                         ->weight('bold')
                         ->size('lg')

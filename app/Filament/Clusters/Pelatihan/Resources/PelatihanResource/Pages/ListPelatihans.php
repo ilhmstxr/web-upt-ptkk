@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Pages;
 use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Contracts\View\View;
 
 class ListPelatihans extends ListRecords
 {
@@ -22,5 +23,12 @@ class ListPelatihans extends ListRecords
         return [
             Actions\CreateAction::make(),
         ];
+    }
+    
+    public function getHeader(): ?View
+    {
+        return view('filament.clusters.pelatihan.components.resource-tabs', [
+            'activeTab' => 'pelatihans'
+        ]);
     }
 }

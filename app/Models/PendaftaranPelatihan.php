@@ -26,6 +26,10 @@ class PendaftaranPelatihan extends Model
         'status_pendaftaran',
     ];
 
+    protected $casts = [
+        'tanggal_pendaftaran' => 'datetime',
+    ];
+
     public function peserta()
     {
         return $this->belongsTo(Peserta::class, 'peserta_id');

@@ -21,6 +21,9 @@ class PelatihanResource extends Resource
     protected static ?string $cluster = Pelatihan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    
+    // Hide from sidebar navigation (accessed via tabs only)
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {

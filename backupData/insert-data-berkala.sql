@@ -2,21 +2,21 @@
 -- Dumping data for table `bidang`
 --
 
-INSERT INTO `bidang` (`id`, `nama_bidang`, `deskripsi`, `kode`, `kelas_keterampilan`, `created_at`, `updated_at`) VALUES
-(1, 'Tata Boga', 'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.', 'TTBG', 'Kelas Keterampilan dan Teknik', NULL, NULL),
-(2, 'Tata Busana', 'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.', 'TTBS', 'Kelas Keterampilan dan Teknik', NULL, NULL),
-(3, 'Kecantikan', 'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.', 'KCAN', 'Kelas Keterampilan dan Teknik', NULL, NULL),
-(4, 'Teknik Pendingin dan Tata Udara', 'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.', 'TPTU', 'Kelas Keterampilan dan Teknik', NULL, NULL),
-(5, 'Web Desain', 'Bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.', 'WBDS', 'Milenial Job Center (MJC)', NULL, NULL),
-(6, 'Desain Grafis', 'Bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.', 'DSGF', 'Milenial Job Center (MJC)', NULL, NULL),
-(7, 'Motion Animasi', 'Bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.', 'ANMS', 'Milenial Job Center (MJC)', NULL, NULL),
-(8, 'Fotografi', 'Bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.', 'FTGR', 'Milenial Job Center (MJC)', NULL, NULL),
-(9, 'Videografi', 'Bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.', 'VDGR', 'Milenial Job Center (MJC)', NULL, NULL),
-(10, 'PLC', 'Bidang keahlian yang mengajarkan programming logic controller', 'PLC', 'Kelas Keterampilan dan Teknik', NULL, NULL),
-(11, 'Foto Produk', 'Foto Produk', 'FTPD', 'Milenial Job Center (MJC)', NULL, NULL),
-(12, 'Teknik Pemesinan', 'Bidang keahlian teknik pemesinan', 'TPM', 'Kelas Keterampilan dan Teknik', NULL, NULL),
-(13, 'Teknik Otomotif', 'Bidang keahlian teknik otomotif', 'TOTO', 'Kelas Keterampilan dan Teknik', NULL, NULL),
-(14, 'Teknik Pengelasan', 'Bidang keahlian teknik pengelasan', 'TLAS', 'Kelas Keterampilan dan Teknik', NULL, NULL);
+INSERT INTO `bidang` (`id`, `nama_bidang`, `deskripsi`, `kode`, `kelas_keterampilan`, `gambar`, `created_at`, `updated_at`) VALUES
+(1, 'Tata Boga', 'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.', 'TTBG', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(2, 'Tata Busana', 'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.', 'TTBS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(3, 'Kecantikan', 'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.', 'KCAN', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(4, 'Teknik Pendingin dan Tata Udara', 'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.', 'TPTU', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(5, 'Web Desain', 'Bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.', 'WBDS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(6, 'Desain Grafis', 'Bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.', 'DSGF', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(7, 'Motion Animasi', 'Bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.', 'ANMS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(8, 'Fotografi', 'Bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.', 'FTGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(9, 'Videografi', 'Bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.', 'VDGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(10, 'PLC', 'Bidang keahlian yang mengajarkan programming logic controller', 'PLC', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(11, 'Foto Produk', 'Foto Produk', 'FTPD', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(12, 'Teknik Pemesinan', 'Bidang keahlian teknik pemesinan', 'TPM', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(13, 'Teknik Otomotif', 'Bidang keahlian teknik otomotif', 'TOTO', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(14, 'Teknik Pengelasan', 'Bidang keahlian teknik pengelasan', 'TLAS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL);
 
 --
 -- Dumping data for table `bidang_pelatihan`
