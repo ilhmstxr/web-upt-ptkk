@@ -85,13 +85,18 @@ class PelatihanResource extends Resource
                 Tables\Columns\ImageColumn::make('gambar')
                     ->label('Cover')
                     ->square()
+                    ->size(60)
                     ->defaultImageUrl('https://via.placeholder.com/150'),
                 
                 Tables\Columns\TextColumn::make('nama_pelatihan')
                     ->label('Nama Pelatihan')
                     ->searchable()
                     ->sortable()
-                    ->description(fn ($record) => $record->jenis_program . ' • ' . $record->batch),
+                    ->wrap()
+                    ->limit(100)
+                    ->tooltip(fn ($record) => $record->nama_pelatihan)
+                    ->description(fn ($record) => $record->jenis_program . ' • Batch ' . $record->batch)
+                    ->weight('medium'),
 
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
@@ -100,17 +105,20 @@ class PelatihanResource extends Resource
                         'Pendaftaran Buka' => 'info',
                         'Selesai' => 'gray',
                         default => 'gray',
-                    }),
+                    })
+                    ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('kuota_peserta')
                     ->label('Kuota')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('tanggal_mulai')
                     ->label('Jadwal')
                     ->date('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn ($record) => $record->tanggal_selesai ? 'S/d ' . $record->tanggal_selesai->format('d M Y') : null),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('instansi')

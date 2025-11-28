@@ -59,6 +59,8 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->login()
+            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
             ->plugin(FilamentFullCalendarPlugin::make());
     }
 }

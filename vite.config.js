@@ -16,16 +16,6 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
-    css: {
-        postcss: {
-            
-            plugins: {
-                "tailwindcss/nesting": "postcss-nesting",
-                tailwindcss: {},
-                autoprefixer: {},
-            },
-        },
-    },
     server: {
         cors: true,
     },
