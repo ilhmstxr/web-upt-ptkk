@@ -19,9 +19,12 @@ class Instansi extends Model
         'bidang_keahlian',
         'kota',
         'kota_id',
-        'kelas',
+        // 'kelas', // Removed
         'cabangDinas_id',
         'user_id',
+        // Removed jenis_instansi and status_kerjasama
+        'no_telepon',
+        'email',
     ];
 
     public function cabangDinas(): BelongsTo

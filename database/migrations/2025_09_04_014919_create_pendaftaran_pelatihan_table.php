@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('bidang_pelatihan_id')->nullable()
                 ->constrained('bidang_pelatihan')
                 ->cascadeOnDelete();
+            $table->string('kelas')->nullable();
 
             // IMPROVE: menambahkan bidang id 
             // $table->foreignId('bidang_id')->constrained('bidang')->cascadeOnDelete();

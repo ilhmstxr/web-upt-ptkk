@@ -42,7 +42,7 @@ class PelatihanResource extends Resource
                             Forms\Components\TextInput::make('nama_pelatihan')
                                 ->required()
                                 ->maxLength(255),
-                            Forms\Components\TextInput::make('batch')
+                            Forms\Components\TextInput::make('angkatan')
                                 ->label('Angkatan')
                                 ->numeric()
                                 ->default(1)
@@ -98,7 +98,7 @@ class PelatihanResource extends Resource
                     ->wrap()
                     ->limit(100)
                     ->tooltip(fn ($record) => $record->nama_pelatihan)
-                    ->description(fn ($record) => $record->jenis_program . ' • Batch ' . $record->batch)
+                    ->description(fn ($record) => $record->jenis_program . ' • Angkatan ' . $record->angkatan)
                     ->weight('medium'),
 
                 Tables\Columns\TextColumn::make('status')
@@ -111,7 +111,7 @@ class PelatihanResource extends Resource
                     })
                     ->alignCenter(),
 
-                Tables\Columns\TextColumn::make('kuota_peserta')
+                Tables\Columns\TextColumn::make('jumlah_peserta')
                     ->label('Kuota')
                     ->numeric()
                     ->sortable()

@@ -71,10 +71,10 @@ class TracerStudyResource extends Resource
                     ->sortable()
                     ->icon(fn ($record) => 'heroicon-o-user-circle'), // Placeholder for avatar
                 
-                Tables\Columns\TextColumn::make('batch') // Assuming batch exists or relation
-                    ->label('Batch Pelatihan')
-                    ->default('Web Dev Batch 3') // Placeholder if not in DB yet
-                    ->color('gray'),
+                // Tables\Columns\TextColumn::make('batch') // Assuming batch exists or relation
+                //     ->label('Batch Pelatihan')
+                //     ->default('Web Dev Batch 3') // Placeholder if not in DB yet
+                //     ->color('gray'),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status Saat Ini')

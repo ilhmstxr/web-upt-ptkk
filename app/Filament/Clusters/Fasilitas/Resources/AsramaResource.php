@@ -44,33 +44,23 @@ class AsramaResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nomor_kamar')
-                    ->label('Kamar')
-                    ->weight('bold')
-                    ->icon('heroicon-o-home')
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Asrama')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('lantai')
-                    ->label('Lantai')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('kapasitas')
-                    ->label('Kapasitas')
-                    ->numeric()
-                    ->suffix(' Bed'),
-                Tables\Columns\TextColumn::make('penghuni_count')
-                    ->counts('penghuni')
-                    ->label('Terisi')
-                    ->badge()
-                    ->color(fn ($state, $record) => $state >= $record->kapasitas ? 'danger' : ($state > 0 ? 'warning' : 'success')),
-                Tables\Columns\TextColumn::make('status_ketersediaan')
-                    ->label('Status')
+                Tables\Columns\TextColumn::make('gender')
+                    ->label('Khusus')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Tersedia' => 'success',
-                        'Penuh' => 'danger',
-                        'Perbaikan' => 'warning',
+                        'Laki-laki' => 'info',
+                        'Perempuan' => 'danger', // Pinkish usually, but danger is close
+                        'Campur' => 'warning',
                         default => 'gray',
                     }),
+                Tables\Columns\TextColumn::make('kamars_count')
+                    ->counts('kamars')
+                    ->label('Jumlah Kamar')
+                    ->alignCenter(),
             ])
             ->filters([
                 //

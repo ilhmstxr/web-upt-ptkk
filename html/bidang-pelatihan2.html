@@ -432,49 +432,58 @@
                             </div>
                         </div>
 
+
                         <!-- 3. MONEV STATS (SURVEY) -->
                         <div
-                            class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 class="font-bold text-gray-800 text-lg">Survey Monev</h3>
-                                    <p class="text-xs text-gray-500">Kepuasan Peserta</p>
+                            class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-gray-800 text-lg">Survey Monev</h3>
+                                        <p class="text-xs text-gray-500">Kepuasan Peserta</p>
+                                    </div>
+                                    <span
+                                        class="bg-purple-100 text-purple-700 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide">Aktif</span>
                                 </div>
-                                <span
-                                    class="bg-purple-100 text-purple-700 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide">Aktif</span>
+
+                                <div class="flex flex-col gap-3">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="text-gray-500">Kepuasan Materi</span>
+                                            <span class="font-bold text-gray-800">4.8 <span
+                                                    class="text-gray-400 font-normal">/ 5.0</span></span>
+                                        </div>
+                                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                            <div class="bg-warning h-1.5 rounded-full" style="width: 96%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="text-gray-500">Kinerja Instruktur</span>
+                                            <span class="font-bold text-gray-800">4.9 <span
+                                                    class="text-gray-400 font-normal">/ 5.0</span></span>
+                                        </div>
+                                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: 98%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="text-gray-500">Respon Survey</span>
+                                            <span class="font-bold text-purple-600">20/32</span>
+                                        </div>
+                                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                            <div class="bg-purple-400 h-1.5 rounded-full" style="width: 65%"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="flex flex-col gap-3">
-                                <div>
-                                    <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-gray-500">Kepuasan Materi</span>
-                                        <span class="font-bold text-gray-800">4.8 <span
-                                                class="text-gray-400 font-normal">/ 5.0</span></span>
-                                    </div>
-                                    <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                        <div class="bg-warning h-1.5 rounded-full" style="width: 96%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-gray-500">Kinerja Instruktur</span>
-                                        <span class="font-bold text-gray-800">4.9 <span
-                                                class="text-gray-400 font-normal">/ 5.0</span></span>
-                                    </div>
-                                    <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 98%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-gray-500">Respon Survey</span>
-                                        <span class="font-bold text-purple-600">20/32</span>
-                                    </div>
-                                    <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                        <div class="bg-purple-400 h-1.5 rounded-full" style="width: 65%"></div>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- TOMBOL BARU DITAMBAHKAN -->
+                            <a href="detail-bidang-monev.html"
+                                class="mt-4 flex items-center justify-center w-full py-2 bg-purple-50 text-purple-700 rounded-lg text-xs font-bold hover:bg-purple-100 transition-colors border border-purple-100">
+                                <i class="fa-solid fa-chart-pie mr-2"></i> Lihat Detail Grafik
+                            </a>
                         </div>
                     </div>
 

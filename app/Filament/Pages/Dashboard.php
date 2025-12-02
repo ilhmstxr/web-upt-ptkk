@@ -22,12 +22,12 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            // GlobalStatsOverview::class,
-            // StatsOverview::class,
-            // DaftarPelatihanWidget::class, 
-            // PelatihanAktifTable::class,
-            // AkumulasiSurveiChart::class,
-            // InformasiAsramaWidget::class,
+            StatsOverview::class,
+            PelatihanAktifTable::class,
+            AkumulasiSurveiChart::class,
+            InformasiAsramaWidget::class,
+            \App\Filament\Widgets\PerformaPesertaTableWidget::class,
+            \App\Filament\Widgets\PerformaBidangTableWidget::class,
         ];
     }
 
