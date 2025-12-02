@@ -137,7 +137,6 @@ class PendaftaranController extends Controller
                     'alamat_instansi'   => $allData['alamat_instansi'],
                     'kota'   => $allData['kota'],
                     'kota_id'   => $allData['kota_id'],
-                    'kelas' => $allData['kelas'],
                 ],
                 [
                     'bidang_keahlian'       => $allData['bidang_keahlian'],
@@ -216,6 +215,7 @@ class PendaftaranController extends Controller
                 'urutan_per_bidang'     => $urutBidang,
                 'nomor_registrasi'      => $nomorReg,
                 'tanggal_pendaftaran'   => now(),
+                'kelas'                 => $allData['kelas'],
             ]);
             $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
                 ->latest('id')

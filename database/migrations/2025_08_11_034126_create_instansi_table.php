@@ -18,7 +18,10 @@ return new class extends Migration
             $table->string('kota_id');
             $table->string('kota');
             $table->string('bidang_keahlian');
-            $table->string('kelas');
+            // kelas removed
+            // Removed jenis_instansi and status_kerjasama as per request
+            $table->string('no_telepon')->nullable();
+            $table->string('email')->nullable();
             $table->foreignId('cabangDinas_id')
                 ->constrained('cabang_dinas')
                 ->cascadeOnDelete();

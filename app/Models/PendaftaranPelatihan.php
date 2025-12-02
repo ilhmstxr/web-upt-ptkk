@@ -14,8 +14,10 @@ class PendaftaranPelatihan extends Model
         'peserta_id',
         'pelatihan_id',
         'bidang_id',
+        'bidang_pelatihan_id', // Added missing field from usage
         'nomor_registrasi',
         'tanggal_pendaftaran',
+        'kelas', // Added
 
         'nilai_pre_test',
         'nilai_post_test',
@@ -24,6 +26,7 @@ class PendaftaranPelatihan extends Model
         'nilai_survey',
         'status',
         'status_pendaftaran',
+        'urutan_per_bidang', // Added missing field from usage
     ];
 
     protected $casts = [
@@ -41,5 +44,9 @@ class PendaftaranPelatihan extends Model
     public function bidangPelatihan()
     {
         return $this->belongsTo(BidangPelatihan::class, 'bidang_pelatihan_id');
+    }
+    public function bidang()
+    {
+        return $this->belongsTo(Bidang::class, 'bidang_id');
     }
 }

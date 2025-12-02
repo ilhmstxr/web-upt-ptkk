@@ -257,7 +257,11 @@
                 </div>
             </div>
              <div class="text-center text-gray-500 dark:text-gray-400 py-10">
-                <p>Laporan hasil evaluasi akan ditampilkan di sini.</p>
+                <div class="grid grid-cols-1 gap-6">
+                    @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\JawabanAkumulatifChart::class, ['record' => $record])
+                    @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\JawabanPerKategoriChart::class, ['record' => $record])
+                    @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\PiePerPertanyaanWidget::class, ['record' => $record])
+                </div>
             </div>
         </div>
 
