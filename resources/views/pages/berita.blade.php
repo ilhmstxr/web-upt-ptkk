@@ -22,30 +22,6 @@
       --card-manfaat: #DBE7F7;
     }
 
-    .stroke-yellow{
-      text-shadow:
-        -1px -1px 0 var(--kuning-stroke),
-         1px -1px 0 var(--kuning-stroke),
-        -1px  1px 0 var(--kuning-stroke),
-         1px  1px 0 var(--kuning-stroke);
-    }
-    .stroke-red{
-      text-shadow:
-        -1px -1px 0 var(--merah-stroke),
-         1px -1px 0 var(--merah-stroke),
-        -1px  1px 0 var(--merah-stroke),
-         1px  1px 0 var(--merah-stroke);
-    }
-
-    .shadow-5x{
-      box-shadow:
-        0 1px 3px rgba(0,0,0,0.05),
-        0 2px 6px rgba(0,0,0,0.07),
-        0 4px 10px rgba(0,0,0,0.09),
-        0 6px 14px rgba(0,0,0,0.11),
-        0 8px 20px rgba(0,0,0,0.13);
-    }
-
     .section-container {
       max-width: 1280px;
       margin-left: auto;
@@ -55,27 +31,14 @@
     }
 
     @media (min-width: 768px) {
-      .section-container {
-        padding-left: 3rem;
-        padding-right: 3rem;
-      }
+      .section-container { padding-left: 3rem; padding-right: 3rem; }
     }
 
     @media (min-width: 1024px) {
-      .section-container {
-        padding-left: 80px;
-        padding-right: 80px;
-      }
+      .section-container { padding-left: 80px; padding-right: 80px; }
     }
 
-    .section-compact {
-      padding-top: 30px !important;
-      padding-bottom: 30px !important;
-    }
-
-    section + section {
-      margin-top: 30px !important;
-    }
+    section + section { margin-top: 30px !important; }
   </style>
 </head>
 
@@ -100,74 +63,81 @@
   @php
     use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
+    use Illuminate\Support\Carbon;
 
     /**
-     * Helper kecil untuk mendapatkan URL gambar yang bisa diakses di browser.
-     * Menerima $value (string|null). Mengembalikan URL (string) atau null.
+     * resolve_image_url: mengembalikan URL gambar yang dapat diakses
+     * menerima path relatif ('berita/xxx.jpg') atau full URL.
      */
     if (! function_exists('resolve_image_url')) {
-      function resolve_image_url($value) {
+      function resolve_image_url($value, $fallback = null) {
         if (empty($value)) {
-          return null;
+          return $fallback;
         }
 
-        // already a full URL
+        // full URL
         if (preg_match('/^https?:\\/\\//i', $value)) {
           return $value;
         }
 
-        // normalize remove leading storage/ atau public/
         $normalized = preg_replace('#^storage\/+#i', '', trim($value));
         $normalized = preg_replace('#^public\/+#i', '', $normalized);
 
-        // prefer Storage::disk('public')
         try {
           if (Storage::disk('public')->exists($normalized)) {
-            return Storage::disk('public')->url($normalized); // /storage/...
+            return Storage::disk('public')->url($normalized);
           }
         } catch (\Throwable $e) {
           // ignore
         }
 
-        // check public/storage/<normalized>
         if (file_exists(public_path('storage/' . $normalized))) {
           return asset('storage/' . $normalized);
         }
 
-        // check public/<normalized>
         if (file_exists(public_path($normalized))) {
           return asset($normalized);
         }
 
-        return null;
+        return $fallback;
       }
     }
+
+    // ----- Normalize variables from controller -----
+    // Accept several possible names (postsPaginator OR posts)
+    $postsPaginator = $postsPaginator ?? ($posts ?? null);
+    $featured = $featured ?? null;
+    $others = $others ?? null;
+
+    // If controller only sent $posts as LengthAwarePaginator, use it
+    if (empty($postsPaginator) && ! empty($posts) && is_object($posts) && method_exists($posts, 'items')) {
+      $postsPaginator = $posts;
+    }
+
+    // If there is a paginator but featured not set, compute from current page items
+    if ($postsPaginator && empty($featured)) {
+      $items = collect($postsPaginator->items());
+      $featured = $items->first() ?: null;
+      $others = $items->slice(1);
+    }
+
+    // If controller sent $posts as Collection (not paginator)
+    if (empty($postsPaginator) && ! empty($posts) && ($posts instanceof \Illuminate\Support\Collection)) {
+      $items = $posts;
+      $featured = $featured ?? $items->first();
+      $others = $others ?? $items->slice(1);
+    }
+
+    // Ensure $others is a collection
+    if ($others && ! ($others instanceof \Illuminate\Support\Collection)) {
+      $others = collect($others);
+    }
+
+    // timezone helper
+    $tz = config('app.timezone') ?: 'UTC';
   @endphp
 
   <section class="section-container py-8 md:py-10">
-    @php
-      // fallback variables: jika controller tidak mengirim, coba cari nama alternatif
-      $postsPaginator = $postsPaginator ?? ($posts ?? null);
-      $featured = $featured ?? null;
-      $others = $others ?? null;
-
-      // Jika controller hanya mengirim $posts (LengthAwarePaginator), siapkan featured/others
-      if (empty($postsPaginator) && ! empty($posts) && is_object($posts) && method_exists($posts, 'items')) {
-          $postsPaginator = $posts;
-      }
-
-      if ($postsPaginator && empty($featured)) {
-          $items = collect($postsPaginator->items());
-          $featured = $items->first() ?? null;
-          $others = $items->slice(1);
-      }
-
-      // Ensure $others is a collection
-      if ($others && ! ($others instanceof \Illuminate\Support\Collection)) {
-        $others = collect($others);
-      }
-    @endphp
-
     @if( ! $postsPaginator || ($postsPaginator->count() === 0 && (empty($featured) && ($others ? $others->isEmpty() : true))) )
       <div class="text-center py-16">
         <h3 class="text-2xl font-bold text-[#1524AF]">Belum ada berita</h3>
@@ -180,13 +150,20 @@
           $fIsModel = is_object($featured);
           $fTitle = $fIsModel ? ($featured->title ?? '—') : ($featured['title'] ?? '—');
           $fSlug = $fIsModel ? ($featured->slug ?? '#') : ($featured['url'] ?? '#');
-          // image resolution: prefer $featured->image_url accessor if exists
           if ($fIsModel && method_exists($featured, 'getImageUrlAttribute')) {
             $fImgUrl = $featured->image_url;
           } else {
-            $fImgUrl = resolve_image_url($fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null));
+            $fImgUrl = resolve_image_url($fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null), asset('images/beranda/slide1.jpg'));
           }
           $fDate = $fIsModel ? ($featured->published_at ?? $featured->created_at) : ($featured['date'] ?? null);
+          // format date safely
+          if ($fDate && is_object($fDate) && method_exists($fDate, 'setTimezone')) {
+            $fDateForDisplay = $fDate->setTimezone($tz)->translatedFormat('d F Y H:i');
+          } elseif (!empty($fDate)) {
+            $fDateForDisplay = Carbon::parse($fDate)->setTimezone($tz)->translatedFormat('d F Y H:i');
+          } else {
+            $fDateForDisplay = '-';
+          }
         @endphp
 
         <article class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 lg:mb-10">
@@ -218,15 +195,7 @@
                 <line x1="8"  y1="2" x2="8"  y2="6" stroke-width="2"></line>
                 <line x1="3"  y1="10" x2="21" y2="10" stroke-width="2"></line>
               </svg>
-              <span>
-                @if($fDate && is_object($fDate) && method_exists($fDate, 'setTimezone'))
-                  {{ $fDate->setTimezone(config('app.timezone'))->translatedFormat('d F Y H:i') }}
-                @elseif(!empty($fDate))
-                  {{ \Carbon\Carbon::parse($fDate)->setTimezone(config('app.timezone'))->translatedFormat('d F Y H:i') }}
-                @else
-                  -
-                @endif
-              </span>
+              <span>{{ $fDateForDisplay }}</span>
             </div>
 
             <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[26px] leading-tight text-[#1524AF] mb-2">
@@ -237,7 +206,7 @@
 
             <p class="font-[Montserrat] text-[14.5px] md:text-[15px] text-slate-800 leading-relaxed mb-3 max-w-[60ch]">
               @if($fIsModel)
-                {{ \Illuminate\Support\Str::limit(strip_tags($featured->content ?? ''), 320) }}
+                {{ Str::limit(strip_tags($featured->content ?? ''), 320) }}
               @else
                 {{ $featured['excerpt'] ?? '' }}
               @endif
@@ -261,9 +230,16 @@
             $isModel = is_object($post);
             $title = $isModel ? ($post->title ?? '—') : ($post['title'] ?? '—');
             $slugOrUrl = $isModel ? route('berita.show', $post->slug) : ($post['url'] ?? '#');
-            $imgUrl = $isModel && method_exists($post, 'getImageUrlAttribute') ? $post->image_url : resolve_image_url($isModel ? ($post->image ?? null) : ($post['thumb'] ?? null));
+            $imgUrl = $isModel && method_exists($post, 'getImageUrlAttribute') ? $post->image_url : resolve_image_url($isModel ? ($post->image ?? null) : ($post['thumb'] ?? null), asset('images/beranda/slide1.jpg'));
             $date = $isModel ? ($post->published_at ?? $post->created_at) : ($post['date'] ?? null);
-            $excerpt = $isModel ? \Illuminate\Support\Str::limit(strip_tags($post->content ?? ''), 120) : ($post['excerpt'] ?? '');
+            if ($date && is_object($date) && method_exists($date, 'setTimezone')) {
+              $dateForDisplay = $date->setTimezone($tz)->translatedFormat('d F Y');
+            } elseif (!empty($date)) {
+              $dateForDisplay = Carbon::parse($date)->setTimezone($tz)->translatedFormat('d F Y');
+            } else {
+              $dateForDisplay = '-';
+            }
+            $excerpt = $isModel ? Str::limit(strip_tags($post->content ?? ''), 120) : ($post['excerpt'] ?? '');
           @endphp
 
           <article class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm hover:shadow-md transition">
@@ -285,15 +261,7 @@
                 <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line>
                 <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line>
               </svg>
-              <span>
-                @if($date && is_object($date) && method_exists($date, 'setTimezone'))
-                  {{ $date->setTimezone(config('app.timezone'))->translatedFormat('d F Y') }}
-                @elseif(!empty($date))
-                  {{ \Carbon\Carbon::parse($date)->setTimezone(config('app.timezone'))->translatedFormat('d F Y') }}
-                @else
-                  -
-                @endif
-              </span>
+              <span>{{ $dateForDisplay }}</span>
             </div>
 
             <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug text-slate-900 mb-2">
@@ -314,12 +282,44 @@
         @endforeach
       </div>
 
-      {{-- PAGINATION --}}
-      <div class="mt-8">
+      {{-- PAGINATION (manual, aman) --}}
+      <div class="mt-8 flex justify-center">
         @if($postsPaginator)
-          {{ $postsPaginator->links() }}
+          @php
+            $p = $postsPaginator;
+            $current = $p->currentPage();
+            $last = $p->lastPage();
+            $start = max(1, $current - 3);
+            $end = min($last, $current + 3);
+          @endphp
+
+          <nav class="inline-flex items-center gap-1" aria-label="Pagination">
+            {{-- Prev --}}
+            @if($p->onFirstPage())
+              <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed">&laquo;</span>
+            @else
+              <a href="{{ $p->url($current - 1) }}" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">&laquo;</a>
+            @endif
+
+            {{-- Page numbers --}}
+            @for($i = $start; $i <= $end; $i++)
+              @if($i === $current)
+                <span class="px-3 py-1.5 rounded-lg border border-[#1524AF] text-[#1524AF] bg-[#F5FBFF]">{{ $i }}</span>
+              @else
+                <a href="{{ $p->url($i) }}" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">{{ $i }}</a>
+              @endif
+            @endfor
+
+            {{-- Next --}}
+            @if($current >= $last)
+              <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed">&raquo;</span>
+            @else
+              <a href="{{ $p->url($current + 1) }}" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">&raquo;</a>
+            @endif
+          </nav>
         @endif
       </div>
+
     @endif
   </section>
 
