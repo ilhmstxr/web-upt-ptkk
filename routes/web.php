@@ -174,7 +174,7 @@ route::resource('pertanyaan', PertanyaanController::class);
 | Detail Pelatihan (public)
 |--------------------------------------------------------------------------
 */
-Route::get('/pelatihan/{slug}', [App\Http\Controllers\PelatihanDetailController::class, 'show'])->name('detail-pelatihan');
+Route::get('/pelatihan/{slug}', [\App\Http\Controllers\PelatihanDetailController::class, 'show'])->name('detail-pelatihan');
 
 
 /*

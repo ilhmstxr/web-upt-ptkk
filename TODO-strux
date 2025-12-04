@@ -614,14 +614,14 @@ admin
 TODO - instruktur (blm di tes)
 DONE configure db
 CHECK crud filament instruktur resource 
-crud yang berhubungan dengan instruktur
+CHECK crud yang berhubungan dengan instruktur
 
 - create bidang (stuck instruktur)
 
 
 - setup tes
-test crud test di filament
-check the error n solve
+CHECK test crud test di filament
+CHECK the error n solve
 
 
 - emailing peserta
