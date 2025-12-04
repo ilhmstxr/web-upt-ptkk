@@ -158,7 +158,6 @@ class PendaftaranController extends Controller
                     'alamat_instansi'   => $allData['alamat_instansi'],
                     'kota'   => $allData['kota'],
                     'kota_id'   => $allData['kota_id'],
-                    'kelas' => $allData['kelas'],
                 ],
                 [
                     'bidang_keahlian'       => $allData['bidang_keahlian'],
@@ -237,6 +236,7 @@ class PendaftaranController extends Controller
                 'urutan_per_bidang'     => $urutBidang,
                 'nomor_registrasi'      => $nomorReg,
                 'tanggal_pendaftaran'   => now(),
+                'kelas'                 => $allData['kelas'],
             ]);
             $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
                 ->latest('id')
@@ -365,7 +365,7 @@ class PendaftaranController extends Controller
 
     public function exportSingle(PendaftaranPelatihan $pendaftaran)
     {
-    $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
+        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
         $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
         return response()->download($pdfPath)->deleteFileAfterSend(true);
     }
@@ -477,18 +477,17 @@ class PendaftaranController extends Controller
 
             // [Langkah 2] Kunci semua baris yang relevan
             // Proses lain yang mencoba mengakses baris ini akan disuruh MENUNGGU
-            PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
-                ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
-                ->where('peserta.bidang_id', $bidangId)
-                ->select('pendaftaran_pelatihan.id')
-                ->lockForUpdate() // <--- BAGIAN PALING PENTING
+            PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+                ->where('bidang_id', $bidangId)
+                ->select('id')
+                ->lockForUpdate()
                 ->get();
+
 
             // [Langkah 3] Hitung jumlah pendaftar
             // Karena proses lain menunggu, hitungan ini DIJAMIN akurat
-            $jumlah = PendaftaranPelatihan::join('peserta', 'pendaftaran_pelatihan.peserta_id', '=', 'peserta.id')
-                ->where('pendaftaran_pelatihan.pelatihan_id', $pelatihanId)
-                ->where('peserta.bidang_id', $bidangId)
+            $jumlah = PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+                ->where('bidang_id', $bidangId)
                 ->count();
 
             // [Langkah 4] Buat nomor unik yang sudah pasti aman
@@ -508,4 +507,3 @@ class PendaftaranController extends Controller
         return strtoupper($akronim);
     }
 }
-

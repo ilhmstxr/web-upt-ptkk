@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Soal - SEO Specialist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#475569',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom radio button for correct answer selection */
+        .correct-radio:checked + div {
+            border-color: #10B981;
+            background-color: #ECFDF5;
+        }
+        .correct-radio:checked + div .check-icon {
+            display: block;
+        }
+        .question-card.active {
+            border-color: #2563EB;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1), 0 2px 4px -1px rgba(37, 99, 235, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 font-sans min-h-screen pb-20">
+
+    <!-- TOP NAV / ACTION BAR -->
+    <div class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                
+                <!-- Breadcrumbs & Title -->
+                <div>
+                    <nav class="flex text-sm font-medium text-gray-500 mb-1">
+                        <a href="#" class="hover:text-primary transition-colors">Digital Marketing Batch 5</a>
+                        <span class="mx-2">/</span>
+                        <a href="#" class="hover:text-primary transition-colors">SEO Specialist</a>
+                        <span class="mx-2">/</span>
+                        <span class="text-gray-900">Setup Posttest</span>
+                    </nav>
+                    <h1 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square text-primary"></i>
+                        Setup Soal Posttest
+                    </h1>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="hidden md:flex flex-col items-end mr-4 border-r border-gray-200 pr-4">
+                        <span class="text-xs text-gray-500">Total Bobot</span>
+                        <span class="font-bold text-green-600 text-lg">100<span class="text-gray-400 text-sm">/100</span></span>
+                    </div>
+                    <button class="flex-1 md:flex-none px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        Simpan Draft
+                    </button>
+                    <button class="flex-1 md:flex-none px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Publikasikan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- LEFT COLUMN: SETTINGS -->
+            <div class="lg:col-span-1 space-y-6">
+                
+                <!-- Card: Konfigurasi Ujian -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <h3 class="font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100">Pengaturan Dasar</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Judul Ujian</label>
+                            <input type="text" value="Posttest: Evaluasi Akhir SEO" class="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm focus:border-primary focus:ring-primary shadow-sm">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Durasi (Menit)</label>
+                                <div class="relative">
+                                    <input type="number" value="60" class="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm focus:border-primary focus:ring-primary shadow-sm pl-8">
+                                    <i class="fa-regular fa-clock absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">KKM / Pass Grade</label>
+                                <input type="number" value="75" class="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm focus:border-primary focus:ring-primary shadow-sm text-center font-bold text-gray-800">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Periode Akses</label>
+                            <input type="datetime-local" class="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm mb-2 text-gray-500" value="2024-12-10T09:00">
+                            <input type="datetime-local" class="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm text-gray-500" value="2024-12-10T12:00">
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <label class="flex items-center justify-between cursor-pointer mb-3">
+                                <span class="text-sm text-gray-700">Acak Urutan Soal</span>
+                                <div class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-sm text-gray-700">Tampilkan Nilai Akhir</span>
+                                <div class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Helper: Bank Soal -->
+                <div class="bg-blue-50 rounded-xl border border-blue-100 p-5">
+                    <h4 class="font-bold text-blue-800 text-sm mb-2"><i class="fa-solid fa-lightbulb mr-1"></i> Tips</h4>
+                    <p class="text-xs text-blue-700 leading-relaxed mb-3">
+                        Anda bisa mengimport soal dari bank soal batch sebelumnya untuk menghemat waktu.
+                    </p>
+                    <button class="w-full py-2 bg-white border border-blue-200 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors">
+                        Buka Bank Soal
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: QUESTION BUILDER -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- LIST SOAL -->
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">Daftar Pertanyaan (5)</h3>
+                    <div class="flex gap-2">
+                         <button class="text-sm text-primary hover:underline font-medium"><i class="fa-solid fa-eye mr-1"></i> Preview Ujian</button>
+                    </div>
+                </div>
+
+                <!-- Question Item 1 (Collapsed/Saved State) -->
+                <div class="group bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:border-blue-300 transition-all cursor-pointer relative">
+                    <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-blue-100 hover:text-blue-600"><i class="fa-solid fa-pen"></i></button>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center font-bold text-gray-500 text-sm shrink-0">1</div>
+                        <div>
+                            <span class="inline-block bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold mb-1">Pilihan Ganda</span>
+                            <p class="text-gray-800 font-medium text-sm line-clamp-1">Apa yang dimaksud dengan 'Keyword Density' dalam konteks SEO?</p>
+                            <p class="text-gray-400 text-xs mt-1">Bobot: 20 Poin</p>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Question Item 2 (Active/Editing State) -->
+                <div class="bg-white rounded-xl shadow-md border border-primary p-5 relative ring-2 ring-blue-50 ring-offset-2">
+                    <!-- Header Edit -->
+                    <div class="flex justify-between items-start mb-4 border-b border-gray-100 pb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-sm">2</div>
+                            <span class="text-sm font-bold text-gray-700">Edit Soal</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500">Bobot Nilai:</span>
+                            <input type="number" value="20" class="w-16 text-center border border-gray-300 rounded p-1 text-sm font-bold text-gray-800 focus:border-primary focus:ring-1 focus:ring-primary">
+                        </div>
+                    </div>
+
+                    <!-- Input Pertanyaan -->
+                    <div class="mb-4">
+                         <div class="flex justify-between mb-1">
+                             <label class="block text-sm font-medium text-gray-700">Pertanyaan</label>
+                             <select class="text-xs border-none bg-transparent text-gray-500 font-medium focus:ring-0 cursor-pointer hover:text-primary">
+                                 <option>Pilihan Ganda</option>
+                                 <option>Essay</option>
+                                 <option>True/False</option>
+                             </select>
+                         </div>
+                        <!-- WYSIWYG Toolbar Simulation -->
+                        <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-primary focus-within:border-primary">
+                            <div class="bg-gray-50 border-b border-gray-300 px-3 py-2 flex gap-3 text-gray-500 text-sm">
+                                <button class="hover:text-gray-800"><i class="fa-solid fa-bold"></i></button>
+                                <button class="hover:text-gray-800"><i class="fa-solid fa-italic"></i></button>
+                                <button class="hover:text-gray-800"><i class="fa-solid fa-underline"></i></button>
+                                <span class="border-l border-gray-300 mx-1"></span>
+                                <button class="hover:text-gray-800"><i class="fa-solid fa-image"></i></button>
+                                <button class="hover:text-gray-800"><i class="fa-solid fa-link"></i></button>
+                            </div>
+                            <textarea rows="3" class="w-full p-3 text-sm text-gray-800 border-none focus:ring-0 resize-none" placeholder="Tulis pertanyaan di sini...">Tool manakah yang paling tepat digunakan untuk meriset volume pencarian keyword secara gratis dari Google?</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Opsi Jawaban -->
+                    <div class="space-y-3 mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Opsi Jawaban</label>
+                        
+                        <!-- Option A -->
+                        <div class="flex items-center gap-3 group">
+                            <div class="relative shrink-0">
+                                <input type="radio" name="q2_ans" class="correct-radio sr-only peer" id="q2_optA">
+                                <div class="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-400 font-bold hover:border-gray-400 cursor-pointer peer-checked:bg-green-50 peer-checked:border-green-500 peer-checked:text-green-600 transition-all" onclick="document.getElementById('q2_optA').checked = true;">
+                                    A
+                                </div>
+                            </div>
+                            <input type="text" value="Ahrefs" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-primary" placeholder="Teks Jawaban A">
+                            <button class="text-gray-300 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+
+                        <!-- Option B (Correct) -->
+                        <div class="flex items-center gap-3 group">
+                            <div class="relative shrink-0">
+                                <input type="radio" name="q2_ans" class="correct-radio sr-only peer" id="q2_optB" checked>
+                                <div class="w-8 h-8 rounded-full border-2 border-green-500 bg-green-50 flex items-center justify-center text-green-600 font-bold cursor-pointer transition-all" onclick="document.getElementById('q2_optB').checked = true;">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </div>
+                            </div>
+                            <input type="text" value="Google Keyword Planner" class="flex-1 border-2 border-green-500 bg-green-50/20 rounded-lg px-3 py-2 text-sm text-green-800 font-medium focus:ring-green-500 focus:border-green-500" placeholder="Teks Jawaban B">
+                            <button class="text-gray-300 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+
+                         <!-- Option C -->
+                         <div class="flex items-center gap-3 group">
+                            <div class="relative shrink-0">
+                                <input type="radio" name="q2_ans" class="correct-radio sr-only peer" id="q2_optC">
+                                <div class="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-400 font-bold hover:border-gray-400 cursor-pointer peer-checked:bg-green-50 peer-checked:border-green-500 peer-checked:text-green-600 transition-all" onclick="document.getElementById('q2_optC').checked = true;">
+                                    C
+                                </div>
+                            </div>
+                            <input type="text" value="SEMrush" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-primary" placeholder="Teks Jawaban C">
+                            <button class="text-gray-300 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+
+                        <!-- Option D -->
+                        <div class="flex items-center gap-3 group">
+                            <div class="relative shrink-0">
+                                <input type="radio" name="q2_ans" class="correct-radio sr-only peer" id="q2_optD">
+                                <div class="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-400 font-bold hover:border-gray-400 cursor-pointer peer-checked:bg-green-50 peer-checked:border-green-500 peer-checked:text-green-600 transition-all" onclick="document.getElementById('q2_optD').checked = true;">
+                                    D
+                                </div>
+                            </div>
+                            <input type="text" value="Moz Explorer" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-primary" placeholder="Teks Jawaban D">
+                            <button class="text-gray-300 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Footer Action Edit -->
+                    <div class="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                        <button class="px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-800">Batal</button>
+                        <button class="px-4 py-1.5 bg-gray-800 text-white text-xs font-bold rounded hover:bg-gray-900 shadow-sm">Selesai</button>
+                    </div>
+                </div>
+
+                <!-- Add New Button -->
+                <button class="w-full py-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-primary hover:text-primary hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 group">
+                    <div class="w-10 h-10 rounded-full bg-gray-100 group-hover:bg-blue-200 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-plus text-lg"></i>
+                    </div>
+                    <span class="font-medium text-sm">Tambah Pertanyaan Baru</span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -301,7 +301,8 @@ if (App::isLocal()) {
         // CUKUP GANTI NAMA FUNGSI DI BAWAH INI
         // UNTUK MENGETES LOGIKA YANG BERBEDA.
 
-        $result = SurveyHasilKegiatan();
+        // $result = SurveyHasilKegiatan();
+        $result = countBidang();
         // $result = testCreateDummyUser();
         // $result = testSomethingElse();
 

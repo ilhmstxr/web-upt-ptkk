@@ -29,6 +29,7 @@ lalu tabel percobaan di join dengan jawaban user lalu dihitung untuk survey mone
 1. akumulasi totall
 2. jawaban per kategori
 3. jawaban per pertanyaan
+4. jawaban akumulasi total per bidang
 
 
 - PROGRESS buat chart nilai monev
@@ -36,16 +37,55 @@ fetching pelatihan
 fetching skor dari percobaan
 fetching tabel per 
 
+data  yang dibutuhkan:
+jawaban user
+pelatihan
+-> bidang
+-> per percobaan (pretest, posttest, monev)
+-> diak
+
+
+per bidang
+- nama pelatihan
+- No.	
+- NAMA LENGKAP	
+- ASAL LEMBAGA	
+- PreTest	
+- PostTest
+- Praktek	
+- Jumlah(pretest posttest praktek) 	
+- Rata-Rata(pretest posttest praktek)
+- Pembagi(3)
+
+rekap all bidang per pelatihan
+- NAMA 
+- PROGRAM KEAHLIAN	
+- PRE	
+- POST	
+- PRAKTEK	
+- RATA -RATA PER JURUSAN
+
+
+
 - PROGRESS export nilai monev ke excel
 - TODO benerin peserta downloadnya jadi zip
 
+- TODO benerin layout posttest pretest
 - TODO bikin template email buat token
 - TODO nanti nyampaikan token ke peserta via email
 - TODO bikin hasil monev
 - TODO bikin hasil post-test pretest
-- TODO bikin dokumen
+- TODO bikin dokumen ??
+
+    
+
+- TODO data cleaning sesuai instansi, kelas, user agar tidak redundant 
+- TODO testing error
 
 
+- IMPROVE data di tabel jawaban_user menjadi json di tabel percobaan
+contoh json di kolom jawaban_user di tabel percobaan:
+{{pertanyaan_id(menggunakkan key), opsi_jawaban, nilai_jawaban(benar / salah),jawaban_teks}} 
 tes pertanyaan
 tes
 

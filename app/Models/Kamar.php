@@ -11,4 +11,19 @@ class Kamar extends Model
     use HasFactory;
 
     protected $table = 'kamar';
+
+    protected $fillable = [
+        'asrama_id',
+        'nomor_kamar',
+        'lantai',
+        'status',
+        'total_beds',
+        'available_beds',
+    ];
+
+    public function asrama()
+    {
+        return $this->belongsTo(Asrama::class, 'asrama_id');
+    }
+    
 }

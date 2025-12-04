@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Filament\Resources\JawabanSurveiResource\Pages\ReportJawabanSurvei;
-use App\Filament\Resources\JawabanSurveiResource\Widgets\BuildsLikertData;
+
 use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanAkumulatifChart;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerKategoriChart;
 use App\Filament\Resources\JawabanSurveiResource\Widgets\PiePerPertanyaanWidget;
@@ -17,7 +17,7 @@ use Spatie\Browsershot\Exceptions\CouldNotTakeBrowsershot;
 
 class ExportController extends Controller
 {
-    use BuildsLikertData; // <- INI YANG BENAR, bukan `trait BuildsLikertData;`
+
 
     // browsershot
     public function generateReportPdf($pelatihanId, Request $request)
@@ -69,22 +69,27 @@ class ExportController extends Controller
 
         // --- Bagian Ringkasan & Chart Lain (Bar & Line) ---
         // Kode di bagian ini bisa tetap sama jika sudah berfungsi
-        $pertanyaanIdsForSummary = $this->collectPertanyaanIds($pelatihanId);
-        [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIdsForSummary);
-        $answers = $this->normalizedAnswers($pelatihanId, $pertanyaanIdsForSummary, $pivot, $opsiIdToSkala, $opsiTextToId);
-        $onlyScored = $answers->filter(fn($a) => $a['skala'] !== null);
-        $avgSkala = $onlyScored->avg(fn($a) => (float) $a['skala']);
-        $fmt1 = static fn($n) => number_format((float) $n, 1, ',', '.');
+        // $pertanyaanIdsForSummary = $this->collectPertanyaanIds($pelatihanId);
+        // [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIdsForSummary);
+        // $answers = $this->normalizedAnswers($pelatihanId, $pertanyaanIdsForSummary, $pivot, $opsiIdToSkala, $opsiTextToId);
+        // $onlyScored = $answers->filter(fn($a) => $a['skala'] !== null);
+        // $avgSkala = $onlyScored->avg(fn($a) => (float) $a['skala']);
+        // $fmt1 = static fn($n) => number_format((float) $n, 1, ',', '.');
         $ringkasan = [
-            'Jumlah Pertanyaan Likert' => $pertanyaanIdsForSummary->count(),
-            'Total Jawaban Terskala' => $onlyScored->count(),
-            'Rata-rata Skala Likert' => $avgSkala ? $fmt1($avgSkala) : '0,0',
+            // 'Jumlah Pertanyaan Likert' => $pertanyaanIdsForSummary->count(),
+            // 'Total Jawaban Terskala' => $onlyScored->count(),
+            // 'Rata-rata Skala Likert' => $avgSkala ? $fmt1($avgSkala) : '0,0',
+             'Jumlah Pertanyaan Likert' => 0,
+            'Total Jawaban Terskala' => 0,
+            'Rata-rata Skala Likert' => '0,0',
         ];
 
-        $bar = $this->buildPerKategori($pelatihanId, $range);
-        $line = $this->buildAkumulatif($pelatihanId, $range);
-        $barData = ['labels' => $bar['labels'] ?? [], 'datasets' => $bar['datasets'] ?? []];
-        $lineData = ['labels' => $line['labels'] ?? [], 'datasets' => $line['datasets'] ?? []];
+        // $bar = $this->buildPerKategori($pelatihanId, $range);
+        // $line = $this->buildAkumulatif($pelatihanId, $range);
+        // $barData = ['labels' => $bar['labels'] ?? [], 'datasets' => $bar['datasets'] ?? []];
+        // $lineData = ['labels' => $line['labels'] ?? [], 'datasets' => $line['datasets'] ?? []];
+        $barData = ['labels' => [], 'datasets' => []];
+        $lineData = ['labels' => [], 'datasets' => []];
         // --------------------------------------------------
 
 
@@ -93,29 +98,31 @@ class ExportController extends Controller
         // =======================================================
 
         // 1. Ambil SEMUA ID pertanyaan terlebih dahulu
-        $piePertanyaanIds = $this->collectPertanyaanIds($pelatihanId);
+        // $piePertanyaanIds = $this->collectPertanyaanIds($pelatihanId);
 
         // 2. Siapkan array kosong untuk menampung data setiap pie chart
         $pieCharts = [];
 
         // 3. Looping setiap ID pertanyaan
-        foreach ($piePertanyaanIds as $pertanyaanId) {
-            // 4. Panggil buildPiePerPertanyaan UNTUK SATU ID PADA SETIAP ITERASI
-            $singlePieData = $this->buildPiePerPertanyaan($pelatihanId, $pertanyaanId, $range);
+        // foreach ($piePertanyaanIds as $pertanyaanId) {
+        //     // 4. Panggil buildPiePerPertanyaan UNTUK SATU ID PADA SETIAP ITERASI
+        //     $singlePieData = $this->buildPiePerPertanyaan($pelatihanId, $pertanyaanId, $range);
 
-            // 5. Masukkan hasilnya ke dalam array jika tidak kosong
-            if (!empty($singlePieData)) {
-                $pieCharts[] = $singlePieData;
-            }
-        }
+        //     // 5. Masukkan hasilnya ke dalam array jika tidak kosong
+        //     if (!empty($singlePieData)) {
+        //         $pieCharts[] = $singlePieData;
+        //     }
+        // }
         // =======================================================
         // AKHIR DARI LOGIKA BARU
         // =======================================================
 
         // Siapkan data chart utama (tanpa pie chart)
         $charts = [
-            ['title' => 'Jawaban Akumulatif', 'type' => 'line', 'data' => $lineData, 'options' => $line['options'] ?? []],
-            ['title' => 'Distribusi Jawaban per Kategori', 'type' => 'bar', 'data' => $barData, 'options' => $bar['options'] ?? []],
+            // ['title' => 'Jawaban Akumulatif', 'type' => 'line', 'data' => $lineData, 'options' => $line['options'] ?? []],
+            // ['title' => 'Distribusi Jawaban per Kategori', 'type' => 'bar', 'data' => $barData, 'options' => $bar['options'] ?? []],
+            ['title' => 'Jawaban Akumulatif', 'type' => 'line', 'data' => $lineData, 'options' =>  []],
+            ['title' => 'Distribusi Jawaban per Kategori', 'type' => 'bar', 'data' => $barData, 'options' =>  []],
         ];
 
 

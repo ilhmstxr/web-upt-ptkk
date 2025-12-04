@@ -309,3 +309,301 @@ SET tipe = 'post-test'
 WHERE skor IS NOT NULL AND skor > 0;
 
 nambahin peserta_id otomatis
+
+
+perubahan untuk asrama
+
+ASRAMA
+id 
+name
+gender
+
+
+KAMAR
+id 
+asrama
+nomor_kamar
+lantai
+status
+total_beds
+available_beds
+
+
+penambahan kolom
+tabel percobaan
++ pelatihan_id 
+
+
+tabel peserta 
++ pretest
++ posttest
++ praktek
++ rata rata
++ nilai survei
++ status
+
+
+
+
+
+mindah nilai ke pendafaran pelatihan
+UPDATE pendaftaran_pelatihan AS pp
+LEFT JOIN (
+    -- Subquery untuk mengambil skor pre-test terbaru
+    SELECT
+        p.peserta_id,
+        p.pelatihan_id,
+        p.skor AS nilai_pre_test
+    FROM percobaan AS p
+    INNER JOIN (
+        SELECT peserta_id, pelatihan_id, MAX(id) AS max_id
+        FROM percobaan
+        WHERE tipe = 'pre-test' AND peserta_id IS NOT NULL AND pelatihan_id IS NOT NULL
+        GROUP BY peserta_id, pelatihan_id
+    ) AS latest_pre
+    ON p.id = latest_pre.max_id
+) AS pre_test_data
+ON pp.peserta_id = pre_test_data.peserta_id AND pp.pelatihan_id = pre_test_data.pelatihan_id
+
+LEFT JOIN (
+    -- Subquery untuk mengambil skor post-test terbaru dan status kelulusan
+    SELECT
+        p.peserta_id,
+        p.pelatihan_id,
+        p.skor AS nilai_post_test,
+        CASE WHEN p.lulus = 1 THEN 'Lulus' ELSE 'Belum Lulus' END AS status
+    FROM percobaan AS p
+    INNER JOIN (
+        SELECT peserta_id, pelatihan_id, MAX(id) AS max_id
+        FROM percobaan
+        WHERE tipe = 'post-test' AND peserta_id IS NOT NULL AND pelatihan_id IS NOT NULL
+        GROUP BY peserta_id, pelatihan_id
+    ) AS latest_post
+    ON p.id = latest_post.max_id
+) AS post_test_data
+ON pp.peserta_id = post_test_data.peserta_id AND pp.pelatihan_id = post_test_data.pelatihan_id
+
+SET
+    pp.nilai_pre_test = COALESCE(pre_test_data.nilai_pre_test, pp.nilai_pre_test),
+    pp.nilai_post_test = COALESCE(post_test_data.nilai_post_test, pp.nilai_post_test),
+    pp.status = COALESCE(post_test_data.status, 'Belum Lulus');
+
+
+
+
+
+
+
+cek bidang_id lama ke bidang_id baru
+
+COUNT(*)
+OR
+
+SELECT
+
+pp.id AS id_pendaftaran,
+  pp.bidang_id AS id_bidang_lama,
+  bp.id AS id_bidang_baru_yang_akan_dipakai
+
+
+FROM
+  `pendaftaran_pelatihan` AS pp
+JOIN
+  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`;
+
+
+
+update bidang_id  lama ke bidang_Id baru
+UPDATE
+  `pendaftaran_pelatihan` AS pp
+JOIN
+  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`
+SET
+  pp.`bidang_id` = bp.`id`;
+
+
+
+SELECT
+pp.id AS id_pendaftaran,
+  pp.bidang_id AS id_bidang_lama,
+  bp.id AS id_bidang_baru_yang_akan_dipakai
+
+
+FROM
+  `pendaftaran_pelatihan` AS pp
+JOIN
+  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`
+  ORDER BY PP.id asc;
+
+95 ~ 114
+140 ~ 150
+180 an
+
+
+AH KOPLAK, konsistensi data yang ada di mtu & mjc di pelatihan 10 & 11 masih belum konsisten
+
+TODO, ngulik, ngecek pendaftaran_pelatihan dan diesuaikan dengan bidang_pelatihan 
+
+foto - malang
+video - magetan
+plc - nganjuk
+tptu - kediri
+tptu - tuban
+
+
+SELECT bidang_id, COUNT(*) AS jumlah_peserta
+FROM peserta
+WHERE pelatihan_id = 1
+GROUP BY bidang_id;
+
+
+
+
+SELECT bidang_id, COUNT(*) AS jumlah_peserta
+FROM pendaftaran_pelatihan
+WHERE pelatihan_id = 1
+GROUP BY bidang_id;
+
+
+nambahin data terbaru lalu ditampilkan 
+
+tata boga         v 
+tata busana       v
+tata kecantikan   v
+tptu              v
+web desain        V
+desain grafis     V
+motion animasi    V
+foto produk       V
+videografi        V
+fotografi         V
+plc               V
+
+
+injection 8 data pelatihan 
+DONE pelatihan
+DONE bidang
+DONE bidang_pelatihan 
+TODO pretest
+TODO posttest
+TODO praktek
+TODO semua nilai (tanpa nilai survei)
+TODO semua jawaban user (pretest, possttest, survey / monev)
+
+
+
+
+masukkin data pretest
+dari pretest posttest  -> jadikan diagram (ambil dari survey)
+
+
+MONEV
+monev aksel guru
+monev aksel Teknik guru
+monev aksel Teknik siswa
+monev siswa aksel mjc 
+monev siswa regular Teknik 1
+monev siswa regular mjc 1
+monev siswa regular mjc 2
+monev siswa mtu 1
+
+
+sudah di database
+monev siswa regular Teknik 2
+monev siswa mtu 2
+
+
+PRETEST
+⦁	pretest aksel guru 			5 done
+⦁	pretest aksel Teknik guru		4 done
+⦁	pretest aksel Teknik siswa		4 done
+⦁	pretest siswa aksel mjc 		5 done
+⦁	pretest siswa regular Teknik 1	4 done
+⦁	pretest siswa regular Teknik 2	4 done
+⦁	pretest siswa regular mjc 1		5 done
+⦁	pretest siswa regular mjc 2		5 done
+⦁	pretest siswa mtu 1			4 done (5 actually)
+
+
+sudah di database (cek ulang)
+⦁	pretest siswa regular Teknik 2	v
+⦁	pretest siswa mtu 2			v
+
+
+
+
+POSTTEST
+⦁	posttest aksel guru			      5 done
+⦁	posttest aksel Teknik guru		4 done
+⦁	posttest aksel Teknik siswa		4 done
+⦁	posttest siswa aksel mjc 		  5 done
+⦁	posttest siswa regular Teknik 1	4 done
+⦁	posttest siswa regular Teknik 2	4 done
+⦁	posttest siswa regular mjc 1		5 done
+⦁	posttest siswa regular mjc 2		5 done
+⦁	posttest siswa mtu 1			4 done (actualy 5)
+
+
+sudah di database
+⦁	posttest siswa regular Teknik 2	x
+⦁	posttest siswa mtu 2			x
+
+CREATE TABLE id_mapping(
+  `old_id` bigint(20) unsigned NOT NULL,
+  `new_id` bigint(20) unsigned NOT NULL,
+
+  PRIMARY KEY (`old_id`),
+  UNIQUE KEY `new_id` ( `new_id`)
+)
+
+
+INSERT INTO `id_mapping` (`old_id`,`new_id`)
+VALUES
+(1,43),
+(2,42),
+(3,40),
+(4,41),
+(5,103),
+(6,1),
+(7,2),
+(8,3),
+(98,4),
+(99,5),
+(100,6),
+(101,7),
+(102,8);
+
+web-content
+- upload banner (hero)
+- Berita
+- Sorotan pelatihan (judul, keterangan, foto-foto)
+- kompetensi bidang pelatihan
+- statistik (iki sg rata rata pretest post test)
+- edit kepala upt (foto, nama)
+- text pelatihan (syarat ketentuan, lokasi, jadwal)
+
+ga wajib
+- foto di cerita kami 
+- foto foto di program pelatihan
+
+
+
+pelatihan
+1. informasi dasar 
+jenis program diganti dropdown reguler, mtu, mjc
+batch diganti angkatan
+kuota dihapus
+instansi dihapus
+gambar dihapus
+deskripsi dihapus
+tambahkan tanggal mulai ~ tanggal selesai pelatihan
+
+2. kurikulum & jadwal
+bidang awalnya disediakan 1 card saja
+modul di komen terlebih dahulu
+tanggal mulai dihapus
+jam mulai selesai dihapus
+default lokasi di upt-ptkk
+metode dihapus
+
+3. durasi pelatihan dihapus

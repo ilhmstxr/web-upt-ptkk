@@ -2,34 +2,52 @@
 
 namespace App\Filament\Pages;
 
-// Import semua widget yang sudah Anda buat
-use App\Filament\Widgets\Dashboard\CalendarWidget;
-use App\Filament\Widgets\Dashboard\ParticipantsByFieldChart;
+// Import widget yang akan digunakan
+use App\Filament\Widgets\GlobalStatsOverview;
+use App\Filament\Widgets\PelatihanAktifTable;
+use App\Filament\Widgets\AkumulasiSurveiChart;
+use App\Filament\Widgets\DaftarPelatihanWidget;
 use App\Filament\Widgets\Dashboard\StatsOverview;
-use App\Filament\Widgets\Dashboard\SurveyChart;
-
-// Gunakan kelas Dashboard bawaan sebagai dasar
+use App\Filament\Widgets\InformasiAsramaWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Support\Facades\Filament;
 
 class Dashboard extends BaseDashboard
 {
-    // Metode ini akan mendaftarkan widget Anda secara spesifik
+    /**
+     * Mengatur widget yang akan ditampilkan di dashboard.
+     *
+     * @return array<class-string<\Filament\Widgets\Widget>>
+     */
     public function getWidgets(): array
     {
         return [
             StatsOverview::class,
-            SurveyChart::class,
-            ParticipantsByFieldChart::class,
-            CalendarWidget::class,
+            PelatihanAktifTable::class,
+            AkumulasiSurveiChart::class,
+            InformasiAsramaWidget::class,
+            \App\Filament\Widgets\PerformaPesertaTableWidget::class,
+            \App\Filament\Widgets\PerformaBidangTableWidget::class,
         ];
     }
 
-    // Metode ini mengatur layout kolom di dashboard
+    /**
+     * Mengatur layout kolom untuk widget.
+     *
+     * @return int | string | array
+     */
     public function getColumns(): int | string | array
     {
-        return [
-            'sm' => 1, // 1 kolom di layar kecil
-            'lg' => 2, // 2 kolom di layar besar
-        ];
+        return 2; // Mengatur layout menjadi 2 kolom
+    }
+
+    /**
+     * Mengatur judul halaman dashboard.
+     *
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return 'Dashboard Utama';
     }
 }

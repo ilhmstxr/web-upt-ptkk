@@ -15,13 +15,9 @@ return new class extends Migration
             $table->id();
 
             // --- Relasi ke tabel lain ---
-            $table->foreignId('pelatihan_id')
-                ->constrained('pelatihan')
-                ->cascadeOnDelete();
-
-            $table->foreignId('bidang_id')
-                ->constrained('bidang')
-                ->cascadeOnDelete();
+            // $table->foreignId('pelatihan_id')
+            //     ->constrained('pelatihan')
+            //     ->cascadeOnDelete();
 
             $table->foreignId('instansi_id')
                 ->constrained('instansi')

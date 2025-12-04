@@ -16,8 +16,9 @@ return new class extends Migration
             // IMPROVE: percobaan terkena RESTRICT
             $table->foreignId('peserta_id')->nullable()->constrained('peserta')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('pesertaSurvei_id')->nullable()->constrained('peserta_survei')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('pelatihan_id')->nullable()->constrained('pelatihan')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
-            // $table->string('tipe');
+            $table->Enum('tipe',['survey','pre-test','post-test'])->nullable();
             $table->timestamp('waktu_mulai');
             $table->timestamp('waktu_selesai')->nullable();
             $table->decimal('skor', 5, 2)->nullable(); // 5 digit total, 2 di belakang koma

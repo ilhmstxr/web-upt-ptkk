@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('asrama_id')->constrained('asrama')->cascadeOnDelete();
             $table->string('nomor_kamar');
+            $table->integer('lantai');
+            $table->Enum('status',['tersedia','perbaikan','rusak'])->nullable();
             $table->integer('total_beds')->default(0);
             $table->integer('available_beds')->default(0);
             $table->timestamps();
