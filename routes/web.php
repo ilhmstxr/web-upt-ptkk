@@ -54,10 +54,8 @@ Route::view('/panduan', 'pages.panduan')->name('panduan');
 Route::view('/masuk', 'pages.masuk')->name('masuk');
 
 /* 🔹 Halaman Daftar (frontend baru) */
-Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])->name('daftar');
-
-
-
+Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])
+    ->name('pendaftaran.daftar');
 
 /* ===== end BERANDA & HOME ===== */
 

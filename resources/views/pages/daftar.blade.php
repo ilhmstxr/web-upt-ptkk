@@ -63,8 +63,52 @@
   {{-- NAVBAR LANDING --}}
   @includeIf('components.layouts.app.navbarlanding')
 
-  <main class="flex-1 pt-6 pb-12">
-    <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px] space-y-8">
+ <main class="flex-1 pt-6 pb-12">
+  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px] space-y-8">
+
+    @php
+      // pastikan selalu boolean, aman walau $pelatihan null
+      $adaPelatihanAktif = isset($pelatihan)
+        && $pelatihan instanceof \Illuminate\Support\Collection
+        && $pelatihan->isNotEmpty();
+    @endphp
+
+    @if (! $adaPelatihanAktif)
+      {{-- =================== STATE: TIDAK ADA PELATIHAN =================== --}}
+      <section class="mt-10">
+        <div class="flex justify-center">
+          <div
+            class="w-full md:w-[720px] bg-gradient-to-r from-[#F1F9FF] to-[#C9E3FF]
+                   border-2 border-[#1D4ED8] rounded-3xl px-6 py-10 md:px-10 md:py-12
+                   shadow-sm"
+          >
+            <h2
+              class="font-volkhov font-bold text-[18px] md:text-[22px] text-[#1524AF] text-center mb-3"
+            >
+              Saat ini belum ada program pelatihan yang sedang berlangsung
+            </h2>
+
+            <p class="text-slate-700 text-[14px] md:text-[15px] text-center mb-8">
+              Sambil menunggu, kamu dapat menyiapkan berkas dan mengajukan permohonan
+              peserta terlebih dahulu sesuai panduan.
+            </p>
+
+            <div class="flex justify-center">
+              <a
+                href="{{ url('/panduan') }}" {{-- nanti sesuaikan route panduanmu --}}
+                class="inline-flex items-center justify-center px-5 py-2.5 rounded-full
+                       bg-[#1524AF] text-white text-[14px] font-medium
+                       hover:bg-[#1524AF]/90 transition"
+              >
+                Lihat Panduan
+                <span class="ml-2">➜</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    @else
+      {{-- =================== STATE: ADA PELATIHAN → TAMPILKAN ACCORDION + FORM =================== --}}
 
       {{-- ===================== ACCORDION INFORMASI PROGRAM ===================== --}}
       <section class="space-y-4" id="accordionInformasiProgram">
@@ -1259,7 +1303,7 @@
         </div>
 
       </section>
-
+@endif
     </div>
   </main>
 

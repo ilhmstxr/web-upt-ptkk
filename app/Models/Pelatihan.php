@@ -12,16 +12,19 @@ class Pelatihan extends Model
 
     protected $table = 'pelatihan';
 
-    protected $guarded = [
-        'nama_pelatihan',
-        'jenis_program',
-        'slug',
-        'gambar',
-        'status',
-        'tanggal_mulai',
-        'tanggal_selesai',
-        'deskripsi',
-    ];
+   protected $fillable = [
+    'nama_pelatihan',
+    'jenis_program',
+    'slug',
+    'gambar',
+    'status',
+    'tanggal_mulai',
+    'tanggal_selesai',
+    'deskripsi',
+    'syarat_ketentuan',
+    'jadwal_text',
+    'lokasi_text',
+];
 
     protected $casts = [
         'tanggal_mulai' => 'date',
