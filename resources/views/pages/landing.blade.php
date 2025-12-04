@@ -797,146 +797,89 @@
     </h2>
 
     @php
-      $sorotan = [
-        [
-          'key'   => 'mtu',
-          'label' => 'Mobil Training Unit',
-          'desc'  => 'Mobil Keliling UPT. PTKK Dindik Jatim adalah sebuah program unggulan yang dirancang khusus untuk menjangkau sekolah di pelosok-pelosok Jawa Timur.',
-          // MTU di images/profil
-          'files' => [
-            'profil/MTU1.svg',
-            'profil/MTU2.svg',
-            'profil/MTU3.svg',
-            'profil/MTU4.svg',
-            'profil/MTU5.svg',
-            'profil/MTU6.svg',
-          ],
-        ],
-        [
-          'key'   => 'reguler',
-          'label' => 'Pelatihan Reguler',
-          'desc'  => 'Proses peningkatan kompetensi di UPT. PTKK dipandu oleh para asesor kompetensi profesional yang tersertifikasi.',
-          // reguler di images/sorotan/reguler
-          'files' => [
-            'sorotan/reguler/reg-1.jpg',
-            'sorotan/reguler/reg-2.jpg',
-            'sorotan/reguler/reg-3.jpg',
-            'sorotan/reguler/reg-4.jpg',
-            'sorotan/reguler/reg-5.jpg',
-            'sorotan/reguler/reg-6.jpg',
-          ],
-        ],
-        [
-          'key'   => 'akselerasi',
-          'label' => 'Pelatihan Akselerasi',
-          'desc'  => 'UPT. PTKK memiliki 6 kompetensi yang tersertifikasi oleh Kemendikdasmen sebagai tempat uji kompetensi yang memiliki fasilitas mumpuni.',
-          // akselerasi di images/sorotan/akselerasi
-          'files' => [
-            'sorotan/akselerasi/acc-1.jpg',
-            'sorotan/akselerasi/acc-2.jpg',
-            'sorotan/akselerasi/acc-3.jpg',
-            'sorotan/akselerasi/acc-4.jpg',
-            'sorotan/akselerasi/acc-5.jpg',
-            'sorotan/akselerasi/acc-6.jpg',
-          ],
-        ],
-      ];
+      $sorotanData = $sorotan->map(function ($item) {
+        return [
+          'key'   => 'spotlight-' . $item->id,
+          'label' => $item->title,
+          'desc'  => $item->description,
+          'files' => $item->fotos->pluck('path')->map(fn($p) => 'storage/' . $p)->toArray(),
+        ];
+      });
     @endphp
 
-    {{-- NAMA PELATIHAN + DESKRIPSI --}}
-    <div id="sorotan-top"
-         class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
-      <div class="shrink-0">
-        <button type="button"
-                class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
-                       font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
-                       rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
-          {{ $sorotan[0]['label'] }}
-        </button>
-      </div>
-
-      <p id="sorotan-desc"
-         class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px]
-                font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">
-        {{ $sorotan[0]['desc'] }}
-      </p>
-    </div>
-
-  {{-- SLIDER FOTO: auto jalan sendiri, 6 foto rapi --}}
-<div class="w-full mb-8 md:mb-10 lg:mb-12">
-  @foreach($sorotan as $i => $cat)
-    @php $files = $cat['files']; @endphp
-
-    <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
-      <div class="relative">
-        <div class="overflow-hidden">
-          {{-- Track: isi digandakan 2x untuk loop mulus --}}
-          <div
-            class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]"
-            data-key="{{ $cat['key'] }}"
-          >
-            @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
-              @foreach($files as $fname)
-                <div
-                  class="relative h-[130px] md:h-[150px] lg:h-[170px]
-                         w-[220px] md:w-[260px] lg:w-[280px]
-                         rounded-2xl overflow-hidden shrink-0">
-                  <img src="{{ asset('images/'.$fname) }}"
-                       alt="{{ $cat['label'] }}" loading="lazy"
-                       class="w-full h-full object-cover">
-                </div>
-              @endforeach
-            @endfor
-          </div>
-
-          {{-- Fade kiri–kanan --}}
-          <div class="pointer-events-none absolute inset-0
-                      [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
-        </div>
-      </div>
-    </div>
-  @endforeach
-</div>
-
-    {{-- KONTROL KATEGORI (panah hanya pindah kategori) --}}
-    <div class="mt-2 flex items-center justify-center gap-6">
-      <button id="tabPrev"
-              class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6] text-[#0E2A7B]
-                     hover:bg-[#1524AF] hover:text-white transition"
-              aria-label="Kategori sebelumnya" type="button">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
-      </button>
-
-      <div id="tabDots" class="flex items-center gap-2" aria-label="Indikator kategori"></div>
-
-      <button id="tabNext"
-              class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6] text-[#0E2A7B]
-                     hover:bg-[#1524AF] hover:text-white transition"
-              aria-label="Kategori selanjutnya" type="button">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-        </svg>
+@if($sorotanData->isNotEmpty())
+  {{-- NAMA PELATIHAN + DESKRIPSI --}}
+  <div id="sorotan-top" class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
+    <div class="shrink-0">
+      <button type="button"
+              class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
+                     font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
+                     rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
+        {{ $sorotanData[0]['label'] }}
       </button>
     </div>
 
+    <p id="sorotan-desc"
+       class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px]
+              font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">
+      {{ $sorotanData[0]['desc'] }}
+    </p>
   </div>
 
-  {{-- SCRIPT: hanya untuk ganti kategori + dots --}}
+  {{-- SLIDER FOTO --}}
+  <div class="w-full mb-8 md:mb-10 lg:mb-12">
+    @foreach($sorotanData as $i => $cat)
+      @php $files = $cat['files']; @endphp
+
+      <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
+        <div class="relative">
+          <div class="overflow-hidden">
+            <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]" data-key="{{ $cat['key'] }}">
+              @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
+                @foreach($files as $fname)
+                  <div class="relative h-[130px] md:h-[150px] lg:h-[170px] w-[220px] md:w-[260px] lg:w-[280px] rounded-2xl overflow-hidden shrink-0">
+                    <img src="{{ asset($fname) }}" alt="{{ $cat['label'] }}" loading="lazy" class="w-full h-full object-cover">
+                  </div>
+                @endforeach
+              @endfor
+            </div>
+            <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
+          </div>
+        </div>
+      </div>
+    @endforeach
+  </div>
+
+  {{-- KONTROL KATEGORI --}}
+  <div class="mt-2 flex items-center justify-center gap-6">
+    <button id="tabPrev" class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6] text-[#0E2A7B] hover:bg-[#1524AF] hover:text-white transition" aria-label="Kategori sebelumnya" type="button">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+
+    <div id="tabDots" class="flex items-center gap-2" aria-label="Indikator kategori"></div>
+
+    <button id="tabNext" class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6] text-[#0E2A7B] hover:bg-[#1524AF] hover:text-white transition" aria-label="Kategori selanjutnya" type="button">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+
+  {{-- SCRIPT --}}
   <script>
     (function(){
-      const tabOrder = ['mtu','reguler','akselerasi'];
-
+      const tabOrder = @json($sorotanData->pluck('key'));
       const panes = document.querySelectorAll('.sorotan-pane');
       const label = document.querySelector('.sorotan-label');
       const desc  = document.getElementById('sorotan-desc');
 
-      const meta = {
-        mtu:       { label: 'Mobil Training Unit',   desc: @json($sorotan[0]['desc']) },
-        reguler:   { label: 'Pelatihan Reguler',     desc: @json($sorotan[1]['desc']) },
-        akselerasi:{ label: 'Pelatihan Akselerasi',  desc: @json($sorotan[2]['desc']) },
-      };
+      const meta = @json(
+        $sorotanData->mapWithKeys(fn($s) => [
+          $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']]
+        ])
+      );
 
       function currentKey(){
         const active = Array.from(panes).find(p=>!p.classList.contains('hidden'));
@@ -978,40 +921,31 @@
         paintTabDots();
       }
 
-      // Init pertama
       setActive(tabOrder[0]);
     })();
 
+    (function(){
+      const tracks = document.querySelectorAll('.sorotan-track');
+      const SPEED = 0.8;
 
-  // Auto-scroll untuk setiap sorotan-track (infinite loop halus)
-  (function(){
-    const tracks = document.querySelectorAll('.sorotan-track');
-    const SPEED = 0.8; // px per frame (ubah kalau mau lebih cepat / pelan)
-
-    tracks.forEach((track) => {
-      let offset = 0;
-
-      function animate() {
-        const halfWidth = track.scrollWidth / 2; // lebar 6 foto pertama
-
-        // Geser ke kiri
-        offset -= SPEED;
-
-        // Kalau sudah lewat satu deret (6 foto), reset supaya loop mulus
-        if (Math.abs(offset) >= halfWidth) {
-          offset += halfWidth;
+      tracks.forEach((track) => {
+        let offset = 0;
+        function animate() {
+          const halfWidth = track.scrollWidth / 2;
+          offset -= SPEED;
+          if (Math.abs(offset) >= halfWidth) {
+            offset += halfWidth;
+          }
+          track.style.transform = `translateX(${offset}px)`;
+          requestAnimationFrame(animate);
         }
-
-        track.style.transform = `translateX(${offset}px)`;
         requestAnimationFrame(animate);
-      }
-
-      // Mulai animasi
-      requestAnimationFrame(animate);
-    });
-  })();
-
+      });
+    })();
   </script>
+  @else
+  <p class="text-center text-gray-500">Belum ada sorotan pelatihan yang dipublikasikan.</p>
+@endif
 
 
 </section>

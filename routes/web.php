@@ -12,6 +12,7 @@ use App\Http\Controllers\SuratController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\PostTestController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Public\LandingController;
 
 use App\Models\Peserta;
 use App\Mail\TestMail;
@@ -38,7 +39,7 @@ use Spatie\Browsershot\Browsershot;
 */
 
 /* ======= BERANDA & HOME ======= */
-Route::get('/', fn () => view('pages.landing'))->name('landing');
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 // PROFIL
 Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
@@ -48,6 +49,7 @@ Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name(
 Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
 
 Route::view('/berita',  'pages.berita')->name('news');
+
 Route::view('/panduan', 'pages.panduan')->name('panduan');
 
 /* 🔹 Halaman Masuk */
