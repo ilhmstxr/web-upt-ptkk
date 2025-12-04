@@ -22,6 +22,15 @@
       --card-manfaat: #DBE7F7;
     }
 
+    .judul-stroke {
+      color: #1524AF !important;
+      text-shadow:
+        -1px -1px 0 #FFDE59,
+         1px -1px 0 #FFDE59,
+        -1px  1px 0 #FFDE59,
+         1px  1px 0 #FFDE59;
+    }
+
     .section-container {
       max-width: 1280px;
       margin-left: auto;
@@ -104,7 +113,6 @@
     }
 
     // ----- Normalize variables from controller -----
-    // Accept several possible names (postsPaginator OR posts)
     $postsPaginator = $postsPaginator ?? ($posts ?? null);
     $featured = $featured ?? null;
     $others = $others ?? null;
@@ -148,15 +156,23 @@
       @if($featured)
         @php
           $fIsModel = is_object($featured);
-          $fTitle = $fIsModel ? ($featured->title ?? '—') : ($featured['title'] ?? '—');
-          $fSlug = $fIsModel ? ($featured->slug ?? '#') : ($featured['url'] ?? '#');
-          if ($fIsModel && method_exists($featured, 'getImageUrlAttribute')) {
+          $fTitle   = $fIsModel ? ($featured->title ?? '—') : ($featured['title'] ?? '—');
+          $fSlug    = $fIsModel ? ($featured->slug ?? '#')   : ($featured['url'] ?? '#');
+
+          // 🔥 PRIORITAS: sama seperti show page → Storage::url
+          if ($fIsModel && !empty($featured->image)) {
+            $fImgUrl = Storage::url($featured->image);
+          } elseif ($fIsModel && method_exists($featured, 'getImageUrlAttribute') && !empty($featured->image_url)) {
             $fImgUrl = $featured->image_url;
           } else {
-            $fImgUrl = resolve_image_url($fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null), asset('images/beranda/slide1.jpg'));
+            $fImgUrl = resolve_image_url(
+              $fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null),
+              asset('images/beranda/slide1.jpg')
+            );
           }
+
           $fDate = $fIsModel ? ($featured->published_at ?? $featured->created_at) : ($featured['date'] ?? null);
-          // format date safely
+
           if ($fDate && is_object($fDate) && method_exists($fDate, 'setTimezone')) {
             $fDateForDisplay = $fDate->setTimezone($tz)->translatedFormat('d F Y H:i');
           } elseif (!empty($fDate)) {
@@ -171,7 +187,9 @@
             <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}" class="block group">
               <div class="aspect-[16/12] md:aspect-[16/11] w-full rounded-[18px] overflow-hidden">
                 @if($fImgUrl)
-                  <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}" class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy"
+                  <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}"
+                       class="w-full h-full object-cover transition group-hover:scale-[1.02]"
+                       loading="lazy"
                        onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
                 @else
                   <div class="w-full h-full bg-slate-300/60"></div>
@@ -198,7 +216,7 @@
               <span>{{ $fDateForDisplay }}</span>
             </div>
 
-            <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[26px] leading-tight text-[#1524AF] mb-2">
+            <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[26px] leading-tight text-[#1524AF] mb-2 judul-stroke">
               <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}" class="hover:opacity-90 transition">
                 {{ $fTitle }}
               </a>
@@ -227,11 +245,24 @@
       <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
         @foreach ($others as $post)
           @php
-            $isModel = is_object($post);
-            $title = $isModel ? ($post->title ?? '—') : ($post['title'] ?? '—');
+            $isModel  = is_object($post);
+            $title    = $isModel ? ($post->title ?? '—') : ($post['title'] ?? '—');
             $slugOrUrl = $isModel ? route('berita.show', $post->slug) : ($post['url'] ?? '#');
-            $imgUrl = $isModel && method_exists($post, 'getImageUrlAttribute') ? $post->image_url : resolve_image_url($isModel ? ($post->image ?? null) : ($post['thumb'] ?? null), asset('images/beranda/slide1.jpg'));
+
+            // 🔥 Sama: prioritaskan Storage::url untuk model Post
+            if ($isModel && !empty($post->image)) {
+              $imgUrl = Storage::url($post->image);
+            } elseif ($isModel && method_exists($post, 'getImageUrlAttribute') && !empty($post->image_url)) {
+              $imgUrl = $post->image_url;
+            } else {
+              $imgUrl = resolve_image_url(
+                $isModel ? ($post->image ?? null) : ($post['thumb'] ?? null),
+                asset('images/beranda/slide1.jpg')
+              );
+            }
+
             $date = $isModel ? ($post->published_at ?? $post->created_at) : ($post['date'] ?? null);
+
             if ($date && is_object($date) && method_exists($date, 'setTimezone')) {
               $dateForDisplay = $date->setTimezone($tz)->translatedFormat('d F Y');
             } elseif (!empty($date)) {
@@ -239,14 +270,19 @@
             } else {
               $dateForDisplay = '-';
             }
-            $excerpt = $isModel ? Str::limit(strip_tags($post->content ?? ''), 120) : ($post['excerpt'] ?? '');
+
+            $excerpt = $isModel
+              ? Str::limit(strip_tags($post->content ?? ''), 120)
+              : ($post['excerpt'] ?? '');
           @endphp
 
           <article class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm hover:shadow-md transition">
             <a href="{{ $slugOrUrl }}" class="block mb-3">
               <div class="aspect-[16/11] w-full rounded-xl border border-[#1524AF]/40 overflow-hidden">
                 @if($imgUrl)
-                  <img src="{{ $imgUrl }}" alt="{{ $title }}" class="w-full h-full object-cover hover:scale-[1.02] transition" loading="lazy"
+                  <img src="{{ $imgUrl }}" alt="{{ $title }}"
+                       class="w-full h-full object-cover hover:scale-[1.02] transition"
+                       loading="lazy"
                        onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
                 @else
                   <div class="w-full h-full bg-slate-200/70"></div>
@@ -264,7 +300,7 @@
               <span>{{ $dateForDisplay }}</span>
             </div>
 
-            <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug text-slate-900 mb-2">
+            <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug text-[#1524AF] mb-2 judul-stroke">
               <a href="{{ $slugOrUrl }}" class="hover:text-[#1524AF] transition">{{ $title }}</a>
             </h3>
 
@@ -286,11 +322,11 @@
       <div class="mt-8 flex justify-center">
         @if($postsPaginator)
           @php
-            $p = $postsPaginator;
+            $p       = $postsPaginator;
             $current = $p->currentPage();
-            $last = $p->lastPage();
-            $start = max(1, $current - 3);
-            $end = min($last, $current + 3);
+            $last    = $p->lastPage();
+            $start   = max(1, $current - 3);
+            $end     = min($last, $current + 3);
           @endphp
 
           <nav class="inline-flex items-center gap-1" aria-label="Pagination">
