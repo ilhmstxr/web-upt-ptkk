@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('bidang_pelatihan_id')->nullable()
                 ->constrained('bidang_pelatihan')
                 ->cascadeOnDelete();
+            $table->string('kelas')->nullable();
 
             // IMPROVE: menambahkan bidang id 
             // $table->foreignId('bidang_id')->constrained('bidang')->cascadeOnDelete();
@@ -30,6 +31,7 @@ return new class extends Migration
             $table->Integer('rata_rata')->default(0);
             $table->Integer('nilai_survey')->default(0);
             $table->Enum('status', ['Lulus', 'Tidak Lulus', 'Belum Lulus'])->default('Belum Lulus');
+            $table->Enum('status_pendaftaran', ['Pending', 'Verifikasi', 'Diterima', 'Ditolak'])->default('Pending');
             $table->String('nomor_registrasi')->unique();
             $table->timestamp('tanggal_pendaftaran');
             $table->timestamps();

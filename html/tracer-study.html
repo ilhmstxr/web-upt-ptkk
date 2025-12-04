@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracer Study Alumni - SIM-PELATIHAN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#475569',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Animations */
+        .modal-enter {
+            animation: scaleIn 0.2s ease-out forwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Toast Notification */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .toast {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-slate-800 font-sans h-screen flex overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-gray-900 text-gray-300 flex flex-col shadow-xl z-20 overflow-y-auto">
+        <div
+            class="h-16 flex items-center px-6 bg-gray-950 text-white font-bold text-xl tracking-wider border-b border-gray-800">
+            <i class="fa-solid fa-layer-group text-amber-500 mr-2"></i> SIM-LAT
+        </div>
+
+        <nav class="flex-1 px-2 py-4 space-y-6">
+
+            <!-- Group: Main -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Utama</div>
+                <a href="dashoard-old.html"
+                    class="sidebar-item flex items-center px-4 py-2.5 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-chart-pie w-6 text-center mr-2"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+            </div>
+
+            <!-- Group: Manajemen Pelatihan -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Akademik & Pelatihan
+                </div>
+                <a href="manajemen-pelatihan2.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-chalkboard-user w-6 text-center mr-2"></i>
+                    <span>Pelatihan (Training)</span>
+                </a>
+                <a href="#"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-book-open w-6 text-center mr-2"></i>
+                    <span>Materi Pembelajaran</span>
+                </a>
+                <a href="bidang-pelatihan2.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-shapes w-6 text-center mr-2"></i>
+                    <span>Bidang Kejuruan</span>
+                </a>
+            </div>
+
+            <!-- Group: Kesiswaan -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Kesiswaan</div>
+                <a href="pendaftaran_pelatihan.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors justify-between">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-clipboard-check w-6 text-center mr-2"></i>
+                        <span>Verifikasi Pendaftaran</span>
+                    </div>
+                    <span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">5</span>
+                </a>
+                <a href="pendaftaran_pelatihan.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-users w-6 text-center mr-2"></i>
+                    <span>Data Peserta</span>
+                </a>
+                <a href="data-instansi.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-building w-6 text-center mr-2"></i>
+                    <span>Data Instansi</span>
+                </a>
+            </div>
+
+            <!-- Group: Ujian & Evaluasi -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">CBT & Evaluasi</div>
+                <a href="setup-soal.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-laptop-code w-6 text-center mr-2"></i>
+                    <span>Bank Soal & Ujian</span>
+                </a>
+                <a href="analisis-tes.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-poll w-6 text-center mr-2"></i>
+                    <span>Survei & Monev</span>
+                </a>
+                <a href="analisis-tes.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-square-poll-vertical w-6 text-center mr-2"></i>
+                    <span>Hasil Nilai Peserta</span>
+                </a>
+            </div>
+
+            <!-- Group: Alumni (NEW) -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Alumni</div>
+                <a href="tracer-study.html"
+                    class="sidebar-item active flex items-center px-4 py-2 rounded-lg text-white group transition-colors">
+                    <i class="fa-solid fa-user-graduate w-6 text-center mr-2 text-amber-500"></i>
+                    <span>Tracer Study</span>
+                </a>
+            </div>
+
+            <!-- Group: Sarana -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Fasilitas</div>
+                <a href="manajemen-asrama.html"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-bed w-6 text-center mr-2"></i>
+                    <span>Manajemen Asrama</span>
+                </a>
+            </div>
+
+            <!-- Group: System -->
+            <div>
+                <div class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pengaturan</div>
+                <a href="#"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-user-shield w-6 text-center mr-2"></i>
+                    <span>User & Roles</span>
+                </a>
+                <a href="#"
+                    class="sidebar-item flex items-center px-4 py-2 rounded-lg hover:text-white group transition-colors">
+                    <i class="fa-solid fa-envelope w-6 text-center mr-2"></i>
+                    <span>Template Email</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="p-4 bg-gray-950 border-t border-gray-800">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-gray-900 font-bold">
+                    A</div>
+                <div>
+                    <div class="text-sm font-medium text-white">Administrator</div>
+                    <div class="text-xs text-gray-500">admin@simpel.com</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
+        <!-- Topbar -->
+        <header class="bg-white shadow-sm h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+            <div class="text-xl font-bold text-gray-800">Tracer Study</div>
+            <div class="flex items-center gap-4">
+                <button class="p-2 text-gray-400 hover:text-gray-600 relative">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
+                <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
+                    <i class="fa-solid fa-calendar-day mr-2"></i> Nov 2025
+                </button>
+            </div>
+        </header>
+
+        <div class="p-8 max-w-7xl mx-auto space-y-8">
+
+            <!-- TOAST CONTAINER -->
+            <div id="toast-container" class="flex flex-col gap-2"></div>
+
+            <!-- HEADER & ACTIONS -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Tracer Study Alumni</h1>
+                    <p class="text-sm text-gray-500 mt-1">Monitoring karir dan status kebekerjaan alumni pasca
+                        pelatihan.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="alert('Membuka template kuesioner...')"
+                        class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-file-lines"></i> Kelola Kuesioner
+                    </button>
+                    <button onclick="openModal('modalAddAlumni')"
+                        class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Tambah Alumni
+                    </button>
+                </div>
+            </div>
+
+            <!-- SUMMARY STATS -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-blue-50 text-blue-600 rounded-lg"><i
+                            class="fa-solid fa-user-graduate text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium uppercase">Total Alumni</p>
+                        <p class="text-2xl font-bold text-gray-900" id="total-alumni">0</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-green-50 text-green-600 rounded-lg"><i class="fa-solid fa-briefcase text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium uppercase">Sudah Bekerja</p>
+                        <p class="text-2xl font-bold text-gray-900"><span id="count-bekerja">0</span> <span
+                                class="text-sm font-normal text-green-600" id="perc-bekerja">(0%)</span></p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-purple-50 text-purple-600 rounded-lg"><i class="fa-solid fa-rocket text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium uppercase">Wirausaha</p>
+                        <p class="text-2xl font-bold text-gray-900"><span id="count-wirausaha">0</span> <span
+                                class="text-sm font-normal text-purple-600" id="perc-wirausaha">(0%)</span></p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-yellow-50 text-yellow-600 rounded-lg"><i class="fa-solid fa-spinner text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium uppercase">Belum Bekerja</p>
+                        <p class="text-2xl font-bold text-gray-900"><span id="count-belum">0</span> <span
+                                class="text-sm font-normal text-yellow-600" id="perc-belum">(0%)</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS SECTION -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Employment Status Chart -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="font-bold text-gray-800 mb-4">Distribusi Status Alumni</h3>
+                    <div class="h-64 flex justify-center">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Salary Range & Waiting Time -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-800">Waktu Tunggu & Rentang Gaji</h3>
+                        <select class="text-xs border border-gray-300 rounded px-2 py-1 bg-white">
+                            <option>Tahun 2024</option>
+                            <option>Tahun 2023</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                            <p class="text-xs text-blue-600 font-bold uppercase mb-2">Rata-rata Waktu Tunggu</p>
+                            <div class="flex items-end gap-2">
+                                <span class="text-3xl font-bold text-blue-800">2.5</span>
+                                <span class="text-sm text-blue-600 mb-1">Bulan</span>
+                            </div>
+                            <p class="text-xs text-blue-500 mt-2">Dari lulus pelatihan hingga dapat kerja.</p>
+                        </div>
+                        <div class="p-4 bg-green-50 rounded-lg border border-green-100">
+                            <p class="text-xs text-green-600 font-bold uppercase mb-2">Rata-rata Gaji Pertama</p>
+                            <div class="flex items-end gap-2">
+                                <span class="text-3xl font-bold text-green-800">4.2</span>
+                                <span class="text-sm text-green-600 mb-1">Juta/Bulan</span>
+                            </div>
+                            <p class="text-xs text-green-500 mt-2">Berdasarkan data responden.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATA TABLE ALUMNI -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-bold text-lg text-gray-800">Data Alumni</h3>
+                        <span
+                            class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">Batch
+                            Terbaru</span>
+                    </div>
+                    <div class="flex gap-3 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-64">
+                            <input type="text" id="searchAlumni" onkeyup="renderTable()"
+                                placeholder="Cari nama, perusahaan..."
+                                class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary">
+                            <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                        </div>
+                        <select id="filterStatus" onchange="renderTable()"
+                            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary bg-white">
+                            <option value="">Semua Status</option>
+                            <option value="Bekerja">Bekerja</option>
+                            <option value="Wirausaha">Wirausaha</option>
+                            <option value="Belum Bekerja">Belum Bekerja</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto custom-scroll">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Alumni
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Batch
+                                    Pelatihan</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Saat
+                                    Ini</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Posisi /
+                                    Perusahaan</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="bg-white divide-y divide-gray-200 text-sm">
+                            <!-- Data injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL ADD ALUMNI -->
+    <div id="modalAddAlumni"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-900 bg-opacity-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 modal-enter">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900">Tambah Data Alumni</h3>
+                <button onclick="closeModal('modalAddAlumni')" class="text-gray-400 hover:text-gray-600"><i
+                        class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="formAddAlumni" onsubmit="event.preventDefault(); addAlumni();">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Alumni</label>
+                        <input type="text" id="inputNama" required
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Batch Pelatihan</label>
+                        <input type="text" id="inputBatch" required
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary"
+                            placeholder="Contoh: Web Dev Batch 3">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select id="inputStatus"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary">
+                            <option value="Bekerja">Bekerja</option>
+                            <option value="Wirausaha">Wirausaha</option>
+                            <option value="Belum Bekerja">Belum Bekerja</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Perusahaan / Usaha
+                            (Opsional)</label>
+                        <input type="text" id="inputCompany"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Posisi (Opsional)</label>
+                        <input type="text" id="inputPosition"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary">
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('modalAddAlumni')"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 text-sm shadow-sm">Simpan
+                        Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- MOCK DATA ---
+        let alumniData = [
+            { id: 1, name: "Andi Dermawan", email: "andi.d@gmail.com", batch: "Web Dev Batch 3", status: "Bekerja", position: "Frontend Dev", company: "PT Tokopedia" },
+            { id: 2, name: "Siti Komariah", email: "siti.k@yahoo.com", batch: "Digital Marketing Batch 5", status: "Wirausaha", position: "Owner", company: "Siti Catering" },
+            { id: 3, name: "Budi Gunawan", email: "budi.g@gmail.com", batch: "Data Analyst Batch 1", status: "Belum Bekerja", position: "-", company: "-" }
+        ];
+
+        let chartInstance = null;
+
+        // --- RENDER TABLE & STATS ---
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const search = document.getElementById('searchAlumni').value.toLowerCase();
+            const filter = document.getElementById('filterStatus').value;
+
+            tbody.innerHTML = '';
+
+            const filteredData = alumniData.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(search) || item.company.toLowerCase().includes(search);
+                const matchFilter = filter === '' || item.status === filter;
+                return matchSearch && matchFilter;
+            });
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">Tidak ada data ditemukan.</td></tr>';
+            } else {
+                filteredData.forEach(item => {
+                    let statusBadge = '';
+                    if (item.status === 'Bekerja') statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">Bekerja</span>';
+                    else if (item.status === 'Wirausaha') statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800 border border-purple-200">Wirausaha</span>';
+                    else statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Belum Bekerja</span>';
+
+                    const row = `
+                        <tr class="hover:bg-gray-50 transition-colors border-b border-gray-100">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">${item.name.substring(0, 2).toUpperCase()}</div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-gray-900">${item.name}</div>
+                                        <div class="text-xs text-gray-500">${item.email}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-sm">${item.batch}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${statusBadge}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div class="font-medium text-gray-900">${item.position}</div>
+                                <div>${item.company}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button onclick="alert('Edit ${item.name}')" class="text-blue-600 hover:text-blue-900 mr-3"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteAlumni(${item.id})" class="text-red-600 hover:text-red-900"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+            updateStats();
+            updateChart();
+        }
+
+        function updateStats() {
+            const total = alumniData.length;
+            const working = alumniData.filter(a => a.status === 'Bekerja').length;
+            const entrepreneur = alumniData.filter(a => a.status === 'Wirausaha').length;
+            const unemployed = alumniData.filter(a => a.status === 'Belum Bekerja').length;
+
+            document.getElementById('total-alumni').innerText = total;
+
+            document.getElementById('count-bekerja').innerText = working;
+            document.getElementById('perc-bekerja').innerText = `(${Math.round((working / total) * 100 || 0)}%)`;
+
+            document.getElementById('count-wirausaha').innerText = entrepreneur;
+            document.getElementById('perc-wirausaha').innerText = `(${Math.round((entrepreneur / total) * 100 || 0)}%)`;
+
+            document.getElementById('count-belum').innerText = unemployed;
+            document.getElementById('perc-belum').innerText = `(${Math.round((unemployed / total) * 100 || 0)}%)`;
+        }
+
+        function updateChart() {
+            const working = alumniData.filter(a => a.status === 'Bekerja').length;
+            const entrepreneur = alumniData.filter(a => a.status === 'Wirausaha').length;
+            const unemployed = alumniData.filter(a => a.status === 'Belum Bekerja').length;
+
+            if (chartInstance) chartInstance.destroy();
+
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bekerja', 'Wirausaha', 'Belum Bekerja'],
+                    datasets: [{
+                        data: [working, entrepreneur, unemployed],
+                        backgroundColor: ['#10B981', '#A855F7', '#F59E0B'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        // --- CRUD ACTIONS ---
+        function addAlumni() {
+            const name = document.getElementById('inputNama').value;
+            const batch = document.getElementById('inputBatch').value;
+            const status = document.getElementById('inputStatus').value;
+            const company = document.getElementById('inputCompany').value || "-";
+            const position = document.getElementById('inputPosition').value || "-";
+
+            const newId = alumniData.length + 1;
+            alumniData.unshift({
+                id: newId,
+                name: name,
+                email: name.toLowerCase().replace(' ', '.') + '@email.com', // Mock email
+                batch: batch,
+                status: status,
+                company: company,
+                position: position
+            });
+
+            renderTable();
+            closeModal('modalAddAlumni');
+            showToast(`Data alumni <b>${name}</b> berhasil ditambahkan.`);
+            document.getElementById('formAddAlumni').reset();
+        }
+
+        function deleteAlumni(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                alumniData = alumniData.filter(a => a.id !== id);
+                renderTable();
+                showToast('Data alumni berhasil dihapus.');
+            }
+        }
+
+        // --- MODAL & TOAST UTILS ---
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast show bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 text-sm min-w-[250px]';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-green-400 text-lg"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        renderTable();
+    </script>
+</body>
+
+</html>

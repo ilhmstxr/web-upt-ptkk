@@ -32,14 +32,19 @@ class PendaftaranController extends Controller
 {
     public const LAMPIRAN_DESTINATION = 'pertanyaan/opsi';
 
-    public function showDaftar()
+   public function showDaftar()
 {
-    // ambil data master yang sama seperti di step 2
-    $bidang      = Bidang::all();                       // untuk Kompetensi/Bidang Keahlian
-    $cabangDinas = CabangDinas::all();                  // untuk Cabang Dinas Wilayah
-    $pelatihan   = Pelatihan::where('status', 'aktif')->get(); // kalau di daftar juga mau list pelatihan
+    // data master untuk form (dropdown)
+    $bidang      = Bidang::all();
+    $cabangDinas = CabangDinas::all();
 
-    // kalau kamu mau pakai step-style di UI daftar, bisa kirim default
+    // 👉 ambil SATU pelatihan aktif, yang tanggalnya masih jalan
+    $pelatihan = Pelatihan::where('status', 'aktif')
+        ->whereDate('tanggal_selesai', '>=', now())
+        ->orderBy('tanggal_mulai', 'asc')
+        ->first();  // <— beda di sini: dulu get(), sekarang first()
+
+    // kalau kamu tetap mau pakai variabel ini buat wizard di view, biarkan saja
     $currentStep = 1;
     $allowedStep = 1;
     $formData    = [];
@@ -158,7 +163,6 @@ class PendaftaranController extends Controller
                     'alamat_instansi'   => $allData['alamat_instansi'],
                     'kota'   => $allData['kota'],
                     'kota_id'   => $allData['kota_id'],
-                    'kelas' => $allData['kelas'],
                 ],
                 [
                     'bidang_keahlian'       => $allData['bidang_keahlian'],
@@ -237,6 +241,7 @@ class PendaftaranController extends Controller
                 'urutan_per_bidang'     => $urutBidang,
                 'nomor_registrasi'      => $nomorReg,
                 'tanggal_pendaftaran'   => now(),
+                'kelas'                 => $allData['kelas'],
             ]);
             $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
                 ->latest('id')

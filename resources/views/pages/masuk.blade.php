@@ -60,53 +60,64 @@
         Pre Test, Post Test, Monev
       </p>
 
-      {{-- Input ID Peserta --}}
-      <label class="block text-[#1A1A1A] text-sm font-medium">ID Peserta</label>
-      <input type="text"
-             class="w-full mt-1 rounded-xl border border-gray-300 px-4 py-3 text-sm
-                    focus:ring-2 focus:ring-[#1524AF] outline-none"
-             placeholder="Masukkan ID Peserta">
+      {{-- 🔹 FORM LOGIN --}}
+      <form action="{{ route('dashboard.home') }}" method="GET" class="space-y-4">
 
-      {{-- Input Password --}}
-      <label class="block text-[#1A1A1A] text-sm font-medium mt-4">Password</label>
-      <div class="relative mt-1">
-        <input type="password" id="passwordInput"
-               class="w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm
-                      focus:ring-2 focus:ring-[#1524AF] outline-none"
-               placeholder="Masukkan Password">
+        {{-- Input ID Peserta --}}
+        <div>
+          <label class="block text-[#1A1A1A] text-sm font-medium">ID Peserta</label>
+          <input type="text"
+                 name="id_peserta"
+                 class="w-full mt-1 rounded-xl border border-gray-300 px-4 py-3 text-sm
+                        focus:ring-2 focus:ring-[#1524AF] outline-none"
+                 placeholder="Masukkan ID Peserta">
+        </div>
 
-        <button type="button" id="togglePassword"
-                class="absolute right-3 top-3 text-gray-400 hover:text-[#1524AF] transition">
-          <span id="eyeIcon" class="material-symbols-rounded text-[22px]">visibility_off</span>
-        </button>
-      </div>
+        {{-- Input Password --}}
+        <div>
+          <label class="block text-[#1A1A1A] text-sm font-medium mt-1">Password</label>
+          <div class="relative mt-1">
+            <input type="password" id="passwordInput"
+                   name="password"
+                   class="w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm
+                          focus:ring-2 focus:ring-[#1524AF] outline-none"
+                   placeholder="Masukkan Password">
 
-      <hr class="my-6 border-[#B6BBE6]">
+            <button type="button" id="togglePassword"
+                    class="absolute right-3 top-3 text-gray-400 hover:text-[#1524AF] transition">
+              <span id="eyeIcon" class="material-symbols-rounded text-[22px]">visibility_off</span>
+            </button>
+          </div>
+        </div>
 
-{{-- Tombol --}}
-<div class="flex justify-center gap-3 sm:gap-4 mt-2 w-full">
+        <hr class="my-4 border-[#B6BBE6]">
 
-  {{-- Tombol Kembali --}}
-  <button type="button"
-          onclick="window.history.back()"
-          class="px-6 py-2 rounded-xl bg-[#F1F9FC] text-[#1524AF]
-                 text-sm font-medium hover:bg-[#DBE7F7]
-                 transition border-[3px] border-[#1524AF]
-                 min-w-[90px]">
-    Kembali
-  </button>
+        {{-- Tombol --}}
+        <div class="flex justify-center gap-3 sm:gap-4 mt-2 w-full">
 
-  {{-- Tombol Login --}}
-  <button type="submit"
-          class="px-6 py-2 rounded-xl bg-[#1524AF] text-white
-                 text-sm font-medium hover:bg-[#0E1A82] transition
-                 flex items-center justify-center gap-2
-                 min-w-[90px]">
-    <span>Login</span>
-    <span class="material-symbols-rounded text-[18px]">arrow_forward</span>
-  </button>
+          {{-- Tombol Kembali --}}
+          <button type="button"
+                  onclick="window.history.back()"
+                  class="px-6 py-2 rounded-xl bg-[#F1F9FC] text-[#1524AF]
+                         text-sm font-medium hover:bg-[#DBE7F7]
+                         transition border-[3px] border-[#1524AF]
+                         min-w-[90px]">
+            Kembali
+          </button>
 
-</div>
+          {{-- Tombol Login --}}
+          <button type="submit"
+                  class="px-6 py-2 rounded-xl bg-[#1524AF] text-white
+                         text-sm font-medium hover:bg-[#0E1A82] transition
+                         flex items-center justify-center gap-2
+                         min-w-[90px]">
+            <span>Login</span>
+            <span class="material-symbols-rounded text-[18px]">arrow_forward</span>
+          </button>
+
+        </div>
+
+      </form>
 
     </div>
   </div>

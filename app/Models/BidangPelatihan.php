@@ -18,6 +18,12 @@ class BidangPelatihan extends Model
         'kode_bidang_pelatihan',
         'rata_rata_peningkatan',
         'status_performa',
+        'metode',
+        'file_modul',
+        'tanggal',
+        'jam_mulai',
+        'jam_selesai',
+        'instruktur_id',
     ];
 
     public function pelatihan()
@@ -56,4 +62,8 @@ class BidangPelatihan extends Model
         );
     }
 
+    public function instruktur()
+    {
+        return $this->belongsTo(Instruktur::class);
+    }
 }

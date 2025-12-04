@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Kelas - SEO Specialist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#475569',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Simple Circular Progress Bar Logic */
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #eee; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 font-sans min-h-screen pb-10">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- 1. BREADCRUMBS (Navigasi Level) -->
+        <nav class="flex mb-6 text-sm font-medium text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm w-fit overflow-hidden">
+            <a href="#" class="px-4 py-2 hover:bg-gray-50 border-r border-gray-100 bg-gray-50"><i class="fa-solid fa-house text-gray-400"></i></a>
+            <a href="#" class="px-4 py-2 hover:bg-gray-50 hover:text-primary border-r border-gray-100">Manajemen Pelatihan</a>
+            <a href="#" class="px-4 py-2 hover:bg-gray-50 hover:text-primary border-r border-gray-100">Digital Marketing Batch 5</a>
+            <span class="px-4 py-2 bg-white text-primary flex items-center gap-2 border-t-2 border-primary -mt-[2px]">
+                <i class="fa-solid fa-chalkboard-user"></i> SEO Specialist
+            </span>
+        </nav>
+
+        <!-- 2. HEADER KELAS & INSTRUKTUR -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between gap-6">
+                <!-- Info Kiri -->
+                <div class="flex gap-5">
+                    <div class="w-20 h-20 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 text-3xl font-bold shrink-0">
+                        SEO
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 mb-1">SEO Specialist & Analytics</h1>
+                        <p class="text-gray-500 text-sm mb-3"><i class="fa-regular fa-clock mr-1"></i> Senin & Kamis • 09:00 - 12:00 WIB • Ruang Zoom A</p>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-semibold border border-green-200">Sedang Berlangsung</span>
+                            <span class="text-gray-300">|</span>
+                            <a href="#" class="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1">
+                                <i class="fa-solid fa-video"></i> Link Zoom Kelas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Kanan (Instruktur) -->
+                <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100 md:min-w-[300px]">
+                    <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=random" class="w-12 h-12 rounded-full border-2 border-white shadow-sm">
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Instruktur Utama</p>
+                        <p class="text-sm font-bold text-gray-900">Budi Santoso, S.Kom</p>
+                        <div class="flex gap-2 mt-1">
+                            <button class="text-xs bg-white border border-gray-300 px-2 py-1 rounded text-gray-600 hover:text-blue-600 hover:border-blue-400"><i class="fa-solid fa-envelope"></i> Email</button>
+                            <button class="text-xs bg-white border border-gray-300 px-2 py-1 rounded text-gray-600 hover:text-green-600 hover:border-green-400"><i class="fa-brands fa-whatsapp"></i> Chat</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. TABS NAVIGATION -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[600px]">
+            <div class="border-b border-gray-200 px-6">
+                <nav class="-mb-px flex space-x-8">
+                    <button onclick="switchTab('kurikulum')" id="tab-kurikulum" class="tab-btn border-transparent text-gray-500 py-4 px-1 border-b-2 font-medium text-sm hover:text-gray-700 transition-colors">
+                        <i class="fa-solid fa-list-check mr-2"></i>Kurikulum & Sesi
+                    </button>
+                    <!-- Tab Evaluasi Aktif Default -->
+                    <button onclick="switchTab('evaluasi')" id="tab-evaluasi" class="tab-btn active border-primary text-primary py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                        <i class="fa-solid fa-chart-simple mr-2"></i>Evaluasi & Statistik
+                    </button>
+                    <button onclick="switchTab('peserta')" id="tab-peserta" class="tab-btn border-transparent text-gray-500 py-4 px-1 border-b-2 font-medium text-sm hover:text-gray-700 transition-colors">
+                        <i class="fa-solid fa-users mr-2"></i>Peserta Kelas (32)
+                    </button>
+                </nav>
+            </div>
+
+            <!-- TAB CONTENT: EVALUASI & STATISTIK (CORE REQUEST) -->
+            <div id="content-evaluasi" class="tab-content active p-6 bg-gray-50/50">
+                
+                <!-- A. Statistik Overview Cards (Pretest, Posttest, Monev) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    
+                    <!-- 1. PRETEST STATS -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg">Pretest</h3>
+                                <p class="text-xs text-gray-500">Evaluasi Awal</p>
+                            </div>
+                            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-bold">Selesai</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-4">
+                            <!-- Circular Progress: Rata-rata Nilai -->
+                            <div class="relative w-20 h-20">
+                                <svg viewBox="0 0 36 36" class="circular-chart text-blue-500 w-full h-full">
+                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="circle" stroke-dasharray="65, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke="currentColor" />
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-700">65.4</div>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Rata-rata Kelas</p>
+                                <div class="text-xs text-gray-400 mt-1">
+                                    <p><i class="fa-solid fa-check text-green-500 mr-1"></i>Highest: 88</p>
+                                    <p><i class="fa-solid fa-xmark text-red-400 mr-1"></i>Lowest: 40</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between text-xs font-medium text-gray-600">
+                            <span>Partisipasi:</span>
+                            <span class="text-blue-600">32/32 (100%)</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. POSTTEST STATS -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg">Posttest</h3>
+                                <p class="text-xs text-gray-500">Evaluasi Akhir</p>
+                            </div>
+                            <span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded font-bold">Belum Mulai</span>
+                        </div>
+                        
+                        <!-- Empty State Illustration for Future Data -->
+                        <div class="flex items-center justify-center h-20 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                             <p class="text-xs text-gray-400 text-center px-4">Data akan muncul setelah ujian dilaksanakan</p>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between text-xs font-medium text-gray-600">
+                            <span>Target Minimal:</span>
+                            <span class="text-gray-800">Nilai 75.0</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. MONEV STATS -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg">Monev</h3>
+                                <p class="text-xs text-gray-500">Monitoring & Evaluasi</p>
+                            </div>
+                            <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-bold">Berjalan</span>
+                        </div>
+                        
+                        <div class="flex flex-col gap-2">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-500">Tingkat Kepuasan Peserta</span>
+                                    <span class="font-bold text-gray-800">4.8/5.0</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="bg-warning h-2 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-500">Respon Peserta</span>
+                                    <span class="font-bold text-blue-600">20/32</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="bg-blue-400 h-2 rounded-full" style="width: 65%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 pt-3 border-t border-gray-100 flex justify-between text-xs font-medium text-gray-600">
+                             <span class="text-gray-400 italic">"Materi sangat relevan..."</span>
+                             <a href="#" class="text-blue-600 hover:underline">Lihat Feedback</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- B. Action List (Detail Tugasnya) -->
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">Daftar Penilaian Wajib</h3>
+                        <button class="text-sm text-blue-600 font-medium hover:underline"><i class="fa-solid fa-download mr-1"></i> Rekap Nilai (Excel)</button>
+                    </div>
+                    <div class="divide-y divide-gray-100">
+                        
+                        <!-- ITEM 1: PRETEST -->
+                        <div class="p-5 flex flex-col md:flex-row items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-4 w-full md:w-1/3">
+                                <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+                                    1
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">Pretest: Dasar SEO</h4>
+                                    <p class="text-xs text-gray-500">Dilaksanakan: 10 Oktober 2024</p>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/3 flex flex-col items-center">
+                                <span class="text-xs text-gray-500 mb-1">Status Submission</span>
+                                <div class="w-full max-w-[150px] bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-green-500 h-2.5 rounded-full" style="width: 100%"></div>
+                                </div>
+                                <span class="text-xs font-bold text-gray-700 mt-1">32/32 Dikumpulkan</span>
+                            </div>
+                            <div class="w-full md:w-auto flex gap-2">
+                                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-white hover:border-blue-500 hover:text-blue-600 transition-all">
+                                    Lihat Nilai
+                                </button>
+                                <button class="px-3 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm cursor-not-allowed" disabled>
+                                    <i class="fa-solid fa-lock"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ITEM 2: POSTTEST -->
+                        <div class="p-5 flex flex-col md:flex-row items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-4 w-full md:w-1/3">
+                                <div class="w-10 h-10 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center font-bold">
+                                    2
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">Posttest: Evaluasi Akhir</h4>
+                                    <p class="text-xs text-gray-500">Jadwal: 10 Desember 2024</p>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/3 flex flex-col items-center">
+                                <span class="text-xs text-gray-500 mb-1">Status Submission</span>
+                                <div class="w-full max-w-[150px] bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-gray-400 h-2.5 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span class="text-xs font-bold text-gray-500 mt-1">Belum Dibuka</span>
+                            </div>
+                            <div class="w-full md:w-auto flex gap-2">
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm hover:bg-blue-700 shadow-sm shadow-blue-200">
+                                    Setup Soal
+                                </button>
+                                <button class="px-3 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm hover:bg-gray-50">
+                                    <i class="fa-solid fa-gear"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ITEM 3: MONEV -->
+                        <div class="p-5 flex flex-col md:flex-row items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-4 w-full md:w-1/3">
+                                <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+                                    3
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">Monev (Feedback Kelas)</h4>
+                                    <p class="text-xs text-gray-500">Tenggat: 12 Desember 2024</p>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/3 flex flex-col items-center">
+                                <span class="text-xs text-gray-500 mb-1">Respon Masuk</span>
+                                <div class="w-full max-w-[150px] bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-purple-500 h-2.5 rounded-full" style="width: 62%"></div>
+                                </div>
+                                <span class="text-xs font-bold text-gray-700 mt-1">20/32 Respon</span>
+                            </div>
+                            <div class="w-full md:w-auto flex gap-2">
+                                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-white hover:border-blue-500 hover:text-blue-600 transition-all">
+                                    Analisis Hasil
+                                </button>
+                                <button class="px-3 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm hover:bg-gray-50" title="Kirim Pengingat">
+                                    <i class="fa-regular fa-bell"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT: KURIKULUM (Placeholder) -->
+            <div id="content-kurikulum" class="tab-content p-6 bg-white">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">Jadwal Sesi Pembelajaran</h3>
+                    <button class="bg-primary text-white px-3 py-1.5 rounded-lg text-sm hover:bg-blue-700"><i class="fa-solid fa-plus mr-2"></i>Tambah Sesi</button>
+                </div>
+                <div class="space-y-4">
+                    <!-- Sesi 1 -->
+                    <div class="border border-gray-200 rounded-lg p-4 flex gap-4 hover:bg-gray-50 transition">
+                         <div class="flex flex-col items-center justify-center bg-gray-100 rounded-lg w-16 h-16 shrink-0">
+                            <span class="text-xs text-gray-500 font-bold">SESI</span>
+                            <span class="text-xl font-bold text-gray-800">01</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-900">Pengenalan Fundamental SEO</h4>
+                            <p class="text-sm text-gray-500 mt-1"><i class="fa-regular fa-calendar mr-1"></i> 10 Oktober 2024 • 09:00 - 12:00</p>
+                            <div class="flex gap-3 mt-2">
+                                <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-100"><i class="fa-solid fa-check mr-1"></i>Selesai</span>
+                                <a href="#" class="text-xs text-blue-600 hover:underline flex items-center"><i class="fa-solid fa-file-pdf mr-1"></i>Materi.pdf</a>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Sesi 2 -->
+                     <div class="border border-gray-200 rounded-lg p-4 flex gap-4 hover:bg-gray-50 transition">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 rounded-lg w-16 h-16 shrink-0">
+                           <span class="text-xs text-gray-500 font-bold">SESI</span>
+                           <span class="text-xl font-bold text-gray-800">02</span>
+                       </div>
+                       <div class="flex-1">
+                           <h4 class="font-bold text-gray-900">On-Page Optimization</h4>
+                           <p class="text-sm text-gray-500 mt-1"><i class="fa-regular fa-calendar mr-1"></i> 13 Oktober 2024 • 09:00 - 12:00</p>
+                           <div class="flex gap-3 mt-2">
+                               <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-100"><i class="fa-solid fa-check mr-1"></i>Selesai</span>
+                               <a href="#" class="text-xs text-blue-600 hover:underline flex items-center"><i class="fa-solid fa-file-pdf mr-1"></i>Materi.pdf</a>
+                           </div>
+                       </div>
+                   </div>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT: PESERTA (Placeholder) -->
+            <div id="content-peserta" class="tab-content p-6 bg-white">
+                <h3 class="font-bold text-lg mb-4">Daftar Peserta Kelas SEO</h3>
+                <p class="text-gray-500 text-sm">List peserta yang terdaftar khusus untuk kelas ini.</p>
+                <!-- Tabel Peserta Sederhana -->
+                <div class="mt-4 border border-gray-200 rounded-lg overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Pretest</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Absen</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900">Andi Dermawan</td>
+                                <td class="px-4 py-3 text-sm text-gray-600 text-center font-bold">85</td>
+                                <td class="px-4 py-3 text-sm text-gray-600 text-center">100%</td>
+                                <td class="px-4 py-3 text-sm text-right text-green-600">Aktif</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900">Siti Komariah</td>
+                                <td class="px-4 py-3 text-sm text-gray-600 text-center font-bold">72</td>
+                                <td class="px-4 py-3 text-sm text-gray-600 text-center">90%</td>
+                                <td class="px-4 py-3 text-sm text-right text-green-600">Aktif</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT TABS -->
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'border-primary', 'text-primary');
+                el.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            document.getElementById('content-' + tabId).classList.add('active');
+            const activeBtn = document.getElementById('tab-' + tabId);
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+            activeBtn.classList.add('active', 'border-primary', 'text-primary');
+        }
+    </script>
+</body>
+</html>

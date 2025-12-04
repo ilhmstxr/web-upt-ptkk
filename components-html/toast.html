@@ -1,0 +1,16 @@
+<!-- TOAST CONTAINER -->
+<div id="toast-container" class="flex flex-col gap-2"></div>
+
+<script>
+    function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast show bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 text-sm min-w-[250px]';
+        toast.innerHTML = `<i class="fa-solid fa-circle-check text-green-400 text-lg"></i> <span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+</script>

@@ -14,6 +14,9 @@ class Bidang extends Model
     protected $fillable = [
         'nama_bidang',
         'deskripsi',
+        'kode',
+        'kelas_keterampilan',
+        'gambar',
     ];
 
     public function bidangPelatihan()

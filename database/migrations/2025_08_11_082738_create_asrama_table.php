@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('asrama', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('gender', ['Laki-laki', 'Perempuan']);
+            $table->enum('gender', ['Laki-laki', 'Perempuan','Campur']);
             // $table->integer('total_kamar')->default(0ob);
             $table->timestamps();
         });

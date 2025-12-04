@@ -3,7 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Filament\Pages\DetailPelatihan;
-use App\Filament\Resources\PelatihanResource;
+use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource;
 use App\Models\Pelatihan;
 use Carbon\Carbon;
 use Filament\Tables;

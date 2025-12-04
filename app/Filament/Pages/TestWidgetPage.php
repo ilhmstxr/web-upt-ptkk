@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Resources\JawabanSurveiResource\Widgets\BuildsLikertData;
+
 use App\Filament\Widgets\DynamicStatsOverviewWidget;
 use App\Filament\Widgets\DynamicTableWidget;
 use App\Filament\Widgets\GlobalStatsOverview;
@@ -10,7 +10,7 @@ use Filament\Pages\Page;
 
 class TestWidgetPage extends Page
 {
-    use BuildsLikertData;
+
 
     protected static ?string $navigationIcon = 'heroicon-o-breaker';
     // protected static ?string $navigationGroup = 'Hasil Kegiatan';
@@ -42,7 +42,7 @@ class TestWidgetPage extends Page
         // $testStats = $this->peserta($pid);
         // $testStats = $this->instruktur($pid);
         // $testStats = $this->getPesertaTableConfig();
-        $testStats = $this->getTopNilaiTableConfig();
+        // $testStats = $this->getTopNilaiTableConfig();
         return [
             // DynamicStatsOverviewWidget::make([
             //     'stats' => $testStats

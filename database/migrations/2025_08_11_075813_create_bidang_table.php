@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('nama_bidang');
             $table->text('deskripsi')->nullable();
             $table->text('kode')->nullable();
+            $table->string('kelas_keterampilan')->nullable();
+            $table->string('gambar')->nullable(); // Image path
             $table->timestamps();
         });
     }
