@@ -1,6 +1,3 @@
---
--- Dumping data for table `bidang`
---
 INSERT INTO
   `bidang` (
     `id`,
