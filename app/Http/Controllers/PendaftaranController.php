@@ -32,6 +32,27 @@ class PendaftaranController extends Controller
 {
     public const LAMPIRAN_DESTINATION = 'pertanyaan/opsi';
 
+    public function showDaftar()
+{
+    // ambil data master yang sama seperti di step 2
+    $bidang      = Bidang::all();                       // untuk Kompetensi/Bidang Keahlian
+    $cabangDinas = CabangDinas::all();                  // untuk Cabang Dinas Wilayah
+    $pelatihan   = Pelatihan::where('status', 'aktif')->get(); // kalau di daftar juga mau list pelatihan
+
+    // kalau kamu mau pakai step-style di UI daftar, bisa kirim default
+    $currentStep = 1;
+    $allowedStep = 1;
+    $formData    = [];
+
+    return view('pages.daftar', compact(
+        'bidang',
+        'cabangDinas',
+        'pelatihan',
+        'currentStep',
+        'allowedStep',
+        'formData'
+    ));
+}
 
     public function index()
     {

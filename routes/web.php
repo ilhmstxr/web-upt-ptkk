@@ -40,20 +40,23 @@ use Spatie\Browsershot\Browsershot;
 /* ======= BERANDA & HOME ======= */
 Route::get('/', fn () => view('pages.landing'))->name('landing');
 
-// ======= PROFIL (dropdown di navbar) =======
-// ⬇️ S E S U A I K A N  D I S I N I
-Route::view('/cerita-kami',           'pages.profil.cerita-kami')->name('story');
-Route::view('/program-pelatihan',     'pages.profil.program-pelatihan')->name('programs');
-Route::view('/kompetensi-pelatihan',  'pages.profil.kompetensi-pelatihan')->name('kompetensi');
+// PROFIL
+Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
+Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
+Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
 
-// Legacy redirect (biar link lama tidak 404)
 Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
 
-// Menu lain yang dipakai navbar
-Route::view('/berita', 'pages.berita')->name('news');
+Route::view('/berita',  'pages.berita')->name('news');
+Route::view('/panduan', 'pages.panduan')->name('panduan');
 
-// ⬇️ Tambahkan Panduan (buat view sesuai strukturmu, contoh: resources/views/pages/panduan/index.blade.php)
-Route::view('/panduan',  'pages.panduan')->name('panduan');
+/* 🔹 Halaman Masuk */
+Route::view('/masuk', 'pages.masuk')->name('masuk');
+
+/* 🔹 Halaman Daftar (frontend baru) */
+Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])->name('daftar');
+
+
 
 
 /* ===== end BERANDA & HOME ===== */

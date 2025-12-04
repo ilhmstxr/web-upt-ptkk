@@ -262,18 +262,18 @@ section + section {
     margin: 0 0 2.5rem 0;         /* jarak antar tahun */
   }
 
-  /* Titik biru di kiri, CENTANG nempel ke garis */
   .timeline-container > div[class*="absolute"]::before {
-    content: '';
-    position: absolute;
-    top: 0.9rem;                  /* kira-kira sejajar atas gambar */
-    left: 1.5rem;                 /* sama dengan garis */
-    width: 14px;
-    height: 14px;
-    border-radius: 999px;
-    background: #1524AF;
-    transform: translate(-50%, 0);  /* center titik = center garis */
-  }
+  content: '';
+  position: absolute;
+  top: 0rem;
+  left: -0rem;  /* 🎯 SUPER FINE TUNE */
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #1524AF;
+  transform: translate(-50%, 0);
+  z-index: 99;
+}
 
   /* Grid 2 kolom dipecah jadi vertikal */
   .timeline-container > div[class*="absolute"] > .grid {
@@ -287,6 +287,10 @@ section + section {
     padding: 0 !important;
     margin: 0 0 0.5rem 0 !important;
     text-align: left !important;
+  }
+  /* Geser teks (tahun + paragraf) sedikit ke kanan di HP */
+  .timeline-container > div[class*="absolute"] > .grid > div:nth-child(2) {
+    padding-left: 1rem !important; /* boleh dinaikkan ke 1rem kalau mau lebih jauh */
   }
 
   /* Gambar di HP: sedikit lebih kecil + jarak bawah */
