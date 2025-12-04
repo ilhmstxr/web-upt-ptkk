@@ -25,24 +25,38 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
-                    ->maxLength(255)
-                    ->hiddenOn('edit'),
-                Forms\Components\Select::make('roles')
-                    ->relationship('roles', 'name')
-                    ->multiple()
-                    ->preload()
-                    ->searchable(),
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Informasi Akun')
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('email')
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('password')
+                                    ->password()
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->hiddenOn('edit'),
+                            ]),
+                    ])->columnSpan(['lg' => 2]),
+
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Hak Akses')
+                            ->schema([
+                                Forms\Components\Select::make('roles')
+                                    ->relationship('roles', 'name')
+                                    ->multiple()
+                                    ->preload()
+                                    ->searchable(),
+                            ]),
+                    ])->columnSpan(['lg' => 1]),
             ]);
     }
 

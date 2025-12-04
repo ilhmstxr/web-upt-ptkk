@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('tes_id')->constrained('tes')->onDelete('cascade');
             $table->integer('nomor');
             $table->text('teks_pertanyaan');
+            $table->string('kategori')->nullable();
             $table->string('gambar')->nullable();
             $table->enum('tipe_jawaban', ['pilihan_ganda', 'skala_likert', 'teks_bebas']);
             $table->timestamps();

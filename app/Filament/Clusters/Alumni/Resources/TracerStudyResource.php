@@ -29,33 +29,48 @@ class TracerStudyResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->searchable()
-                    ->required()
-                    ->label('Alumni'),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'Bekerja' => 'Bekerja',
-                        'Wirausaha' => 'Wirausaha',
-                        'Mencari Kerja' => 'Mencari Kerja',
-                        'Melanjutkan Studi' => 'Melanjutkan Studi',
+                Forms\Components\Section::make('Informasi Alumni')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('user_id')
+                                    ->relationship('user', 'name')
+                                    ->searchable()
+                                    ->required()
+                                    ->label('Alumni'),
+                                Forms\Components\Select::make('status')
+                                    ->options([
+                                        'Bekerja' => 'Bekerja',
+                                        'Wirausaha' => 'Wirausaha',
+                                        'Mencari Kerja' => 'Mencari Kerja',
+                                        'Melanjutkan Studi' => 'Melanjutkan Studi',
+                                    ])
+                                    ->required()
+                                    ->reactive(),
+                            ]),
+                    ]),
+                Forms\Components\Section::make('Detail Pekerjaan / Usaha')
+                    ->description('Isi jika status Bekerja atau Wirausaha')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('company')
+                                    ->label('Nama Perusahaan / Usaha')
+                                    ->visible(fn (Forms\Get $get) => in_array($get('status'), ['Bekerja', 'Wirausaha']))
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
+                                Forms\Components\TextInput::make('salary')
+                                    ->label('Pendapatan Bulanan (Rp)')
+                                    ->numeric()
+                                    ->prefix('Rp')
+                                    ->visible(fn (Forms\Get $get) => in_array($get('status'), ['Bekerja', 'Wirausaha'])),
+                                Forms\Components\TextInput::make('waiting_period')
+                                    ->label('Masa Tunggu (Bulan)')
+                                    ->numeric()
+                                    ->helperText('Berapa bulan setelah lulus hingga mendapatkan pekerjaan?')
+                                    ->visible(fn (Forms\Get $get) => in_array($get('status'), ['Bekerja', 'Wirausaha'])),
+                            ]),
                     ])
-                    ->required()
-                    ->reactive(),
-                Forms\Components\TextInput::make('company')
-                    ->label('Nama Perusahaan / Usaha')
-                    ->visible(fn (Forms\Get $get) => in_array($get('status'), ['Bekerja', 'Wirausaha']))
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('salary')
-                    ->label('Pendapatan Bulanan (Rp)')
-                    ->numeric()
-                    ->prefix('Rp')
-                    ->visible(fn (Forms\Get $get) => in_array($get('status'), ['Bekerja', 'Wirausaha'])),
-                Forms\Components\TextInput::make('waiting_period')
-                    ->label('Masa Tunggu (Bulan)')
-                    ->numeric()
-                    ->helperText('Berapa bulan setelah lulus hingga mendapatkan pekerjaan?')
                     ->visible(fn (Forms\Get $get) => in_array($get('status'), ['Bekerja', 'Wirausaha'])),
             ]);
     }

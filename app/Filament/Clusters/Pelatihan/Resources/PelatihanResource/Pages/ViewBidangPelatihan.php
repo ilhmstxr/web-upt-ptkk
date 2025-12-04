@@ -14,6 +14,17 @@ class ViewBidangPelatihan extends Page
 
     protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-bidang-pelatihan';
 
+    protected function getActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('detail_monev')
+                ->label('Detail Survey Monev')
+                ->icon('heroicon-o-chart-pie')
+                ->url(fn () => ViewMonevDetail::getUrl(['record' => $this->record->id, 'bidang_id' => $this->bidangPelatihan->id]))
+                ->color('primary'),
+        ];
+    }
+
     public Pelatihan $record;
     public BidangPelatihan $bidangPelatihan;
 

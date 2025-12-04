@@ -25,31 +25,45 @@ class BeritaResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\Section::make()
+                Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\TextInput::make('title')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(Berita::class, 'slug', ignoreRecord: true),
-                        Forms\Components\RichEditor::make('content')
-                            ->required()
-                            ->columnSpanFull(),
-                        Forms\Components\FileUpload::make('image')
-                            ->image()
-                            ->directory('berita')
-                            ->columnSpanFull(),
-                        Forms\Components\Toggle::make('is_published')
-                            ->label('Publikasikan')
-                            ->default(false),
-                        Forms\Components\DateTimePicker::make('published_at')
-                            ->label('Tanggal Publikasi'),
-                    ]),
+                        Forms\Components\Section::make('Konten Berita')
+                            ->schema([
+                                Forms\Components\TextInput::make('title')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
+                                Forms\Components\TextInput::make('slug')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Berita::class, 'slug', ignoreRecord: true),
+                                Forms\Components\RichEditor::make('content')
+                                    ->required()
+                                    ->columnSpanFull(),
+                            ]),
+                    ])->columnSpan(['lg' => 2]),
+
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Media')
+                            ->schema([
+                                Forms\Components\FileUpload::make('image')
+                                    ->image()
+                                    ->directory('berita')
+                                    ->columnSpanFull(),
+                            ]),
+                        Forms\Components\Section::make('Publikasi')
+                            ->schema([
+                                Forms\Components\Toggle::make('is_published')
+                                    ->label('Publikasikan')
+                                    ->default(false),
+                                Forms\Components\DateTimePicker::make('published_at')
+                                    ->label('Tanggal Publikasi'),
+                            ]),
+                    ])->columnSpan(['lg' => 1]),
             ]);
     }
 

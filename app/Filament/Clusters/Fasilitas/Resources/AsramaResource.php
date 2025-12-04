@@ -26,17 +26,23 @@ class AsramaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Nama Asrama')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('gender')
-                    ->options([
-                        'Laki-laki' => 'Laki-laki',
-                        'Perempuan' => 'Perempuan',
-                        'Campur' => 'Campur',
-                    ])
-                    ->required(),
+                Forms\Components\Section::make('Informasi Asrama')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Nama Asrama')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('gender')
+                                    ->options([
+                                        'Laki-laki' => 'Laki-laki',
+                                        'Perempuan' => 'Perempuan',
+                                        'Campur' => 'Campur',
+                                    ])
+                                    ->required(),
+                            ]),
+                    ]),
             ]);
     }
 

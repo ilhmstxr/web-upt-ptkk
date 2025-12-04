@@ -28,39 +28,55 @@ class BidangResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\FileUpload::make('gambar')
-                    ->label('Gambar/Icon Bidang')
-                    ->image()
-                    ->imageEditor()
-                    ->imageEditorAspectRatios([
-                        '1:1',
-                        '4:3',
-                        '16:9',
-                    ])
-                    ->maxSize(2048) // 2MB
-                    ->directory('bidang-images')
-                    ->visibility('public')
-                    ->columnSpanFull(),
-                    
-                Forms\Components\TextInput::make('nama_bidang')
-                    ->label('Nama Bidang')
-                    ->required()
-                    ->maxLength(255),
-                    
-                Forms\Components\TextInput::make('kode')
-                    ->label('Kode Bidang')
-                    ->maxLength(255),
-                    
-                Forms\Components\TextInput::make('kelas_keterampilan')
-                    ->label('Kelas Keterampilan')
-                    ->maxLength(255),
-                    
-                Forms\Components\Textarea::make('deskripsi')
-                    ->label('Deskripsi')
-                    ->maxLength(65535)
-                    ->rows(4)
-                    ->columnSpanFull(),
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Informasi Bidang')
+                            ->schema([
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('nama_bidang')
+                                            ->label('Nama Bidang')
+                                            ->required()
+                                            ->maxLength(255),
+                                            
+                                        Forms\Components\TextInput::make('kode')
+                                            ->label('Kode Bidang')
+                                            ->maxLength(255),
+                                            
+                                        Forms\Components\TextInput::make('kelas_keterampilan')
+                                            ->label('Kelas Keterampilan')
+                                            ->maxLength(255)
+                                            ->columnSpanFull(),
+                                            
+                                        Forms\Components\Textarea::make('deskripsi')
+                                            ->label('Deskripsi')
+                                            ->maxLength(65535)
+                                            ->rows(4)
+                                            ->columnSpanFull(),
+                                    ]),
+                            ]),
+                    ])->columnSpan(['lg' => 2]),
+
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Media')
+                            ->schema([
+                                Forms\Components\FileUpload::make('gambar')
+                                    ->label('Gambar/Icon Bidang')
+                                    ->image()
+                                    ->imageEditor()
+                                    ->imageEditorAspectRatios([
+                                        '1:1',
+                                        '4:3',
+                                        '16:9',
+                                    ])
+                                    ->maxSize(2048) // 2MB
+                                    ->directory('bidang-images')
+                                    ->visibility('public'),
+                            ]),
+                    ])->columnSpan(['lg' => 1]),
             ]);
     }
 

@@ -25,42 +25,50 @@ class ProfilUPTResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\Section::make('Profil Kepala UPT')
+                Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\TextInput::make('kepala_upt_name')
-                            ->label('Nama Kepala UPT')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\FileUpload::make('kepala_upt_photo')
-                            ->label('Foto Kepala UPT')
-                            ->image()
-                            ->directory('profil')
-                            ->columnSpanFull(),
-                        Forms\Components\Textarea::make('sambutan')
-                            ->label('Kata Sambutan')
-                            ->columnSpanFull(),
-                    ])->columns(2),
-                Forms\Components\Section::make('Tentang UPT')
+                        Forms\Components\Section::make('Tentang UPT')
+                            ->schema([
+                                Forms\Components\RichEditor::make('sejarah')
+                                    ->columnSpanFull(),
+                                Forms\Components\RichEditor::make('visi')
+                                    ->columnSpanFull(),
+                                Forms\Components\RichEditor::make('misi')
+                                    ->columnSpanFull(),
+                            ]),
+                    ])->columnSpan(['lg' => 2]),
+
+                Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\RichEditor::make('sejarah')
-                            ->columnSpanFull(),
-                        Forms\Components\RichEditor::make('visi')
-                            ->columnSpanFull(),
-                        Forms\Components\RichEditor::make('misi')
-                            ->columnSpanFull(),
-                    ]),
-                Forms\Components\Section::make('Kontak')
-                    ->schema([
-                        Forms\Components\TextInput::make('alamat')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
-                            ->email()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('phone')
-                            ->tel()
-                            ->maxLength(255),
-                    ])->columns(3),
+                        Forms\Components\Section::make('Profil Kepala UPT')
+                            ->schema([
+                                Forms\Components\TextInput::make('kepala_upt_name')
+                                    ->label('Nama Kepala UPT')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\FileUpload::make('kepala_upt_photo')
+                                    ->label('Foto Kepala UPT')
+                                    ->image()
+                                    ->directory('profil')
+                                    ->columnSpanFull(),
+                                Forms\Components\Textarea::make('sambutan')
+                                    ->label('Kata Sambutan')
+                                    ->columnSpanFull(),
+                            ]),
+                        Forms\Components\Section::make('Kontak')
+                            ->schema([
+                                Forms\Components\TextInput::make('alamat')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('email')
+                                    ->email()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('phone')
+                                    ->tel()
+                                    ->maxLength(255),
+                            ]),
+                    ])->columnSpan(['lg' => 1]),
             ]);
     }
 

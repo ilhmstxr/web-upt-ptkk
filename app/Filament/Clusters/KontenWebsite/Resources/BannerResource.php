@@ -25,23 +25,39 @@ class BannerResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\FileUpload::make('image')
-                    ->image()
-                    ->required()
-                    ->directory('banners')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('title')
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->maxLength(65535)
-                    ->columnSpanFull(),
-                Forms\Components\Toggle::make('is_active')
-                    ->required()
-                    ->default(true),
-                Forms\Components\TextInput::make('sort_order')
-                    ->numeric()
-                    ->default(0),
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Konten Banner')
+                            ->schema([
+                                Forms\Components\TextInput::make('title')
+                                    ->maxLength(255)
+                                    ->required(),
+                                Forms\Components\Textarea::make('description')
+                                    ->maxLength(65535)
+                                    ->columnSpanFull(),
+                                Forms\Components\FileUpload::make('image')
+                                    ->image()
+                                    ->required()
+                                    ->directory('banners')
+                                    ->columnSpanFull()
+                                    ->imageEditor(),
+                            ]),
+                    ])->columnSpan(['lg' => 2]),
+
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Pengaturan')
+                            ->schema([
+                                Forms\Components\Toggle::make('is_active')
+                                    ->required()
+                                    ->default(true),
+                                Forms\Components\TextInput::make('sort_order')
+                                    ->numeric()
+                                    ->default(0),
+                            ]),
+                    ])->columnSpan(['lg' => 1]),
             ]);
     }
 
