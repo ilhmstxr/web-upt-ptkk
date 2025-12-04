@@ -66,17 +66,27 @@
             <div class="relative z-10">
                 <h3 class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wide font-semibold mb-2">Timeline Progress</h3>
                 <div class="flex items-end gap-2 mb-4">
-                    <span class="text-3xl font-bold text-gray-900 dark:text-white">Hari ke-20</span>
-                    <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">/ 60 Hari</span>
+                    @php
+                        $start = \Carbon\Carbon::parse($record->tanggal_mulai);
+                        $end = \Carbon\Carbon::parse($record->tanggal_selesai);
+                        $now = now();
+                        $totalDays = $start->diffInDays($end) ?: 1;
+                        $daysPassed = $start->diffInDays($now);
+                        if ($now->isBefore($start)) $daysPassed = 0;
+                        if ($now->isAfter($end)) $daysPassed = $totalDays;
+                        $percentage = min(100, max(0, ($daysPassed / $totalDays) * 100));
+                    @endphp
+                    <span class="text-3xl font-bold text-gray-900 dark:text-white">Hari ke-{{ $daysPassed }}</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">/ {{ $totalDays }} Hari</span>
                 </div>
                 <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
-                    <div class="bg-primary-600 dark:bg-primary-500 h-3 rounded-full transition-all duration-1000 relative" style="width: 33%">
+                    <div class="bg-primary-600 dark:bg-primary-500 h-3 rounded-full transition-all duration-1000 relative" style="width: {{ $percentage }}%">
                             <div class="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-20 w-full animate-pulse"></div>
                     </div>
                 </div>
                 <div class="flex justify-between text-xs text-gray-400 dark:text-gray-500 font-medium">
-                    <span>Mulai: {{ \Carbon\Carbon::parse($record->tanggal_mulai)->format('d M') }}</span>
-                    <span>Target: {{ \Carbon\Carbon::parse($record->tanggal_selesai)->format('d M') }}</span>
+                    <span>Mulai: {{ $start->format('d M') }}</span>
+                    <span>Target: {{ $end->format('d M') }}</span>
                 </div>
             </div>
         </div>
@@ -96,7 +106,7 @@
                 <span class="text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
                     <x-heroicon-o-arrow-trending-up class="w-3 h-3" /> +12%
                 </span>
-                <span class="text-gray-400 dark:text-gray-500">dari target awal</span>
+                <span class="text-gray-400 dark:text-gray-500">dari target {{ $record->jumlah_peserta ?? '-' }}</span>
             </div>
         </div>
 
@@ -110,7 +120,7 @@
                     <h3 class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wide font-semibold">Bidang</h3>
                 </div>
                 <div>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ $record->bidang_pelatihan_count ?? 4 }}</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ $record->bidangPelatihan->count() }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Kelas Aktif</p>
                 </div>
             </div>
@@ -193,9 +203,39 @@
                     <button class="px-3 py-2 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700"><x-heroicon-o-plus class="w-3 h-3 inline mr-1" /> Tambah Peserta</button>
                 </div>
             </div>
-            <div class="text-center text-gray-500 dark:text-gray-400 py-10">
-                <p>Data peserta akan ditampilkan di sini.</p>
-            </div>
+                <div class="overflow-x-auto custom-scrollbar border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-900/50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nama Peserta</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Instansi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                            @foreach($record->pendaftaranPelatihan as $pendaftaran)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                    <div class="flex items-center">
+                                        <div class="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mr-3 text-xs font-bold">
+                                            {{ substr($pendaftaran->peserta->nama ?? 'XX', 0, 2) }}
+                                        </div>
+                                        {{ $pendaftaran->peserta->nama ?? '-' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                    {{ $pendaftaran->peserta->instansi->asal_instansi ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                        {{ $pendaftaran->status ?? 'Terdaftar' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
         </div>
 
 
@@ -208,8 +248,25 @@
                     <x-heroicon-o-plus class="w-4 h-4" /> Tambah Instruktur
                 </button>
             </div>
-             <div class="text-center text-gray-500 dark:text-gray-400 py-10">
-                <p>Data instruktur akan ditampilkan di sini.</p>
+             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($record->bidangPelatihan as $bidang)
+                    @if($bidang->instruktur)
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:shadow-md transition-shadow relative group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-14 h-14 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-500 dark:text-gray-400">
+                                {{ substr($bidang->instruktur->nama ?? 'IN', 0, 2) }}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 dark:text-white">{{ $bidang->instruktur->nama }}</h4>
+                                <p class="text-xs text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full w-fit mt-1">{{ $bidang->bidang->nama_bidang ?? 'Bidang' }}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            <div class="flex items-center gap-2"><x-heroicon-o-envelope class="w-4 h-4 text-gray-400" /> {{ $bidang->instruktur->user->email ?? '-' }}</div>
+                        </div>
+                    </div>
+                    @endif
+                @endforeach
             </div>
         </div>
 

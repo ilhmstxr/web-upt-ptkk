@@ -27,12 +27,19 @@ class InstrukturResource extends Resource
                     ->relationship('bidang', 'nama_bidang')
                     ->searchable()
                     ->preload(),
-                Forms\Components\Select::make('pelatihan_id')
-                    ->relationship('pelatihan', 'nama_pelatihan')
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\TextInput::make('nama_gelar')
-                    ->label('Nama Gelar')
+                Forms\Components\TextInput::make('email')
+                    ->label('Email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255)
+                    ->unique('users', 'email'),
+                Forms\Components\TextInput::make('password')
+                    ->label('Password')
+                    ->password()
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('nama')
+                    ->label('Nama')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('tempat_lahir')
@@ -75,16 +82,14 @@ class InstrukturResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama_gelar')
+                Tables\Columns\TextColumn::make('nama')
                     ->label('Nama')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('bidang.nama_bidang')
                     ->label('Bidang')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
-                    ->label('Pelatihan')
-                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('instansi')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('no_hp')
@@ -108,7 +113,7 @@ class InstrukturResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            InstrukturResource\RelationManagers\PelatihanRelationManager::class,
         ];
     }
 

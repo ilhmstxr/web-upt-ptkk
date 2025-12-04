@@ -1,3 +1,4 @@
+<div>
 <x-filament-panels::page>
     <!-- Custom Styles from HTML -->
     <style>
@@ -171,3 +172,4 @@
         }
     </script>
 </x-filament-panels::page>
+</div>

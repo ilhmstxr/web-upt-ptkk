@@ -66,7 +66,7 @@ class PelatihanResource extends Resource
                                     //     ->acceptedFileTypes(['application/pdf'])
                                     //     ->label('Modul (PDF)'),
                                     Forms\Components\Select::make('instruktur_id')
-                                        ->relationship('instruktur', 'nama_instruktur')
+                                        ->relationship('instruktur', 'nama')
                                         ->label('Instruktur')
                                         ->searchable(),
                                     Forms\Components\TextInput::make('lokasi')
