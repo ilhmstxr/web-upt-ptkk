@@ -9,13 +9,12 @@
   {{-- Tailwind --}}
   <script src="https://cdn.tailwindcss.com"></script>
 
-  {{-- Fonts (dari design estetik) --}}
+  {{-- Fonts --}}
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Volkhov:wght@700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
 
   <style>
-    /* CSS Custom dari design estetik */
     :root{
       --biru-brand: #1524AF;
       --kuning-stroke: #FFDE59;
@@ -23,7 +22,6 @@
       --card-manfaat: #DBE7F7;
     }
 
-    /* Stroke teks utilitas */
     .stroke-yellow{
       text-shadow:
         -1px -1px 0 var(--kuning-stroke),
@@ -39,7 +37,6 @@
          1px  1px 0 var(--merah-stroke);
     }
 
-    /* Shadow bertingkat (5 lapis) */
     .shadow-5x{
       box-shadow:
         0 1px 3px rgba(0,0,0,0.05),
@@ -48,8 +45,7 @@
         0 6px 14px rgba(0,0,0,0.11),
         0 8px 20px rgba(0,0,0,0.13);
     }
-    
-    /* Global Section Layout Consistency */
+
     .section-container {
       max-width: 1280px;
       margin-left: auto;
@@ -71,7 +67,12 @@
         padding-right: 80px;
       }
     }
-    
+
+    .section-compact {
+      padding-top: 30px !important;
+      padding-bottom: 30px !important;
+    }
+
     section + section {
       margin-top: 30px !important;
     }
@@ -85,127 +86,198 @@
   {{-- NAVBAR --}}
   @include('components.layouts.app.navbarlanding')
 
-  {{-- HERO (komponen reusable) --}}
+  {{-- HERO --}}
   <x-layouts.app.profile-hero
     title="Berita"
     :crumbs="[
       ['label' => 'Beranda', 'route' => 'landing'],
-      ['label' => 'Berita',  'route' => 'berita.index'], {{-- Menggunakan route fungsional --}}
+      ['label' => 'Berita',  'route' => 'berita.index'],
     ]"
     height="h-[320px]"
   />
   {{-- /HERO --}}
 
-  {{-- SECTION: Daftar Berita --}}
+  @php
+    use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Str;
+
+    /**
+     * Helper kecil untuk mendapatkan URL gambar yang bisa diakses di browser.
+     * Menerima $value (string|null). Mengembalikan URL (string) atau null.
+     */
+    if (! function_exists('resolve_image_url')) {
+      function resolve_image_url($value) {
+        if (empty($value)) {
+          return null;
+        }
+
+        // already a full URL
+        if (preg_match('/^https?:\\/\\//i', $value)) {
+          return $value;
+        }
+
+        // normalize remove leading storage/ atau public/
+        $normalized = preg_replace('#^storage\/+#i', '', trim($value));
+        $normalized = preg_replace('#^public\/+#i', '', $normalized);
+
+        // prefer Storage::disk('public')
+        try {
+          if (Storage::disk('public')->exists($normalized)) {
+            return Storage::disk('public')->url($normalized); // /storage/...
+          }
+        } catch (\Throwable $e) {
+          // ignore
+        }
+
+        // check public/storage/<normalized>
+        if (file_exists(public_path('storage/' . $normalized))) {
+          return asset('storage/' . $normalized);
+        }
+
+        // check public/<normalized>
+        if (file_exists(public_path($normalized))) {
+          return asset($normalized);
+        }
+
+        return null;
+      }
+    }
+  @endphp
+
   <section class="section-container py-8 md:py-10">
     @php
-      // ====== Logic Laravel Fungsional untuk mengambil data ======
-      $postsCollection = $posts instanceof \Illuminate\Pagination\LengthAwarePaginator
-                         ? $posts->items()
-                         : ($posts ?? collect());
+      // fallback variables: jika controller tidak mengirim, coba cari nama alternatif
+      $postsPaginator = $postsPaginator ?? ($posts ?? null);
+      $featured = $featured ?? null;
+      $others = $others ?? null;
 
-      if (!isset($featured)) {
-          $featured = collect($postsCollection)->first();
+      // Jika controller hanya mengirim $posts (LengthAwarePaginator), siapkan featured/others
+      if (empty($postsPaginator) && ! empty($posts) && is_object($posts) && method_exists($posts, 'items')) {
+          $postsPaginator = $posts;
       }
 
-      // Filter posts, jika $featured ada, hilangkan dari $others
-      $others = collect($postsCollection)->filter(fn($p) => !($featured && ($p->id ?? $p->slug) === ($featured->id ?? $featured->slug)));
+      if ($postsPaginator && empty($featured)) {
+          $items = collect($postsPaginator->items());
+          $featured = $items->first() ?? null;
+          $others = $items->slice(1);
+      }
+
+      // Ensure $others is a collection
+      if ($others && ! ($others instanceof \Illuminate\Support\Collection)) {
+        $others = collect($others);
+      }
     @endphp
 
-    {{-- Jika tidak ada berita --}}
-    @if(empty($postsCollection) || count($postsCollection) === 0)
+    @if( ! $postsPaginator || ($postsPaginator->count() === 0 && (empty($featured) && ($others ? $others->isEmpty() : true))) )
       <div class="text-center py-16">
         <h3 class="text-2xl font-bold text-[#1524AF]">Belum ada berita</h3>
       </div>
-
     @else
-      
-      {{-- ===== KARTU UNGGULAN (FEATURED) ===== --}}
+
+      {{-- FEATURED --}}
       @if($featured)
-      <article class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 lg:mb-10">
-        {{-- Gambar --}}
-        <div class="lg:col-span-5">
-          <a href="{{ route('berita.show', $featured->slug) }}" class="block group">
-            <div class="aspect-[16/12] md:aspect-[16/11] w-full rounded-[18px] overflow-hidden shadow-md">
-              {{-- Menggunakan data fungsional --}}
-              @if($featured->image)
-                <img src="{{ Storage::url($featured->image) }}" alt="{{ $featured->title }}"
-                     class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy">
-              @else
-                {{-- Placeholder jika tidak ada gambar --}}
-                <div class="w-full h-full bg-slate-300/60"></div>
-              @endif
-            </div>
-          </a>
-        </div>
+        @php
+          $fIsModel = is_object($featured);
+          $fTitle = $fIsModel ? ($featured->title ?? '—') : ($featured['title'] ?? '—');
+          $fSlug = $fIsModel ? ($featured->slug ?? '#') : ($featured['url'] ?? '#');
+          // image resolution: prefer $featured->image_url accessor if exists
+          if ($fIsModel && method_exists($featured, 'getImageUrlAttribute')) {
+            $fImgUrl = $featured->image_url;
+          } else {
+            $fImgUrl = resolve_image_url($fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null));
+          }
+          $fDate = $fIsModel ? ($featured->published_at ?? $featured->created_at) : ($featured['date'] ?? null);
+        @endphp
 
-        {{-- Teks --}}
-        <div class="lg:col-span-7">
-          {{-- Badge --}}
-          <div class="mb-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
-                         font-[Volkhov] text-[15px] leading-none shadow-sm">
-              Berita Baru
-            </span>
-          </div>
-
-          {{-- Tanggal --}}
-          <div class="flex items-center gap-2 text-slate-500 text-[13px] mb-1">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
-              <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line>
-              <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line>
-            </svg>
-            {{-- Menggunakan data fungsional --}}
-            <span>{{ optional($featured->published_at ?? $featured->created_at)->format('d F Y') }}</span>
-          </div>
-
-          {{-- Judul --}}
-          <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[26px] leading-tight text-[#1524AF] mb-2">
-            {{-- Menggunakan route fungsional --}}
-            <a href="{{ route('berita.show', $featured->slug) }}" class="hover:opacity-90 transition">
-              {{ $featured->title }}
+        <article class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 lg:mb-10">
+          <div class="lg:col-span-5">
+            <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}" class="block group">
+              <div class="aspect-[16/12] md:aspect-[16/11] w-full rounded-[18px] overflow-hidden">
+                @if($fImgUrl)
+                  <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}" class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy"
+                       onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
+                @else
+                  <div class="w-full h-full bg-slate-300/60"></div>
+                @endif
+              </div>
             </a>
-          </h2>
+          </div>
 
-          {{-- Excerpt --}}
-          <p class="font-[Montserrat] text-[14.5px] md:text-[15px] text-slate-800 leading-relaxed mb-3 max-w-[60ch]">
-            {{-- Menggunakan data fungsional dan Str::limit untuk excerpt --}}
-            {!! \Illuminate\Support\Str::limit(strip_tags($featured->content), 250) !!}
-          </p>
+          <div class="lg:col-span-7">
+            <div class="mb-2">
+              <span class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                           font-[Volkhov] text-[15px] leading-none shadow-sm">
+                Berita Baru
+              </span>
+            </div>
 
-          {{-- CTA --}}
-          <a href="{{ route('berita.show', $featured->slug) }}"
-             class="inline-flex items-center gap-2 text-[#1524AF] font-[Montserrat] underline underline-offset-2 hover:no-underline">
-            Baca Selengkapnya
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        </div>
-      </article>
+            <div class="flex items-center gap-2 text-slate-500 text-[13px] mb-1">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
+                <line x1="8"  y1="2" x2="8"  y2="6" stroke-width="2"></line>
+                <line x1="3"  y1="10" x2="21" y2="10" stroke-width="2"></line>
+              </svg>
+              <span>
+                @if($fDate && is_object($fDate) && method_exists($fDate, 'setTimezone'))
+                  {{ $fDate->setTimezone(config('app.timezone'))->translatedFormat('d F Y H:i') }}
+                @elseif(!empty($fDate))
+                  {{ \Carbon\Carbon::parse($fDate)->setTimezone(config('app.timezone'))->translatedFormat('d F Y H:i') }}
+                @else
+                  -
+                @endif
+              </span>
+            </div>
+
+            <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[26px] leading-tight text-[#1524AF] mb-2">
+              <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}" class="hover:opacity-90 transition">
+                {{ $fTitle }}
+              </a>
+            </h2>
+
+            <p class="font-[Montserrat] text-[14.5px] md:text-[15px] text-slate-800 leading-relaxed mb-3 max-w-[60ch]">
+              @if($fIsModel)
+                {{ \Illuminate\Support\Str::limit(strip_tags($featured->content ?? ''), 320) }}
+              @else
+                {{ $featured['excerpt'] ?? '' }}
+              @endif
+            </p>
+
+            <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}"
+               class="inline-flex items-center gap-2 text-[#1524AF] font-[Montserrat] underline underline-offset-2 hover:no-underline">
+              Baca Selengkapnya
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </article>
       @endif
 
-      {{-- ===== GRID BERITA LAIN ===== --}}
+      {{-- GRID OTHER POSTS --}}
       <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
         @foreach ($others as $post)
+          @php
+            $isModel = is_object($post);
+            $title = $isModel ? ($post->title ?? '—') : ($post['title'] ?? '—');
+            $slugOrUrl = $isModel ? route('berita.show', $post->slug) : ($post['url'] ?? '#');
+            $imgUrl = $isModel && method_exists($post, 'getImageUrlAttribute') ? $post->image_url : resolve_image_url($isModel ? ($post->image ?? null) : ($post['thumb'] ?? null));
+            $date = $isModel ? ($post->published_at ?? $post->created_at) : ($post['date'] ?? null);
+            $excerpt = $isModel ? \Illuminate\Support\Str::limit(strip_tags($post->content ?? ''), 120) : ($post['excerpt'] ?? '');
+          @endphp
+
           <article class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm hover:shadow-md transition">
-            {{-- Thumb --}}
-            <a href="{{ route('berita.show', $post->slug) }}" class="block mb-3">
+            <a href="{{ $slugOrUrl }}" class="block mb-3">
               <div class="aspect-[16/11] w-full rounded-xl border border-[#1524AF]/40 overflow-hidden">
-                {{-- Menggunakan data fungsional --}}
-                @if($post->image)
-                  <img src="{{ Storage::url($post->image) }}" alt="{{ $post->title }}"
-                       class="w-full h-full object-cover hover:scale-[1.02] transition" loading="lazy">
+                @if($imgUrl)
+                  <img src="{{ $imgUrl }}" alt="{{ $title }}" class="w-full h-full object-cover hover:scale-[1.02] transition" loading="lazy"
+                       onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
                 @else
-                  {{-- Placeholder jika tidak ada gambar --}}
                   <div class="w-full h-full bg-slate-200/70"></div>
                 @endif
               </div>
             </a>
 
-            {{-- Meta tanggal --}}
             <div class="flex items-center gap-2 text-slate-500 text-xs mb-1">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
@@ -213,27 +285,26 @@
                 <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line>
                 <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line>
               </svg>
-              {{-- Menggunakan data fungsional --}}
-              <span>{{ optional($post->published_at ?? $post->created_at)->format('d F Y') }}</span>
+              <span>
+                @if($date && is_object($date) && method_exists($date, 'setTimezone'))
+                  {{ $date->setTimezone(config('app.timezone'))->translatedFormat('d F Y') }}
+                @elseif(!empty($date))
+                  {{ \Carbon\Carbon::parse($date)->setTimezone(config('app.timezone'))->translatedFormat('d F Y') }}
+                @else
+                  -
+                @endif
+              </span>
             </div>
 
-            {{-- Judul --}}
             <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug text-slate-900 mb-2">
-              {{-- Menggunakan route fungsional --}}
-              <a href="{{ route('berita.show', $post->slug) }}" class="hover:text-[#1524AF] transition">
-                {{ $post->title }}
-              </a>
+              <a href="{{ $slugOrUrl }}" class="hover:text-[#1524AF] transition">{{ $title }}</a>
             </h3>
 
-            {{-- Excerpt --}}
-            <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-slate-700 mb-3 line-clamp-2">
-              {{-- Menggunakan data fungsional dan Str::limit --}}
-              {!! \Illuminate\Support\Str::limit(strip_tags($post->content), 80) !!}
+            <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-slate-700 mb-3">
+              {!! $excerpt !!}
             </p>
 
-            {{-- Read more --}}
-            <a href="{{ route('berita.show', $post->slug) }}"
-               class="inline-flex items-center gap-2 text-[#1524AF] text-[13px] sm:text-[14px] hover:underline">
+            <a href="{{ $slugOrUrl }}" class="inline-flex items-center gap-2 text-[#1524AF] text-[13px] sm:text-[14px] hover:underline">
               Baca Selengkapnya
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -243,12 +314,12 @@
         @endforeach
       </div>
 
-      {{-- ===== PAGINATION (menggunakan Paginator Laravel) ===== --}}
-      <nav class="mt-8 flex justify-center">
-        {{-- Menggunakan helper Laravel untuk paginasi --}}
-        {{ $posts->links('pagination::tailwind') }}
-      </nav>
-
+      {{-- PAGINATION --}}
+      <div class="mt-8">
+        @if($postsPaginator)
+          {{ $postsPaginator->links() }}
+        @endif
+      </div>
     @endif
   </section>
 

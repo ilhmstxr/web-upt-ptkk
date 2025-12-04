@@ -8,65 +8,41 @@ use Illuminate\Http\Request;
 class BeritaController extends Controller
 {
     /**
-     * Tampilkan daftar berita (published) dengan pagination.
+     * Tampilkan daftar berita (semua yang is_published = true) dengan pagination.
+     * Menghasilkan variabel yang sesuai dengan blade:
+     * - $postsPaginator  => LengthAwarePaginator
+     * - $featured        => model (atau null)
+     * - $others          => Collection (model)
      */
     public function index(Request $request)
     {
-        // Ambil only published. Jika ingin testing tanpa filter published_at,
-        // ganti query sesuai komentar di bawah.
-        $query = Berita::query()
-            ->where('is_published', true);
+        // Ambil semua yang is_published = true (tanpa memeriksa published_at)
+        $query = Berita::query()->where('is_published', true);
 
-        // Optional: pastikan published_at sudah <= now() jika kolom dipakai.
-        if (schema_has_column('beritas', 'published_at')) {
-            $query->where(function ($q) {
-                $q->whereNull('published_at')
-                  ->orWhere('published_at', '<=', now());
-            });
-        }
+        // Urutkan: gunakan published_at (jika ada) lalu id
+        $postsPaginator = $query->orderByDesc('published_at')
+                                ->orderByDesc('id')
+                                ->paginate(9)
+                                ->withQueryString();
 
-        $posts = $query->orderByDesc('published_at')
-                       ->orderByDesc('id')
-                       ->paginate(9)
-                       ->withQueryString();
+        // Siapkan featured (item pertama dari current page) dan others (sisanya)
+        $items = collect($postsPaginator->items()); // array -> collection
+        $featured = $items->first() ?: null;
+        $others = $items->slice(1);
 
-        // Featured = first item (atau null)
-        $featured = $posts->count() ? $posts->items()[0] : null;
-
-        return view('pages.berita', compact('posts', 'featured'));
+        return view('pages.berita', compact('postsPaginator', 'featured', 'others'));
     }
 
     /**
-     * Tampilkan single berita berdasarkan slug.
+     * Tampilkan detail berita berdasarkan slug.
+     * Menampilkan berita yang is_published = true.
      */
-    public function show($slug)
+    public function show(Request $request, $slug)
     {
         $post = Berita::where('slug', $slug)
                       ->where('is_published', true)
-                      ->when(schema_has_column('beritas', 'published_at'), function ($q) {
-                          $q->where(function ($q2) {
-                              $q2->whereNull('published_at')
-                                 ->orWhere('published_at', '<=', now());
-                          });
-                      })
                       ->firstOrFail();
 
         return view('pages.berita_show', compact('post'));
-    }
-}
-
-/**
- * Helper kecil: periksa ada kolom di table (agar tidak error di environment dev).
- * NOTE: fungsi global ini diletakkan di file controller untuk safety; jika kamu
- * sudah punya helper lain, silakan hapus bagian ini dan panggil helper yang ada.
- */
-if (!function_exists('schema_has_column')) {
-    function schema_has_column(string $table, string $column): bool
-    {
-        try {
-            return \Illuminate\Support\Facades\Schema::hasColumn($table, $column);
-        } catch (\Throwable $e) {
-            return false;
-        }
     }
 }

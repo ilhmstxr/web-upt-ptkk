@@ -3,10 +3,8 @@
 namespace App\Filament\Clusters\KontenWebsite\Resources;
 
 use App\Filament\Clusters\KontenWebsite;
-// ✅ Sudah benar: Import Pages untuk definisi rute
-use App\Filament\Clusters\KontenWebsite\Resources\BeritaResource\Pages; 
-// ✅ PERBAIKAN: Import Model yang benar (App\Models\Berita)
-use App\Models\Berita; 
+use App\Filament\Clusters\KontenWebsite\Resources\BeritaResource\Pages;
+use App\Models\Berita;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -35,32 +33,39 @@ class BeritaResource extends Resource
                     ->description('Informasi utama, konten, dan gambar berita.')
                     ->columns(2)
                     ->schema([
+                        // KIRI: Judul, slug, konten (mengisi kolom utama)
                         Forms\Components\Group::make()
-                            ->columnSpan(['sm' => 1, 'md' => 1, 'lg' => 1, 'xl' => 1]) // Dibuat responsif
+                            ->columnSpan(['sm' => 2, 'lg' => 1])
                             ->schema([
                                 Forms\Components\TextInput::make('title')
                                     ->label('Judul Berita')
                                     ->required()
                                     ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => ($operation === 'create' || $operation === 'edit') ? $set('slug', Str::slug($state)) : null),
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        if (!empty($state)) {
+                                            $set('slug', Str::slug($state));
+                                        }
+                                    }),
 
                                 Forms\Components\TextInput::make('slug')
                                     ->label('Slug (URL)')
                                     ->required()
                                     ->maxLength(255)
-                                    ->unique(Berita::class, 'slug', ignoreRecord: true),
-                                
+                                    ->unique(Berita::class, 'slug', ignoreRecord: true)
+                                    ->helperText('Biarkan terisi otomatis dari judul atau ubah sesuai kebutuhan.'),
+
                                 Forms\Components\RichEditor::make('content')
                                     ->label('Konten Berita')
                                     ->required()
                                     ->columnSpanFull()
-                                    ->fileAttachmentsDisk('public') // Opsional: Konfigurasi upload gambar di editor
-                                    ->fileAttachmentsDirectory('berita_content'), // Opsional: Konfigurasi folder
+                                    ->fileAttachmentsDisk('public')
+                                    ->fileAttachmentsDirectory('berita_content'),
                             ]),
-                        
+
+                        // KANAN: Gambar, publish toggle & tanggal
                         Forms\Components\Group::make()
-                            ->columnSpan(['sm' => 1, 'md' => 1, 'lg' => 1, 'xl' => 1]) // Dibuat responsif
+                            ->columnSpan(['sm' => 2, 'lg' => 1])
                             ->schema([
                                 Forms\Components\FileUpload::make('image')
                                     ->label('Gambar Utama')
@@ -69,21 +74,20 @@ class BeritaResource extends Resource
                                     ->disk('public')
                                     ->visibility('public')
                                     ->imageCropAspectRatio('16:9')
-                                    ->imageEditor()
+                                    ->maxSize(4096) // KB (4MB)
                                     ->columnSpanFull()
-                                    ->required(), // Tambahkan required untuk memastikan gambar utama ada
+                                    ->helperText('Unggah gambar utama untuk tampilan featured.'),
 
                                 Forms\Components\Toggle::make('is_published')
                                     ->label('Publikasikan Segera')
                                     ->default(false)
-                                    ->inline(false)
                                     ->helperText('Aktifkan untuk menampilkan berita di website.'),
 
                                 Forms\Components\DateTimePicker::make('published_at')
                                     ->label('Tanggal & Waktu Publikasi')
                                     ->default(now())
-                                    ->required(fn (Forms\Get $get): bool => $get('is_published')) // Required jika is_published true
-                                    ->visible(fn (Forms\Get $get): bool => $get('is_published') || $get('published_at')), // Tampilkan jika published atau sudah pernah diisi
+                                    ->visible(fn (Forms\Get $get): bool => (bool) $get('is_published'))
+                                    ->required(fn (Forms\Get $get): bool => (bool) $get('is_published')),
                             ]),
                     ]),
             ]);
@@ -93,19 +97,36 @@ class BeritaResource extends Resource
     {
         return $table
             ->columns([
+                // ImageColumn: aman dengan path relatif atau full URL
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
                     ->size(80)
-                    ->square(), // Tampilkan sebagai kotak, lebih rapi di tabel
-                
+                    ->square()
+                    ->getStateUsing(function ($record) {
+                        // $record bisa model atau array
+                        $r = is_array($record) ? (object)$record : $record;
+                        $path = $r->image ?? null;
+                        if (! $path) {
+                            return null;
+                        }
+                        // jika full URL langsung kembalikan
+                        if (preg_match('/^https?:\\/\\//i', $path)) {
+                            return $path;
+                        }
+                        // normalisasi: hapus awalan storage/ atau public/
+                        $normalized = preg_replace('#^public\/+#i', '', $path);
+                        $normalized = preg_replace('#^storage\/+#i', '', $normalized);
+                        return '/storage/' . ltrim($normalized, '/');
+                    }),
+
                 Tables\Columns\TextColumn::make('title')
                     ->label('Judul Berita')
-                    ->description(fn (Berita $record): string => Str::limit(strip_tags($record->content ?? ''), 70) . '...') // Batasan deskripsi lebih panjang
+                    ->description(fn (Berita $record): string => Str::limit(strip_tags($record->content ?? ''), 70))
                     ->searchable()
                     ->sortable()
-                    ->wrap(), // Tambahkan wrap
-                
-                Tables\Columns\IconColumn::make('is_published') // Gunakan IconColumn untuk Toggle
+                    ->wrap(),
+
+                Tables\Columns\IconColumn::make('is_published')
                     ->label('Status')
                     ->boolean()
                     ->sortable(),
@@ -115,9 +136,8 @@ class BeritaResource extends Resource
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->color('primary')
-                    ->since() // Tampilkan 'X hari yang lalu'
-                    ->tooltip(fn (Berita $record): string => $record->published_at ? $record->published_at->format('d M Y H:i') : 'Belum dipublikasi'),
-                    
+                    ->tooltip(fn (Berita $record): ?string => $record->published_at ? $record->published_at->format('d M Y H:i') : null),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y')
@@ -128,21 +148,15 @@ class BeritaResource extends Resource
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_published')
                     ->label('Status Publikasi')
-                    ->indicator('Status Publikasi')
-                    ->options([
-                        true => 'Terpublikasi',
-                        false => 'Draft',
-                    ])
-                    ->placeholder('Semua Berita'),
-                    
+                    ->placeholder('Semua'),
+
                 Tables\Filters\Filter::make('published_recently')
                     ->label('Baru Dipublikasi (7 hari)')
                     ->query(fn (Builder $query): Builder => $query->where('published_at', '>=', now()->subDays(7)))
-                    ->toggle()
+                    ->toggle(),
             ])
             ->actions([
-                // ✅ Tambahkan ViewAction untuk melihat detail
-                Tables\Actions\ViewAction::make(), 
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -163,11 +177,10 @@ class BeritaResource extends Resource
     public static function getPages(): array
     {
         return [
-            // ✅ Sudah benar
-            'index' => Pages\ListBeritas::route('/'),
+            'index'  => Pages\ListBeritas::route('/'),
             'create' => Pages\CreateBerita::route('/create'),
-            'edit' => Pages\EditBerita::route('/{record}/edit'),
-            'view' => Pages\ViewBerita::route('/{record}'), // Tambahkan View Page
+            'edit'   => Pages\EditBerita::route('/{record}/edit'),
+            'view'   => Pages\ViewBerita::route('/{record}'),
         ];
     }
 }
