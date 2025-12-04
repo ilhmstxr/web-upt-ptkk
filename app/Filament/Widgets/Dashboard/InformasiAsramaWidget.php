@@ -2,31 +2,25 @@
 
 namespace App\Filament\Widgets;
 
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\Widget;
 
-class InformasiAsramaWidget extends BaseWidget
+class InformasiAsramaWidget extends Widget
 {
-    // INI ADALAH DEKLARASI YANG BENAR (NON-STATIC)
-    protected ?string $heading = 'Informasi Asrama';
-
-    // Mengatur lebar widget agar menempati 1 kolom
+    protected static ?int $sort = 4;
     protected int | string | array $columnSpan = 1;
+    protected static string $view = 'filament.widgets.informasi-asrama-widget';
 
-    protected function getStats(): array
+    protected function getViewData(): array
     {
-        // --- GANTI DENGAN LOGIKA ANDA ---
-        $totalKamar = 60; // Contoh
-        $kamarTerisi = 45; // Contoh dari query
-        $ketersediaan = $totalKamar - $kamarTerisi;
+        // Ambil pelatihan yang sedang aktif (status 'Aktif' dan tanggal sekarang dalam rentang)
+        $activeTraining = \App\Models\Pelatihan::where('status', 'Aktif')
+            ->whereDate('tanggal_mulai', '<=', now())
+            ->whereDate('tanggal_selesai', '>=', now())
+            ->latest('tanggal_mulai')
+            ->first();
 
         return [
-            Stat::make('Kamar Terisi', "{$kamarTerisi} / {$totalKamar}")
-                ->description('Total kamar yang sedang digunakan')
-                ->color('warning'),
-            Stat::make('Ketersediaan', $ketersediaan)
-                ->description('Jumlah kamar yang masih kosong')
-                ->color('success'),
+            'activeTrainingName' => $activeTraining ? $activeTraining->nama_pelatihan : 'Tidak ada pelatihan aktif',
         ];
     }
 }

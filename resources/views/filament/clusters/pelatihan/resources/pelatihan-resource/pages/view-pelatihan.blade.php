@@ -56,10 +56,10 @@
     </div>
 
     <!-- 3. STATS OVERVIEW -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         
         <!-- Progress Card -->
-        <div class="md:col-span-5 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-md transition-shadow">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-md transition-shadow">
             <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                 <x-heroicon-o-clock class="w-16 h-16 text-primary-600 dark:text-primary-400" />
             </div>
@@ -82,14 +82,14 @@
         </div>
 
         <!-- Total Peserta -->
-        <div class="md:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 group hover:shadow-md transition-shadow">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 group hover:shadow-md transition-shadow">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg group-hover:scale-110 transition-transform">
                     <x-heroicon-o-users class="w-6 h-6" />
                 </div>
                 <div>
                     <h3 class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wide font-semibold">Total Peserta</h3>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ $record->kuota_peserta }}</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ $record->pendaftaranPelatihan()->count() }}</p>
                 </div>
             </div>
             <div class="mt-4 pt-3 border-t border-gray-50 dark:border-gray-700 flex items-center gap-2 text-xs">
@@ -101,7 +101,7 @@
         </div>
 
         <!-- Total Bidang -->
-        <div class="md:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 group hover:shadow-md transition-shadow">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 group hover:shadow-md transition-shadow">
             <div class="flex flex-col h-full justify-between">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-lg group-hover:scale-110 transition-transform">
@@ -116,21 +116,7 @@
             </div>
         </div>
 
-        <!-- Absensi -->
-        <div class="md:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 group hover:shadow-md transition-shadow">
-            <div class="flex flex-col h-full justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 rounded-lg group-hover:scale-110 transition-transform">
-                        <x-heroicon-o-clipboard-document-check class="w-5 h-5" />
-                    </div>
-                    <h3 class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wide font-semibold">Absensi</h3>
-                </div>
-                <div>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white">92%</p>
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Rata-rata</p>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <!-- 4. TABS & MAIN CONTENT AREA -->
@@ -144,9 +130,7 @@
                 <button @click="activeTab = 'peserta'" :class="{ 'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'peserta', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'peserta' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center">
                     <x-heroicon-o-users class="w-4 h-4 mr-2" />Data Peserta
                 </button>
-                <button @click="activeTab = 'jadwal'" :class="{ 'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'jadwal', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'jadwal' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center">
-                    <x-heroicon-o-calendar-days class="w-4 h-4 mr-2" />Jadwal & Absensi
-                </button>
+
                 <button @click="activeTab = 'admin'" :class="{ 'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'admin', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'admin' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center">
                         <x-heroicon-o-user-group class="w-4 h-4 mr-2" />Instruktur
                 </button>
@@ -214,13 +198,7 @@
             </div>
         </div>
 
-        <!-- CONTENT 3: JADWAL -->
-        <div x-show="activeTab === 'jadwal'" class="p-6 bg-white dark:bg-gray-800 min-h-[400px]">
-             <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-6">Jadwal Pelatihan Minggu Ini</h3>
-             <div class="text-center text-gray-500 dark:text-gray-400 py-10">
-                <p>Jadwal pelatihan akan ditampilkan di sini.</p>
-            </div>
-        </div>
+
 
         <!-- CONTENT 4: INSTRUKTUR -->
         <div x-show="activeTab === 'admin'" class="p-6 bg-white dark:bg-gray-800 min-h-[400px]">

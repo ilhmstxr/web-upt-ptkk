@@ -111,9 +111,9 @@ class PelatihanResource extends Resource
                     })
                     ->alignCenter(),
 
-                Tables\Columns\TextColumn::make('jumlah_peserta')
-                    ->label('Kuota')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('pendaftaran_pelatihan_count')
+                    ->counts('pendaftaranPelatihan')
+                    ->label('Total Peserta')
                     ->sortable()
                     ->alignCenter(),
 

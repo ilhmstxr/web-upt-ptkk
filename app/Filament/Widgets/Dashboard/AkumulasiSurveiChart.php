@@ -21,7 +21,7 @@ class AkumulasiSurveiChart extends ChartWidget
             // Mengambil opsi jawaban yang relevan untuk survei kepuasan
             // ->where('pertanyaan_id', 1) // Sesuaikan jika perlu filter
             ->withCount('jawabanUsers') // Menghitung relasi menggunakan Eloquent
-            ->orderBy('id', 'asc') // Mengurutkan berdasarkan ID
+            ->orderBy('id', 'desc') // Mengurutkan berdasarkan ID DESC (Sangat Puas dulu)
             ->get();
 
         return [
@@ -30,10 +30,10 @@ class AkumulasiSurveiChart extends ChartWidget
                     'label' => 'Jumlah Jawaban',
                     'data' => $data->pluck('jawaban_users_count')->all(),
                     'backgroundColor' => [
-                        '#F87171', // Merah untuk 'Kurang'
-                        '#FBBF24', // Kuning untuk 'Cukup'
-                        '#60A5FA', // Biru untuk 'Puas'
-                        '#34D399', // Hijau untuk 'Sangat Puas'
+                        '#34d399', // Hijau untuk 'Sangat Puas'
+                        '#60a5fa', // Biru untuk 'Puas'
+                        '#fbbf24', // Amber untuk 'Cukup'
+                        '#f87171', // Merah untuk 'Kurang'
                     ],
                 ],
             ],

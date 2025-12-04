@@ -1,111 +1,70 @@
 <x-filament-widgets::widget>
-    <x-filament::card>
-        {{-- Menggunakan grid layout yang sudah kita setujui --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            {{-- Menggunakan @forelse dari file referensi Anda untuk keamanan --}}
-            @forelse ($this->charts as $c)
-                <div class="flex flex-col p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                    {{-- Teks pertanyaan dengan gaya dari versi kita --}}
-                    <h3 class="text-sm font-medium text-center text-gray-900 dark:text-gray-900 mb-4">
-                        {{ $c['question_label'] }}
-                    </h3>
-
-                    {{-- Mengambil SELURUH LOGIKA x-data dari file referensi Anda --}}
-                    <div x-data="{
-                        labels: @js($c['labels']),
-                        data: @js($c['data']),
-                        // Urutan warna disesuaikan untuk skala Likert
-                        colorsBg: [
-                            '#EF4444', // 1. Tidak Memuaskan (Merah)
-                            '#F59E0B', // 2. Kurang Memuaskan (Oranye)
-                            '#3B82F6', // 3. Memuaskan (Biru)
-                            '#10B981', // 4. Sangat Memuaskan (Hijau)
-                            '#8B5CF6', // 5. Opsi kelima (Ungu)
-                        ],
-                        pct: [],
-                        init() {
-                            const total = (this.data ?? []).reduce((a, b) => a + (Number(b) || 0), 0);
-                            this.pct = (this.data ?? []).map(v => {
-                                const p = total ? (Number(v) / total * 100) : 0;
-                                return Number.isFinite(p) ? p : 0;
-                            });
-                    
-                            const createChart = () => {
-                                new Chart(this.$refs.canvas, {
-                                    type: 'pie',
-                                    data: {
-                                        labels: this.labels,
-                                        datasets: [{
-                                            data: this.data,
-                                            backgroundColor: this.colorsBg,
-                                        }],
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        maintainAspectRatio: true,
-                                        aspectRatio: 1,
-                                        plugins: {
-                                            legend: { display: false }, // Legenda Chart.js dimatikan
-                                            tooltip: {
-                                                callbacks: {
-                                                    label: (item) => {
-                                                        const idx = item.dataIndex;
-                                                        const name = this.labels?.[idx] ?? '';
-                                                        const val = this.data?.[idx] ?? 0;
-                                                        const p = (this.pct?.[idx] ?? 0).toFixed(1);
-                                                        return `${name}: ${val} (${p}%)`;
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    },
-                                });
-                            };
-                    
-                            // Metode aman untuk memuat Chart.js dari file referensi
-                            if (window.Chart) {
-                                createChart();
-                            } else {
-                                const s = document.createElement('script');
-                                s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-                                s.onload = () => createChart();
-                                document.head.appendChild(s);
-                            }
-                        },
-                        percentStr(i) {
-                            const p = (this.pct?.[i] ?? 0);
-                            // Menggunakan titik sebagai pemisah desimal
-                            return p.toFixed(1) + '%';
-                        }
-                    }" class="flex gap-4 items-center w-full flex-grow">
-                        
-                        {{-- PERUBAHAN: Wadah Canvas, porsinya sedikit dikurangi menjadi 7/12 --}}
-                        <div class="w-7/12">
-                            <canvas x-ref="canvas"></canvas>
-                        </div>
-
-                        {{-- PERUBAHAN: Legenda HTML kustom, porsinya ditambah menjadi 5/12 --}}
-                        <div class="w-5/12">
-                            {{-- Menambahkan kelas warna teks untuk dark mode --}}
-                            <ul class="text-xs space-y-2 text-gray-900 dark:text-white" role="list">
-                                <template x-for="(label, i) in labels" :key="i">
-                                    <li class="flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            {{-- PERUBAHAN: Kotak warna dibuat kotak (rounded-sm) dan diberi jarak (mr-2) --}}
-                                            <span class="inline-block h-3 w-3 mr-2 flex-shrink-0 rounded-sm" :style="`background:${colorsBg[i]}`"></span>
-                                            <span x-text="label"></span>
-                                        </div>
-                                        <span class="font-medium" x-text="percentStr(i)"></span>
-                                    </li>
-                                </template>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="text-sm text-gray-500 col-span-full">Data tidak tersedia.</div>
-            @endforelse
+    <div class="space-y-8">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-gray-800 dark:text-white flex items-center">
+                <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs mr-2">3</span>
+                Detail Jawaban Per Pertanyaan
+            </h2>
         </div>
-    </x-filament::card>
+
+        @foreach ($chartsByCategory as $category => $charts)
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
+                <div class="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="font-bold text-gray-700 dark:text-gray-200 text-sm uppercase tracking-wider">
+                        {{ $loop->iteration }}. {{ $category }}
+                    </h3>
+                </div>
+                
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @foreach ($charts as $c)
+                        <div class="flex flex-col items-center">
+                            <h4 class="text-sm font-semibold text-gray-800 dark:text-white mb-3 text-center h-12 flex items-center justify-center w-full px-2 leading-tight">
+                                {{ $c['question_label'] }}
+                            </h4>
+                            <div class="h-48 w-full relative"
+                                 x-data="{
+                                    labels: @js($c['labels']),
+                                    data: @js($c['data']),
+                                    colors: @js($c['colors']),
+                                    init() {
+                                        new Chart(this.$refs.canvas, {
+                                            type: 'pie',
+                                            data: {
+                                                labels: this.labels,
+                                                datasets: [{
+                                                    data: this.data,
+                                                    backgroundColor: this.colors,
+                                                    borderWidth: 2,
+                                                    borderColor: '#ffffff'
+                                                }]
+                                            },
+                                            options: {
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                plugins: {
+                                                    legend: {
+                                                        position: 'bottom',
+                                                        labels: { boxWidth: 10, font: { size: 10 }, padding: 10 }
+                                                    },
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                return context.label + ': ' + context.raw + ' (' + context.parsed + '%)';
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                 }"
+                            >
+                                <canvas x-ref="canvas"></canvas>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endforeach
+    </div>
 </x-filament-widgets::widget>

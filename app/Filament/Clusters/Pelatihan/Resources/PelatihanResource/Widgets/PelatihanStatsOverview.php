@@ -16,7 +16,6 @@ class PelatihanStatsOverview extends Widget
             'totalPelatihan' => Pelatihan::count(),
             'sedangBerjalan' => Pelatihan::where('status', 'Sedang Berjalan')->count(), // Adjust status value as needed
             'totalPeserta' => PendaftaranPelatihan::count(), // Correct model usage
-            'rataKelulusan' => 94, // Placeholder or calculate from data
         ];
     }
 }

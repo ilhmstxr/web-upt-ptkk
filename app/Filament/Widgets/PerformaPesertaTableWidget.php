@@ -13,6 +13,7 @@ class PerformaPesertaTableWidget extends BaseWidget
     
     // Judul Widget
     protected static ?string $heading = 'Top Nilai Terbaik Per Peserta';
+    protected static ?int $sort = 5;
     
     // Set kolom agar widget tidak terlalu tinggi
     protected int | string | array $columnSpan = 'full';
@@ -23,10 +24,17 @@ class PerformaPesertaTableWidget extends BaseWidget
             ->query(
                 // Mengambil data dari PendaftaranPelatihan, diurutkan berdasarkan rata-rata nilai
                 PendaftaranPelatihan::query()
-                    ->with('peserta') // Load relasi
+                    ->with(['peserta', 'pelatihan']) // Load relasi
                     ->orderBy('rata_rata', 'desc')
                     ->limit(5) // Tampilkan 5 terbaik
             )
+            ->headerActions([
+                Tables\Actions\Action::make('Lihat Semua')
+                    ->url('#') // Ganti dengan URL resource yang sesuai, misal: PendaftaranPelatihanResource::getUrl('index')
+                    ->button()
+                    ->color('gray')
+                    ->size('xs'),
+            ])
             ->columns([
                 TextColumn::make('peserta.kode_peserta') // Asumsi 'kode_peserta' ada di model Peserta
                     ->label('KODE PESERTA')
@@ -36,6 +44,10 @@ class PerformaPesertaTableWidget extends BaseWidget
                     ->label('NAMA PESERTA')
                     ->searchable(),
                 
+                TextColumn::make('pelatihan.nama_pelatihan')
+                    ->label('PELATIHAN')
+                    ->limit(30),
+
                 TextColumn::make('bidang.nama_bidang') // Asumsi 'nama_bidang' ada di model Bidang
                     ->label('BIDANG'),
 
@@ -59,11 +71,7 @@ class PerformaPesertaTableWidget extends BaseWidget
                     ->color('success') // Sesuai gambar
                     ->sortable(),
 
-                TextColumn::make('nilai_praktek')
-                    ->label('NILAI PRAKTEK (Opsional)')
-                    ->numeric()
-                    ->alignRight()
-                    ->placeholder('(jika ada)'), // Tampilkan placeholder jika null
+
             ])
             ->paginated(false); // Sembunyikan paginasi
     }
