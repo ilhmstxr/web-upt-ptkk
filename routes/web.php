@@ -40,20 +40,23 @@ use Spatie\Browsershot\Browsershot;
 /* ======= BERANDA & HOME ======= */
 Route::get('/', fn () => view('pages.landing'))->name('landing');
 
-// ======= PROFIL (dropdown di navbar) =======
-// ⬇️ S E S U A I K A N  D I S I N I
-Route::view('/cerita-kami',           'pages.profil.cerita-kami')->name('story');
-Route::view('/program-pelatihan',     'pages.profil.program-pelatihan')->name('programs');
-Route::view('/kompetensi-pelatihan',  'pages.profil.kompetensi-pelatihan')->name('kompetensi');
+// PROFIL
+Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
+Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
+Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
 
-// Legacy redirect (biar link lama tidak 404)
 Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
 
-// Menu lain yang dipakai navbar
-Route::view('/berita', 'pages.berita')->name('news');
+Route::view('/berita',  'pages.berita')->name('news');
+Route::view('/panduan', 'pages.panduan')->name('panduan');
 
-// ⬇️ Tambahkan Panduan (buat view sesuai strukturmu, contoh: resources/views/pages/panduan/index.blade.php)
-Route::view('/panduan',  'pages.panduan')->name('panduan');
+/* 🔹 Halaman Masuk */
+Route::view('/masuk', 'pages.masuk')->name('masuk');
+
+/* 🔹 Halaman Daftar (frontend baru) */
+Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])->name('daftar');
+
+
 
 
 /* ===== end BERANDA & HOME ===== */
@@ -82,9 +85,34 @@ Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk
 
 // Cetak Massal & Exports
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
-Route::get('/exports/pendaftaran/{pelatihan}/bulk',   [PendaftaranController::class, 'exportBulk'])->name('exports.pendaftaran.bulk');
-Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::class, 'exportSample'])->name('exports.pendaftaran.sample');
-Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])->name('exports.pendaftaran.single');
+Route::get('pendaftaran-baru', fn() => view('registration-form-new'))->name('pendaftaran.baru');
+Route::get('/exports/pendaftaran/{pelatihan}/bulk',   [PendaftaranController::class, 'exportBulk'])
+    ->name('exports.pendaftaran.bulk');
+
+Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::class, 'exportSample'])
+    ->name('exports.pendaftaran.sample');
+
+Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
+    ->name('exports.pendaftaran.single');
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/reports/jawaban-akumulatif/pdf', [ExportController::class, 'jawabanAkumulatifPdf'])
+//         ->name('reports.jawaban-akumulatif.pdf');
+// });
+// Route::middleware(['auth']) // opsional, sesuai kebutuhan
+//     ->get('/exports/report-jawaban-survei', [ExportController::class, 'reportJawabanSurvei'])
+//     ->name('export.report-jawaban-survei');
+
+Route::middleware(['auth'])
+    ->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
+    ->name('export.report.pelatihan');
+// routes/web.php
+Route::middleware(['auth']) // opsional
+    ->get('/reports/jawaban-survei/pdf/{pelatihanId}', [ExportController::class, 'pdfView'])
+    ->name('reports.jawaban-survei.pdf');
+
+// Tambahkan middleware jika halaman ini hanya boleh diakses oleh user yang login
+
+
 
 // Step View
 Route::prefix('pendaftaran/step')->group(function () {
