@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kamar extends Model
 {
-    /** @use HasFactory<\Database\Factories\KamarFactory> */
     use HasFactory;
 
     protected $table = 'kamar';
@@ -25,5 +24,21 @@ class Kamar extends Model
     {
         return $this->belongsTo(Asrama::class, 'asrama_id');
     }
-    
+
+    /**
+     * Semua riwayat penempatan penghuni pada kamar ini
+     */
+    public function penempatans()
+    {
+        return $this->hasMany(PenempatanAsrama::class, 'kamar_id');
+    }
+
+    /**
+     * Penghuni yang masih aktif (belum checkout)
+     */
+    public function penghuniAktif()
+    {
+        return $this->hasMany(PenempatanAsrama::class, 'kamar_id')
+            ->whereNull('checkout_at');
+    }
 }

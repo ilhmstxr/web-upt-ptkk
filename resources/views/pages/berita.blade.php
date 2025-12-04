@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cerita Kami - UPT PTKK Dinas Pendidikan Prov. Jawa Timur</title>
+  <title>Berita - UPT PTKK Dinas Pendidikan Prov. Jawa Timur</title>
 
   {{-- Tailwind --}}
   <script src="https://cdn.tailwindcss.com"></script>
@@ -22,84 +22,23 @@
       --card-manfaat: #DBE7F7;
     }
 
-    /* Stroke teks utilitas */
-    .stroke-yellow{
-      text-shadow:
-        -1px -1px 0 var(--kuning-stroke),
-         1px -1px 0 var(--kuning-stroke),
-        -1px  1px 0 var(--kuning-stroke),
-         1px  1px 0 var(--kuning-stroke);
-    }
-    .stroke-red{
-      text-shadow:
-        -1px -1px 0 var(--merah-stroke),
-         1px -1px 0 var(--merah-stroke),
-        -1px  1px 0 var(--merah-stroke),
-         1px  1px 0 var(--merah-stroke);
-    }
-
-    /* Shadow bertingkat (5 lapis) */
-    .shadow-5x{
-      box-shadow:
-        0 1px 3px rgba(0,0,0,0.05),
-        0 2px 6px rgba(0,0,0,0.07),
-        0 4px 10px rgba(0,0,0,0.09),
-        0 6px 14px rgba(0,0,0,0.11),
-        0 8px 20px rgba(0,0,0,0.13);
-    }
-
-    /* Kartu Tujuan & Manfaat */
-    .tujuan-card{
-      background: #FEFEFE;
-      box-shadow:
-        0 2px 4px rgba(0,0,0,.06),
-        0 12px 24px rgba(0,0,0,.08),
-        0 40px 80px rgba(0,0,0,.08);
-      border-radius: 1rem; /* rounded-2xl */
-    }
-    .card-manfaat{
-      background: var(--card-manfaat);
-      height: 300px;
-      border-radius: 1rem; /* rounded-2xl */
-    }
-
-    /* =======================================================
-       GLOBAL SECTION LAYOUT CONSISTENCY
-       ======================================================= */
-
-    /* Padding horizontal sama untuk semua section */
     .section-container {
-      max-width: 1280px; /* setara max-w-7xl */
+      max-width: 1280px;
       margin-left: auto;
       margin-right: auto;
-      padding-left: 1.5rem;   /* px-6 */
-      padding-right: 1.5rem;  /* px-6 */
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
     }
 
     @media (min-width: 768px) {
-      .section-container {
-        padding-left: 3rem;   /* md:px-12 */
-        padding-right: 3rem;
-      }
+      .section-container { padding-left: 3rem; padding-right: 3rem; }
     }
 
     @media (min-width: 1024px) {
-      .section-container {
-        padding-left: 80px;   /* lg:px-[80px] */
-        padding-right: 80px;
-      }
+      .section-container { padding-left: 80px; padding-right: 80px; }
     }
 
-    /* === Baru: kompak 30px vertikal untuk semua section === */
-    .section-compact {
-      padding-top: 30px !important;
-      padding-bottom: 30px !important;
-    }
-
-    /* === Baru: jarak antar section 30px === */
-    section + section {
-      margin-top: 30px !important;
-    }
+    section + section { margin-top: 30px !important; }
   </style>
 </head>
 
@@ -110,168 +49,278 @@
   {{-- NAVBAR --}}
   @include('components.layouts.app.navbarlanding')
 
-  {{-- HERO (komponen reusable) --}}
+  {{-- HERO --}}
   <x-layouts.app.profile-hero
     title="Berita"
     :crumbs="[
       ['label' => 'Beranda', 'route' => 'landing'],
-      ['label' => 'Berita',  'route' => 'news'],
+      ['label' => 'Berita',  'route' => 'berita.index'],
     ]"
-    height="h-[320px]"   {{-- opsional: samakan tinggi hero --}}
-    {{-- image="images/berita/hero-berita.jpg"  --}} {{-- opsional kalau kamu punya gambar khusus --}}
+    height="h-[320px]"
   />
   {{-- /HERO --}}
 
-  {{-- SECTION: Daftar Berita --}}
+  @php
+    use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Str;
+    use Illuminate\Support\Carbon;
+
+    /**
+     * resolve_image_url: mengembalikan URL gambar yang dapat diakses
+     * menerima path relatif ('berita/xxx.jpg') atau full URL.
+     */
+    if (! function_exists('resolve_image_url')) {
+      function resolve_image_url($value, $fallback = null) {
+        if (empty($value)) {
+          return $fallback;
+        }
+
+        // full URL
+        if (preg_match('/^https?:\\/\\//i', $value)) {
+          return $value;
+        }
+
+        $normalized = preg_replace('#^storage\/+#i', '', trim($value));
+        $normalized = preg_replace('#^public\/+#i', '', $normalized);
+
+        try {
+          if (Storage::disk('public')->exists($normalized)) {
+            return Storage::disk('public')->url($normalized);
+          }
+        } catch (\Throwable $e) {
+          // ignore
+        }
+
+        if (file_exists(public_path('storage/' . $normalized))) {
+          return asset('storage/' . $normalized);
+        }
+
+        if (file_exists(public_path($normalized))) {
+          return asset($normalized);
+        }
+
+        return $fallback;
+      }
+    }
+
+    // ----- Normalize variables from controller -----
+    // Accept several possible names (postsPaginator OR posts)
+    $postsPaginator = $postsPaginator ?? ($posts ?? null);
+    $featured = $featured ?? null;
+    $others = $others ?? null;
+
+    // If controller only sent $posts as LengthAwarePaginator, use it
+    if (empty($postsPaginator) && ! empty($posts) && is_object($posts) && method_exists($posts, 'items')) {
+      $postsPaginator = $posts;
+    }
+
+    // If there is a paginator but featured not set, compute from current page items
+    if ($postsPaginator && empty($featured)) {
+      $items = collect($postsPaginator->items());
+      $featured = $items->first() ?: null;
+      $others = $items->slice(1);
+    }
+
+    // If controller sent $posts as Collection (not paginator)
+    if (empty($postsPaginator) && ! empty($posts) && ($posts instanceof \Illuminate\Support\Collection)) {
+      $items = $posts;
+      $featured = $featured ?? $items->first();
+      $others = $others ?? $items->slice(1);
+    }
+
+    // Ensure $others is a collection
+    if ($others && ! ($others instanceof \Illuminate\Support\Collection)) {
+      $others = collect($others);
+    }
+
+    // timezone helper
+    $tz = config('app.timezone') ?: 'UTC';
+  @endphp
+
   <section class="section-container py-8 md:py-10">
-    @php
-      // ====== Dummy data (ganti dengan data dari DB/Eloquent) ======
-      $posts = collect(range(1,10))->map(function($i){
-        return [
-          'title'   => "Judul Berita {$i}",
-          'date'    => '22 Oktober 2024',
-          'excerpt' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ornare ligula...',
-          'url'     => url("/berita/{$i}"),
-          'thumb'   => null, // ganti ke path gambar jika ada
-        ];
-      });
-      $featured = $posts->first();
-      $others   = $posts->slice(1);
-    @endphp
+    @if( ! $postsPaginator || ($postsPaginator->count() === 0 && (empty($featured) && ($others ? $others->isEmpty() : true))) )
+      <div class="text-center py-16">
+        <h3 class="text-2xl font-bold text-[#1524AF]">Belum ada berita</h3>
+      </div>
+    @else
 
-    {{-- ===== KARTU UNGGULAN ===== --}}
-    <article class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 lg:mb-10">
-      {{-- Gambar --}}
-      <div class="lg:col-span-5">
-        <a href="{{ $featured['url'] }}" class="block group">
-          <div class="aspect-[16/12] md:aspect-[16/11] w-full rounded-[18px] overflow-hidden">
-            @if($featured['thumb'])
-              <img src="{{ $featured['thumb'] }}" alt="{{ $featured['title'] }}"
-                   class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy">
-            @else
-              <div class="w-full h-full bg-slate-300/60"></div>
-            @endif
+      {{-- FEATURED --}}
+      @if($featured)
+        @php
+          $fIsModel = is_object($featured);
+          $fTitle = $fIsModel ? ($featured->title ?? '—') : ($featured['title'] ?? '—');
+          $fSlug = $fIsModel ? ($featured->slug ?? '#') : ($featured['url'] ?? '#');
+          if ($fIsModel && method_exists($featured, 'getImageUrlAttribute')) {
+            $fImgUrl = $featured->image_url;
+          } else {
+            $fImgUrl = resolve_image_url($fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null), asset('images/beranda/slide1.jpg'));
+          }
+          $fDate = $fIsModel ? ($featured->published_at ?? $featured->created_at) : ($featured['date'] ?? null);
+          // format date safely
+          if ($fDate && is_object($fDate) && method_exists($fDate, 'setTimezone')) {
+            $fDateForDisplay = $fDate->setTimezone($tz)->translatedFormat('d F Y H:i');
+          } elseif (!empty($fDate)) {
+            $fDateForDisplay = Carbon::parse($fDate)->setTimezone($tz)->translatedFormat('d F Y H:i');
+          } else {
+            $fDateForDisplay = '-';
+          }
+        @endphp
+
+        <article class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 lg:mb-10">
+          <div class="lg:col-span-5">
+            <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}" class="block group">
+              <div class="aspect-[16/12] md:aspect-[16/11] w-full rounded-[18px] overflow-hidden">
+                @if($fImgUrl)
+                  <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}" class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy"
+                       onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
+                @else
+                  <div class="w-full h-full bg-slate-300/60"></div>
+                @endif
+              </div>
+            </a>
           </div>
-        </a>
-      </div>
 
-      {{-- Teks --}}
-      <div class="lg:col-span-7">
-        {{-- Badge --}}
-        <div class="mb-2">
-          <span class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
-                       font-[Volkhov] text-[15px] leading-none shadow-sm">
-            Berita Baru
-          </span>
-        </div>
-
-        {{-- Tanggal --}}
-        <div class="flex items-center gap-2 text-slate-500 text-[13px] mb-1">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
-            <line x1="8"  y1="2" x2="8"  y2="6" stroke-width="2"></line>
-            <line x1="3"  y1="10" x2="21" y2="10" stroke-width="2"></line>
-          </svg>
-          <span>{{ $featured['date'] }}</span>
-        </div>
-
-        {{-- Judul --}}
-        <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[26px] leading-tight text-[#1524AF] mb-2">
-          <a href="{{ $featured['url'] }}" class="hover:opacity-90 transition">
-            {{ $featured['title'] }}
-          </a>
-        </h2>
-
-        {{-- Excerpt --}}
-        <p class="font-[Montserrat] text-[14.5px] md:text-[15px] text-slate-800 leading-relaxed mb-3 max-w-[60ch]">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam condimentum libero ut nibh fermentum,
-          non sollicitudin dolor rutrum. Cras ultricies nec enim ut malesuada. Duis rhoncus dignissim feugiat.
-          Duis laoreet egestas dolor sit amet bibendum. Maecenas egestas porttitor mattis. Quisque orci est,
-          faucibus nec fermentum vitae, interdum faucibus nisl. Vivamus ornare porttitor nisl eget venenatis …
-        </p>
-
-        {{-- CTA --}}
-        <a href="{{ $featured['url'] }}"
-           class="inline-flex items-center gap-2 text-[#1524AF] font-[Montserrat] underline underline-offset-2 hover:no-underline">
-          Baca Selengkapnya
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-            <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
-      </div>
-    </article>
-
-    {{-- ===== GRID BERITA LAIN ===== --}}
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
-      @foreach ($others as $post)
-        <article class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm hover:shadow-md transition">
-          {{-- Thumb --}}
-          <a href="{{ $post['url'] }}" class="block mb-3">
-            <div class="aspect-[16/11] w-full rounded-xl border border-[#1524AF]/40 overflow-hidden">
-              @if($post['thumb'])
-                <img src="{{ $post['thumb'] }}" alt="{{ $post['title'] }}"
-                     class="w-full h-full object-cover hover:scale-[1.02] transition" loading="lazy">
-              @else
-                <div class="w-full h-full bg-slate-200/70"></div>
-              @endif
+          <div class="lg:col-span-7">
+            <div class="mb-2">
+              <span class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                           font-[Volkhov] text-[15px] leading-none shadow-sm">
+                Berita Baru
+              </span>
             </div>
-          </a>
 
-          {{-- Meta tanggal --}}
-          <div class="flex items-center gap-2 text-slate-500 text-xs mb-1">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
-              <line x1="8"  y1="2" x2="8"  y2="6" stroke-width="2"></line>
-              <line x1="3"  y1="10" x2="21" y2="10" stroke-width="2"></line>
-            </svg>
-            <span>{{ $post['date'] }}</span>
+            <div class="flex items-center gap-2 text-slate-500 text-[13px] mb-1">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
+                <line x1="8"  y1="2" x2="8"  y2="6" stroke-width="2"></line>
+                <line x1="3"  y1="10" x2="21" y2="10" stroke-width="2"></line>
+              </svg>
+              <span>{{ $fDateForDisplay }}</span>
+            </div>
+
+            <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[26px] leading-tight text-[#1524AF] mb-2">
+              <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}" class="hover:opacity-90 transition">
+                {{ $fTitle }}
+              </a>
+            </h2>
+
+            <p class="font-[Montserrat] text-[14.5px] md:text-[15px] text-slate-800 leading-relaxed mb-3 max-w-[60ch]">
+              @if($fIsModel)
+                {{ Str::limit(strip_tags($featured->content ?? ''), 320) }}
+              @else
+                {{ $featured['excerpt'] ?? '' }}
+              @endif
+            </p>
+
+            <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}"
+               class="inline-flex items-center gap-2 text-[#1524AF] font-[Montserrat] underline underline-offset-2 hover:no-underline">
+              Baca Selengkapnya
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
           </div>
-
-          {{-- Judul --}}
-          <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug text-slate-900 mb-2">
-            <a href="{{ $post['url'] }}" class="hover:text-[#1524AF] transition">
-              {{ $post['title'] }}
-            </a>
-          </h3>
-
-          {{-- Excerpt --}}
-          <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-slate-700 mb-3">
-            {{ $post['excerpt'] }}
-          </p>
-
-          {{-- Read more --}}
-          <a href="{{ $post['url'] }}"
-             class="inline-flex items-center gap-2 text-[#1524AF] text-[13px] sm:text-[14px] hover:underline">
-            Baca Selengkapnya
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
         </article>
-      @endforeach
-    </div>
+      @endif
 
-    {{-- ===== PAGINATION (dummy) ===== --}}
-    <nav class="mt-8 flex justify-center">
-      <ul class="inline-flex items-center gap-1">
-        <li>
-          <a class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50" href="#">&laquo;</a>
-        </li>
-        @foreach (range(1,7) as $p)
-          <li>
-            <a href="#"
-               class="px-3 py-1.5 rounded-lg border {{ $p===3 ? 'border-[#1524AF] text-[#1524AF] bg-[#F5FBFF]' : 'border-slate-200 text-slate-700 hover:bg-slate-50' }}">
-              {{ $p }}
+      {{-- GRID OTHER POSTS --}}
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+        @foreach ($others as $post)
+          @php
+            $isModel = is_object($post);
+            $title = $isModel ? ($post->title ?? '—') : ($post['title'] ?? '—');
+            $slugOrUrl = $isModel ? route('berita.show', $post->slug) : ($post['url'] ?? '#');
+            $imgUrl = $isModel && method_exists($post, 'getImageUrlAttribute') ? $post->image_url : resolve_image_url($isModel ? ($post->image ?? null) : ($post['thumb'] ?? null), asset('images/beranda/slide1.jpg'));
+            $date = $isModel ? ($post->published_at ?? $post->created_at) : ($post['date'] ?? null);
+            if ($date && is_object($date) && method_exists($date, 'setTimezone')) {
+              $dateForDisplay = $date->setTimezone($tz)->translatedFormat('d F Y');
+            } elseif (!empty($date)) {
+              $dateForDisplay = Carbon::parse($date)->setTimezone($tz)->translatedFormat('d F Y');
+            } else {
+              $dateForDisplay = '-';
+            }
+            $excerpt = $isModel ? Str::limit(strip_tags($post->content ?? ''), 120) : ($post['excerpt'] ?? '');
+          @endphp
+
+          <article class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm hover:shadow-md transition">
+            <a href="{{ $slugOrUrl }}" class="block mb-3">
+              <div class="aspect-[16/11] w-full rounded-xl border border-[#1524AF]/40 overflow-hidden">
+                @if($imgUrl)
+                  <img src="{{ $imgUrl }}" alt="{{ $title }}" class="w-full h-full object-cover hover:scale-[1.02] transition" loading="lazy"
+                       onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
+                @else
+                  <div class="w-full h-full bg-slate-200/70"></div>
+                @endif
+              </div>
             </a>
-          </li>
+
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
+                <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line>
+                <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line>
+              </svg>
+              <span>{{ $dateForDisplay }}</span>
+            </div>
+
+            <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug text-slate-900 mb-2">
+              <a href="{{ $slugOrUrl }}" class="hover:text-[#1524AF] transition">{{ $title }}</a>
+            </h3>
+
+            <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-slate-700 mb-3">
+              {!! $excerpt !!}
+            </p>
+
+            <a href="{{ $slugOrUrl }}" class="inline-flex items-center gap-2 text-[#1524AF] text-[13px] sm:text-[14px] hover:underline">
+              Baca Selengkapnya
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </article>
         @endforeach
-        <li>
-          <a class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50" href="#">&raquo;</a>
-          </li>
-      </ul>
-    </nav>
+      </div>
+
+      {{-- PAGINATION (manual, aman) --}}
+      <div class="mt-8 flex justify-center">
+        @if($postsPaginator)
+          @php
+            $p = $postsPaginator;
+            $current = $p->currentPage();
+            $last = $p->lastPage();
+            $start = max(1, $current - 3);
+            $end = min($last, $current + 3);
+          @endphp
+
+          <nav class="inline-flex items-center gap-1" aria-label="Pagination">
+            {{-- Prev --}}
+            @if($p->onFirstPage())
+              <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed">&laquo;</span>
+            @else
+              <a href="{{ $p->url($current - 1) }}" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">&laquo;</a>
+            @endif
+
+            {{-- Page numbers --}}
+            @for($i = $start; $i <= $end; $i++)
+              @if($i === $current)
+                <span class="px-3 py-1.5 rounded-lg border border-[#1524AF] text-[#1524AF] bg-[#F5FBFF]">{{ $i }}</span>
+              @else
+                <a href="{{ $p->url($i) }}" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">{{ $i }}</a>
+              @endif
+            @endfor
+
+            {{-- Next --}}
+            @if($current >= $last)
+              <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed">&raquo;</span>
+            @else
+              <a href="{{ $p->url($current + 1) }}" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">&raquo;</a>
+            @endif
+          </nav>
+        @endif
+      </div>
+
+    @endif
   </section>
 
   {{-- FOOTER --}}
