@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pertanyaan;
+use App\Models\Tes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -15,7 +16,14 @@ class PertanyaanController extends Controller
 {
     public function index()
     {
-        //
+        // Ambil semua pertanyaan, beserta relasi 'tes' untuk efisiensi query
+        $pertanyaans = Pertanyaan::with('tes')->orderBy('tes_id')->orderBy('nomor')->get();
+        
+        // Ambil semua data Tes untuk ditampilkan di form modal
+        $tests = Tes::all();
+
+        // Kirim data pertanyaan dan tes ke view
+        return view('admin.dashboard_pertanyaan_sementara', compact('pertanyaans', 'tests'));
     }
 
     public function create()
@@ -25,7 +33,25 @@ class PertanyaanController extends Controller
 
     public function store(Request $request)
     {
-        //
+        // Validasi input
+        $validatedData = $request->validate([
+            'tes_id' => 'required|exists:tes,id',
+            'nomor' => 'required|integer|min:1',
+            'teks_pertanyaan' => 'required|string',
+            'tipe_jawaban' => 'required|in:pilihan_ganda,esai,skala_likert',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi untuk gambar
+        ]);
+
+        // Handle upload gambar jika ada
+        if ($request->hasFile('gambar')) {
+            $path = $request->file('gambar')->store('public/images/pertanyaan');
+            // Simpan path relatif ke database
+            $validatedData['gambar'] = str_replace('public/', '', $path);
+        }
+
+        Pertanyaan::create($validatedData);
+
+        return redirect()->route('pertanyaan.index')->with('success', 'Pertanyaan berhasil ditambahkan.');
     }
 
     public function show(Pertanyaan $pertanyaan)
@@ -38,7 +64,31 @@ class PertanyaanController extends Controller
         //
     }
 
-    public function update(Request $request, Pertanyaan $pertanyaan) {}
+    public function update(Request $request, Pertanyaan $pertanyaan) {
+        $validatedData = $request->validate([
+            'tes_id' => 'required|exists:tes,id',
+            'nomor' => 'required|integer|min:1',
+            'teks_pertanyaan' => 'required|string',
+            'tipe_jawaban' => 'required|in:pilihan_ganda,esai,skala_likert',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Handle upload gambar baru jika ada
+        if ($request->hasFile('gambar')) {
+            // Hapus gambar lama jika ada
+            if ($pertanyaan->gambar) {
+                Storage::delete('public/' . $pertanyaan->gambar);
+            }
+
+            // Simpan gambar baru
+            $path = $request->file('gambar')->store('public/images/pertanyaan');
+            $validatedData['gambar'] = str_replace('public/', '', $path);
+        }
+
+        $pertanyaan->update($validatedData);
+
+        return redirect()->route('pertanyaan.index')->with('success', 'Pertanyaan berhasil diperbarui.');
+    }
 
     // public function update(Request $request, Pertanyaan $pertanyaan)
     // {
@@ -130,6 +180,13 @@ class PertanyaanController extends Controller
 
     public function destroy(Pertanyaan $pertanyaan)
     {
-        //
+        // Hapus gambar dari storage jika ada
+        if ($pertanyaan->gambar) {
+            Storage::delete('public/' . $pertanyaan->gambar);
+        }
+
+        $pertanyaan->delete();
+
+        return redirect()->route('pertanyaan.index')->with('success', 'Pertanyaan berhasil dihapus.');
     }
 }

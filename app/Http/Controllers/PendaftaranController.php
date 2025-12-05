@@ -32,6 +32,32 @@ class PendaftaranController extends Controller
 {
     public const LAMPIRAN_DESTINATION = 'pertanyaan/opsi';
 
+   public function showDaftar()
+{
+    // data master untuk form (dropdown)
+    $bidang      = Bidang::all();
+    $cabangDinas = CabangDinas::all();
+
+    // 👉 ambil SATU pelatihan aktif, yang tanggalnya masih jalan
+    $pelatihan = Pelatihan::where('status', 'aktif')
+        ->whereDate('tanggal_selesai', '>=', now())
+        ->orderBy('tanggal_mulai', 'asc')
+        ->first();  // <— beda di sini: dulu get(), sekarang first()
+
+    // kalau kamu tetap mau pakai variabel ini buat wizard di view, biarkan saja
+    $currentStep = 1;
+    $allowedStep = 1;
+    $formData    = [];
+
+    return view('pages.daftar', compact(
+        'bidang',
+        'cabangDinas',
+        'pelatihan',
+        'currentStep',
+        'allowedStep',
+        'formData'
+    ));
+}
 
     public function index()
     {

@@ -21,7 +21,7 @@ class PelatihanResource extends Resource
     protected static ?string $cluster = Pelatihan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    
+
     // Hide from sidebar navigation (accessed via tabs only)
     protected static bool $shouldRegisterNavigation = false;
 
@@ -116,7 +116,7 @@ class PelatihanResource extends Resource
                     ->square()
                     ->size(60)
                     ->defaultImageUrl('https://via.placeholder.com/150'),
-                
+
                 Tables\Columns\TextColumn::make('nama_pelatihan')
                     ->label('Nama Pelatihan')
                     ->searchable()
