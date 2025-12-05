@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('asrama', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->string('name');
             $table->enum('gender', ['Laki-laki', 'Perempuan', 'Campur'])->default('Campur');
             $table->text('alamat')->nullable();
             $table->timestamps();
