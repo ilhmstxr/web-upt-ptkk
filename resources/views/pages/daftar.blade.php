@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pendaftaran Program Pelatihan - UPT PTKK</title>
+  <title>Pendaftaran {{ $pelatihan->nama_pelatihan ?? 'Program Pelatihan' }} - UPT PTKK</title>
 
   {{-- Tailwind --}}
   <script src="https://cdn.tailwindcss.com"></script>
@@ -68,9 +68,7 @@
 
     @php
       // pastikan selalu boolean, aman walau $pelatihan null
-      $adaPelatihanAktif = isset($pelatihan)
-        && $pelatihan instanceof \Illuminate\Support\Collection
-        && $pelatihan->isNotEmpty();
+      $adaPelatihanAktif = isset($pelatihan) && $pelatihan !== null;
     @endphp
 
     @if (! $adaPelatihanAktif)
@@ -231,80 +229,58 @@
 
           <div class="px-3 md:px-4 pb-4 pt-2 text-[14px] text-[#000] font-medium">
             <div class="space-y-2">
+              @php
+                  $tglMulai = $pelatihan->tanggal_mulai;
+                  $tglSelesai = $pelatihan->tanggal_selesai;
+                  // Simulasi jadwal relatif (bisa disesuaikan jika ada field asli)
+                  $mulaiDaftar = $tglMulai->copy()->subDays(14);
+                  $selesaiDaftar = $tglMulai->copy()->subDays(3);
+                  $mulaiAdmin = $tglMulai->copy()->subDays(3);
+                  $selesaiAdmin = $tglMulai->copy()->subDays(1);
+                  $daftarUlang = $tglMulai->copy()->subDays(1);
+              @endphp
 
-              {{-- Baris 1 --}}
+              {{-- Baris 1: Masa Pengisian Link --}}
               <div class="flex items-start gap-4">
                 <div class="relative pl-6 flex-1">
-                  <span
-                    class="absolute left-0 top-[3px] text-[#1524AF] inline-block font-bold
-                           leading-none text-[17px]"
-                  >
-                    >
-                  </span>
+                  <span class="absolute left-0 top-[3px] text-[#1524AF] inline-block font-bold leading-none text-[17px]">></span>
                   Masa Pengisian Link Pendaftaran
                 </div>
-
-                <span
-                  class="text-[13px] md:text-[14px] text-[#000000] whitespace-nowrap md:text-right"
-                >
-                  17 September s/d 20 September 2025
+                <span class="text-[13px] md:text-[14px] text-[#000000] whitespace-nowrap md:text-right">
+                  {{ $mulaiDaftar->translatedFormat('d F') }} s/d {{ $selesaiDaftar->translatedFormat('d F Y') }}
                 </span>
               </div>
 
-              {{-- Baris 2 --}}
+              {{-- Baris 2: Proses Administrasi --}}
               <div class="flex items-start gap-4">
                 <div class="relative pl-6 flex-1">
-                  <span
-                    class="absolute left-0 top-[3px] text-[#1524AF] inline-block font-bold
-                           leading-none text-[17px]"
-                  >
-                    >
-                  </span>
+                  <span class="absolute left-0 top-[3px] text-[#1524AF] inline-block font-bold leading-none text-[17px]">></span>
                   Proses Administrasi
                 </div>
-
-                <span
-                  class="text-[13px] md:text-[14px] text-[#000000] whitespace-nowrap md:text-right"
-                >
-                  17 September s/d 20 September 2025
+                <span class="text-[13px] md:text-[14px] text-[#000000] whitespace-nowrap md:text-right">
+                   {{ $mulaiAdmin->translatedFormat('d F') }} s/d {{ $selesaiAdmin->translatedFormat('d F Y') }}
                 </span>
               </div>
 
-              {{-- Baris 3 --}}
+              {{-- Baris 3: Registrasi Ulang --}}
               <div class="flex items-start gap-4">
                 <div class="relative pl-6 flex-1">
-                  <span
-                    class="absolute left-0 top-[3px] text-[#1524AF] inline-block font-bold
-                           leading-none text-[17px]"
-                  >
-                    >
-                  </span>
+                  <span class="absolute left-0 top-[3px] text-[#1524AF] inline-block font-bold leading-none text-[17px]">></span>
                   Registrasi Ulang Secara Offline
                 </div>
-
-                <span
-                  class="text-[13px] md:text-[14px] text-[#000000] whitespace-nowrap md:text-right"
-                >
-                  17 September s/d 20 September 2025
+                <span class="text-[13px] md:text-[14px] text-[#000000] whitespace-nowrap md:text-right">
+                  {{ $daftarUlang->translatedFormat('d F Y') }}
                 </span>
               </div>
 
-              {{-- Baris 4 --}}
+              {{-- Baris 4: Masa Belajar --}}
               <div class="flex items-start gap-4">
                 <div class="relative pl-6 flex-1">
-                  <span
-                    class="absolute left-0 top-[3px] text-[#1524AF] inline-block font-bold
-                           leading-none text-[17px]"
-                  >
-                    >
-                  </span>
+                  <span class="absolute left-0 top-[3px] text-[#1524AF] inline-block font-bold leading-none text-[17px]">></span>
                   Masa Belajar
                 </div>
-
-                <span
-                  class="text-[13px] md:text-[14px] text-[#000000] whitespace-nowrap md:text-right"
-                >
-                  17 September s/d 20 September 2025
+                <span class="text-[13px] md:text-[14px] text-[#000000] whitespace-nowrap md:text-right">
+                  {{ $tglMulai->translatedFormat('d F') }} s/d {{ $tglSelesai->translatedFormat('d F Y') }}
                 </span>
               </div>
             </div>
@@ -344,113 +320,27 @@
           {{-- Isi --}}
           <div class="px-3 md:px-4 pb-4 pt-2 text-[14px] text-[#000] font-medium">
             <ul class="space-y-3 text-[14px] font-medium text-[#000000]">
-
-              {{-- 1. Programmable Logic Controller --}}
+              @forelse($pelatihan->bidangPelatihan as $bp)
               <li class="relative pl-6">
-                <span
-                  class="absolute left-0 top-[4px] text-[#1524AF] inline-block font-bold
-                         leading-none text-[17px]"
-                >
-                  >
-                </span>
-
+                <span class="absolute left-0 top-[4px] text-[#1524AF] inline-block font-bold leading-none text-[17px]">></span>
                 <div class="space-y-1">
-                  <p class="font-semibold">Programmable Logic Controller</p>
-
+                  <p class="font-semibold">{{ $bp->bidang->nama_bidang ?? 'Kejuruan' }}</p>
                   <div class="flex items-start gap-2">
-                    {{-- Icon lokasi --}}
-                    <span
-                      class="mt-[2px] inline-flex h-5 w-5 items-center justify-center
-                             rounded-full bg-[#1524AF]"
-                    >
+                    <span class="mt-[2px] inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#1524AF]">
                       <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#FFFFFF">
-                        <path
-                          d="M12 2C8.7 2 6 4.7 6 8c0 4.1 4.6 9.4 5.6 10.6.2.2.5.4.8.4s.6-.1.8-.4C13.4 17.4 18 12.1 18 8c0-3.3-2.7-6-6-6zm0 8.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 5.5 12 5.5s2.5 1.1 2.5 2.5S13.4 10.5 12 10.5z"
-                        />
+                        <path d="M12 2C8.7 2 6 4.7 6 8c0 4.1 4.6 9.4 5.6 10.6.2.2.5.4.8.4s.6-.1.8-.4C13.4 17.4 18 12.1 18 8c0-3.3-2.7-6-6-6zm0 8.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 5.5 12 5.5s2.5 1.1 2.5 2.5S13.4 10.5 12 10.5z"/>
                       </svg>
                     </span>
-
                     <div class="space-y-0.5">
-                      <p>UPT Pengembangan Teknik Dan Keterampilan Kejuruan</p>
-                      <p>
-                        Komplek Kampus Unesa Jl. Ketintang No.25, Ketintang, Kec. Gayungan,
-                        Surabaya, Jawa Timur 60231
-                      </p>
+                      <p>{{ $bp->lokasi ?? 'UPT Pengembangan Teknik Dan Keterampilan Kejuruan' }}</p>
+                      <p>{{ $bp->kota ?? 'Surabaya, Jawa Timur' }}</p>
                     </div>
                   </div>
                 </div>
               </li>
-
-              {{-- 2. Teknik Pendingin dan Tata Udara --}}
-              <li class="relative pl-6">
-                <span
-                  class="absolute left-0 top-[4px] text-[#1524AF] inline-block font-bold
-                         leading-none text-[17px]"
-                >
-                  >
-                </span>
-
-                <div class="space-y-1">
-                  <p class="font-semibold">Teknik Pendingin dan Tata Udara</p>
-
-                  <div class="flex items-start gap-2">
-                    <span
-                      class="mt-[2px] inline-flex h-5 w-5 items-center justify-center
-                             rounded-full bg-[#1524AF]"
-                    >
-                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#FFFFFF">
-                        <path
-                          d="M12 2C8.7 2 6 4.7 6 8c0 4.1 4.6 9.4 5.6 10.6.2.2.5.4.8.4s.6-.1.8-.4C13.4 17.4 18 12.1 18 8c0-3.3-2.7-6-6-6zm0 8.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 5.5 12 5.5s2.5 1.1 2.5 2.5S13.4 10.5 12 10.5z"
-                        />
-                      </svg>
-                    </span>
-
-                    <div class="space-y-0.5">
-                      <p>SMK Negeri 1 Wonoerjo</p>
-                      <p>
-                        Komplek Kampus Unesa Jl. Ketintang No.25, Ketintang, Kec. Gayungan,
-                        Surabaya, Jawa Timur 60231
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
-              {{-- 3. Fotografi --}}
-              <li class="relative pl-6">
-                <span
-                  class="absolute left-0 top-[4px] text-[#1524AF] inline-block font-bold
-                         leading-none text-[17px]"
-                >
-                  >
-                </span>
-
-                <div class="space-y-1">
-                  <p class="font-semibold">Fotografi</p>
-
-                  <div class="flex items-start gap-2">
-                    <span
-                      class="mt-[2px] inline-flex h-5 w-5 items-center justify-center
-                             rounded-full bg-[#1524AF]"
-                    >
-                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#FFFFFF">
-                        <path
-                          d="M12 2C8.7 2 6 4.7 6 8c0 4.1 4.6 9.4 5.6 10.6.2.2.5.4.8.4s.6-.1.8-.4C13.4 17.4 18 12.1 18 8c0-3.3-2.7-6-6-6zm0 8.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 5.5 12 5.5s2.5 1.1 2.5 2.5S13.4 10.5 12 10.5z"
-                        />
-                      </svg>
-                    </span>
-
-                    <div class="space-y-0.5">
-                      <p>SMK Negeri 1 Wonoerjo</p>
-                      <p>
-                        Komplek Kampus Unesa Jl. Ketintang No.25, Ketintang, Kec. Gayungan,
-                        Surabaya, Jawa Timur 60231
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
+              @empty
+              <li class="pl-6 text-gray-500 italic">Belum ada data lokasi.</li>
+              @endforelse
             </ul>
           </div>
         </details>
@@ -462,6 +352,9 @@
       <section aria-labelledby="form-pendaftaran-heading" class="mt-8">
 
         {{-- KARTU WIZARD --}}
+        <form id="form-pendaftaran" action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="pelatihan_id" value="{{ $pelatihan->id }}">
         <div
           id="wizardContainer"
           class="rounded-2xl border-[4px] border-[#B6BBE6] overflow-hidden bg-[#F1F9FC]"
@@ -652,8 +545,9 @@
   </div>
 </div>
               {{-- STEP 1: DATA DIRI --}}
+              {{-- STEP 1: DATA DIRI --}}
               <div id="step1" class="step-content block">
-                <form id="form-step1" class="flex flex-col min-h-[520px] space-y-6">
+                <div id="div-step1" class="flex flex-col min-h-[520px] space-y-6">
 
                   {{-- KONTEN FIELD --}}
                   <div class="space-y-4 flex-1">
@@ -865,12 +759,12 @@
                     </button>
                   </div>
 
-                </form>
+                </div>
               </div>
 
               {{-- STEP 2: DATA LEMBAGA --}}
               <div id="step2" class="step-content hidden">
-                <form id="form-step2" class="flex flex-col min-h-[520px] space-y-6">
+                <div id="div-step2" class="flex flex-col min-h-[520px] space-y-6">
 
                   <div class="flex-1">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
@@ -882,12 +776,12 @@
                         </label>
                         <input
                           type="text"
-                          name="asal_lembaga"
+                          name="asal_instansi"
                           required
                           class="w-full rounded-lg border border-[#B6BBE6] bg-white px-3 py-2.5
                                  text-[13px] md:text-[14px] focus:outline-none focus:ring-2
                                  focus:ring-[#1524AF]/40 focus:border-[#1524AF]"
-                          placeholder="Masukkan Asal Lembaga"
+                          placeholder="Masukkan Asal Instansi"
                         >
                       </div>
 
@@ -898,12 +792,12 @@
                         </label>
                         <input
                           type="text"
-                          name="alamat_sekolah"
+                          name="alamat_instansi"
                           required
                           class="w-full rounded-lg border border-[#B6BBE6] bg-white px-3 py-2.5
                                  text-[13px] md:text-[14px] focus:outline-none focus:ring-2
                                  focus:ring-[#1524AF]/40 focus:border-[#1524AF]"
-                          placeholder="Masukkan Alamat Sekolah"
+                          placeholder="Masukkan Alamat Instansi"
                         >
                       </div>
 
@@ -944,6 +838,28 @@
                                  focus:ring-[#1524AF]/40 focus:border-[#1524AF]"
                           placeholder="Masukkan Kelas"
                         >
+                      </div>
+
+                      {{-- Kota / Kabupaten --}}
+                      <div>
+                        <label class="block text-[13px] md:text-[14px] text-slate-800 mb-1">
+                          Kota / Kabupaten
+                        </label>
+                        <div class="relative">
+                            <input
+                              type="text"
+                              id="kota"
+                              name="kota"
+                              required
+                              autocomplete="off"
+                              class="w-full rounded-lg border border-[#B6BBE6] bg-white px-3 py-2.5
+                                     text-[13px] md:text-[14px] focus:outline-none focus:ring-2
+                                     focus:ring-[#1524AF]/40 focus:border-[#1524AF]"
+                              placeholder="Ketik nama kota..."
+                            >
+                            <div id="kotaSuggestions" class="absolute z-10 w-full bg-white border border-[#B6BBE6] rounded-b-lg mt-1 max-h-60 overflow-y-auto shadow-lg hidden"></div>
+                            <input type="hidden" name="kota_id" id="kota_id">
+                        </div>
                       </div>
 
                       {{-- Cabang Dinas Wilayah --}}
@@ -998,7 +914,7 @@
                     </button>
                   </div>
 
-                </form>
+                </div>
               </div>
 
               {{-- STEP 3: LAMPIRAN --}}
@@ -1275,6 +1191,7 @@
             </div> {{-- end flex-1 (KANAN) --}}
           </div> {{-- end wizardSteps --}}
         </div> {{-- end wizardContainer --}}
+        </form>
 
         {{-- CARD SUKSES SETELAH SUBMIT --}}
         <div class="mt-8 p-2">
@@ -1315,8 +1232,9 @@
       const step2 = document.getElementById('step2');
       const step3 = document.getElementById('step3');
 
-      const form1 = document.getElementById('form-step1');
-      const form2 = document.getElementById('form-step2');
+      // const form1 = document.getElementById('form-step1'); // HAPUS
+      // const form2 = document.getElementById('form-step2'); // HAPUS
+      const mainForm = document.getElementById('form-pendaftaran'); // TAMBAH
 
       // container & card sukses
       const wizardContainer = document.getElementById('wizardContainer');
@@ -1475,13 +1393,21 @@
       showStep(1);
 
       // ========== EVENT NAVIGASI STEP ==========
+      // ========== EVENT NAVIGASI STEP ==========
       btnToStep2 && btnToStep2.addEventListener('click', () => {
-        if (!form1) return;
+        // Validasi input di Step 1
+        const inputsStep1 = step1.querySelectorAll('input, select, textarea');
+        let valid = true;
+        inputsStep1.forEach(el => {
+            if (!el.checkValidity()) {
+                el.reportValidity();
+                valid = false;
+                return;
+            }
+        });
 
-        if (form1.checkValidity()) {
+        if (valid) {
           showStep(2);
-        } else {
-          form1.reportValidity();
         }
       });
 
@@ -1490,12 +1416,19 @@
       });
 
       btnToStep3 && btnToStep3.addEventListener('click', () => {
-        if (!form2) return;
+        // Validasi input di Step 2
+        const inputsStep2 = step2.querySelectorAll('input, select, textarea');
+        let valid = true;
+        inputsStep2.forEach(el => {
+            if (!el.checkValidity()) {
+                el.reportValidity();
+                valid = false;
+                return;
+            }
+        });
 
-        if (form2.checkValidity()) {
+        if (valid) {
           showStep(3);
-        } else {
-          form2.reportValidity();
         }
       });
 
@@ -1504,35 +1437,45 @@
       });
 
       // ========== SUBMIT STEP 3 → TAMPILKAN HALAMAN SUKSES ==========
+      // ========== SUBMIT STEP 3 → TAMPILKAN HALAMAN SUKSES ==========
       btnSubmit && btnSubmit.addEventListener('click', (e) => {
-        e.preventDefault(); // jangan reload page dulu
+        // e.preventDefault(); // BIARKAN SUBMIT KE SERVER
 
-        // validasi Step 1
-        if (form1 && !form1.checkValidity()) {
-          showStep(1);
-          form1.reportValidity();
-          return;
+        // validasi Step 1 (jaga-jaga)
+        const inputsStep1 = step1.querySelectorAll('input, select, textarea');
+        for (let el of inputsStep1) {
+            if (!el.checkValidity()) {
+                showStep(1);
+                el.reportValidity();
+                e.preventDefault();
+                return;
+            }
         }
 
         // validasi Step 2
-        if (form2 && !form2.checkValidity()) {
-          showStep(2);
-          form2.reportValidity();
-          return;
+        const inputsStep2 = step2.querySelectorAll('input, select, textarea');
+        for (let el of inputsStep2) {
+            if (!el.checkValidity()) {
+                showStep(2);
+                el.reportValidity();
+                e.preventDefault();
+                return;
+            }
         }
 
-        // TODO: kalau nanti mau submit ke backend, taruh AJAX/fetch di sini
-
-        // sembunyikan wizardContainer, tampilkan successCard
-        if (wizardContainer) wizardContainer.classList.add('hidden');
-
-        if (successCard) {
-          successCard.classList.remove('hidden');
-          successCard.scrollIntoView({ behavior: 'smooth' });
+        // validasi Step 3
+        const inputsStep3 = step3.querySelectorAll('input, select, textarea');
+        for (let el of inputsStep3) {
+            if (!el.checkValidity()) {
+                showStep(3);
+                el.reportValidity();
+                e.preventDefault();
+                return;
+            }
         }
-
-        // kunci stepper di step 3
-        updateStepper(3);
+        
+        // Jika lolos, form akan submit secara normal ke action="{{ route('pendaftaran.store') }}"
+        // Kita bisa tampilkan loading atau biarkan reload
       });
     })();
 
@@ -1629,6 +1572,93 @@
           }
         });
       });
+    })();
+    // =============== AUTOCOMPLETE KOTA ===============
+    (function() {
+        const kotaInput = document.getElementById("kota");
+        const kotaIdHidden = document.getElementById("kota_id");
+        const suggestionsContainer = document.getElementById("kotaSuggestions");
+
+        if (!kotaInput || !suggestionsContainer) return;
+
+        let allRegencies = [];
+        let filtered = [];
+        let activeIndex = -1;
+
+        const normalize = (s) => (s || "").toString().trim().toLowerCase().replace(/\s+/g, " ");
+
+        // Fetch Data
+        fetch("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/35.json")
+            .then(res => res.json())
+            .then(data => {
+                allRegencies = data;
+            })
+            .catch(err => console.error("Gagal load kota", err));
+
+        const showSuggestions = () => suggestionsContainer.classList.remove("hidden");
+        const hideSuggestions = () => {
+            suggestionsContainer.classList.add("hidden");
+            activeIndex = -1;
+        };
+
+        const renderSuggestions = (items) => {
+            suggestionsContainer.innerHTML = "";
+            items.forEach((item, idx) => {
+                const div = document.createElement("div");
+                div.textContent = item.name;
+                div.className = "p-2 cursor-pointer hover:bg-gray-100 text-sm " + (idx === activeIndex ? "bg-gray-100" : "");
+                div.addEventListener("mousedown", (e) => {
+                    e.preventDefault();
+                    chooseItem(item);
+                });
+                suggestionsContainer.appendChild(div);
+            });
+            if (items.length > 0) showSuggestions();
+            else hideSuggestions();
+        };
+
+        const chooseItem = (item) => {
+            kotaInput.value = item.name;
+            kotaIdHidden.value = item.id;
+            kotaInput.setCustomValidity(""); // Valid
+            hideSuggestions();
+        };
+
+        kotaInput.addEventListener("input", function() {
+            kotaIdHidden.value = ""; // Reset ID if typed
+            kotaInput.setCustomValidity("Pilih kota dari daftar"); // Invalid until selected
+
+            const q = normalize(this.value);
+            if (!q) {
+                hideSuggestions();
+                return;
+            }
+            filtered = allRegencies.filter(r => normalize(r.name).includes(q));
+            renderSuggestions(filtered);
+        });
+
+        kotaInput.addEventListener("blur", function() {
+            // Delay to allow click event on suggestion
+            setTimeout(() => {
+                hideSuggestions();
+                if (!kotaIdHidden.value) {
+                     kotaInput.setCustomValidity("Pilih kota dari daftar");
+                }
+            }, 200);
+        });
+
+        kotaInput.addEventListener("keydown", (e) => {
+             if (e.key === "ArrowDown") {
+                 e.preventDefault();
+                 activeIndex = (activeIndex + 1) % filtered.length;
+                 renderSuggestions(filtered);
+             } else if (e.key === "Enter") {
+                 if (activeIndex >= 0 && filtered[activeIndex]) {
+                     e.preventDefault();
+                     chooseItem(filtered[activeIndex]);
+                 }
+             }
+        });
     })();
   </script>
   @endpush

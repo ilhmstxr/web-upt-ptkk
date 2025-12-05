@@ -82,7 +82,7 @@ class PelatihanResource extends Resource
                                     ->label('Materi / Bidang'),
 
                                 Forms\Components\Select::make('instruktur_id')
-                                    ->relationship('instruktur', 'nama_instruktur')
+                                    ->relationship('instruktur', 'nama')
                                     ->label('Instruktur')
                                     ->searchable(),
 

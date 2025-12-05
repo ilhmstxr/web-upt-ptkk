@@ -43,7 +43,7 @@
   $beranda   = collect($nav)->firstWhere('label', 'Beranda');
   $others    = collect($nav)->reject(fn($i) => $i['label'] === 'Beranda')->values();
   $loginHref  = Route::has('masuk') ? route('masuk') : url('/masuk');
-$daftarHref = Route::has('daftar') ? route('daftar') : url('/daftar');
+  $daftarHref = Route::has('pendaftaran.index') ? route('pendaftaran.index') : url('/pendaftaran');
 @endphp
 
 <header id="siteHeader"

@@ -39,10 +39,11 @@ class PendaftaranController extends Controller
     $cabangDinas = CabangDinas::all();
 
     // 👉 ambil SATU pelatihan aktif, yang tanggalnya masih jalan
-    $pelatihan = Pelatihan::where('status', 'aktif')
+    $pelatihan = Pelatihan::with(['bidangPelatihan.bidang', 'bidangPelatihan.instruktur'])
+        ->where('status', 'aktif')
         ->whereDate('tanggal_selesai', '>=', now())
         ->orderBy('tanggal_mulai', 'asc')
-        ->first();  // <— beda di sini: dulu get(), sekarang first()
+        ->first();
 
     // kalau kamu tetap mau pakai variabel ini buat wizard di view, biarkan saja
     $currentStep = 1;
@@ -61,7 +62,30 @@ class PendaftaranController extends Controller
 
     public function index()
     {
-        return redirect()->route('pendaftaran.create');
+        // data master untuk form (dropdown)
+        $bidang      = Bidang::all();
+        $cabangDinas = CabangDinas::all();
+
+        // 👉 ambil SATU pelatihan aktif, yang tanggalnya masih jalan
+        $pelatihan = Pelatihan::with(['bidangPelatihan.bidang', 'bidangPelatihan.instruktur'])
+            ->where('status', 'aktif')
+            ->whereDate('tanggal_selesai', '>=', now())
+            ->orderBy('tanggal_mulai', 'asc')
+            ->first();
+
+        // kalau kamu tetap mau pakai variabel ini buat wizard di view, biarkan saja
+        $currentStep = 1;
+        $allowedStep = 1;
+        $formData    = [];
+
+        return view('pages.daftar', compact(
+            'bidang',
+            'cabangDinas',
+            'pelatihan',
+            'currentStep',
+            'allowedStep',
+            'formData'
+        ));
     }
 
     public function create(Request $request)
@@ -99,117 +123,93 @@ class PendaftaranController extends Controller
 
     public function store(Request $request)
     {
-        $currentStep = $request->input('current_step');
-        $formData = $request->session()->get('pendaftaran_data', []);
+        // 1. Validasi Semua Data Sekaligus
+        $validatedData = $request->validate([
+            // Step 1: Data Diri
+            'nama' => 'required|string|max:150',
+            'nik' => 'required|string|digits:16|max:20|unique:peserta,nik',
+            'no_hp' => 'required|string|max:20',
+            'email' => 'required|email|max:255|unique:users,email',
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'agama' => 'required|string|max:50',
+            'alamat' => 'required|string',
 
-        // [x] Validasi tiap langkah
-        if ($currentStep == 1) {
-            $validatedData = $request->validate([
-                'nama' => 'required|string|max:150',
-                'nik' => 'required|string|digits:16|max:20|unique:peserta,nik',
-                'no_hp' => 'required|string|max:20',
-                'email' => 'required|email|max:255|unique:users,email',
-                'tempat_lahir' => 'required|string|max:100',
-                'tanggal_lahir' => 'required|date',
-                'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-                'agama' => 'required|string|max:50',
-                'alamat' => 'required|string',
-            ]);
+            // Step 2: Data Instansi
+            'asal_instansi' => 'required|string|max:255',
+            'alamat_instansi' => 'required|string',
+            'kota' => 'required|string|max:100',
+            'kota_id' => 'required|integer',
+            'bidang_keahlian' => 'required|string|max:255',
+            'kelas' => 'required|string|max:100',
+            'cabangDinas_id' => 'required|string|max:255',
+            'pelatihan_id' => 'required|string', // Hidden input
 
-            $request->session()->put('pendaftaran_data', array_merge($formData, $validatedData));
-            $request->session()->put('pendaftaran_step', 2);
-            return redirect()->route('pendaftaran.create', ['step' => 2]);
-        }
+            // Step 3: Lampiran
+            'fc_ktp' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'fc_ijazah' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'fc_surat_tugas' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'fc_surat_sehat' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'nomor_surat_tugas' => 'nullable|string|max:100',
+        ]);
 
-        if ($currentStep == 2) {
-            $validatedData = $request->validate([
-                'asal_instansi' => 'required|string|max:255',
-                'alamat_instansi' => 'required|string',
-                'kota' => 'required|string|max:100',
-                'kota_id' => 'required|integer',
-                'bidang_keahlian' => 'required|string|max:255',
-                'kelas' => 'required|string|max:100',
-                'cabangDinas_id' => 'required|string|max:255',
-                'pelatihan_id' => 'required|string',
-            ]);
+        $validatedData['asal_instansi'] = $this->normalizeAsalInstansi($validatedData['asal_instansi']);
 
-            $validatedData['asal_instansi'] = $this->normalizeAsalInstansi($validatedData['asal_instansi']);
-
-            $request->session()->put('pendaftaran_data', array_merge($formData, $validatedData));
-            $request->session()->put('pendaftaran_step', 3);
-            return redirect()->route('pendaftaran.create', ['step' => 3]);
-        }
-
-        if ($currentStep == 3) {
-            $validatedData = $request->validate([
-                'fc_ktp' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-                'fc_ijazah' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-                'fc_surat_tugas' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-                'fc_surat_sehat' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-                'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            ]);
-
-            $allData = array_merge($formData, $validatedData);
-            // return $allData;
-
-            // [x] Simpan ke DB dalam transaction
-            // DONE: registrasi sudah disesuaikan dengan db baru
-            // return $allData;
-            // DB::transaction(function () use ($allData, $request) {
-            // 1) Pastikan instansi ada
+        // 2. Simpan ke DB dalam transaction
+        $pendaftaran = DB::transaction(function () use ($validatedData, $request) {
+            // A. Instansi
             $instansi = Instansi::firstOrCreate(
                 [
-                    'asal_instansi'     => $allData['asal_instansi'],
-                    'alamat_instansi'   => $allData['alamat_instansi'],
-                    'kota'   => $allData['kota'],
-                    'kota_id'   => $allData['kota_id'],
+                    'asal_instansi'     => $validatedData['asal_instansi'],
+                    'alamat_instansi'   => $validatedData['alamat_instansi'],
+                    'kota'              => $validatedData['kota'],
+                    'kota_id'           => $validatedData['kota_id'],
                 ],
                 [
-                    'bidang_keahlian'       => $allData['bidang_keahlian'],
-                    'cabangDinas_id'  => $allData['cabangDinas_id'],
+                    'bidang_keahlian' => $validatedData['bidang_keahlian'],
+                    'cabangDinas_id'  => $validatedData['cabangDinas_id'],
                 ]
             );
 
+            // B. User
             $user = User::firstOrCreate(
-                ['email' => $allData['email']],
+                ['email' => $validatedData['email']],
                 [
-                    'name'     => $allData['nama'],
-                    // pilih salah satu:
-                    'password' => Hash::make(Carbon::parse($allData['tanggal_lahir'])->format('dmY')),
-                    // 'password' => Hash::make(Str::random(16)),    // atau acak 16 char
+                    'name'     => $validatedData['nama'],
+                    'password' => Hash::make(Carbon::parse($validatedData['tanggal_lahir'])->format('dmY')),
                 ]
             );
 
-            // Opsional: sinkronkan nama jika user sudah ada tapi nama berbeda
-            if ($user->wasRecentlyCreated === false && $user->name !== $allData['nama']) {
-                $user->name = $allData['nama'];
+            if ($user->wasRecentlyCreated === false && $user->name !== $validatedData['nama']) {
+                $user->name = $validatedData['nama'];
                 $user->save();
             }
 
-            // 3) Buat peserta dan kaitkan ke user & instansi
+            // C. Peserta
             $peserta = Peserta::create([
-                'pelatihan_id'  => $allData['pelatihan_id'],
+                'pelatihan_id'  => $validatedData['pelatihan_id'],
                 'instansi_id'   => $instansi->id,
-                'bidang_id'     => $allData['bidang_keahlian'],
-                'user_id'       => $user->id,             // <— penting: foreign key ke users
-                'nama'          => $allData['nama'],
-                'nik'           => $allData['nik'],
-                'tempat_lahir'  => $allData['tempat_lahir'],
-                'tanggal_lahir' => $allData['tanggal_lahir'],
-                'jenis_kelamin' => $allData['jenis_kelamin'],
-                'agama'         => $allData['agama'],
-                'alamat'        => $allData['alamat'],
-                'no_hp'         => $allData['no_hp'],
+                'bidang_id'     => $validatedData['bidang_keahlian'],
+                'user_id'       => $user->id,
+                'nama'          => $validatedData['nama'],
+                'nik'           => $validatedData['nik'],
+                'tempat_lahir'  => $validatedData['tempat_lahir'],
+                'tanggal_lahir' => $validatedData['tanggal_lahir'],
+                'jenis_kelamin' => $validatedData['jenis_kelamin'],
+                'agama'         => $validatedData['agama'],
+                'alamat'        => $validatedData['alamat'],
+                'no_hp'         => $validatedData['no_hp'],
             ]);
 
-            ['nomor' => $nomorReg, 'urutan' => $urutBidang] = $this->generateToken($allData['pelatihan_id'], $allData['bidang_keahlian']);
+            // D. Generate Token
+            ['nomor' => $nomorReg, 'urutan' => $urutBidang] = $this->generateToken($validatedData['pelatihan_id'], $validatedData['bidang_keahlian']);
 
-
-
-            // 4) Lampiran + upload file
+            // E. Lampiran
             $lampiranData = [
                 'peserta_id'      => $peserta->id,
-                'no_surat_tugas'  => $allData['no_surat_tugas'] ?? null,
+                'no_surat_tugas'  => $validatedData['nomor_surat_tugas'] ?? null,
             ];
 
             $fileFields = ['fc_ktp', 'fc_ijazah', 'fc_surat_tugas', 'fc_surat_sehat', 'pas_foto'];
@@ -220,40 +220,41 @@ class PendaftaranController extends Controller
                     $fileName = $peserta->id . '_' . $peserta->bidang_id . '_' . $peserta->instansi_id
                         . '_' . $field . '.' . $file->extension();
 
-                    // simpan di public/pertanyaan/opsi
                     $targetDirectory = public_path(self::LAMPIRAN_DESTINATION);
                     if (! File::isDirectory($targetDirectory)) {
                         File::makeDirectory($targetDirectory, 0755, true);
                     }
 
                     $file->move($targetDirectory, $fileName);
-
                     $lampiranData[$field] = self::LAMPIRAN_DESTINATION . '/' . $fileName;
                 }
             }
 
             Lampiran::create($lampiranData);
 
+            // F. PendaftaranPelatihan
             PendaftaranPelatihan::create([
                 'peserta_id'            => $peserta->id,
-                'pelatihan_id'          => $allData['pelatihan_id'],
-                'bidang_id'             => $allData['bidang_keahlian'],
+                'pelatihan_id'          => $validatedData['pelatihan_id'],
+                'bidang_id'             => $validatedData['bidang_keahlian'],
                 'urutan_per_bidang'     => $urutBidang,
                 'nomor_registrasi'      => $nomorReg,
                 'tanggal_pendaftaran'   => now(),
-                'kelas'                 => $allData['kelas'],
+                'kelas'                 => $validatedData['kelas'],
             ]);
-            $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
+
+            return PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
                 ->latest('id')
                 ->first();
+        });
 
-            // return $pendaftaran;
+        // Hapus session jika ada
+        $request->session()->forget('pendaftaran_data');
+        $request->session()->forget('pendaftaran_step');
 
-            $request->session()->forget('pendaftaran_data');
-            return redirect()
-                ->route('pendaftaran.selesai', ['id' => $pendaftaran->id])
-                ->with('pendaftaran', $pendaftaran);
-        }
+        return redirect()
+            ->route('pendaftaran.selesai', ['id' => $pendaftaran->id])
+            ->with('pendaftaran', $pendaftaran);
     }
 
     // public function selesai(int $id)
