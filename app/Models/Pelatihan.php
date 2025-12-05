@@ -102,19 +102,19 @@ class Pelatihan extends Model
     //     );
     // }
 
-    protected function status(): Attribute
-    {
-        return Attribute::make(
-            get: function (): string {
-                $now = now();
-                if ($now->isBefore($this->tanggal_mulai)) {
-                    return 'Mendatang';
-                }
-                if ($now->between($this->tanggal_mulai, $this->tanggal_selesai)) {
-                    return 'Aktif';
-                }
-                return 'Selesai';
-            },
-        );
-    }
+    // protected function status(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: function (): string {
+    //             $now = now();
+    //             if ($now->isBefore($this->tanggal_mulai)) {
+    //                 return 'Mendatang';
+    //             }
+    //             if ($now->between($this->tanggal_mulai, $this->tanggal_selesai)) {
+    //                 return 'Aktif';
+    //             }
+    //             return 'Selesai';
+    //         },
+    //     );
+    // }
 }

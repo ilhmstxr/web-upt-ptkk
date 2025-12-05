@@ -49,6 +49,16 @@ class PelatihanResource extends Resource
                                                     'akselerasi' => 'Akselerasi',
                                                 ])
                                                 ->required(),
+
+                                            Forms\Components\Select::make('status')
+                                                ->options([
+                                                    'Pendaftaran Buka' => 'Pendaftaran Buka',
+                                                    'Sedang Berjalan' => 'Sedang Berjalan',
+                                                    'Selesai' => 'Selesai',
+                                                    'Mendatang' => 'Mendatang',
+                                                ])
+                                                ->required()
+                                                ->default('Mendatang'),
                                             
                                             Forms\Components\TextInput::make('angkatan')
                                                 ->label('Angkatan')
