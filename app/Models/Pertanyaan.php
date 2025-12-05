@@ -12,10 +12,21 @@ class Pertanyaan extends Model
 
     protected $table = 'pertanyaan';
 
+    protected static function booted()
+    {
+        static::creating(function ($pertanyaan) {
+            if (is_null($pertanyaan->nomor)) {
+                $maxNomor = static::where('tes_id', $pertanyaan->tes_id)->max('nomor') ?? 0;
+                $pertanyaan->nomor = $maxNomor + 1;
+            }
+        });
+    }
+
     protected $fillable = [
         'tes_id',
         'nomor',
         'teks_pertanyaan',
+        'kategori',
         'gambar',
         'tipe_jawaban',
     ];

@@ -55,6 +55,7 @@ class ImportSqlFile extends Command
             'jawaban_user',
             'bidang_pelatihan',
             'pendaftaran_pelatihan',
+            'instruktur'
         ];
 
         $tableOrder2 = [
