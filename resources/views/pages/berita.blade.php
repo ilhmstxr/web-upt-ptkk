@@ -51,48 +51,8 @@
   use Illuminate\Support\Str;
   use Illuminate\Support\Carbon;
 
-  /**
-   * force_storage_url($raw, $fallback)
-   * - jika $raw sudah full URL -> kembalikan apa adanya
-   * - jika $raw relatif (mungkin diawali "storage/" atau "public/") -> normalisasi lalu coba Storage::disk('public')->url(...)
-   * - jika gagal, cek public/storage/ dan public/ secara langsung
-   * - fallback ke gambar default
-   */
-  if (! function_exists('force_storage_url')) {
-    function force_storage_url($raw, $fallback = null) {
-      $fallback = $fallback ?? asset('images/beranda/slide1.jpg');
-      if (empty($raw)) return $fallback;
-
-      // full URL -> ok
-      if (preg_match('/^https?:\\/\\//i', $raw)) return $raw;
-
-      // normalisasi path untuk disk public
-      $p = trim($raw);
-      $p = preg_replace('#^storage/+#i', '', $p);
-      $p = preg_replace('#^public/+#i', '', $p);
-      $p = ltrim($p, '/');
-
-      try {
-        if (Storage::disk('public')->exists($p)) {
-          return Storage::disk('public')->url($p); // biasanya menghasilkan /storage/...
-        }
-      } catch (\Throwable $e) {
-        // ignore dan lanjut ke cek file_exists
-      }
-
-      // cek public/storage/<p>
-      if (file_exists(public_path('storage/' . $p))) {
-        return asset('storage/' . $p);
-      }
-
-      // cek public/<p>
-      if (file_exists(public_path($p))) {
-        return asset($p);
-      }
-
-      return $fallback;
-    }
-  }
+  // HAPUS FUNGSI force_storage_url YANG RUMIT
+  // Kita ganti logikanya langsung di bawah (simple logic)
 
   // normalisasi input dari controller
   $postsPaginator = $postsPaginator ?? ($posts ?? null);
@@ -136,9 +96,17 @@
           $fTitle = $fIsModel ? ($featured->title ?? '—') : ($featured['title'] ?? '—');
           $fSlug = $fIsModel ? ($featured->slug ?? '#') : ($featured['url'] ?? '#');
 
-          // Dapatkan raw image path kemudian pakai force_storage_url
+          // --- LOGIKA GAMBAR DIPERBAIKI (SIMPLE) ---
           $rawImg = $fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null);
-          $fImgUrl = force_storage_url($rawImg, asset('images/beranda/slide1.jpg'));
+          
+          if ($rawImg) {
+              // Jika path image ada, gunakan Storage::url
+              $fImgUrl = Storage::url($rawImg);
+          } else {
+              // Fallback default
+              $fImgUrl = asset('images/beranda/slide1.jpg');
+          }
+          // -----------------------------------------
 
           $fDate = $fIsModel ? ($featured->published_at ?? $featured->created_at) : ($featured['date'] ?? null);
           if ($fDate && is_object($fDate) && method_exists($fDate, 'setTimezone')) {
@@ -210,8 +178,17 @@
             $title = $isModel ? ($post->title ?? '—') : ($post['title'] ?? '—');
             $slugOrUrl = $isModel ? route('berita.show', $post->slug) : ($post['url'] ?? '#');
 
+            // --- LOGIKA GAMBAR DIPERBAIKI (SIMPLE) ---
             $rawImg = $isModel ? ($post->image ?? null) : ($post['thumb'] ?? null);
-            $imgUrl = force_storage_url($rawImg, asset('images/beranda/slide1.jpg'));
+            
+            if ($rawImg) {
+                // Gunakan Storage::url
+                $imgUrl = Storage::url($rawImg);
+            } else {
+                // Fallback
+                $imgUrl = asset('images/beranda/slide1.jpg');
+            }
+            // -----------------------------------------
 
             $date = $isModel ? ($post->published_at ?? $post->created_at) : ($post['date'] ?? null);
             if ($date && is_object($date) && method_exists($date, 'setTimezone')) {
