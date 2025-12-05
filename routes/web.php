@@ -46,10 +46,8 @@ use App\Exports\LampiranSheet;
 Route::get('/', fn () => view('pages.landing'))->name('landing');
 
 Route::get('/home', function () {
-    if (auth()->check()) {
-        return redirect()->route('dashboard.home');
-    }
-    return redirect()->route('landing');
+    // Rute /home akan selalu mengarah ke landing page (sesuai permintaan sebelumnya)
+    return redirect()->route('landing'); 
 })->name('home');
 
 Route::view('/masuk', 'pages.masuk')->name('masuk');
@@ -86,7 +84,7 @@ Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'dow
 Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
 
-// Exports
+// Exports (HARUSNYA DILINDUNGI AUTH DI CONTROLLER)
 Route::get('/exports/pendaftaran/{pelatihan}/bulk', [PendaftaranController::class, 'exportBulk'])
     ->name('exports.pendaftaran.bulk');
 Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::class, 'exportSample'])
@@ -108,10 +106,11 @@ Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard Peserta (Guest-Friendly & Auth)
+| Dashboard Peserta (Requires Auth for all routes within group)
 |--------------------------------------------------------------------------
 */
-Route::prefix('dashboard')->name('dashboard.')->group(function () {
+// DITAMBAHKAN middleware('auth') untuk melindungi SEMUA rute dashboard
+Route::prefix('dashboard')->name('dashboard.')->middleware('auth')->group(function () { 
     // Dashboard umum
     Route::get('/', [DashboardController::class, 'home'])->name('home');
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
@@ -166,7 +165,8 @@ Route::post('/admin/uploads', [UploadController::class, 'store'])
     ->middleware(['web', 'auth'])
     ->name('admin.uploads.store');
 
-Route::resource('pertanyaan', PertanyaanController::class);
+// Pertanyaan Resource (HARUS DILINDUNGI AUTH)
+Route::resource('pertanyaan', PertanyaanController::class)->middleware('auth');
 
 // Report Exports
 Route::middleware(['auth'])
