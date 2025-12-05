@@ -4,9 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Throwable; // <-- PENTING: Tambahkan ini agar try/catch berfungsi!
 
 class Banner extends Model
 {
+    protected $table = 'banners'; // Tambahkan deklarasi tabel (Opsional, tapi praktik yang baik)
+    
+    /**
+     * The attributes that are mass assignable.
+     * Termasuk 'is_featured' untuk kompatibilitas dengan form dan migrasi.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'image',
         'title',
@@ -16,6 +25,11 @@ class Banner extends Model
         'sort_order',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
@@ -24,59 +38,50 @@ class Banner extends Model
 
     /**
      * Accessor: image_url
-     * Penggunaan di blade: {{ $banner->image_url }}
+     * Menghasilkan URL gambar yang disederhanakan dan andal, dengan beberapa tingkat fallback.
      *
-     * Logika:
-     * - jika kolom image kosong -> fallback ke public/images/beranda/slide1.jpg
-     * - jika string adalah URL penuh -> dikembalikan langsung
-     * - cek Storage::disk('public') (storage/app/public)
-     * - cek public/storage/<path> (link storage)
-     * - cek public/<path>
-     * - fallback terakhir -> asset('images/beranda/slide1.jpg')
+     * @return string
      */
     public function getImageUrlAttribute(): string
     {
-        // fallback jika kosong
+        // Tentukan Fallback
+        // Ganti 'images/fallback.jpg' dengan path gambar default Anda yang PASTI ada di folder public/images/
+        $defaultFallback = asset('images/fallback.jpg'); 
+
+        // 1. Cek jika kolom 'image' kosong di database
         if (empty($this->image)) {
-            return asset('images/beranda/slide1.jpg');
+            return $defaultFallback;
         }
 
-        // jika sudah URL lengkap
-        if (preg_match('/^https?:\\/\\//i', $this->image)) {
-            return $this->image;
+        $path = $this->image;
+
+        // 2. Jika sudah URL lengkap (http/https), kembalikan langsung
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+        
+        // 3. Normalisasi path: hapus awalan 'public/' jika ada 
+        if (str_starts_with($path, 'public/')) {
+            $path = str_replace('public/', '', $path);
         }
 
-        // normalisasi (hapus leading "public/" bila ada)
-        $normalized = preg_replace('#^public\/+#i', '', $this->image);
-
-        // 1) cek Storage disk('public') (storage/app/public)
+        // 4. Cek dan hasilkan URL dari Storage disk 'public'
         try {
-            if (!empty($normalized) && Storage::disk('public')->exists($normalized)) {
-                return Storage::disk('public')->url($normalized); // -> /storage/...
+            // Kita harus memastikan file ada sebelum memanggil Storage::url()
+            if (Storage::disk('public')->exists($path)) {
+                return Storage::disk('public')->url($path);
             }
-        } catch (\Throwable $e) {
-            // abaikan error disk
+        } catch (Throwable $e) {
+            // Jika ada masalah I/O atau disk, kita abaikan dan lanjut ke fallback
         }
 
-        // 2) cek public/storage/<normalized> (symlink)
-        if (!empty($normalized) && file_exists(public_path('storage/' . $normalized))) {
-            return asset('storage/' . $normalized);
+        // 5. Fallback Akhir: Coba ambil dari folder public/ langsung (seperti aset statis)
+        // Ini adalah fallback kedua terbaik jika symlink Storage gagal, tapi file ada di public/
+        if (file_exists(public_path($this->image))) {
+             return asset($this->image);
         }
-
-        // 3) cek public/<normalized> (jika file langsung di public/)
-        if (!empty($normalized) && file_exists(public_path($normalized))) {
-            return asset($normalized);
-        }
-
-        // 4) coba gabungkan ke folder images/ jika path mengandung subfolder
-        if (!empty($normalized) && strpos($normalized, '/') !== false) {
-            $maybe = 'images/' . ltrim($normalized, '/');
-            if (file_exists(public_path($maybe))) {
-                return asset($maybe);
-            }
-        }
-
-        // fallback terakhir
-        return asset('images/beranda/slide1.jpg');
+        
+        // Final fallback jika file tidak ditemukan
+        return $defaultFallback;
     }
 }

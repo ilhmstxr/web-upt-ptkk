@@ -196,13 +196,15 @@ class DashboardController extends Controller
             'peserta_id' => 'nullable|exists:peserta,id',
         ]);
 
+        // Jika peserta_id diberikan langsung (hidden) — pilih langsung
         if ($request->filled('peserta_id')) {
             $peserta = Peserta::findOrFail($request->peserta_id);
             session(['peserta_id' => $peserta->id]);
             return redirect()->route('dashboard.home')->with('success','Peserta dipilih: '.$peserta->nama);
         }
 
-        $nama = mb_strtolower(trim($validated['nama']));
+        $namaRaw = trim($validated['nama']);
+        $nama = mb_strtolower($namaRaw);
 
         $matches = Peserta::with('instansi:id,asal_instansi,kota')
             ->whereRaw('LOWER(nama) = ?', [$nama])
@@ -220,8 +222,10 @@ class DashboardController extends Controller
             return back()->withInput()->with('error','Peserta tidak ditemukan.');
         }
 
+        // ambil pertama (atau implementasikan pilihan multiple later)
         $peserta = $matches->first();
 
+        // aman: hapus session peserta lama, regenerate session id untuk keamanan
         $request->session()->forget(['peserta_id','instansi_id','instansi_nama','instansi_kota']);
         $request->session()->regenerate();
 
@@ -236,18 +240,25 @@ class DashboardController extends Controller
             ->with('success', 'Peserta dipilih: '.$peserta->nama.' — '.(session('instansi_nama') ?? ''));
     }
 
+    /**
+     * AJAX: lookup instansi & peserta by nama (dipakai di modal/home)
+     * Mengembalikan 'nama' dan 'nama_lower' sehingga JS bisa melakukan perbandingan case-insensitive
+     */
     public function lookupInstansiByNama(Request $request)
     {
-        $nama = mb_strtolower(trim($request->get('nama','')));
+        $namaRaw = trim($request->get('nama',''));
+        $nama = mb_strtolower($namaRaw);
 
         if ($nama === '') {
             return response()->json(['ok' => false, 'message' => 'Nama kosong']);
         }
 
+        // cari exact match dulu
         $peserta = Peserta::with('instansi:id,asal_instansi,kota')
             ->whereRaw('LOWER(nama) = ?', [$nama])
             ->first();
 
+        // kalau gak ada exact, gunakan LIKE
         if (!$peserta) {
             $like = '%'.str_replace(' ','%',$nama).'%';
             $peserta = Peserta::with('instansi:id,asal_instansi,kota')
@@ -260,13 +271,15 @@ class DashboardController extends Controller
             return response()->json(['ok' => false, 'message' => 'Peserta tidak ditemukan']);
         }
 
+        // kembalikan nama asli (untuk ditampilkan) dan juga versi lower
         return response()->json([
             'ok' => true,
             'data' => [
-                'peserta_id' => $peserta->id,
-                'nama'       => $peserta->nama,
-                'instansi'   => optional($peserta->instansi)->asal_instansi,
-                'kota'       => optional($peserta->instansi)->kota,
+                'peserta_id'   => $peserta->id,
+                'nama'         => $peserta->nama,               // nama asli (untuk ditampilkan)
+                'nama_lower'   => mb_strtolower($peserta->nama), // versi lower untuk perbandingan
+                'instansi'     => optional($peserta->instansi)->asal_instansi,
+                'kota'         => optional($peserta->instansi)->kota,
             ]
         ]);
     }

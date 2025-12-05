@@ -22,7 +22,6 @@
       --card-manfaat: #DBE7F7;
     }
 
-    /* Stroke teks utilitas */
     .stroke-yellow{
       text-shadow:
         -1px -1px 0 var(--kuning-stroke),
@@ -30,6 +29,7 @@
         -1px  1px 0 var(--kuning-stroke),
          1px  1px 0 var(--kuning-stroke);
     }
+
     .stroke-red{
       text-shadow:
         -1px -1px 0 var(--merah-stroke),
@@ -38,7 +38,7 @@
          1px  1px 0 var(--merah-stroke);
     }
 
-    /* Shadow bertingkat (5 lapis) */
+    /* Shadow bertingkat */
     .shadow-5x{
       box-shadow:
         0 1px 3px rgba(0,0,0,0.05),
@@ -48,283 +48,111 @@
         0 8px 20px rgba(0,0,0,0.13);
     }
 
-    /* Kartu Tujuan & Manfaat */
-   /* Kartu Tujuan – dasar */
-.tujuan-card{
-  position: relative;
-  background: #F1F9FC;
-  border-radius: 1rem;
-  border: 1px solid #E0E7FF;
-  box-shadow:
-    0 2px 4px rgba(0,0,0,.04),
-    0 10px 20px rgba(0,0,0,.08);
-  overflow: visible;  /* biarkan lingkaran keluar 1/4 */
-  transition:
-    transform 220ms ease,
-    box-shadow 220ms ease,
-    border-color 220ms ease,
-    background-color 220ms ease;
-}
+    /* Kartu Tujuan */
+    .tujuan-card{
+      position: relative;
+      background: #F1F9FC;
+      border-radius: 1rem;
+      border: 1px solid #E0E7FF;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,.04),
+        0 10px 20px rgba(0,0,0,.08);
+      overflow: visible;
+      transition:
+        transform 220ms ease,
+        box-shadow 220ms ease,
+        border-color 220ms ease,
+        background-color 220ms ease;
+    }
 
-/* SHAPE biru di DALAM kartu, cuma bagian bawah */
-/* SHAPE biru full di bawah, ngikut bentuk kartu */
-.tujuan-card::after{
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 10px;
-  background: linear-gradient(90deg,#0E65CC 0%,#01A0F6 50%,#0C69CF 100%);
-  border-radius: 0 0 1rem 1rem;   /* sudut bawah ikut kartu */
-  opacity: 0;
-  transform: translateY(100%);
-  transition:
-    opacity 220ms ease,
-    transform 220ms ease;
-}
+    .tujuan-card::after{
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 10px;
+      background: linear-gradient(90deg,#0E65CC 0%,#01A0F6 50%,#0C69CF 100%);
+      border-radius: 0 0 1rem 1rem;
+      opacity: 0;
+      transform: translateY(100%);
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
 
-.tujuan-card:hover{
-  transform: translateY(-6px);
-  border-color: #0E65CC;
-  background-color: #E8F3FF;
-  box-shadow:
-    0 4px 8px rgba(0,0,0,.05),
-    0 22px 45px rgba(0,0,0,.14);
-}
+    .tujuan-card:hover{
+      transform: translateY(-6px);
+      border-color: #0E65CC;
+      background-color: #E8F3FF;
+      box-shadow:
+        0 4px 8px rgba(0,0,0,.05),
+        0 22px 45px rgba(0,0,0,.14);
+    }
 
-.tujuan-card:hover::after{
-  opacity: 1;
-  transform: translateY(0);
-}
+    .tujuan-card:hover::after{ opacity:1; transform:translateY(0); }
 
-/* Badge angka – membesar sedikit saat hover */
-/* Posisi default: agak masuk ke dalam */
-.tujuan-badge{
-  position: absolute;
-  top: 0;          /* tepat di tepi atas */
-  right: 0;        /* tepat di tepi kanan */
-  width: 45px;
-  height: 45px;
-  border-radius: 999px;
-  background: linear-gradient(90deg,#0E65CC 0%,#01A0F6 49%,#0C69CF 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #FFFFFF;
-  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.18);
-  z-index: 20;
-  transform: translate(35%, -35%);  /* 3/4 di dalam, 1/4 di luar */
-  transition:
-    transform 240ms cubic-bezier(0.19, 1, 0.22, 1),
-    box-shadow 240ms cubic-bezier(0.19, 1, 0.22, 1);
-}
+    .tujuan-badge{
+      position:absolute;
+      top:0; right:0;
+      width:45px; height:45px;
+      border-radius:999px;
+      background:linear-gradient(90deg,#0E65CC,#01A0F6,#0C69CF);
+      display:flex; align-items:center; justify-content:center;
+      color:#FFF; font-weight:600; font-size:16px;
+      transform:translate(35%,-35%);
+      box-shadow:0 2px 6px rgba(0,0,0,.18);
+      transition:transform .22s ease;
+    }
 
+    .tujuan-card:hover .tujuan-badge{ transform:translate(35%,-35%) scale(1.16); }
 
-/* Hover: sedikit membesar dan “masuk” ke dalam dikit */
-.tujuan-card:hover .tujuan-badge{
-  transform: translate(35%, -35%) scale(1.16);  /* tetap di pojok yang sama, cuma membesar */
-  box-shadow: 0 8px 18px rgba(0,0,0,.25);
-}
-
-
-/* Icon – miring dikit ke kanan */
-.tujuan-icon{
-  transition: transform 220ms ease;
-}
-.tujuan-card:hover .tujuan-icon{
-  transform: rotate(7deg) translateY(-2px);
-}
-
-.tujuan-text{
-  transition: transform 220ms ease;
-}
-.tujuan-card:hover .tujuan-text{
-  transform: scale(1.03);
-}
-
-  .card-manfaat{
-  background: var(--card-manfaat);
-  height: 300px;
-  border-radius: 1rem;
-}
-
-/* ==== RAMPELIN LEBAR KHUSUS TABLET ==== */
-@media (min-width: 768px) and (max-width: 1023.98px) {
-  .card-manfaat {
-    max-width: 230px;   /* bikin lebih ramping */
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-
-    /* =======================================================
-   GLOBAL SECTION LAYOUT CONSISTENCY
-   ======================================================= */
-
-/* Padding horizontal sama untuk semua section */
-.section-container {
-  max-width: 1280px; /* setara max-w-7xl */
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.5rem;   /* px-6 */
-  padding-right: 1.5rem;  /* px-6 */
-}
-
-@media (min-width: 768px) {
-  .section-container {
-    padding-left: 3rem;   /* md:px-12 */
-    padding-right: 3rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .section-container {
-    padding-left: 80px;   /* lg:px-[80px] */
-    padding-right: 80px;
-  }
-}
-
-/* === Baru: kompak 30px vertikal untuk semua section === */
-.section-compact {
-  padding-top: 30px !important;
-  padding-bottom: 30px !important;
-}
-
-/* === Baru: jarak antar section 30px === */
-section + section {
-  margin-top: 30px !important;
-}
-
-/* ================= TIMELINE SEJARAH ================= */
-
-/* Default (desktop & tablet) – posisi diatur lewat class Tailwind di HTML */
-.timeline-container {
-  position: relative;
-}
-
-/* Tablet: tinggi sedikit lebih besar, gambar agak mengecil */
-@media (min-width: 768px) and (max-width: 1023.98px) {
-  .timeline-container {
-    height: 1700px;
-  }
-
-  .sejarah-img {
-    width: 260px !important;
-  }
-}
-
-/* Desktop: gambar dibesarkan */
-@media (min-width: 1024px) {
-  .sejarah-img {
-    width: 360px !important;  /* silakan ubah 340/380 kalau mau */
-  }
-}
-
-/* ============ MOBILE (<= 767px) ============ */
-/* Garis pindah ke kiri, item bertumpuk: gambar → tahun → teks */
-@media (max-width: 767.98px) {
-
-  .timeline-container {
-    height: auto !important;      /* override h-[1400px] */
-    padding-left: 2.5rem;         /* ruang untuk garis di kiri */
-    padding-right: 1.25rem;
-  }
-
-  /* Sembunyikan garis & 5 titik versi desktop */
-  .timeline-container > span {
-    display: none;
-  }
-
-  /* Garis vertikal baru di kiri (sepanjang konten) */
-  .timeline-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 1.5rem;                 /* referensi center garis */
-    width: 3px;
-    background: #D1EDF5;
-    transform: translateX(-50%);  /* biar center di 1.5rem */
-  }
-
-  /* Setiap blok tahun (1974–2019) jadi item bertumpuk */
-  .timeline-container > div[class*="absolute"] {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
-    max-width: 100%;
-    margin: 0 0 2.5rem 0;         /* jarak antar tahun */
-  }
-
-  /* Titik biru di kiri, CENTANG nempel ke garis */
-  .timeline-container > div[class*="absolute"]::before {
-    content: '';
-    position: absolute;
-    top: 0.9rem;                  /* kira-kira sejajar atas gambar */
-    left: 1.5rem;                 /* sama dengan garis */
-    width: 14px;
-    height: 14px;
-    border-radius: 999px;
-    background: #1524AF;
-    transform: translate(-50%, 0);  /* center titik = center garis */
-  }
-
-  /* Grid 2 kolom dipecah jadi vertikal */
-  .timeline-container > div[class*="absolute"] > .grid {
-    display: block;
-  }
-
-  /* Reset padding & align supaya rapi di HP */
-  .timeline-left-col,
-  .timeline-right-col,
-  .timeline-container > div[class*="absolute"] > .grid > div {
-    padding: 0 !important;
-    margin: 0 0 0.5rem 0 !important;
-    text-align: left !important;
-  }
-
-  /* Gambar di HP: sedikit lebih kecil + jarak bawah */
-  .timeline-container .sejarah-img {
-    width: 180px !important;
-    margin-bottom: 0.5rem;
-  }
-
-  /* Teks paragraf sejarah di HP */
-  .sejarah-text {
-    font-size: 12px !important;
-    line-height: 1.6 !important;
-    text-align: justify !important;
-  }
-
-  /* Tahun di HP: kecil & rata tengah */
-  .timeline-container h4 {
-    font-size: 14px !important;
-    margin-bottom: 0.25rem;
-    text-align: center !important;
-    width: 100%;
-  }
-}
-
-/* Jauhkan kolom gambar dari garis tengah (desktop & tablet) */
-.timeline-left-col {
-  padding-right: 3.75rem;   /* ~60px dari garis */
-}
-
-.timeline-right-col {
-  padding-left: 3.75rem;
-}
-
-
+    .timeline-container { position: relative; }
+    @media (max-width: 767px){
+      .timeline-container{ height:auto!important; padding-left:2.5rem; }
+      .timeline-container > span{ display:none; }
+      .timeline-container::before{
+        content:''; position:absolute;
+        top:0; bottom:0; left:1.5rem;
+        width:3px; background:#D1EDF5;
+      }
+      .timeline-container > div[class*="absolute"]{
+        position:relative !important;
+        margin-bottom:40px;
+      }
+      .sejarah-img{ width:180px !important; }
+    }
   </style>
 </head>
 
 <body class="bg-[#F1F9FC] antialiased">
+
+@php
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use App\Models\ProfilUPT;
+
+// ambil profil terakhir (jika ada)
+$profil = null;
+if (class_exists(\App\Models\ProfilUPT::class)) {
+    $profil = ProfilUPT::orderBy('id', 'desc')->first();
+}
+if (! $profil) {
+    $profil = (object)[
+      'kepala_upt_name' => 'ENDANG WINARSIH, S. Sos, M. Si',
+      'kepala_upt_photo' => null,
+      'sambutan' => 'Puji syukur ke hadirat Tuhan Yang Maha Esa atas limpahan rahmat-Nya sehingga UPT PTKK dapat melaksanakan setiap program pelatihan dengan baik. Program pelatihan kami disusun sebagai wujud nyata komitmen UPT PTKK dalam mendukung kebijakan Merdeka Belajar dan perubahan paradigma pendidikan vokasi agar selaras dengan kebutuhan industri, khususnya dalam meningkatkan kompetensi guru dan siswa di pendidikan kejuruan Jawa Timur.
+
+Kami menyadari bahwa pencapaian tujuan besar ini tidak dapat terwujud tanpa kerja sama dan dukungan dari berbagai pihak, baik internal Dinas Pendidikan maupun eksternal. Untuk itu, kami mengucapkan terima kasih atas segala bentuk dukungan dan kontribusi yang telah diberikan. Semoga program pelatihan kami dapat menjadi landasan kuat dalam menciptakan SDM vokasi yang unggul, adaptif, kompetitif serta mampu membawa pendidikan kejuruan Jawa Timur semakin maju.',
+      'visi' => 'Profesional dalam pelayanan guna meningkatkan kualitas SDM dalam pelatihan yang berintegritas dan berkompeten sesuai kebutuhan perkembangan pasar global.',
+      'misi' => "Memberikan pelayanan prima guna mendukung program pemerintah.\nMengembangkan sistem pelatihan yang cerdas, berwawasan, terampil, adaptif, dan berkompeten.\nMeningkatkan keterampilan SDM berbasis vokasi siap kerja, berwirausaha, atau melanjutkan ke jenjang lebih tinggi.",
+    ];
+}
+
+function uploaded_or_asset($path){
+    if (!$path) return asset('images/profil/Kepala-UPT.svg');
+    if (preg_match('/^https?:\/\//', $path)) return $path;
+    if (Storage::exists("public/$path")) return Storage::url($path);
+    if (file_exists(public_path("images/$path"))) return asset("images/$path");
+    return asset('images/profil/Kepala-UPT.svg');
+}
+@endphp
 
   {{-- TOPBAR --}}
   @include('components.layouts.app.topbar')
@@ -368,7 +196,7 @@ section + section {
 
           <div class="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#B5CDEE] to-[#1524AF]"></div>
 
-          <img src="{{ asset('images/profil/Kepala-UPT.svg') }}"
+          <img src="{{ uploaded_or_asset($profil->kepala_upt_photo) }}"
                alt="Kepala UPT PTKK"
                class="absolute bottom-0 left-1/2 -translate-x-1/2
                       h-[260px]
@@ -384,7 +212,7 @@ section + section {
         <div class="block lg:hidden text-center mt-4">
           <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1E3A8A]
                      text-[19px] md:text-[20px] tracking-tight stroke-yellow">
-            ENDANG WINARSIH, S. Sos, M. Si
+            {{ $profil->kepala_upt_name }}
           </h3>
           <p class="mt-1 font-[Montserrat] text-[#1E3A8A]
                     text-[13px] md:text-[14px]">
@@ -398,17 +226,13 @@ section + section {
       <div class="w-full h-full flex flex-col lg:pt-[8px] lg:-mt-[6px]">
 
         <p class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
-          Puji syukur ke hadirat Tuhan Yang Maha Esa atas limpahan rahmat-Nya sehingga UPT PTKK dapat melaksanakan setiap program pelatihan dengan baik. Program pelatihan kami disusun sebagai wujud nyata komitmen UPT PTKK dalam mendukung kebijakan Merdeka Belajar dan perubahan paradigma pendidikan vokasi agar selaras dengan kebutuhan industri, khususnya dalam meningkatkan kompetensi guru dan siswa di pendidikan kejuruan Jawa Timur.
-        </p>
-
-        <p class="mt-4 font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
-          Kami menyadari bahwa pencapaian tujuan besar ini tidak dapat terwujud tanpa kerja sama dan dukungan dari berbagai pihak, baik internal Dinas Pendidikan maupun eksternal. Untuk itu, kami mengucapkan terima kasih atas segala bentuk dukungan dan kontribusi yang telah diberikan. Semoga program pelatihan kami dapat menjadi landasan kuat dalam menciptakan SDM vokasi yang unggul, adaptif, kompetitif serta mampu membawa pendidikan kejuruan Jawa Timur semakin maju.
+          {!! nl2br(e($profil->sambutan)) !!}
         </p>
 
         {{-- NAMA (HANYA DESKTOP: TETAP ASLI) --}}
         <div class="hidden lg:block">
           <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1E3A8A] text-[22px] tracking-tight stroke-yellow">
-            ENDANG WINARSIH, S. Sos, M. Si
+            {{ $profil->kepala_upt_name }}
           </h3>
           <p class="mt-1 font-[Montserrat] text-[#1E3A8A] text-[15px]">
             Kepala UPT. PTKK
@@ -440,8 +264,7 @@ section + section {
               Visi
             </h3>
             <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
-              Profesional dalam pelayanan guna meningkatkan kualitas SDM dalam pelatihan yang berintegritas
-              dan berkompeten sesuai kebutuhan perkembangan pasar global.
+              {!! nl2br(e($profil->visi)) !!}
             </p>
           </div>
         </div>
@@ -454,9 +277,14 @@ section + section {
               Misi
             </h3>
             <ul class="list-disc pl-5 space-y-2 font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
-              <li>Memberikan pelayanan prima guna mendukung program pemerintah.</li>
-              <li>Mengembangkan sistem pelatihan yang cerdas, berwawasan, terampil, adaptif, dan berkompeten.</li>
-              <li>Meningkatkan keterampilan SDM berbasis vokasi siap kerja, berwirausaha, atau melanjutkan ke jenjang lebih tinggi.</li>
+              @php
+                $misi = preg_split("/\r\n|\n|\r/", $profil->misi ?? '');
+              @endphp
+              @foreach($misi as $point)
+                @if(trim($point) !== '')
+                  <li>{{ $point }}</li>
+                @endif
+              @endforeach
             </ul>
           </div>
         </div>
@@ -607,7 +435,7 @@ section + section {
             <img src="{{ asset('images/profil/sejarah2016.svg') }}" alt="Sejarah 2016"
                  class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
           </div>
-          {{-- teks kiri di desktop, tapi setelah gambar di HP --}}
+          {{-- teks kiri di desktop, tapi setelah gambar in HP --}}
           <div class="mt-2 md:mt-2 pr-0 md:pr-[40px] text-left md:text-right
                       order-2 md:order-1">
             <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2016</h4>

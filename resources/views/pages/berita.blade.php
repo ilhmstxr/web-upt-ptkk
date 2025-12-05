@@ -21,23 +21,9 @@
       --merah-stroke: #861D23;
       --card-manfaat: #DBE7F7;
     }
-
-    .section-container {
-      max-width: 1280px;
-      margin-left: auto;
-      margin-right: auto;
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-
-    @media (min-width: 768px) {
-      .section-container { padding-left: 3rem; padding-right: 3rem; }
-    }
-
-    @media (min-width: 1024px) {
-      .section-container { padding-left: 80px; padding-right: 80px; }
-    }
-
+    .section-container { max-width:1280px; margin-left:auto; margin-right:auto; padding-left:1.5rem; padding-right:1.5rem; }
+    @media (min-width:768px){ .section-container{ padding-left:3rem; padding-right:3rem; } }
+    @media (min-width:1024px){ .section-container{ padding-left:80px; padding-right:80px; } }
     section + section { margin-top: 30px !important; }
   </style>
 </head>
@@ -60,82 +46,81 @@
   />
   {{-- /HERO --}}
 
-  @php
-    use Illuminate\Support\Facades\Storage;
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Carbon;
+@php
+  use Illuminate\Support\Facades\Storage;
+  use Illuminate\Support\Str;
+  use Illuminate\Support\Carbon;
 
-    /**
-     * resolve_image_url: mengembalikan URL gambar yang dapat diakses
-     * menerima path relatif ('berita/xxx.jpg') atau full URL.
-     */
-    if (! function_exists('resolve_image_url')) {
-      function resolve_image_url($value, $fallback = null) {
-        if (empty($value)) {
-          return $fallback;
+  /**
+   * force_storage_url($raw, $fallback)
+   * - jika $raw sudah full URL -> kembalikan apa adanya
+   * - jika $raw relatif (mungkin diawali "storage/" atau "public/") -> normalisasi lalu coba Storage::disk('public')->url(...)
+   * - jika gagal, cek public/storage/ dan public/ secara langsung
+   * - fallback ke gambar default
+   */
+  if (! function_exists('force_storage_url')) {
+    function force_storage_url($raw, $fallback = null) {
+      $fallback = $fallback ?? asset('images/beranda/slide1.jpg');
+      if (empty($raw)) return $fallback;
+
+      // full URL -> ok
+      if (preg_match('/^https?:\\/\\//i', $raw)) return $raw;
+
+      // normalisasi path untuk disk public
+      $p = trim($raw);
+      $p = preg_replace('#^storage/+#i', '', $p);
+      $p = preg_replace('#^public/+#i', '', $p);
+      $p = ltrim($p, '/');
+
+      try {
+        if (Storage::disk('public')->exists($p)) {
+          return Storage::disk('public')->url($p); // biasanya menghasilkan /storage/...
         }
-
-        // full URL
-        if (preg_match('/^https?:\\/\\//i', $value)) {
-          return $value;
-        }
-
-        $normalized = preg_replace('#^storage\/+#i', '', trim($value));
-        $normalized = preg_replace('#^public\/+#i', '', $normalized);
-
-        try {
-          if (Storage::disk('public')->exists($normalized)) {
-            return Storage::disk('public')->url($normalized);
-          }
-        } catch (\Throwable $e) {
-          // ignore
-        }
-
-        if (file_exists(public_path('storage/' . $normalized))) {
-          return asset('storage/' . $normalized);
-        }
-
-        if (file_exists(public_path($normalized))) {
-          return asset($normalized);
-        }
-
-        return $fallback;
+      } catch (\Throwable $e) {
+        // ignore dan lanjut ke cek file_exists
       }
+
+      // cek public/storage/<p>
+      if (file_exists(public_path('storage/' . $p))) {
+        return asset('storage/' . $p);
+      }
+
+      // cek public/<p>
+      if (file_exists(public_path($p))) {
+        return asset($p);
+      }
+
+      return $fallback;
     }
+  }
 
-    // ----- Normalize variables from controller -----
-    // Accept several possible names (postsPaginator OR posts)
-    $postsPaginator = $postsPaginator ?? ($posts ?? null);
-    $featured = $featured ?? null;
-    $others = $others ?? null;
+  // normalisasi input dari controller
+  $postsPaginator = $postsPaginator ?? ($posts ?? null);
+  $featured = $featured ?? null;
+  $others = $others ?? null;
 
-    // If controller only sent $posts as LengthAwarePaginator, use it
-    if (empty($postsPaginator) && ! empty($posts) && is_object($posts) && method_exists($posts, 'items')) {
-      $postsPaginator = $posts;
-    }
+  if (empty($postsPaginator) && ! empty($posts) && is_object($posts) && method_exists($posts, 'items')) {
+    $postsPaginator = $posts;
+  }
 
-    // If there is a paginator but featured not set, compute from current page items
-    if ($postsPaginator && empty($featured)) {
-      $items = collect($postsPaginator->items());
-      $featured = $items->first() ?: null;
-      $others = $items->slice(1);
-    }
+  if ($postsPaginator && empty($featured)) {
+    $items = collect($postsPaginator->items());
+    $featured = $items->first() ?: null;
+    $others = $items->slice(1);
+  }
 
-    // If controller sent $posts as Collection (not paginator)
-    if (empty($postsPaginator) && ! empty($posts) && ($posts instanceof \Illuminate\Support\Collection)) {
-      $items = $posts;
-      $featured = $featured ?? $items->first();
-      $others = $others ?? $items->slice(1);
-    }
+  if (empty($postsPaginator) && ! empty($posts) && ($posts instanceof \Illuminate\Support\Collection)) {
+    $items = $posts;
+    $featured = $featured ?? $items->first();
+    $others = $others ?? $items->slice(1);
+  }
 
-    // Ensure $others is a collection
-    if ($others && ! ($others instanceof \Illuminate\Support\Collection)) {
-      $others = collect($others);
-    }
+  if ($others && ! ($others instanceof \Illuminate\Support\Collection)) {
+    $others = collect($others);
+  }
 
-    // timezone helper
-    $tz = config('app.timezone') ?: 'UTC';
-  @endphp
+  $tz = config('app.timezone') ?: 'UTC';
+@endphp
 
   <section class="section-container py-8 md:py-10">
     @if( ! $postsPaginator || ($postsPaginator->count() === 0 && (empty($featured) && ($others ? $others->isEmpty() : true))) )
@@ -150,13 +135,12 @@
           $fIsModel = is_object($featured);
           $fTitle = $fIsModel ? ($featured->title ?? '—') : ($featured['title'] ?? '—');
           $fSlug = $fIsModel ? ($featured->slug ?? '#') : ($featured['url'] ?? '#');
-          if ($fIsModel && method_exists($featured, 'getImageUrlAttribute')) {
-            $fImgUrl = $featured->image_url;
-          } else {
-            $fImgUrl = resolve_image_url($fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null), asset('images/beranda/slide1.jpg'));
-          }
+
+          // Dapatkan raw image path kemudian pakai force_storage_url
+          $rawImg = $fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null);
+          $fImgUrl = force_storage_url($rawImg, asset('images/beranda/slide1.jpg'));
+
           $fDate = $fIsModel ? ($featured->published_at ?? $featured->created_at) : ($featured['date'] ?? null);
-          // format date safely
           if ($fDate && is_object($fDate) && method_exists($fDate, 'setTimezone')) {
             $fDateForDisplay = $fDate->setTimezone($tz)->translatedFormat('d F Y H:i');
           } elseif (!empty($fDate)) {
@@ -170,20 +154,15 @@
           <div class="lg:col-span-5">
             <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}" class="block group">
               <div class="aspect-[16/12] md:aspect-[16/11] w-full rounded-[18px] overflow-hidden">
-                @if($fImgUrl)
-                  <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}" class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy"
-                       onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
-                @else
-                  <div class="w-full h-full bg-slate-300/60"></div>
-                @endif
+                <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}" class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy"
+                     onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
               </div>
             </a>
           </div>
 
           <div class="lg:col-span-7">
             <div class="mb-2">
-              <span class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
-                           font-[Volkhov] text-[15px] leading-none shadow-sm">
+              <span class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] text-[#861D23] font-[Volkhov] text-[15px] leading-none shadow-sm">
                 Berita Baru
               </span>
             </div>
@@ -230,7 +209,10 @@
             $isModel = is_object($post);
             $title = $isModel ? ($post->title ?? '—') : ($post['title'] ?? '—');
             $slugOrUrl = $isModel ? route('berita.show', $post->slug) : ($post['url'] ?? '#');
-            $imgUrl = $isModel && method_exists($post, 'getImageUrlAttribute') ? $post->image_url : resolve_image_url($isModel ? ($post->image ?? null) : ($post['thumb'] ?? null), asset('images/beranda/slide1.jpg'));
+
+            $rawImg = $isModel ? ($post->image ?? null) : ($post['thumb'] ?? null);
+            $imgUrl = force_storage_url($rawImg, asset('images/beranda/slide1.jpg'));
+
             $date = $isModel ? ($post->published_at ?? $post->created_at) : ($post['date'] ?? null);
             if ($date && is_object($date) && method_exists($date, 'setTimezone')) {
               $dateForDisplay = $date->setTimezone($tz)->translatedFormat('d F Y');
@@ -245,12 +227,8 @@
           <article class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm hover:shadow-md transition">
             <a href="{{ $slugOrUrl }}" class="block mb-3">
               <div class="aspect-[16/11] w-full rounded-xl border border-[#1524AF]/40 overflow-hidden">
-                @if($imgUrl)
-                  <img src="{{ $imgUrl }}" alt="{{ $title }}" class="w-full h-full object-cover hover:scale-[1.02] transition" loading="lazy"
-                       onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
-                @else
-                  <div class="w-full h-full bg-slate-200/70"></div>
-                @endif
+                <img src="{{ $imgUrl }}" alt="{{ $title }}" class="w-full h-full object-cover hover:scale-[1.02] transition" loading="lazy"
+                     onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
               </div>
             </a>
 
@@ -282,7 +260,7 @@
         @endforeach
       </div>
 
-      {{-- PAGINATION (manual, aman) --}}
+      {{-- PAGINATION --}}
       <div class="mt-8 flex justify-center">
         @if($postsPaginator)
           @php
@@ -294,14 +272,12 @@
           @endphp
 
           <nav class="inline-flex items-center gap-1" aria-label="Pagination">
-            {{-- Prev --}}
             @if($p->onFirstPage())
               <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed">&laquo;</span>
             @else
               <a href="{{ $p->url($current - 1) }}" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">&laquo;</a>
             @endif
 
-            {{-- Page numbers --}}
             @for($i = $start; $i <= $end; $i++)
               @if($i === $current)
                 <span class="px-3 py-1.5 rounded-lg border border-[#1524AF] text-[#1524AF] bg-[#F5FBFF]">{{ $i }}</span>
@@ -310,7 +286,6 @@
               @endif
             @endfor
 
-            {{-- Next --}}
             @if($current >= $last)
               <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed">&raquo;</span>
             @else
