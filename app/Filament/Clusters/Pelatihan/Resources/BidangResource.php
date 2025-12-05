@@ -4,7 +4,6 @@ namespace App\Filament\Clusters\Pelatihan\Resources;
 
 use App\Filament\Clusters\Pelatihan;
 use App\Filament\Clusters\Pelatihan\Resources\BidangResource\Pages;
-use App\Filament\Clusters\Pelatihan\Resources\BidangResource\RelationManagers;
 use App\Models\Bidang;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -21,8 +20,8 @@ class BidangResource extends Resource
     protected static ?string $cluster = Pelatihan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    
-    // Hide from sidebar navigation (accessed via tabs only)
+
+    // Hide from sidebar navigation (akses via tab cluster saja)
     protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
@@ -31,6 +30,9 @@ class BidangResource extends Resource
             ->schema([
                 Forms\Components\FileUpload::make('gambar')
                     ->label('Gambar/Icon Bidang')
+                    ->disk('public')                 // 🔹 simpan di disk public
+                    ->directory('bidang-images')     // 🔹 folder: storage/app/public/bidang-images
+                    ->visibility('public')           // 🔹 bisa diakses via /storage/...
                     ->image()
                     ->imageEditor()
                     ->imageEditorAspectRatios([
@@ -39,23 +41,27 @@ class BidangResource extends Resource
                         '16:9',
                     ])
                     ->maxSize(2048) // 2MB
-                    ->directory('bidang-images')
-                    ->visibility('public')
                     ->columnSpanFull(),
-                    
+
                 Forms\Components\TextInput::make('nama_bidang')
                     ->label('Nama Bidang')
                     ->required()
                     ->maxLength(255),
-                    
+
                 Forms\Components\TextInput::make('kode')
                     ->label('Kode Bidang')
                     ->maxLength(255),
-                    
-                Forms\Components\TextInput::make('kelas_keterampilan')
-                    ->label('Kelas Keterampilan')
-                    ->maxLength(255),
-                    
+
+                Forms\Components\Select::make('kelas_keterampilan')
+                    ->label('Kelompok Bidang')
+                    ->options([
+                        1 => 'Kelas Keterampilan & Teknik',
+                        0 => 'Milenial Job Center',
+                    ])
+                    ->required()
+                    ->native(false)
+                    ->default(1),
+
                 Forms\Components\Textarea::make('deskripsi')
                     ->label('Deskripsi')
                     ->maxLength(65535)
@@ -73,29 +79,38 @@ class BidangResource extends Resource
             ])
             ->columns([
                 Tables\Columns\Layout\Stack::make([
-                    // Image at top
+                    // Gambar di atas
                     Tables\Columns\ImageColumn::make('gambar')
+                        ->disk('public') // 🔹 ambil dari disk public
                         ->height(150)
-                        ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->nama_bidang) . '&size=300&background=random')
+                        ->defaultImageUrl(fn ($record) =>
+                            'https://ui-avatars.com/api/?name=' .
+                            urlencode($record->nama_bidang) .
+                            '&size=300&background=random'
+                        )
                         ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3']),
-                    
+
                     Tables\Columns\TextColumn::make('nama_bidang')
                         ->weight('bold')
                         ->size('lg')
                         ->icon('heroicon-o-academic-cap')
                         ->color('primary')
                         ->extraAttributes(['class' => 'mb-2']),
-                    
+
                     Tables\Columns\TextColumn::make('kelas_keterampilan')
-                        ->icon('heroicon-o-tag')
-                        ->size('sm')
-                        ->color('gray'),
+                        ->label('Kelompok')
+                        ->formatStateUsing(fn ($state) => $state
+                            ? 'Kelas Keterampilan & Teknik'
+                            : 'Milenial Job Center'
+                        )
+                        ->badge()
+                        ->color(fn ($state) => $state ? 'success' : 'warning'),
 
                     Tables\Columns\TextColumn::make('deskripsi')
                         ->limit(100)
                         ->color('gray')
                         ->size('sm'),
-                    
+
                     Tables\Columns\Layout\Split::make([
                         Tables\Columns\TextColumn::make('created_at')
                             ->date()
@@ -132,9 +147,9 @@ class BidangResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBidangs::route('/'),
+            'index'  => Pages\ListBidangs::route('/'),
             'create' => Pages\CreateBidang::route('/create'),
-            'edit' => Pages\EditBidang::route('/{record}/edit'),
+            'edit'   => Pages\EditBidang::route('/{record}/edit'),
         ];
     }
 }

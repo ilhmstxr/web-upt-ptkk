@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Banner;
 use App\Models\Berita;
 use App\Models\ProfilUPT;
+use App\Models\Bidang; // ✅ TAMBAH INI
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -88,4 +89,26 @@ class LandingController extends Controller
 
         return view('pages.landing', compact('banners', 'beritas', 'profil'));
     }
+
+  // ✅ HALAMAN KOMPETENSI PELATIHAN
+public function bidangPelatihan(Request $request)
+{
+    $activeTab = $request->query('tab', 'keterampilan');
+
+    // kelas_keterampilan = 1 → Kelas Keterampilan & Teknik
+    // kelas_keterampilan = 0 → Milenial Job Center (MJC)
+    $keterampilan = Bidang::where('kelas_keterampilan', 1)
+        ->orderBy('nama_bidang')
+        ->get();
+
+    $mjc = Bidang::where('kelas_keterampilan', 0)
+        ->orderBy('nama_bidang')
+        ->get();
+
+    return view('pages.profil.kompetensi-pelatihan', [
+        'keterampilan' => $keterampilan,
+        'mjc'          => $mjc,
+        'activeTab'    => $activeTab,
+    ]);
+}
 }

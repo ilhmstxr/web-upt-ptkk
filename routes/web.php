@@ -12,6 +12,7 @@ use Spatie\Browsershot\Browsershot;
 // --- IMPORTS CONTROLLERS ---
 use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuratController;
 use App\Http\Controllers\SurveyController;
@@ -51,7 +52,9 @@ Route::get('/', fn () => view('pages.landing'))->name('landing');
 // PROFIL (dropdown navbar)
 Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
 Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
-Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
+// route kompetensi pelatihan
+Route::get('/kompetensi-pelatihan', [LandingController::class, 'bidangPelatihan'])
+    ->name('kompetensi');
 
 // Legacy redirect
 Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
@@ -72,18 +75,6 @@ Route::get('/home', function () {
     }
     return redirect()->route('landing');
 })->name('home');
-
-
-// ======= PROFIL (dropdown di navbar) =======
-Route::view('/cerita-kami', 'pages.profil.cerita-kami')->name('story');
-Route::view('/program-pelatihan', 'pages.profil.program-pelatihan')->name('programs');
-Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
-
-// Legacy redirect
-Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
-
-// Panduan
-Route::view('/panduan', 'pages.panduan')->name('panduan');
 
 /*
 |--------------------------------------------------------------------------

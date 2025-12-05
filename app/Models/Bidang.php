@@ -11,13 +11,13 @@ class Bidang extends Model
 
     protected $table = 'bidang';
 
-    protected $fillable = [
-        'nama_bidang',
-        'deskripsi',
-        'kode',
-        'kelas_keterampilan',
-        'gambar',
-    ];
+   protected $fillable = [
+    'nama_bidang',
+    'deskripsi',
+    'kode',
+    'kelas_keterampilan', // <-- ini dipakai
+    'gambar',
+];
 
     public function bidangPelatihan()
     {
