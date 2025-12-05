@@ -23,55 +23,62 @@ class PendaftaranResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\Section::make('Informasi Pendaftar')
+                Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\TextInput::make('peserta_name')
-                            ->label('Nama Peserta')
-                            ->formatStateUsing(fn ($record) => $record->peserta->nama ?? '-')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('nomor_registrasi')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('pelatihan_name')
-                            ->label('Pelatihan')
-                            ->formatStateUsing(fn ($record) => $record->pelatihan->nama_pelatihan ?? '-')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('tanggal_pendaftaran')
-                            ->disabled(),
-                    ])->columns(2),
+                        Forms\Components\Section::make('Informasi Pendaftar')
+                            ->schema([
+                                Forms\Components\TextInput::make('peserta_name')
+                                    ->label('Nama Peserta')
+                                    ->formatStateUsing(fn ($record) => $record->peserta->nama ?? '-')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('nomor_registrasi')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('pelatihan_name')
+                                    ->label('Pelatihan')
+                                    ->formatStateUsing(fn ($record) => $record->pelatihan->nama_pelatihan ?? '-')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('tanggal_pendaftaran')
+                                    ->disabled(),
+                            ])->columns(2),
 
-                Forms\Components\Section::make('Verifikasi Berkas')
-                    ->schema([
-                        Forms\Components\Placeholder::make('lampiran_info')
-                            ->content(function ($record) {
-                                if (!$record || !$record->peserta || !$record->peserta->lampiran) {
-                                    return 'Belum ada berkas lampiran.';
-                                }
-                                $lampiran = $record->peserta->lampiran;
-                                return new \Illuminate\Support\HtmlString('
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div><strong>KTP:</strong> <a href="'.$lampiran->fc_ktp_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
-                                        <div><strong>Ijazah:</strong> <a href="'.$lampiran->fc_ijazah_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
-                                        <div><strong>Surat Sehat:</strong> <a href="'.$lampiran->fc_surat_sehat_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
-                                        <div><strong>Pas Foto:</strong> <a href="'.$lampiran->pas_foto_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
-                                    </div>
-                                ');
-                            })
-                            ->columnSpanFull(),
-                    ]),
+                        Forms\Components\Section::make('Verifikasi Berkas')
+                            ->schema([
+                                Forms\Components\Placeholder::make('lampiran_info')
+                                    ->content(function ($record) {
+                                        if (!$record || !$record->peserta || !$record->peserta->lampiran) {
+                                            return 'Belum ada berkas lampiran.';
+                                        }
+                                        $lampiran = $record->peserta->lampiran;
+                                        return new \Illuminate\Support\HtmlString('
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div><strong>KTP:</strong> <a href="'.$lampiran->fc_ktp_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
+                                                <div><strong>Ijazah:</strong> <a href="'.$lampiran->fc_ijazah_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
+                                                <div><strong>Surat Sehat:</strong> <a href="'.$lampiran->fc_surat_sehat_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
+                                                <div><strong>Pas Foto:</strong> <a href="'.$lampiran->pas_foto_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
+                                            </div>
+                                        ');
+                                    })
+                                    ->columnSpanFull(),
+                            ]),
+                    ])->columnSpan(['lg' => 2]),
 
-                Forms\Components\Section::make('Status Pendaftaran')
+                Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\Select::make('status_pendaftaran')
-                            ->options([
-                                'Pending' => 'Pending',
-                                'Verifikasi' => 'Verifikasi',
-                                'Diterima' => 'Diterima',
-                                'Ditolak' => 'Ditolak',
-                            ])
-                            ->required()
-                            ->native(false),
-                    ]),
+                        Forms\Components\Section::make('Status Pendaftaran')
+                            ->schema([
+                                Forms\Components\Select::make('status_pendaftaran')
+                                    ->options([
+                                        'Pending' => 'Pending',
+                                        'Verifikasi' => 'Verifikasi',
+                                        'Diterima' => 'Diterima',
+                                        'Ditolak' => 'Ditolak',
+                                    ])
+                                    ->required()
+                                    ->native(false),
+                            ]),
+                    ])->columnSpan(['lg' => 1]),
             ]);
     }
 
