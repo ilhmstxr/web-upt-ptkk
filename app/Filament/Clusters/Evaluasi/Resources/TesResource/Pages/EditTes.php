@@ -12,6 +12,11 @@ class EditTes extends EditRecord
 
     protected static string $view = 'filament.clusters.evaluasi.resources.tes-resource.pages.edit-tes';
 
+    public function getMaxContentWidth(): ?string
+    {
+        return '7xl';
+    }
+
     protected function getHeaderActions(): array
     {
         return [

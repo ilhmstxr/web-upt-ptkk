@@ -10,4 +10,5 @@ class Alumni extends Cluster
 
     protected static ?int $navigationSort = 4;
 
+    protected static bool $shouldRegisterNavigation = false;
 }

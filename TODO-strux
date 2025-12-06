@@ -625,17 +625,6 @@ CHECK the error n solve
 
 
 - emailing peserta
-- export excel buat backup data
-- export pdf, sesuai kebutuhan
-
-
-
-kolom tabel instruktur
-data pribadi : nama, nik, tempat, tanggal lahir, jenis kelamin, agama, no hp
-lampiran : cv, ktp, ijazah, sertifikat kompetensi
-
-
-
 
 TESTING BRANCH MERGE-FINAL
 - nav beranda e jek dashboard peserta
@@ -648,9 +637,6 @@ DONE - lihat gambar (putih putih elek iku hapuen ae)
 DONE - lihat gambar ( si filter kategori sama status pindah ke yang tak tandain warna pink)
 DONE - lihat gambar (gausah dikei opsi tampilan grid lek elek)
 DONE - kolom table pelatihan gaush dikei gambar/cover
-
-
-
 
 
 DONE - lihat gambar (hybrid/zoom? pic admin? hapus ae ganti total peserta:63251876)
@@ -668,27 +654,44 @@ DONE - liat data peserta iku lapu mok kei inisial nama peserta e
 DONE - instruktur e gaisok di tambah (di bidang pelatihan)
 DONE - SYARAT INFORMAI JADWAL LOKASI GA KEUBAH NK DATABASE duh
 DONE - tambah peserta malah error tambah pelatihan
+DONE - instruktur iku gausa digae dropdown isok ga gae format text ae (gak)
 
-
+user
 - nav beranda e jek dashboard peserta
 - asrama blom di cek gaoonk data e
-- hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
--  hasil tes survey lain e blom di cek gaonk data e
+
 - status e uda tak buka pendaftaran tapi nk user ga metu form pendaftaran e
 - export e kabeh grg isok
-
-
-
 TODO - hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
 TODO -  hasil tes survey lain e blom di cek gaonk data e
-CHECK - instruktur iku gausa digae dropdown isok ga gae format text ae (gak)
 
 
+kolom tabel instruktur
+data pribadi: 
+nama, 
+nik, 
+tempat, 
+tanggal lahir, 
+jenis kelamin, 
+agama, 
+no hp
+lampiran : cv, ktp, ijazah, sertifikat kompetensi
 
-- status e uda tak buka pendaftaran tapi nk user ga metu form pendaftaran e
-- export e kabeh grg isok
-- asrama blom di cek gaoonk data e
 
+export peserta pelatihan: 
+excel
+nama lengkap, 
+email, 
+asal lembaga (sekolah), 
+kelas, 
+cabdin,
+jenis pelatihan,
+kompetensi pelatihan (bidangnya apa misal fotografi), 
+nama angkatan pelatihannya (misal milea...),
+no hp,
+link drive pas foto
+
+pdf: biodata peserta
 
 nambah data pretest, posttest, monev
 

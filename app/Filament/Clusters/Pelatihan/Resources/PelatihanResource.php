@@ -101,7 +101,8 @@ class PelatihanResource extends Resource
                                                         ->maxLength(255),
                                                 ]),
 
-                                            Forms\Components\Hidden::make('nama_instruktur'),
+                                            Forms\Components\Hidden::make('nama_instruktur')
+                                                ->dehydrated(false),
                                             
                                             Forms\Components\TextInput::make('lokasi')
                                                 ->label('Lokasi / Ruangan')
