@@ -628,3 +628,21 @@ CHECK the error n solve
 - export excel buat backup data
 - export pdf, sesuai kebutuhan
 
+
+
+TESTING BRANCH MERGE-FINAL
+- nav beranda e jek dashboard peserta
+CHECK - gambar di bidang resource ga muncul (nyimpen gambar e ubah jadi ke public aja soale sekalian di buat halaman user) 
+- ubah gambar di pelatihan susah/ gaisok
+TODO - bidang diganti kompetensi - Bu Nur 1 Desember 2025
+- UELEK ADMINE PELATIHAN
+- Hapus untuk keterangan 
+- lihat gambar (putih putih elek iku hapuen ae)
+- lihat gambar ( si filter kategori sama status pindah ke yang tak tandain warna pink)
+- lihat gambar (gausah dikei opsi tampilan grid lek elek)
+- kolom table pelatihan gaush dikei gambar/cover
+
+
+kolom tabel instruktur
+data pribadi : nama, nik, tempat, tanggal lahir, jenis kelamin, agama, no hp
+lampirran : cv, ktp, ijazah, sertifikat kompetensi

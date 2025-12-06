@@ -74,7 +74,8 @@ class BidangResource extends Resource
                                     ])
                                     ->maxSize(2048) // 2MB
                                     ->directory('bidang-images')
-                                    ->visibility('public'),
+                                    ->visibility('public')
+                                    ->disk('public'),
                             ]),
                     ])->columnSpan(['lg' => 1]),
             ]);
@@ -93,7 +94,8 @@ class BidangResource extends Resource
                     Tables\Columns\ImageColumn::make('gambar')
                         ->height(150)
                         ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->nama_bidang) . '&size=300&background=random')
-                        ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3']),
+                        ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3'])
+                        ->disk('public'),
                     
                     Tables\Columns\TextColumn::make('nama_bidang')
                         ->weight('bold')
