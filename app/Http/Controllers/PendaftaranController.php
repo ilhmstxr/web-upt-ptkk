@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Facades\Excel; // Wajib untuk export
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\TemplateProcessor;
 use ZipArchive;
@@ -30,6 +30,10 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class PendaftaranController extends Controller
 {
     public const LAMPIRAN_DESTINATION = 'pertanyaan/opsi';
+
+    // =======================================================
+    // # PUBLIC REGISTRATION FLOW
+    // =======================================================
 
     public function index()
     {
@@ -63,35 +67,6 @@ class PendaftaranController extends Controller
                 $pelatihan = Pelatihan::find($pelatihanId);
                 return view('peserta.pendaftaran.lampiran', compact('currentStep', 'allowedStep', 'formData', 'pelatihan'));
         }
-    }
-
-    /**
-     * Generate Token Assessment Unik
-     * Format: NAMA(5)-PELATIHANID-TAHUN-RANDOM(4)
-     * Contoh: BUDI-12-2025-X7A9
-     */
-    private function generateUniqueAssessmentToken($nama, $pelatihanId)
-    {
-        // 1. Ambil Nama Depan (maks 5 huruf, uppercase, hapus spasi/simbol)
-        $namaDepan = Str::upper(Str::slug(explode(' ', $nama)[0], ''));
-        $namaClean = substr($namaDepan, 0, 5);
-        
-        // 2. Tahun Sekarang
-        $tahun = date('Y');
-
-        // 3. Generate Random String awal (4 karakter)
-        $random = Str::upper(Str::random(4));
-
-        // 4. Gabungkan
-        $token = sprintf('%s-%s-%s-%s', $namaClean, $pelatihanId, $tahun, $random);
-
-        // 5. Cek keunikan di database, jika ada duplikat, regenerate random-nya
-        while (PendaftaranPelatihan::where('assessment_token', $token)->exists()) {
-            $random = Str::upper(Str::random(4));
-            $token = sprintf('%s-%s-%s-%s', $namaClean, $pelatihanId, $tahun, $random);
-        }
-
-        return $token;
     }
 
     public function store(Request $request)
@@ -149,8 +124,6 @@ class PendaftaranController extends Controller
             ]);
 
             $allData = array_merge($formData, $validatedData);
-            
-            // Variabel untuk menampung hasil create di dalam closure transaction
             $pendaftaran = null;
 
             // [TRANSACTION] Simpan semua data sekaligus agar aman
@@ -171,7 +144,6 @@ class PendaftaranController extends Controller
                 );
 
                 // 2. Buat/Ambil User Login
-                // PASSWORD = TANGGAL LAHIR FORMAT dmY (Contoh: 25081999)
                 $passwordDob = Carbon::parse($allData['tanggal_lahir'])->format('dmY');
 
                 $user = User::firstOrCreate(
@@ -185,8 +157,6 @@ class PendaftaranController extends Controller
                 // Sinkron nama user jika ada perubahan
                 if ($user->wasRecentlyCreated === false && $user->name !== $allData['nama']) {
                     $user->name = $allData['nama'];
-                    // Opsional: Reset password user lama agar sesuai tgl lahir baru
-                    // $user->password = Hash::make($passwordDob);
                     $user->save();
                 }
 
@@ -209,7 +179,7 @@ class PendaftaranController extends Controller
                 // 4. Generate Nomor Registrasi & Urutan
                 ['nomor' => $nomorReg, 'urutan' => $urutBidang] = $this->generateToken($allData['pelatihan_id'], $allData['bidang_keahlian']);
 
-                // 5. [BARU] Generate Token Assessment
+                // 5. Generate Token Assessment
                 $assessmentToken = $this->generateUniqueAssessmentToken($allData['nama'], $allData['pelatihan_id']);
 
                 // 6. Upload Lampiran
@@ -248,8 +218,8 @@ class PendaftaranController extends Controller
                     'tanggal_pendaftaran' => now(),
                     'kelas'               => $allData['kelas'],
                     'status_pendaftaran'  => 'menunggu_verifikasi',
-                    'assessment_token'    => $assessmentToken,      // Simpan Token Baru
-                    'token_expires_at'    => now()->addMonths(3),   // Token Expired
+                    'assessment_token'    => $assessmentToken,
+                    'token_expires_at'    => now()->addMonths(3),
                 ]);
             });
 
@@ -270,7 +240,6 @@ class PendaftaranController extends Controller
     {
         $pendaftaran = session('pendaftaran');
 
-        // Kalau tidak ada (misal user reload / akses ulang lewat URL), ambil dari DB
         if (!$pendaftaran) {
             $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
                 ->findOrFail($id);
@@ -279,7 +248,128 @@ class PendaftaranController extends Controller
         return view('peserta.pendaftaran.selesai', compact('pendaftaran'));
     }
 
-    // --- UTILITIES & EXPORTS ---
+    // =======================================================
+    // # ADMIN UTILITIES (TOKEN GENERATION & EXPORT)
+    // =======================================================
+
+    /**
+     * [ADMIN] Men-generate Token Assessment secara massal
+     * untuk pendaftaran yang belum memilikinya.
+     */
+    public function generateTokenMassal()
+    {
+        // Route protection (Admin check) assumed via middleware('auth')
+        
+        $pendaftarans = PendaftaranPelatihan::with('peserta')
+            ->whereNull('assessment_token')
+            ->get();
+
+        $count = 0;
+        $total = $pendaftarans->count();
+
+        DB::transaction(function () use ($pendaftarans, &$count) {
+            foreach ($pendaftarans as $pendaftaran) {
+                // Pastikan peserta dan id pelatihan ada
+                if ($pendaftaran->peserta && $pendaftaran->pelatihan_id) {
+                    
+                    // Panggil fungsi generator token
+                    $assessmentToken = $this->generateUniqueAssessmentToken(
+                        $pendaftaran->peserta->nama,
+                        $pendaftaran->pelatihan_id
+                    );
+
+                    // Simpan token ke database
+                    $pendaftaran->assessment_token = $assessmentToken;
+                    $pendaftaran->token_expires_at = now()->addMonths(3); 
+                    $pendaftaran->save();
+                    
+                    $count++;
+                }
+            }
+        });
+
+        if ($count > 0) {
+            // Flash Session Success
+            return back()->with('success', "✅ Berhasil men-generate **{$count}** token baru dari {$total} pendaftaran yang belum memiliki token.");
+        }
+        
+        // Flash Session Error
+        return back()->with('error', "❌ Tidak ada pendaftaran baru yang perlu di-generate tokennya.");
+    }
+    
+    /**
+     * [ADMIN] Men-download daftar Token Assessment per Pelatihan (Export)
+     */
+    public function downloadTokenAssessment(Request $request)
+    {
+        // Pastikan Admin yang akses
+        if (!auth()->check()) {
+            return back()->with('error', 'Akses ditolak.');
+        }
+
+        $pendaftarans = PendaftaranPelatihan::with('peserta.user', 'pelatihan', 'bidang')
+            ->whereNotNull('assessment_token')
+            ->orderBy('pelatihan_id')
+            ->get();
+        
+        if ($pendaftarans->isEmpty()) {
+             return back()->with('error', 'Tidak ada Token Assessment yang terdaftar untuk di download.');
+        }
+
+        $exportData = $pendaftarans->map(function ($p) {
+            // Kita hitung password (DOB) di sini
+            $tanggalLahir = $p->peserta->tanggal_lahir ?? null;
+            $password = $tanggalLahir ? Carbon::parse($tanggalLahir)->format('dmY') : 'N/A';
+
+            return [
+                'ID Pendaftaran' => $p->id,
+                'Nomor Registrasi' => $p->nomor_registrasi,
+                'Nama Peserta' => $p->peserta->nama ?? 'N/A',
+                'Email' => $p->peserta->user->email ?? 'N/A', 
+                'Pelatihan' => $p->pelatihan->nama_pelatihan ?? 'N/A',
+                'Bidang' => $p->bidang->nama ?? 'N/A',
+                'ASSESSMENT TOKEN' => $p->assessment_token,
+                'PASSWORD (DOB)' => $password,
+                'Token Berlaku Hingga' => $p->token_expires_at ? Carbon::parse($p->token_expires_at)->format('d-m-Y') : 'N/A',
+            ];
+        });
+
+        // FALLBACK: Mengembalikan JSON jika class export belum dibuat
+        return response()->json($exportData->toArray(), 200); 
+    }
+
+
+    // =======================================================
+    // # HELPER METHODS (PRIVATE)
+    // =======================================================
+
+    /**
+     * Generate Token Assessment Unik
+     * Format: NAMA(5)-PELATIHANID-TAHUN-RANDOM(4)
+     */
+    private function generateUniqueAssessmentToken($nama, $pelatihanId)
+    {
+        // 1. Ambil Nama Depan (maks 5 huruf, uppercase, hapus spasi/simbol)
+        $namaDepan = Str::upper(Str::slug(explode(' ', $nama)[0], ''));
+        $namaClean = substr($namaDepan, 0, 5);
+        
+        // 2. Tahun Sekarang
+        $tahun = date('Y');
+
+        // 3. Generate Random String awal (4 karakter)
+        $random = Str::upper(Str::random(4));
+
+        // 4. Gabungkan
+        $token = sprintf('%s-%s-%s-%s', $namaClean, $pelatihanId, $tahun, $random);
+
+        // 5. Cek keunikan di database, jika ada duplikat, regenerate random-nya
+        while (PendaftaranPelatihan::where('assessment_token', $token)->exists()) {
+            $random = Str::upper(Str::random(4));
+            $token = sprintf('%s-%s-%s-%s', $namaClean, $pelatihanId, $tahun, $random);
+        }
+
+        return $token;
+    }
 
     public function generateMassal()
     {

@@ -22,7 +22,9 @@ use App\Http\Controllers\UploadController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\ExportController;
-use App\Http\Controllers\AssessmentAuthController; // [PENTING] Controller Login Token
+use App\Http\Controllers\AssessmentAuthController;
+use App\Http\Controllers\AdminController; // [BARU] Import Admin Controller
+
 
 // --- MODELS & OTHERS ---
 use App\Models\Peserta;
@@ -36,18 +38,17 @@ use App\Exports\LampiranSheet;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes (Final Fix)
+| Web Routes (Final Kohesif)
 |--------------------------------------------------------------------------
 */
 
 /* * ==========================================
  * ROUTE KHUSUS ASSESSMENT (LOGIN TOKEN)
  * ==========================================
- * Ini wajib ada agar form di overlay dashboard berfungsi
  */
 Route::prefix('assessment')->name('assessment.')->group(function () {
     Route::get('/login', [AssessmentAuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AssessmentAuthController::class, 'login'])->name('login.submit'); // <-- Ini yang dicari error tadi
+    Route::post('/login', [AssessmentAuthController::class, 'login'])->name('login.submit');
     Route::get('/dashboard', [AssessmentAuthController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [AssessmentAuthController::class, 'logout'])->name('logout');
 });
@@ -58,12 +59,10 @@ Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
 Route::get('/berita/{slug}', [BeritaController::class, 'show'])->name('berita.show');
 
 
-/* ======= BERANDA & HOME ======= */
+/* ======= BERANDA & HOME (PUBLIC) ======= */
 Route::get('/', fn () => view('pages.landing'))->name('landing');
 
 Route::get('/home', function () {
-    // Redirect logic: Jika user admin (auth) login, ke dashboard admin (jika ada)
-    // Jika peserta login (session), tetap ke dashboard home
     if (auth()->check()) {
         return redirect()->route('dashboard.home'); 
     }
@@ -81,7 +80,7 @@ Route::view('/kontak-kami', 'pages.kontak')->name('kontak');
 
 /*
 |--------------------------------------------------------------------------
-| Pendaftaran & Exports
+| Pendaftaran & Exports (PUBLIC)
 |--------------------------------------------------------------------------
 */
 Route::resource('pendaftaran', PendaftaranController::class);
@@ -117,14 +116,9 @@ Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 |--------------------------------------------------------------------------
 | Dashboard Peserta (Tanpa Middleware Auth Laravel)
 |--------------------------------------------------------------------------
-| Middleware 'auth' DIHAPUS di sini agar Overlay Token bisa muncul.
-| Keamanan ditangani oleh Logic Overlay di Controller/View.
 */
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
 
-    // [PENTING] Arahkan home ke AssessmentAuthController agar logic overlay jalan
-    // Atau jika Anda pakai DashboardController, pastikan logic overlay ada di sana.
-    // Di sini saya arahkan ke AssessmentAuthController sesuai flow terakhir.
     Route::get('/', [AssessmentAuthController::class, 'dashboard'])->name('home');
 
     // Materi
@@ -176,8 +170,16 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
 |--------------------------------------------------------------------------
 | Admin & Utilities (Wajib Login Admin)
 |--------------------------------------------------------------------------
+| [GABUNGAN]: Menyertakan route AdminController dan utilitas PendaftaranController
 */
 Route::middleware(['auth'])->group(function () {
+    
+    // Admin Dashboard / Manajemen Token View
+    Route::get('/admin/dashboard', [AdminController::class, 'showTokenManagement'])->name('admin.dashboard');
+    
+    // Manajemen Token Endpoints (Actions)
+    Route::post('/admin/tokens/generate', [PendaftaranController::class, 'generateTokenMassal'])->name('admin.generate.tokens');
+    Route::get('/admin/tokens/download', [PendaftaranController::class, 'downloadTokenAssessment'])->name('admin.download.tokens');
     
     // Upload Admin
     Route::post('/admin/uploads', [UploadController::class, 'store'])->name('admin.uploads.store');
