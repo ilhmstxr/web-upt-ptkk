@@ -10,9 +10,29 @@ return new class extends Migration
     {
         Schema::create('peserta', function (Blueprint $table) {
             $table->id();
-            // Asumsi tabel 'users' dan 'instansi' sudah ada
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('instansi_id')->constrained('instansi')->cascadeOnDelete();
+
+            // Relasi wajib
+            $table->foreignId('user_id')
+                  ->constrained('users') // Merujuk ke tabel 'users'
+                  ->cascadeOnDelete();
+            $table->foreignId('instansi_id')
+                  ->constrained('instansi') // Merujuk ke tabel 'instansi'
+                  ->cascadeOnDelete();
+
+            // Relasi opsional: pelatihan_id
+            $table->foreignId('pelatihan_id')
+                  ->nullable()
+                  // Diperbaiki: Merujuk secara eksplisit ke tabel 'pelatihan' (tunggal)
+                  ->constrained('pelatihan') 
+                  ->nullOnDelete();
+                  
+            // Relasi opsional: bidang_id
+            $table->foreignId('bidang_id')
+                  ->nullable()
+                  // Diperbaiki: Merujuk secara eksplisit ke tabel 'bidang' (tunggal)
+                  ->constrained('bidang') 
+                  ->nullOnDelete();
+
             $table->string('nama', 150);
             $table->string('nik', 20)->unique();
             $table->string('jabatan', 150)->nullable(); // Menambahkan Jabatan
