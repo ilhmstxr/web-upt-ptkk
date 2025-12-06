@@ -28,7 +28,7 @@ class ListPelatihans extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            PelatihanResource\Widgets\PelatihanStatsOverview::class,
+            // PelatihanResource\Widgets\PelatihanStatsOverview::class,
         ];
     }
     
