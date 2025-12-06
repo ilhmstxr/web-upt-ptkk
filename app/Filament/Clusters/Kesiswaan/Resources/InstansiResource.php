@@ -27,18 +27,25 @@ class InstansiResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('asal_instansi')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('alamat_instansi')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('no_telepon')
-                    ->tel()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Informasi Instansi')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('asal_instansi')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
+                                Forms\Components\TextInput::make('email')
+                                    ->email()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('no_telepon')
+                                    ->tel()
+                                    ->maxLength(255),
+                                Forms\Components\Textarea::make('alamat_instansi')
+                                    ->required()
+                                    ->columnSpanFull(),
+                            ]),
+                    ]),
             ]);
     }
 

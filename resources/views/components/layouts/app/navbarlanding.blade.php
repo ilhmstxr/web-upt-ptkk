@@ -41,15 +41,26 @@
   }
   $beranda   = collect($nav)->firstWhere('label', 'Beranda');
   $others    = collect($nav)->reject(fn($i) => $i['label'] === 'Beranda')->values();
-  
-  // --- PERBAIKAN DI SINI SESUAI WEB.PHP ---
-  // Route group: prefix('dashboard') -> name('dashboard.')
-  // Route item:  name('home')
-  // Gabungan:    'dashboard.home' (Mengarah ke DashboardController::home)
-  $loginHref  = Route::has('dashboard.home') ? route('dashboard.home') : url('/dashboard');
-  
-  // Tombol Daftar tetap ke registrasi
-  $daftarHref = Route::has('pendaftaran.create') ? route('pendaftaran.create') : url('/pendaftaran');
+
+  // Resolve loginHref dengan beberapa fallback yang umum
+  if (Route::has('masuk')) {
+      $loginHref = route('masuk');
+  } elseif (Route::has('dashboard.home')) {
+      $loginHref = route('dashboard.home');
+  } elseif (Route::has('dashboard')) {
+      $loginHref = route('dashboard');
+  } else {
+      $loginHref = url('/masuk');
+  }
+
+  // Resolve daftarHref dengan beberapa fallback
+  if (Route::has('pendaftaran.create')) {
+      $daftarHref = route('pendaftaran.create');
+  } elseif (Route::has('pendaftaran.index')) {
+      $daftarHref = route('pendaftaran.index');
+  } else {
+      $daftarHref = url('/pendaftaran');
+  }
 @endphp
 
 <header id="siteHeader"
@@ -261,10 +272,15 @@
 
     // CSS var --header-h untuk offset sticky lain
     function setHeaderH(){
+      if (!header) return;
       document.documentElement.style.setProperty('--header-h', header.getBoundingClientRect().height + 'px');
     }
     setHeaderH();
-    new ResizeObserver(setHeaderH).observe(header);
+    if (window.ResizeObserver) {
+      new ResizeObserver(setHeaderH).observe(header);
+    } else {
+      window.addEventListener('resize', setHeaderH, { passive: true });
+    }
 
     // Dropdown Profil (desktop/tablet)
     const btnProfil   = document.getElementById('btnProfil');

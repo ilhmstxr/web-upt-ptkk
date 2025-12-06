@@ -88,36 +88,233 @@
 
     .tujuan-card:hover::after{ opacity:1; transform:translateY(0); }
 
-    .tujuan-badge{
-      position:absolute;
-      top:0; right:0;
-      width:45px; height:45px;
-      border-radius:999px;
-      background:linear-gradient(90deg,#0E65CC,#01A0F6,#0C69CF);
-      display:flex; align-items:center; justify-content:center;
-      color:#FFF; font-weight:600; font-size:16px;
-      transform:translate(35%,-35%);
-      box-shadow:0 2px 6px rgba(0,0,0,.18);
-      transition:transform .22s ease;
-    }
+/* Badge angka – membesar sedikit saat hover */
+/* Posisi default: agak masuk ke dalam */
+.tujuan-badge{
+  position: absolute;
+  top: 0;          /* tepat di tepi atas */
+  right: 0;        /* tepat di tepi kanan */
+  width: 45px;
+  height: 45px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,#0E65CC 0%,#01A0F6 49%,#0C69CF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.18);
+  z-index: 20;
+  transform: translate(35%, -35%);  /* 3/4 di dalam, 1/4 di luar */
+  transition:
+    transform 240ms cubic-bezier(0.19, 1, 0.22, 1),
+    box-shadow 240ms cubic-bezier(0.19, 1, 0.22, 1);
+}
 
-    .tujuan-card:hover .tujuan-badge{ transform:translate(35%,-35%) scale(1.16); }
 
-    .timeline-container { position: relative; }
-    @media (max-width: 767px){
-      .timeline-container{ height:auto!important; padding-left:2.5rem; }
-      .timeline-container > span{ display:none; }
-      .timeline-container::before{
-        content:''; position:absolute;
-        top:0; bottom:0; left:1.5rem;
-        width:3px; background:#D1EDF5;
-      }
-      .timeline-container > div[class*="absolute"]{
-        position:relative !important;
-        margin-bottom:40px;
-      }
-      .sejarah-img{ width:180px !important; }
-    }
+/* Hover: sedikit membesar dan “masuk” ke dalam dikit */
+.tujuan-card:hover .tujuan-badge{
+  transform: translate(35%, -35%) scale(1.16);  /* tetap di pojok yang sama, cuma membesar */
+  box-shadow: 0 8px 18px rgba(0,0,0,.25);
+}
+
+
+/* Icon – miring dikit ke kanan */
+.tujuan-icon{
+  transition: transform 220ms ease;
+}
+.tujuan-card:hover .tujuan-icon{
+  transform: rotate(7deg) translateY(-2px);
+}
+
+.tujuan-text{
+  transition: transform 220ms ease;
+}
+.tujuan-card:hover .tujuan-text{
+  transform: scale(1.03);
+}
+
+  .card-manfaat{
+  background: var(--card-manfaat);
+  height: 300px;
+  border-radius: 1rem;
+}
+
+/* ==== RAMPELIN LEBAR KHUSUS TABLET ==== */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .card-manfaat {
+    max-width: 230px;   /* bikin lebih ramping */
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+
+    /* =======================================================
+   GLOBAL SECTION LAYOUT CONSISTENCY
+   ======================================================= */
+
+/* Padding horizontal sama untuk semua section */
+.section-container {
+  max-width: 1280px; /* setara max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;   /* px-6 */
+  padding-right: 1.5rem;  /* px-6 */
+}
+
+@media (min-width: 768px) {
+  .section-container {
+    padding-left: 3rem;   /* md:px-12 */
+    padding-right: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-container {
+    padding-left: 80px;   /* lg:px-[80px] */
+    padding-right: 80px;
+  }
+}
+
+/* === Baru: kompak 30px vertikal untuk semua section === */
+.section-compact {
+  padding-top: 30px !important;
+  padding-bottom: 30px !important;
+}
+
+/* === Baru: jarak antar section 30px === */
+section + section {
+  margin-top: 30px !important;
+}
+
+/* ================= TIMELINE SEJARAH ================= */
+
+/* Default (desktop & tablet) – posisi diatur lewat class Tailwind di HTML */
+.timeline-container {
+  position: relative;
+}
+
+/* Tablet: tinggi sedikit lebih besar, gambar agak mengecil */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .timeline-container {
+    height: 1700px;
+  }
+
+  .sejarah-img {
+    width: 260px !important;
+  }
+}
+
+/* Desktop: gambar dibesarkan */
+@media (min-width: 1024px) {
+  .sejarah-img {
+    width: 360px !important;  /* silakan ubah 340/380 kalau mau */
+  }
+}
+
+/* ============ MOBILE (<= 767px) ============ */
+/* Garis pindah ke kiri, item bertumpuk: gambar → tahun → teks */
+@media (max-width: 767.98px) {
+
+  .timeline-container {
+    height: auto !important;      /* override h-[1400px] */
+    padding-left: 2.5rem;         /* ruang untuk garis di kiri */
+    padding-right: 1.25rem;
+  }
+
+  /* Sembunyikan garis & 5 titik versi desktop */
+  .timeline-container > span {
+    display: none;
+  }
+
+  /* Garis vertikal baru di kiri (sepanjang konten) */
+  .timeline-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 1.5rem;                 /* referensi center garis */
+    width: 3px;
+    background: #D1EDF5;
+    transform: translateX(-50%);  /* biar center di 1.5rem */
+  }
+
+  /* Setiap blok tahun (1974–2019) jadi item bertumpuk */
+  .timeline-container > div[class*="absolute"] {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    max-width: 100%;
+    margin: 0 0 2.5rem 0;         /* jarak antar tahun */
+  }
+
+  .timeline-container > div[class*="absolute"]::before {
+  content: '';
+  position: absolute;
+  top: 0rem;
+  left: -0rem;  /* 🎯 SUPER FINE TUNE */
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #1524AF;
+  transform: translate(-50%, 0);
+  z-index: 99;
+}
+
+  /* Grid 2 kolom dipecah jadi vertikal */
+  .timeline-container > div[class*="absolute"] > .grid {
+    display: block;
+  }
+
+  /* Reset padding & align supaya rapi di HP */
+  .timeline-left-col,
+  .timeline-right-col,
+  .timeline-container > div[class*="absolute"] > .grid > div {
+    padding: 0 !important;
+    margin: 0 0 0.5rem 0 !important;
+    text-align: left !important;
+  }
+  /* Geser teks (tahun + paragraf) sedikit ke kanan di HP */
+  .timeline-container > div[class*="absolute"] > .grid > div:nth-child(2) {
+    padding-left: 1rem !important; /* boleh dinaikkan ke 1rem kalau mau lebih jauh */
+  }
+
+  /* Gambar di HP: sedikit lebih kecil + jarak bawah */
+  .timeline-container .sejarah-img {
+    width: 180px !important;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Teks paragraf sejarah di HP */
+  .sejarah-text {
+    font-size: 12px !important;
+    line-height: 1.6 !important;
+    text-align: justify !important;
+  }
+
+  /* Tahun di HP: kecil & rata tengah */
+  .timeline-container h4 {
+    font-size: 14px !important;
+    margin-bottom: 0.25rem;
+    text-align: center !important;
+    width: 100%;
+  }
+}
+
+/* Jauhkan kolom gambar dari garis tengah (desktop & tablet) */
+.timeline-left-col {
+  padding-right: 3.75rem;   /* ~60px dari garis */
+}
+
+.timeline-right-col {
+  padding-left: 3.75rem;
+}
+
+
   </style>
 </head>
 

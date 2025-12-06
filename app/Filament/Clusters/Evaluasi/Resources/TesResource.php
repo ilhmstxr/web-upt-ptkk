@@ -26,71 +26,119 @@ class TesResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informasi Tes')
+                Forms\Components\Grid::make(3)
                     ->schema([
-                        Forms\Components\TextInput::make('judul')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\Select::make('tipe')
-                            ->options([
-                                'pre-test' => 'Pre-Test',
-                                'post-test' => 'Post-Test',
-                                'survey' => 'Survey',
-                            ])
-                            ->required(),
-                        Forms\Components\Select::make('pelatihan_id')
-                            ->relationship('pelatihan', 'nama_pelatihan')
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\TextInput::make('durasi_menit')
-                            ->numeric()
-                            ->label('Durasi (Menit)')
-                            ->required(),
-                        Forms\Components\RichEditor::make('deskripsi')
-                            ->columnSpanFull(),
-                    ])->columns(2),
-
-                Forms\Components\Section::make('Bank Soal')
-                    ->schema([
-                        Forms\Components\Repeater::make('pertanyaan')
-                            ->relationship()
+                        Forms\Components\Group::make()
+                            ->columnSpan(1)
                             ->schema([
-                                Forms\Components\RichEditor::make('teks_pertanyaan')
-                                    ->required()
-                                    ->label('Pertanyaan'),
-                                Forms\Components\FileUpload::make('gambar')
-                                    ->image()
-                                    ->directory('soal-images')
-                                    ->label('Gambar Soal (Opsional)'),
-                                Forms\Components\Select::make('tipe_jawaban')
-                                    ->options([
-                                        'pilihan_ganda' => 'Pilihan Ganda',
-                                        'essay' => 'Essay',
-                                    ])
-                                    ->default('pilihan_ganda')
-                                    ->reactive(),
+                                Forms\Components\Section::make('Informasi Tes')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('judul')
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\Select::make('tipe')
+                                            ->options([
+                                                'pre-test' => 'Pre-Test',
+                                                'post-test' => 'Post-Test',
+                                                'survey' => 'Survey',
+                                            ])
+                                            ->required(),
+                                        Forms\Components\Select::make('pelatihan_id')
+                                            ->relationship('pelatihan', 'nama_pelatihan')
+                                            ->searchable()
+                                            ->required()
+                                            ->default(request()->query('pelatihan_id'))
+                                            ->disabled(fn (?string $operation) => $operation === 'edit' || request()->has('pelatihan_id')),
+                                        Forms\Components\Select::make('bidang_id')
+                                            ->relationship('bidang', 'nama_bidang')
+                                            ->searchable()
+                                            ->required()
+                                            ->default(request()->query('bidang_id'))
+                                            ->disabled(fn (?string $operation) => $operation === 'edit' || request()->has('bidang_id')),
+                                        Forms\Components\TextInput::make('durasi_menit')
+                                            ->numeric()
+                                            ->label('Durasi (Menit)')
+                                            ->required(),
+                                        Forms\Components\RichEditor::make('deskripsi')
+                                            ->columnSpanFull(),
+                                    ])->columns(1), // Changed to 1 column for the narrower side panel
                                 
-                                Forms\Components\Repeater::make('opsiJawabans')
+                                Forms\Components\View::make('filament.clusters.evaluasi.resources.tes-resource.partials.tips-card'),
+                            ]),
+
+                        Forms\Components\Section::make('Bank Soal')
+                            ->columnSpan(2)
+                            ->schema([
+                                Forms\Components\Repeater::make('pertanyaan')
                                     ->relationship()
                                     ->schema([
-                                        Forms\Components\TextInput::make('teks_opsi')
+                                        Forms\Components\RichEditor::make('teks_pertanyaan')
                                             ->required()
-                                            ->label('Teks Opsi'),
-                                        Forms\Components\Toggle::make('apakah_benar')
-                                            ->label('Jawaban Benar'),
+                                            ->label('Pertanyaan'),
                                         Forms\Components\FileUpload::make('gambar')
                                             ->image()
-                                            ->directory('opsi-images')
-                                            ->label('Gambar Opsi (Opsional)'),
+                                            ->directory('soal-images')
+                                            ->label('Gambar Soal (Opsional)'),
+                                        Forms\Components\Select::make('tipe_jawaban')
+                                            ->options([
+                                                'pilihan_ganda' => 'Pilihan Ganda',
+                                                'teks_bebas' => 'Essay',
+                                            ])
+                                            ->default('pilihan_ganda')
+                                            ->reactive(),
+                                        
+                                        Forms\Components\Repeater::make('opsiJawabans')
+                                            ->relationship()
+                                            ->schema([
+                                                Forms\Components\TextInput::make('teks_opsi')
+                                                    ->required()
+                                                    ->label('Teks Opsi'),
+                                                Forms\Components\Toggle::make('apakah_benar')
+                                                    ->label('Jawaban Benar')
+                                                    ->default(false)
+                                                    ->live()
+                                                    ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set, Forms\Components\Toggle $component) {
+                                                        if (!$state) return;
+
+                                                        // Get the current item's path and key (UUID)
+                                                        $path = $component->getStatePath();
+                                                        $segments = explode('.', $path);
+                                                        $currentItemKey = $segments[count($segments) - 2];
+
+                                                        // Get all items in the repeater
+                                                        $items = $get('../../opsiJawabans');
+
+                                                        // Uncheck other items
+                                                        foreach ($items as $key => $value) {
+                                                            if ($key !== $currentItemKey && ($value['apakah_benar'] ?? false)) {
+                                                                // Construct the path for the other item
+                                                                $targetPath = str_replace(".{$currentItemKey}.", ".{$key}.", $path);
+                                                                $set($targetPath, false);
+                                                            }
+                                                        }
+                                                    }),
+                                                Forms\Components\FileUpload::make('gambar')
+                                                    ->image()
+                                                    ->directory('opsi-images')
+                                                    ->label('Gambar Opsi (Opsional)'),
+                                            ])
+                                            ->columns(2)
+                                            ->label('Opsi Jawaban')
+                                            ->visible(fn (Forms\Get $get) => $get('tipe_jawaban') === 'pilihan_ganda')
+                                            ->defaultItems(4)
+                                            ->rules([
+                                                fn (): \Closure => function (string $attribute, $value, \Closure $fail) {
+                                                    $correctCount = collect($value)->where('apakah_benar', true)->count();
+                                                    if ($correctCount > 1) {
+                                                        $fail('Hanya satu jawaban yang boleh ditandai sebagai benar.');
+                                                    }
+                                                },
+                                            ]),
                                     ])
-                                    ->columns(2)
-                                    ->label('Opsi Jawaban')
-                                    ->visible(fn (Forms\Get $get) => $get('tipe_jawaban') === 'pilihan_ganda')
-                                    ->defaultItems(4),
-                            ])
-                            ->itemLabel(fn (array $state): ?string => strip_tags($state['teks_pertanyaan'] ?? null))
-                            ->collapsible()
-                            ->collapsed(),
+                                    ->itemLabel(fn (array $state): ?string => strip_tags($state['teks_pertanyaan'] ?? null))
+                                    ->collapsible()
+                                    ->collapsed(),
+                            ]),
                     ]),
             ]);
     }

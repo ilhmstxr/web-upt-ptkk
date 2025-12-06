@@ -4,17 +4,18 @@ namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets;
 
 use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\Concerns\BuildsLikertData;
 use App\Models\Pertanyaan;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Reactive;
 use Illuminate\Database\Eloquent\Model;
 
-class JawabanPerKategoriChart extends ChartWidget
+class JawabanPerKategoriChart extends Widget
 {
     use BuildsLikertData;
 
-    protected static ?string $heading = 'Distribusi Skala per Kategori';
-    protected int|string|array $columnSpan = '8';
+    protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.widgets.jawaban-per-kategori-chart';
+
+    protected int|string|array $columnSpan = 'full';
 
     public ?Model $record = null;
 
@@ -24,17 +25,20 @@ class JawabanPerKategoriChart extends ChartWidget
         'Penilaian Terhadap Instruktur',
     ];
 
-
     #[Reactive]
     public ?int $pelatihanId = null;
-    protected static bool $isLazy = false;   // penting
+    protected static bool $isLazy = false;
 
+    public array $chartData = [];
 
-    protected function getData(): array
+    public function mount(): void
     {
         $pelatihanId = $this->pelatihanId ?? ($this->record?->id ?? request()->integer('pelatihanId'));
         $pertanyaanIds = $this->collectPertanyaanIds($pelatihanId);
-        if ($pertanyaanIds->isEmpty()) return ['labels' => [], 'datasets' => []];
+        
+        if ($pertanyaanIds->isEmpty()) {
+            return;
+        }
 
         [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIds);
         $rows = $this->normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId);
@@ -77,145 +81,41 @@ class JawabanPerKategoriChart extends ChartWidget
             }
         }
 
+        // Calculate Average Score per Category
+        $categoryStats = []; // [CategoryName => ['total_score' => 0, 'count' => 0]]
 
-        // Hanya akumulasi untuk pertanyaan yang memiliki kategori → SIMPAN COUNT
-        $countsMatrix = [];
         foreach ($rows as $r) {
             if (!isset($mapKategori[$r['pertanyaan_id']])) {
-                continue; // skip tanpa kategori
+                continue;
             }
             $cat = $mapKategori[$r['pertanyaan_id']];
-            $countsMatrix[$cat] = $countsMatrix[$cat] ?? [1 => 0, 2 => 0, 3 => 0, 4 => 0];
-            if (!empty($r['skala'])) {
-                $countsMatrix[$cat][(int) $r['skala']]++;
-            }
-        }
-
-        if (empty($countsMatrix)) {
-            return ['labels' => [], 'datasets' => []];
-        }
-
-        // Turunkan persentase dari COUNT tanpa menghilangkan count
-        $percentsMatrix = [];
-        $totalsByCat = [];
-        foreach ($countsMatrix as $cat => $counts) {
-            $total = array_sum($counts);
-            $totalsByCat[$cat] = $total;
-            $percentsMatrix[$cat] = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
-
-            if ($total > 0) {
-                foreach ($counts as $scale => $cnt) {
-                    $percentsMatrix[$cat][$scale] = round(($cnt / $total) * 100, 2);
+            $skala = (int) ($r['skala'] ?? 0);
+            
+            if ($skala >= 1 && $skala <= 4) {
+                if (!isset($categoryStats[$cat])) {
+                    $categoryStats[$cat] = ['total_score' => 0, 'count' => 0];
                 }
+                $categoryStats[$cat]['total_score'] += $skala;
+                $categoryStats[$cat]['count']++;
             }
         }
 
-        // Flatten ke array per-dataset
-        $labels = array_keys($countsMatrix);
-        $C1 = $C2 = $C3 = $C4 = [];
-        $P1 = $P2 = $P3 = $P4 = [];
-        foreach ($labels as $cat) {
-            $C1[] = $countsMatrix[$cat][1] ?? 0;
-            $C2[] = $countsMatrix[$cat][2] ?? 0;
-            $C3[] = $countsMatrix[$cat][3] ?? 0;
-            $C4[] = $countsMatrix[$cat][4] ?? 0;
+        $labels = [];
+        $averages = [];
+        $colors = ['#60A5FA', '#FBBF24', '#A78BFA', '#34D399', '#F472B6']; // Blue, Yellow, Purple, Green, Pink
 
-            $P1[] = $percentsMatrix[$cat][1] ?? 0;
-            $P2[] = $percentsMatrix[$cat][2] ?? 0;
-            $P3[] = $percentsMatrix[$cat][3] ?? 0;
-            $P4[] = $percentsMatrix[$cat][4] ?? 0;
+        $i = 0;
+        foreach ($categoryStats as $cat => $stats) {
+            $avg = $stats['count'] > 0 ? round($stats['total_score'] / $stats['count'], 2) : 0;
+            $labels[] = $cat;
+            $averages[] = $avg;
+            $i++;
         }
 
-        // ---- setelah Anda punya $C1..$C4 (COUNT per kategori) ----
-        $sum = fn(array $a) => array_sum(array_map('intval', $a));
-        $t1 = $sum($C1);
-        $t2 = $sum($C2);
-        $t3 = $sum($C3);
-        $t4 = $sum($C4);
-        $grand = max(1, $t1 + $t2 + $t3 + $t4); // hindari bagi 0
-
-        $p1 = round($t1 / $grand * 100, 1);
-        $p2 = round($t2 / $grand * 100, 1);
-        $p3 = round($t3 / $grand * 100, 1);
-        $p4 = round($t4 / $grand * 100, 1);
-
-        // opsional: format koma
-        $fmt = fn(float $v) => str_replace('.', ',', number_format($v, 1));
-
-        // ---- return chart config ----
-        return [
-        // $data =  [
+        $this->chartData = [
             'labels' => $labels,
-            'datasets' => [
-                [
-                    'type' => 'bar',
-                    'label' => 'Tidak Memuaskan — ' . $fmt($p1) . '%',
-                    'data' => $C1,
-                    'yAxisID' => 'y',
-                    'stack' => 'count',
-                    'backgroundColor' => 'rgba(248,113,113,0.7)',
-                    'borderColor' => 'rgb(239,68,68)',
-                    'borderWidth' => 1,
-                    'order' => 1,
-                ],
-                [
-                    'type' => 'bar',
-                    'label' => 'Kurang Memuaskan — ' . $fmt($p2) . '%',
-                    'data' => $C2,
-                    'yAxisID' => 'y',
-                    'stack' => 'count',
-                    'backgroundColor' => 'rgba(251,191,36,0.7)',
-                    'borderColor' => 'rgb(245,158,11)',
-                    'borderWidth' => 1,
-                    'order' => 1,
-                ],
-                [
-                    'type' => 'bar',
-                    'label' => 'Cukup Memuaskan — ' . $fmt($p3) . '%',
-                    'data' => $C3,
-                    'yAxisID' => 'y',
-                    'stack' => 'count',
-                    'backgroundColor' => 'rgba(59,130,246,0.7)',
-                    'borderColor' => 'rgb(59,130,246)',
-                    'borderWidth' => 1,
-                    'order' => 1,
-                ],
-                [
-                    'type' => 'bar',
-                    'label' => 'Sangat Memuaskan — ' . $fmt($p4) . '%',
-                    'data' => $C4,
-                    'yAxisID' => 'y',
-                    'stack' => 'count',
-                    'backgroundColor' => 'rgba(16,185,129,0.7)',
-                    'borderColor' => 'rgb(16,185,129)',
-                    'borderWidth' => 1,
-                    'order' => 1,
-                ],
-            ],
-            'options' => [
-                'responsive' => true,
-                'maintainAspectRatio' => false,
-                'interaction' => ['mode' => 'index', 'intersect' => false],
-                'scales' => [
-                    'x' => ['stacked' => true],
-                    'y' => [
-                        'stacked' => true,
-                        'beginAtZero' => true,
-                        'title' => ['display' => true, 'text' => 'Total'],
-                    ],
-                ],
-                'plugins' => [
-                    'legend' => ['position' => 'right'], // legend kanan: warna + nama + persen
-                    'tooltip' => ['enabled' => true],     // tooltip default menampilkan COUNT
-                ],
-            ],
+            'data' => $averages,
+            'colors' => array_slice($colors, 0, count($labels)),
         ];
-
-        // dd($data);
-    }
-
-    protected function getType(): string
-    {
-        return 'bar';
     }
 }

@@ -12,15 +12,19 @@ class Pelatihan extends Model
 
     protected $table = 'pelatihan';
 
-    protected $guarded = [
-        'nama_pelatihan',
+    protected $fillable = [
+        'instansi_id',
+        'angkatan',
         'jenis_program',
+        'nama_pelatihan',
         'slug',
         'gambar',
         'status',
         'tanggal_mulai',
         'tanggal_selesai',
         'deskripsi',
+        'jumlah_peserta',
+        'sasaran',
     ];
 
     protected $casts = [
@@ -98,19 +102,19 @@ class Pelatihan extends Model
     //     );
     // }
 
-    protected function status(): Attribute
-    {
-        return Attribute::make(
-            get: function (): string {
-                $now = now();
-                if ($now->isBefore($this->tanggal_mulai)) {
-                    return 'Mendatang';
-                }
-                if ($now->between($this->tanggal_mulai, $this->tanggal_selesai)) {
-                    return 'Aktif';
-                }
-                return 'Selesai';
-            },
-        );
-    }
+    // protected function status(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: function (): string {
+    //             $now = now();
+    //             if ($now->isBefore($this->tanggal_mulai)) {
+    //                 return 'Mendatang';
+    //             }
+    //             if ($now->between($this->tanggal_mulai, $this->tanggal_selesai)) {
+    //                 return 'Aktif';
+    //             }
+    //             return 'Selesai';
+    //         },
+    //     );
+    // }
 }

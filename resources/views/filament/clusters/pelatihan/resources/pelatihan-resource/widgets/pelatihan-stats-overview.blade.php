@@ -1,5 +1,5 @@
 <x-filament-widgets::widget>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
             <div class="flex justify-between items-start">
                 <div>
@@ -47,19 +47,6 @@
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-            <div class="flex justify-between items-start">
-                <div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">Rata-rata Kelulusan</p>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ $rataKelulusan }}%</h3>
-                </div>
-                <div class="p-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-lg">
-                    <x-heroicon-o-academic-cap class="w-6 h-6" />
-                </div>
-            </div>
-            <div class="mt-4 flex items-center text-xs">
-                <span class="text-gray-400 dark:text-gray-500">Target: 90%</span>
-            </div>
-        </div>
+
     </div>
 </x-filament-widgets::widget>

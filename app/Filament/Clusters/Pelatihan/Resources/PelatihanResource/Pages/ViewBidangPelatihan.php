@@ -14,6 +14,17 @@ class ViewBidangPelatihan extends Page
 
     protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-bidang-pelatihan';
 
+    protected function getActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('detail_monev')
+                ->label('Detail Survey Monev')
+                ->icon('heroicon-o-chart-pie')
+                ->url(fn () => ViewMonevDetail::getUrl(['record' => $this->record->id, 'bidang_id' => $this->bidangPelatihan->id]))
+                ->color('primary'),
+        ];
+    }
+
     public Pelatihan $record;
     public BidangPelatihan $bidangPelatihan;
 
@@ -26,5 +37,65 @@ class ViewBidangPelatihan extends Page
     public function getTitle(): string | Htmlable
     {
         return $this->bidangPelatihan->bidang->nama_bidang ?? 'Detail Bidang';
+    }
+
+    public function getTesProperty()
+    {
+        return \App\Models\Tes::where('pelatihan_id', $this->record->id)
+            ->where('bidang_id', $this->bidangPelatihan->bidang_id)
+            ->get();
+    }
+
+    public function getPesertaProperty()
+    {
+        return $this->bidangPelatihan->peserta;
+    }
+
+    public function getStatistikProperty()
+    {
+        $tes = $this->tes;
+        
+        $pretestIds = $tes->where('tipe', 'pre-test')->pluck('id');
+        $posttestIds = $tes->where('tipe', 'post-test')->pluck('id');
+        $surveyIds = $tes->where('tipe', 'survey')->pluck('id');
+
+        // Pretest Stats
+        $pretestAttempts = \App\Models\Percobaan::whereIn('tes_id', $pretestIds)->get();
+        $pretestAvg = $pretestAttempts->avg('skor') ?? 0;
+        $pretestStats = [
+            'avg' => number_format($pretestAvg, 1),
+            'max' => $pretestAttempts->max('skor') ?? 0,
+            'min' => $pretestAttempts->min('skor') ?? 0,
+            'count' => $pretestAttempts->count(),
+        ];
+
+        // Posttest Stats
+        $posttestAttempts = \App\Models\Percobaan::whereIn('tes_id', $posttestIds)->get();
+        $posttestAvg = $posttestAttempts->avg('skor') ?? 0;
+        $posttestStats = [
+            'avg' => number_format($posttestAvg, 1),
+            'lulus' => $posttestAttempts->where('lulus', true)->count(),
+            'remedial' => $posttestAttempts->where('lulus', false)->count(),
+            'kenaikan' => number_format($posttestAvg - $pretestAvg, 1),
+        ];
+
+        // Monev Stats
+        $surveyAttempts = \App\Models\Percobaan::whereIn('tes_id', $surveyIds)->get();
+        $surveyAvg = $surveyAttempts->avg('skor') ?? 0;
+        // Convert 0-100 scale to 0-5 scale
+        $surveyScale5 = ($surveyAvg / 20); 
+
+        $monevStats = [
+            'avg' => number_format($surveyScale5, 1),
+            'responden' => $surveyAttempts->count(),
+            'total_peserta' => $this->peserta->count(),
+            'percentage' => $this->peserta->count() > 0 ? ($surveyAttempts->count() / $this->peserta->count()) * 100 : 0,
+        ];
+
+        return [
+            'pretest' => $pretestStats,
+            'posttest' => $posttestStats,
+            'monev' => $monevStats,
+        ];
     }
 }

@@ -12,6 +12,8 @@ use Illuminate\Support\Carbon;
 
 class StatsOverview extends BaseWidget
 {
+    protected static ?int $sort = 1;
+
     protected function getStats(): array
     {
         return [

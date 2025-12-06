@@ -607,3 +607,24 @@ default lokasi di upt-ptkk
 metode dihapus
 
 3. durasi pelatihan dihapus
+
+
+
+admin
+TODO - instruktur (blm di tes)
+DONE configure db
+CHECK crud filament instruktur resource 
+CHECK crud yang berhubungan dengan instruktur
+
+- create bidang (stuck instruktur)
+
+
+- setup tes
+CHECK test crud test di filament
+CHECK the error n solve
+
+
+- emailing peserta
+- export excel buat backup data
+- export pdf, sesuai kebutuhan
+

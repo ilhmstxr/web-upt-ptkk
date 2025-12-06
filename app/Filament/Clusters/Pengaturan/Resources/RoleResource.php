@@ -26,14 +26,20 @@ class RoleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255)
-                    ->unique(ignoreRecord: true),
-                Forms\Components\TextInput::make('guard_name')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('web'),
+                Forms\Components\Section::make('Detail Role')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(ignoreRecord: true),
+                                Forms\Components\TextInput::make('guard_name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->default('web'),
+                            ]),
+                    ]),
             ]);
     }
 
