@@ -1185,7 +1185,6 @@ $latestBeritas = Berita::query()
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-      <!-- Left Column -->
       <div class="lg:col-span-4 flex flex-col justify-between">
         <div>
           <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-3">
@@ -1201,9 +1200,9 @@ $latestBeritas = Berita::query()
             terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
           </p>
 
-          <!-- Bagian list judul pelatihan (DINAMIS dari $pelatihans) -->
           <ul id="listPelatihan" class="space-y-2">
-            @forelse($pelatihans as $pel)
+            {{-- PERBAIKAN 1: Tambahkan ?? [] untuk mencegah Undefined Variable --}}
+            @forelse($pelatihans ?? [] as $pel) 
               @php
                 $idx = $loop->index;
                 // warna aktif/inaktif: gunakan kolom warna jika tersedia, atau fallback
@@ -1229,7 +1228,7 @@ $latestBeritas = Berita::query()
                 </button>
 
                 <div class="divider h-[1px]"
-                     style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></div>
+                    style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></div>
               </li>
             @empty
               <li>
@@ -1241,15 +1240,24 @@ $latestBeritas = Berita::query()
           </ul>
         </div>
 
-        <a href="{{ route('pelatihan.index') ?? '#' }}" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#1524AF] text-white text-[14px] mt-6 shadow-sm hover:shadow transition-all duration-200 self-start">
+        {{-- PERBAIKAN 2: Blok try...catch untuk mengamankan route('pelatihan.index') --}}
+        @php
+            try {
+                $pelatihanIndexUrl = route('pelatihan.index');
+            } catch (\Throwable $e) {
+                // Fallback ke URL statis jika route tidak ditemukan
+                $pelatihanIndexUrl = '/pelatihan'; 
+            }
+        @endphp
+        
+        <a href="{{ $pelatihanIndexUrl }}" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#1524AF] text-white text-[14px] mt-6 shadow-sm hover:shadow transition-all duration-200 self-start">
           Cari Tahu Lebih
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
           </svg>
         </a>
       </div>
-
-      <!-- Right Column (Chart) -->
+      
       <div class="lg:col-span-8 mt-6 lg:mt-0">
         <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
           <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
@@ -1283,10 +1291,10 @@ $latestBeritas = Berita::query()
 <script>
   // Chart data diambil dari server (Blade -> JS)
   const chartLabels = {!! json_encode($labels ?? []) !!};
-  const chartPre    = {!! json_encode($pre ?? []) !!};
-  const chartPost   = {!! json_encode($post ?? []) !!};
-  const chartPrak   = {!! json_encode($prak ?? []) !!};
-  const chartRata   = {!! json_encode($rata ?? []) !!};
+  const chartPre    = {!! json_encode($pre ?? []) !!};
+  const chartPost   = {!! json_encode($post ?? []) !!};
+  const chartPrak   = {!! json_encode($prak ?? []) !!};
+  const chartRata   = {!! json_encode($rata ?? []) !!};
 
   // Update angka ringkasan (ambil rata-rata across semua pelatihan, round 2)
   function safeAvg(arr){
