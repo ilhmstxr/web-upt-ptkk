@@ -66,7 +66,7 @@ Route::view('/program-pelatihan', 'pages.profil.program-pelatihan')->name('progr
 Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
 Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
 
-Route::get('/berita', [BeritaController::class, 'index'])->name('news');
+Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
 Route::get('/berita/{slug}', [BeritaController::class, 'show'])->name('berita.show');
 
 Route::view('/panduan', 'pages.panduan')->name('panduan');

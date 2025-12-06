@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('kota_id');
             $table->string('kota');
             $table->string('bidang_keahlian');
+            $table->string('kelas')->nullable();
             // kelas removed
             // Removed jenis_instansi and status_kerjasama as per request
             $table->string('no_telepon')->nullable();
