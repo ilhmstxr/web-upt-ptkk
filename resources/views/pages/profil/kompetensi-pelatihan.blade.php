@@ -19,10 +19,13 @@
 
   </style>
 </head>
+
 @php
-    $activeTab    = $activeTab    ?? 'kompetensi';
+    $activeTab    = $activeTab    ?? 'keterampilan'; // jangan 'kompetensi', soalnya key tab-nya 'keterampilan' / 'mjc'
     $keterampilan = $keterampilan ?? [];
+    $mjc          = $mjc          ?? [];
 @endphp
+
 
 <body class="bg-[#F1F9FC] antialiased">
 

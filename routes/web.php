@@ -25,6 +25,7 @@ use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\AssessmentAuthController; // [PENTING] Controller Login Token
+use App\Http\Controllers\KompetensiPelatihanController;
 
 // --- MODELS & OTHERS ---
 use App\Models\Peserta;
@@ -67,21 +68,11 @@ Route::get('/', fn () => view('pages.landing'))->name('landing');
 Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
 Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
 // route kompetensi pelatihan
-Route::get('/kompetensi-pelatihan', function (Request $request) {
-    // tab aktif dari query ?tab=..., default: 'keterampilan'
-    $activeTab = $request->query('tab', 'keterampilan');
+Route::get('/kompetensi-pelatihan', [KompetensiPelatihanController::class, 'index'])
+    ->name('kompetensi');
 
-    // 1 = Kelas Keterampilan & Teknik, 0 = MJC  (lihat keterangan di phpMyAdmin)
-    $keterampilan = Bidang::where('kelas_keterampilan', 1)->get();
-    $mjc          = Bidang::where('kelas_keterampilan', 0)->get();
-
-    return view('pages.profil.kompetensi-pelatihan', compact(
-        'activeTab',
-        'keterampilan',
-        'mjc',
-    ));
-})->name('kompetensi');
-
+    // 🔹 TAMBAHKAN INI UNTUK PANDUAN
+Route::view('/panduan', 'pages.panduan')->name('panduan');
 
 // Legacy redirect
 Route::get('/home', function () {
@@ -97,8 +88,8 @@ Route::get('/home', function () {
 // Halaman Masuk
 Route::view('/masuk', 'pages.masuk')->name('masuk');
 
-// Halaman Daftar (frontend baru)
-Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])->name('pendaftaran.daftar');
+Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])
+    ->name('pendaftaran.daftar');
 
 // Redirect /home (kalau sudah login ke dashboard)
 Route::get('/home', function () {

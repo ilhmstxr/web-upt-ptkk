@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Banner;
 use App\Models\Berita;
 use App\Models\ProfilUPT;
+use App\Models\Bidang;
 use Illuminate\Support\Str;
 
 /* Ambil banners */
@@ -44,6 +45,11 @@ $cloneCount = min(2, $realCount);
 
 // Ambil Profil UPT
 $profil = ProfilUPT::first();
+// Ambil data Bidang untuk Kompetensi
+$bidangItems = Bidang::query()
+    ->orderBy('nama_bidang', 'asc')
+    ->get();
+
 // Teks Default jika database kosong
 $defaultSejarah = "Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis.";
 
@@ -994,46 +1000,33 @@ $latestBeritas = Berita::query()
     {{-- SLIDER --}}
     <div class="relative">
       <div id="kompetensi-track"
-     class="flex gap-4 md:gap-5 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-1"
-     style="scrollbar-width:none;-ms-overflow-style:none;">
+    class="flex gap-4 md:gap-5 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-1"
+    style="scrollbar-width:none;-ms-overflow-style:none;">
+
+    @forelse ($bidangItems as $item)
         @php
-          $items = [
-            'Tata Busana'              => 'tata-busana.svg',
-            'Tata Boga'                => 'tata-boga.svg',
-            'Tata Kecantikan'          => 'tata-kecantikan.svg',
-            'Teknik Pemesinan'         => 'teknik-pemesinan.svg',
-            'Teknik Otomotif'          => 'teknik-otomotif.svg',
-            'Teknik Pendingin'         => 'teknik-pendingin.svg',
-            'Teknik Pengelasan'        => 'teknik-pengelasan.svg',
-            'Desain Grafis'            => 'mjc-desain-grafis.svg',
-            'Web Desain'               => 'mjc-web-desain.svg',
-            'Animasi'                  => 'mjc-animasi.svg',
-            'Fotografi'                => 'mjc-fotografi.svg',
-            'Videografi'               => 'mjc-videografi.svg',
-          ];
+            $imgPath = $item->gambar
+                ? asset('storage/' . $item->gambar)
+                : asset('images/profil/default-bidang.svg'); // fallback gambar default
         @endphp
-@foreach($items as $nama => $file)
-  <div class="shrink-0 snap-start relative w-[260px] h-[180px] rounded-lg overflow-hidden group
-              transition-all duration-300">
-    <!-- Gambar -->
-    <img src="{{ asset('images/profil/'.$file) }}" alt="{{ $nama }}"
-         class="w-full h-full object-cover">
 
-    <!-- Overlay gradient (hilang saat hover) -->
-    <div class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100 group-hover:opacity-0"
-         style="background: linear-gradient(180deg, rgba(219,231,247,0.5) 0%, rgba(21,36,175,0.8) 100%);">
-    </div>
+        <div class="shrink-0 snap-start relative w-[260px] h-[180px] rounded-lg overflow-hidden group transition-all duration-300">
+            <img src="{{ $imgPath }}" alt="{{ $item->nama_bidang }}" class="w-full h-full object-cover">
 
-    <!-- Teks di tengah bawah -->
-    <div class="absolute bottom-3 left-0 right-0 z-10 text-center">
-      <h3 class="text-white font-[Montserrat] font-medium text-[16px]">
-        {{ $nama }}
-      </h3>
-    </div>
-  </div>
-@endforeach
+            <div class="absolute bottom-3 left-0 right-0 z-10 text-center">
+                <h3 class="text-white font-[Montserrat] font-medium text-[16px]">
+                    {{ $item->nama_bidang }}
+                </h3>
+            </div>
 
-      </div>
+            <div class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100 group-hover:opacity-0"
+                style="background: linear-gradient(180deg, rgba(219,231,247,0.5) 0%, rgba(21,36,175,0.8) 100%);">
+            </div>
+        </div>
+    @empty
+        <p class="text-center text-gray-500">Belum ada data kompetensi ditambahkan.</p>
+    @endforelse
+</div>
 
         {{-- BUTTONS & CTA sejajar di bawah slider --}}
 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mt-6">
@@ -1057,15 +1050,17 @@ $latestBeritas = Berita::query()
   </div>
 
   {{-- CTA (kanan) --}}
-  <a href="#"
-     class="inline-flex items-center gap-2 bg-[#1524AF] hover:bg-[#0E1F73]
+ <a href="{{ route('kompetensi') }}"
+    class="inline-flex items-center gap-2 bg-[#1524AF] hover:bg-[#0E1F73]
             text-white text-sm font-medium px-5 py-2.5 rounded-md transition
             self-center md:self-auto">
     Lihat Semua Kompetensi
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
     </svg>
-  </a>
+</a>
+
 </div>
 
 

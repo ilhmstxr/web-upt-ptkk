@@ -105,10 +105,16 @@ public function bidangPelatihan(Request $request)
         ->orderBy('nama_bidang')
         ->get();
 
-    return view('pages.profil.kompetensi-pelatihan', [
-        'keterampilan' => $keterampilan,
-        'mjc'          => $mjc,
-        'activeTab'    => $activeTab,
-    ]);
+        // Ambil seluruh bidang, urutkan kelas_keterampilan 1 dulu baru 0
+$bidang = Bidang::orderBy('kelas_keterampilan', 'desc')
+    ->orderBy('nama_bidang', 'asc')
+    ->get();
+return view('pages.landing', [
+    'banners' => $banners,
+    'beritas' => $beritas,
+    'profil'  => $profil,
+    'bidang'  => $bidang, // 🔥 tambah ini!
+]);
+
 }
 }
