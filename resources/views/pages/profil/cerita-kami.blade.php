@@ -505,7 +505,6 @@ section + section {
   </div>
 </section>
 
-
 {{-- SECTION: Sejarah (garis tengah + 5 titik sejajar, subjudul stroke kuning) --}}
 <section class="relative bg-[#F1F9FC] pt-20 pb-[300px]">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
@@ -611,7 +610,7 @@ section + section {
             <img src="{{ asset('images/profil/sejarah2016.svg') }}" alt="Sejarah 2016"
                  class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
           </div>
-          {{-- teks kiri di desktop, tapi setelah gambar di HP --}}
+          {{-- teks kiri di desktop, tapi setelah gambar in HP --}}
           <div class="mt-2 md:mt-2 pr-0 md:pr-[40px] text-left md:text-right
                       order-2 md:order-1">
             <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2016</h4>
@@ -651,7 +650,7 @@ section + section {
   </div>
 </section>
 
- {{-- SECTION: Tujuan --}}
+  {{-- SECTION: Tujuan --}}
 <section id="tujuan" class="section-compact w-full bg-[#F1F9FC]">
   <div class="section-container">
 

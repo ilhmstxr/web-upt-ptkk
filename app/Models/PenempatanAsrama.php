@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
 class PenempatanAsrama extends Model
 {
@@ -15,37 +14,39 @@ class PenempatanAsrama extends Model
     protected $fillable = [
         'pendaftaran_id',
         'kamar_id',
+        'checkin_at',
+        'checkout_at',
     ];
 
-    public function pendaftaranPelatihan()
-    {
-        return $this->belongsTo(PendaftaranPelatihan::class, 'pendaftaran_id');
-    }
+    protected $casts = [
+        'checkin_at' => 'datetime',
+        'checkout_at' => 'datetime',
+    ];
 
     public function kamar()
     {
         return $this->belongsTo(Kamar::class, 'kamar_id');
     }
 
-    /**
-     * Scope a query to only include active residents.
-     * Logic: Current date is between training start and end date.
-     */
-    public function scopePenghuniAktif(Builder $query): void
+    public function pendaftaran()
     {
-        $query->whereHas('pendaftaranPelatihan.pelatihan', function ($q) {
-            $q->whereRaw('CURDATE() BETWEEN tanggal_mulai AND tanggal_selesai');
-        });
+        return $this->belongsTo(PendaftaranPelatihan::class, 'pendaftaran_id');
     }
 
-    /**
-     * Scope a query to only include history logs (checked out).
-     * Logic: Current date is past the training end date.
-     */
-    public function scopeLogHistory(Builder $query): void
+    public function scopePenghuniAktif($q)
     {
-        $query->whereHas('pendaftaranPelatihan.pelatihan', function ($q) {
-            $q->whereRaw('CURDATE() > tanggal_selesai');
-        });
+        return $q->whereNull('checkout_at');
+    }
+
+    public function peserta()
+    {
+        return $this->hasOneThrough(
+            Peserta::class,
+            PendaftaranPelatihan::class,
+            'id', 
+            'id', 
+            'pendaftaran_id', 
+            'peserta_id'
+        );
     }
 }

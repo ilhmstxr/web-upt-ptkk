@@ -1,395 +1,1015 @@
+{{-- resources/views/pages/landing.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UPT PTKK Dinas Pendidikan Jawa Timur</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UPT PTKK Dinas Pendidikan Prov. Jawa Timur</title>
 
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #1e6091 0%, #4a9eff 100%);
-        min-height: 100vh;
-      }
+  {{-- Tailwind --}}
+  <script src="https://cdn.tailwindcss.com"></script>
 
-      .header {
-        background: white;
-        padding: 15px 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        gap: 15px;
-      }
+  {{-- Fonts --}}
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Volkhov:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 
-      .logo {
-        width: 60px;
-        height: 60px;
-        border-radius: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
+  <style>
+    :root{
+      --biru-brand: #1524AF;
+      --kuning-stroke: #FFDE59;
+      --merah-stroke: #861D23;
+      --card-manfaat: #DBE7F7;
+    }
 
-      .logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
+    /* util styles */
+    .heading-stroke { color:var(--biru-brand); -webkit-text-fill-color:var(--biru-brand); text-shadow:-1px -1px 0 var(--kuning-stroke),1px -1px 0 var(--kuning-stroke),-1px 1px 0 var(--kuning-stroke),1px 1px 0 var(--kuning-stroke); }
+    .tujuan-card{ position:relative; background:#F1F9FC; border-radius:1rem; border:1px solid #E0E7FF; overflow:visible; transition:transform .22s,box-shadow .22s,border-color .22s, background-color .22s; }
+    .tujuan-card::after{ content:''; position:absolute; left:0; right:0; bottom:0; height:10px; background:linear-gradient(90deg,#0E65CC 0%,#01A0F6 50%,#0C69CF 100%); border-radius:0 0 1rem 1rem; opacity:0; transform:translateY(100%); transition:opacity .22s, transform .22s; }
+    .tujuan-card:hover{ transform:translateY(-6px); border-color:#0E65CC; background-color:#E8F3FF; box-shadow:0 4px 8px rgba(0,0,0,.05),0 22px 45px rgba(0,0,0,.14); }
+    .tujuan-card:hover::after{ opacity:1; transform:translateY(0); }
+    .tujuan-badge{ position:absolute; top:0; right:0; width:45px; height:45px; border-radius:999px; background:linear-gradient(90deg,#0E65CC,#01A0F6,#0C69CF); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:16px; transform:translate(35%,-35%); box-shadow:0 2px 6px rgba(0,0,0,.18); transition:transform .24s;}
+    .tujuan-card:hover .tujuan-badge{ transform:translate(35%,-35%) scale(1.16); box-shadow:0 8px 18px rgba(0,0,0,.25); }
 
-      .logo-fallback {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 14px;
-        text-align: center;
-        line-height: 1.2;
-      }
+    .card-manfaat{ background:var(--card-manfaat); height:300px; border-radius:1rem; }
 
-      .header-title {
-        color: #333;
-        font-size: 20px;
-        font-weight: 600;
-      }
+    .shadow-5x{ box-shadow: 0 1px 3px rgba(0,0,0,0.05),0 2px 6px rgba(0,0,0,0.07),0 4px 10px rgba(0,0,0,0.09),0 6px 14px rgba(0,0,0,0.11),0 8px 20px rgba(0,0,0,0.13); }
 
-      .main-container {
-        padding: 40px 20px;
-        max-width: 1400px;
-        margin: 0 auto;
-      }
+    @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    .animate-badge { animation: fadeInUp 0.8s ease-out forwards; }
 
-      .hero-section {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 50px;
-        align-items: center;
-        margin-bottom: 60px;
-      }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-      .hero-content {
-        color: white;
-      }
+    /* container utilities same as project */
+    .section-container { max-width:1280px; margin-left:auto; margin-right:auto; padding-left:1.5rem; padding-right:1.5rem; }
+    @media (min-width:768px){ .section-container{ padding-left:3rem; padding-right:3rem; } }
+    @media (min-width:1024px){ .section-container{ padding-left:80px; padding-right:80px; } }
+    .section-compact{ padding-top:30px !important; padding-bottom:30px !important; }
+    section + section { margin-top:30px !important; }
 
-      .hero-title {
-        font-size: 48px;
-        font-weight: 700;
-        margin-bottom: 20px;
-        line-height: 1.2;
-      }
+    /* timeline responsive tweaks (copied dari profil) */
+    .timeline-container { position: relative; }
+    @media (max-width:767.98px) {
+      .timeline-container { height:auto !important; padding-left:2.5rem; padding-right:1.25rem; }
+      .timeline-container > span { display:none; }
+      .timeline-container::before { content:''; position:absolute; top:0; bottom:0; left:1.5rem; width:3px; background:#D1EDF5; transform:translateX(-50%); }
+    }
+  </style>
 
-      .hero-description {
-        font-size: 16px;
-        line-height: 1.6;
-        opacity: 0.95;
-      }
+  @stack('styles')
+</head>
+<body class="bg-[#F1F9FC] antialiased">
 
-      .hero-image-container {
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+@php
+use Illuminate\Support\Facades\Storage;
+use App\Models\Banner;
+use App\Models\Berita;
+use App\Models\ProfilUPT;
+use Illuminate\Support\Str;
 
-      .hero-image {
-        width: 350px;
-        height: 350px;
-        border-radius: 50%;
-        overflow: hidden;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        border: 5px solid rgba(255, 255, 255, 0.2);
-      }
-
-      .hero-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .programs-section {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        margin-top: 40px;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        padding: 0 10px;
-      }
-
-      .program-card {
-        background: white;
-        border-radius: 25px;
-        padding: 25px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        cursor: pointer;
-        text-decoration: none;
-        color: inherit;
-        display: block;
-        border: 3px solid #e6f3ff;
-        width: 280px;
-        height: 320px;
-        position: relative;
-        flex-shrink: 0;
-      }
-
-      .program-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        border-color: #4a9eff;
-      }
-
-      .program-card:hover .arrow-icon {
-        transform: translateX(5px);
-      }
-
-      .program-image {
-        width: 100%;
-        height: 180px;
-        border-radius: 15px;
-        margin: 0 0 20px 0;
-        overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      }
-
-      .program-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .program-content {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
-        height: calc(100% - 200px);
-        justify-content: space-between;
-      }
-
-      .program-title {
-        font-size: 24px;
-        font-weight: 700;
-        color: #333;
-        margin-bottom: 10px;
-        line-height: 1.2;
-        text-align: left;
-      }
-
-      .program-date {
-        color: #666;
-        font-size: 14px;
-        font-weight: 500;
-        text-align: left;
-      }
-
-      .arrow-icon {
-        position: absolute;
-        bottom: 25px;
-        right: 25px;
-        width: 24px;
-        height: 24px;
-        background: #4a9eff;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 14px;
-        transition: transform 0.3s ease;
-      }
-
-      .floating-elements {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        pointer-events: none;
-      }
-
-      .floating-circle {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        animation: float 6s ease-in-out infinite;
-      }
-
-      .circle-1 {
-        width: 100px;
-        height: 100px;
-        top: 10%;
-        left: 10%;
-        animation-delay: 0s;
-      }
-
-      .circle-2 {
-        width: 60px;
-        height: 60px;
-        top: 60%;
-        right: 20%;
-        animation-delay: 2s;
-      }
-
-      .circle-3 {
-        width: 80px;
-        height: 80px;
-        bottom: 20%;
-        left: 20%;
-        animation-delay: 4s;
-      }
-
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0px) rotate(0deg);
+/**
+ * Helper: uploaded_or_asset
+ * - cek storage public (storage/app/public)
+ * - jika ada, kembalikan Storage::url
+ * - jika bukan, fallback ke public/images/
+ */
+if (! function_exists('uploaded_or_asset')) {
+    function uploaded_or_asset($path, $fallbackPrefix = 'images') {
+        if (! $path) {
+            return asset("{$fallbackPrefix}/placeholder.png");
         }
-        50% {
-          transform: translateY(-20px) rotate(180deg);
+        if (preg_match('/^https?:\\/\\//', $path)) {
+            return $path;
         }
-      }
-
-      @media (max-width: 768px) {
-        .hero-section {
-          grid-template-columns: 1fr;
-          text-align: center;
+        // normalize: accept paths like 'berita/foo.jpg' or 'public/berita/foo.jpg' or 'storage/berita/foo.jpg'
+        $normalized = preg_replace('#^storage\/+#i', '', $path);
+        $normalized = preg_replace('#^public\/+#i', '', $normalized);
+        if (Storage::exists("public/{$normalized}")) {
+            return Storage::url($normalized);
         }
-
-        .hero-title {
-          font-size: 36px;
+        // try in public/images
+        if (file_exists(public_path("images/{$normalized}"))) {
+            return asset("images/{$normalized}");
         }
-
-        .programs-section {
-          flex-wrap: wrap;
-          justify-content: center;
+        // try direct file in public root
+        if (file_exists(public_path($normalized))) {
+            return asset($normalized);
         }
+        // fallback placeholder
+        return asset("{$fallbackPrefix}/placeholder.png");
+    }
+}
 
-        .main-container {
-          padding: 20px 15px;
-        }
-      }
+/* ambil data */
+$banners = Banner::query()->where('is_active', true)->orderBy('sort_order','asc')->get();
+$realCount = $banners->count() > 0 ? $banners->count() : 3;
+$cloneCount = min(2, $realCount);
 
-      @media (max-width: 1200px) {
-        .programs-section {
-          gap: 20px;
-        }
+$latestBeritas = Berita::query()
+    ->where('is_published', true)
+    ->whereNotNull('published_at')
+    ->orderBy('published_at','desc')
+    ->take(3)
+    ->get();
 
-        .program-card {
-          width: 260px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="floating-elements">
-      <div class="floating-circle circle-1"></div>
-      <div class="floating-circle circle-2"></div>
-      <div class="floating-circle circle-3"></div>
-    </div>
+$profil = ProfilUPT::query()->orderBy('updated_at','desc')->first();
+if (! $profil) {
+    // fallback object to avoid errors if table empty
+    $profil = (object)[
+        'kepala_upt_name' => 'Kepala UPT',
+        'kepala_upt_photo' => null,
+        'sambutan' => 'Selamat datang di UPT PTKK...',
+        'visi' => '',
+        'misi' => '',
+        'sejarah' => '',
+        'alamat' => '',
+        'email' => '',
+        'phone' => '',
+    ];
+}
+@endphp
 
-    <header class="header">
-      <div class="logo">
-        <!-- Ganti src dengan URL logo UPT PTKK Anda -->
-        <img src="./logo-upt-ptkk.jpg" alt="Logo UPT PTKK" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-        <div class="logo-fallback" style="display: none">UPT<br />PTKK</div>
+{{-- TOPBAR --}}
+@include('components.layouts.app.topbar')
+
+{{-- NAVBAR --}}
+@include('components.layouts.app.navbarlanding')
+
+{{-- HERO / SLIDER --}}
+<header class="w-full bg-[#F1F9FC]">
+  <div class="w-full px-6 md:px-12 lg:px-[80px] py-4 md:py-6">
+    <div id="hero" class="relative">
+      <div id="hero-track" class="flex items-center gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none py-8">
+        {{-- left gutter --}}
+        <div aria-hidden="true" class="shrink-0 snap-none pointer-events-none w-[15%] md:w-[12%] lg:w-[10%]"></div>
+
+        {{-- clones kiri --}}
+        @if($banners->isNotEmpty())
+          @for($i = $cloneCount; $i > 0; $i--)
+            @php $idx = ($realCount - $i) % $realCount; $b = $banners->values()[$idx]; @endphp
+            <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%]" data-real="{{ $idx }}">
+              <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
+                <img src="{{ uploaded_or_asset($b->image ? 'banners/' . basename($b->image) : 'beranda/slide1.jpg') }}"
+                     alt="{{ $b->title ?? 'Banner' }}"
+                     class="w-full h-full object-cover select-none" draggable="false">
+              </div>
+            </div>
+          @endfor
+
+          {{-- slides asli --}}
+          @foreach($banners as $i => $b)
+            <div class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%]" data-real="{{ $i }}">
+              <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
+                <img src="{{ uploaded_or_asset($b->image ? 'banners/' . basename($b->image) : 'beranda/slide1.jpg') }}"
+                     alt="{{ $b->title ?? 'Banner' }}" class="w-full h-full object-cover select-none" draggable="false">
+              </div>
+            </div>
+          @endforeach
+
+          {{-- clones kanan --}}
+          @for($i = 0; $i < $cloneCount; $i++)
+            @php $idx = $i % $realCount; $b = $banners->values()[$idx]; @endphp
+            <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%]" data-real="{{ $idx }}">
+              <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
+                <img src="{{ uploaded_or_asset($b->image ? 'banners/' . basename($b->image) : 'beranda/slide1.jpg') }}"
+                     alt="{{ $b->title ?? 'Banner' }}" class="w-full h-full object-cover select-none" draggable="false">
+              </div>
+            </div>
+          @endfor
+        @else
+          {{-- fallback static slides --}}
+          @for($i=1;$i<=3;$i++)
+            <div class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%]" data-real="{{ $i-1 }}">
+              <div class="w-full h-[46vw] md:h-[420px] lg:h-[520px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
+                <img src="{{ asset('images/beranda/slide'.$i.'.jpg') }}" alt="Slide {{ $i }}" class="w-full h-full object-cover select-none">
+              </div>
+            </div>
+          @endfor
+        @endif
+
+        {{-- right gutter --}}
+        <div aria-hidden="true" class="shrink-0 snap-none pointer-events-none w-[15%] md:w-[12%] lg:w-[10%]"></div>
       </div>
-      <h1 class="header-title">UPT PTKK Dinas Pendidikan Jawa Timur</h1>
-    </header>
 
-    <main class="main-container">
-      <section class="hero-section">
-        <div class="hero-content">
-          <h2 class="hero-title">UPT PTKK</h2>
-          <p class="hero-description">
-            UPT Pengembangan Teknis Dan Keterampilan Kejuruan sebagai salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Propinsi Jawa timur UPT PTKK bertugas dalam kegiatan dan pengembangan teknis dan keterampilan kejuruan,
-            ketatausahaan, dan pelayanan masyarakat.
-          </p>
+      {{-- Controls + dots --}}
+      <div class="mt-4 flex items-center justify-center gap-4">
+        <button id="hero-prev" class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors" aria-label="Sebelumnya">
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" /></svg>
+        </button>
+
+        <div id="hero-dots" class="flex items-center gap-3">
+          @php $dotsToShow = $realCount; @endphp
+          @for($i=0;$i<$dotsToShow;$i++)
+            <button class="w-2.5 h-2.5 rounded-full transition-colors {{ $i === 0 ? 'bg-[#1524AF]' : 'bg-gray-300' }}" aria-label="Slide {{ $i+1 }}"></button>
+          @endfor
         </div>
-        <div class="hero-image-container">
-          <div class="hero-image">
-            <img src="images/pelatihan.jpg" alt="Professional Team" onerror="this.style.display='none'" />
-          </div>
-        </div>
-      </section>
 
-      <section class="programs-section">
-        <a href="#" class="program-card" onclick="handleCardClick('tata-boga')">
-          <div class="arrow-icon">→</div>
-          <div class="program-image">
-            <img src="images/tata-boga.jpg" alt="Tata Boga" onerror="this.src='images/placeholder.jpg'" />
-          </div>
-          <div class="program-content">
-            <h3 class="program-title">Tata Boga</h3>
-            <span class="program-date">25 - 30 Agustus 2025</span>
-          </div>
-        </a>
+        <button id="hero-next" class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors" aria-label="Berikutnya">
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="m8.59 16.59 1.41 1.41 6-6-6-6L8.59 6.41 13.17 11z" /></svg>
+        </button>
+      </div>
 
-        <a href="#" class="program-card" onclick="handleCardClick('tata-busana')">
-          <div class="arrow-icon">→</div>
-          <div class="program-image">
-            <img src="images/tata-busana.jpg" alt="Tata Busana" onerror="this.src='images/placeholder.jpg'" />
-          </div>
-          <div class="program-content">
-            <h3 class="program-title">Tata Busana</h3>
-            <span class="program-date">25 - 30 Agustus 2025</span>
-          </div>
-        </a>
+    </div>
+  </div>
+</header>
 
-        <a href="#" class="program-card" onclick="handleCardClick('tata-kecantikan')">
-          <div class="arrow-icon">→</div>
-          <div class="program-image">
-            <img src="images/tata-kecantikan.jpg" alt="Tata Kecantikan" onerror="this.src='images/placeholder.jpg'" />
-          </div>
-          <div class="program-content">
-            <h3 class="program-title">Tata Kecantikan</h3>
-            <span class="program-date">25 - 30 Agustus 2025</span>
-          </div>
-        </a>
+<style>
+  .hero-slide { transform: scale(0.85); opacity: 0.5; transition: transform 0.3s ease, opacity 0.3s ease; }
+  .hero-slide.active { transform: scale(1); opacity: 1; }
+</style>
 
-        <a href="#" class="program-card" onclick="handleCardClick('teknik-pendingin-tata-udara')">
-          <div class="arrow-icon">→</div>
-          <div class="program-image">
-            <img src="images/tata-udara.jpg" alt="Teknik Pendingin dan Tata Udara" onerror="this.src='images/placeholder.jpg'" />
-          </div>
-          <div class="program-content">
-            <h3 class="program-title">Teknik Pendingin dan Tata Udara</h3>
-            <span class="program-date">25 - 30 Agustus 2025</span>
-          </div>
-        </a>
-      </section>
-    </main>
+<script>
+(function () {
+  const track = document.getElementById('hero-track');
+  if (!track) return;
+  const slides = Array.from(track.querySelectorAll('.hero-slide'));
+  const dotsEl = document.getElementById('hero-dots');
+  const prev = document.getElementById('hero-prev');
+  const next = document.getElementById('hero-next');
 
-    <script>
-      function handleCardClick(programType) {
-        alert(`Mengarahkan ke form pendaftaran untuk program: ${programType.replace(/-/g, " ")}`);
-        window.location.href = `index.html?program=${programType}`;
+  if (slides.length === 0) return;
+
+  const realIndices = slides.map(s => parseInt(s.dataset.real, 10));
+  const uniqueReals = Array.from(new Set(realIndices));
+  const realCount = uniqueReals.length;
+
+  let FIRST_REAL = 0;
+  function findFirstReal() {
+    for (let start = 0; start < slides.length; start++) {
+      let ok = true;
+      for (let k = 1; k < realCount; k++) {
+        const prevR = parseInt(slides[(start + k - 1) % slides.length].dataset.real, 10);
+        const cur = parseInt(slides[(start + k) % slides.length].dataset.real, 10);
+        if (cur !== (prevR + 1) % realCount && !(realCount === 1)) { ok = false; break; }
       }
+      if (ok) return start;
+    }
+    return 0;
+  }
+  FIRST_REAL = findFirstReal();
+  const LAST_REAL = FIRST_REAL + realCount - 1;
 
-      // Animasi smooth scroll / fade-in untuk kartu
-      document.addEventListener("DOMContentLoaded", function () {
-        const cards = document.querySelectorAll(".program-card");
+  if (dotsEl && dotsEl.children.length !== realCount) {
+    dotsEl.innerHTML = '';
+    for (let i = 0; i < realCount; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'w-2.5 h-2.5 rounded-full transition-colors ' + (i === 0 ? 'bg-[#1524AF]' : 'bg-gray-300');
+      btn.setAttribute('aria-label', 'Slide ' + (i+1));
+      dotsEl.appendChild(btn);
+    }
+  }
 
-        cards.forEach((card, index) => {
-          card.style.opacity = "0";
-          card.style.transform = "translateY(20px)";
+  const updatedDots = dotsEl ? Array.from(dotsEl.children) : [];
+  const ANIM = 300, BUF = 40;
+  let currentIndex = FIRST_REAL;
+  let isTransitioning = false;
 
-          setTimeout(() => {
-            card.style.transition = "all 0.6s ease";
-            card.style.opacity = "1";
-            card.style.transform = "translateY(0)";
-          }, index * 200);
+  const realOf = (idx) => parseInt(slides[idx].dataset.real, 10);
+
+  const setDots = (r) => {
+    updatedDots.forEach((d, i) => {
+      d.className = 'w-2.5 h-2.5 rounded-full transition-colors ' + (i === r ? 'bg-[#1524AF]' : 'bg-gray-300');
+    });
+  };
+
+  const setActive = (idx) => slides.forEach((s,i)=> s.classList.toggle('active', i===idx));
+
+  const centerOffset = (idx) => slides[idx].offsetLeft - (track.clientWidth - slides[idx].clientWidth) / 2;
+  const scrollToIndex = (idx, smooth = true) => track.scrollTo({ left: centerOffset(idx), behavior: smooth ? 'smooth' : 'auto' });
+
+  function smoothScrollToIndex(idx, cb) {
+    const prevSnap = track.style.scrollSnapType;
+    track.style.scrollSnapType = 'none';
+    const target = centerOffset(idx);
+    track.scrollTo({ left: target, behavior: 'smooth' });
+    const t0 = performance.now(), MAX = ANIM + 300, EPS = 1;
+    function tick() {
+      const atTarget = Math.abs(track.scrollLeft - target) <= EPS;
+      const overtime = performance.now() - t0 > MAX;
+      if (atTarget || overtime) {
+        track.style.scrollSnapType = prevSnap;
+        cb && cb();
+        return;
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function rafSwap(fn) { requestAnimationFrame(()=>requestAnimationFrame(fn)); }
+
+  function seamlessSwapByDelta(fromCloneIdx, toRealIdx) {
+    const prevBehavior = track.style.scrollBehavior;
+    const prevSnap = track.style.scrollSnapType;
+    track.style.scrollBehavior = 'auto';
+    track.style.scrollSnapType = 'none';
+    const delta = centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
+    track.scrollLeft += delta;
+    track.style.scrollBehavior = prevBehavior || '';
+    track.style.scrollSnapType = prevSnap || '';
+    currentIndex = toRealIdx;
+    setActive(currentIndex);
+    setDots(realOf(currentIndex));
+  }
+
+  function goNext() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    if (currentIndex === LAST_REAL) {
+      setActive(FIRST_REAL);
+      setDots(realOf(FIRST_REAL));
+      const cloneIdx = LAST_REAL + 1;
+      smoothScrollToIndex(cloneIdx, () => {
+        rafSwap(() => {
+          seamlessSwapByDelta(cloneIdx, FIRST_REAL);
+          isTransitioning = false;
         });
       });
+    } else {
+      const target = currentIndex + 1;
+      setActive(target);
+      setDots(realOf(target));
+      smoothScrollToIndex(target, () => { currentIndex = target; isTransitioning = false; });
+    }
+  }
+
+  function goPrev() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    if (currentIndex === FIRST_REAL) {
+      setActive(LAST_REAL);
+      setDots(realOf(LAST_REAL));
+      const cloneIdx = FIRST_REAL - 1;
+      smoothScrollToIndex(cloneIdx, () => {
+        rafSwap(() => {
+          seamlessSwapByDelta(cloneIdx, LAST_REAL);
+          isTransitioning = false;
+        });
+      });
+    } else {
+      const target = currentIndex - 1;
+      setActive(target);
+      setDots(realOf(target));
+      smoothScrollToIndex(target, () => { currentIndex = target; isTransitioning = false; });
+    }
+  }
+
+  function step(dir, times) {
+    if (times <= 0) return;
+    const tick = () => {
+      dir > 0 ? goNext() : goPrev();
+      times--;
+      if (times > 0) setTimeout(tick, ANIM + BUF + 10);
+    };
+    tick();
+  }
+
+  updatedDots.forEach((d, targetReal) => {
+    d.addEventListener('click', () => {
+      if (isTransitioning) return;
+      const curReal = realOf(currentIndex);
+      if (targetReal === curReal) return;
+      const r = (targetReal - curReal + realCount) % realCount;
+      const l = (curReal - targetReal + realCount) % realCount;
+      if (r <= l) step(1, r); else step(-1, l);
+    });
+  });
+
+  let debounce = null;
+  track.addEventListener('scroll', () => {
+    if (isTransitioning) return;
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let nearest = currentIndex, best = Infinity;
+      for (let i = 0; i < slides.length; i++) {
+        const center = slides[i].offsetLeft + slides[i].clientWidth / 2;
+        const d = Math.abs(center - mid);
+        if (d < best) { best = d; nearest = i; }
+      }
+      if (nearest < FIRST_REAL) { rafSwap(()=>seamlessSwapByDelta(nearest, LAST_REAL)); }
+      else if (nearest > LAST_REAL) { rafSwap(()=>seamlessSwapByDelta(nearest, FIRST_REAL)); }
+      else { currentIndex = nearest; setActive(currentIndex); setDots(realOf(currentIndex)); }
+    }, 80);
+  }, { passive: true });
+
+  // init
+  scrollToIndex(FIRST_REAL, false);
+  setActive(FIRST_REAL);
+  setDots(realOf(FIRST_REAL));
+
+  if (next) next.addEventListener('click', goNext);
+  if (prev) prev.addEventListener('click', goPrev);
+})();
+</script>
+
+{{-- SECTION: Cerita Kami (profil singkat) --}}
+<section class="relative bg-[#F1F9FC] py-6 md:py-10">
+  <div class="section-container">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start md:items-center">
+
+      <div class="w-full flex justify-center md:justify-start md:pl-2 lg:pl-4">
+        <div class="rounded-2xl overflow-hidden shadow-xl ring-2 ring-[#1524AF] max-w-[420px] md:max-w-[480px] lg:max-w-[520px]">
+          <img src="{{ uploaded_or_asset('profil/cerita-kami.svg') }}" alt="Kegiatan UPT PTKK" class="w-full h-auto object-cover">
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <div class="inline-flex self-start items-center justify-center mb-[20px] px-2 py-2 bg-[#F3E8E9] rounded-md">
+          <span class="font-['Volkhov'] font-bold text-[#861D23] text-[22px] md:text-[24px] leading-none">Cerita Kami</span>
+        </div>
+
+        <h2 class="mb-[20px] md:mb-[24px] font-['Volkhov'] font-bold text-[24px] md:text-[30px] lg:text-[34px] leading-tight text-[#1524AF] heading-stroke max-w-[48ch]">UPT Pengembangan Teknis<br class="hidden lg:block" />Dan Keterampilan Kejuruan</h2>
+
+        <p class="mb-[24px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
+          Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi, UPT PTKK terus memperkuat posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata. Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada kemajuan pendidikan di Jawa Timur.
+        </p>
+
+        <a href="{{ route('profil.cerita-kami') ?? '#' }}" class="inline-flex items-center justify-center gap-2 w-max px-5 py-2 rounded-xl bg-[#1524AF] text-white font-['Montserrat'] font-medium text-[14px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+          <span class="leading-none">Cari tahu lebih</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M19 12l-4-4m0 8l4-4" /></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{{-- SECTION: Berita Terbaru (dari Filament BeritaResource) --}}
+<section class="relative bg-[#F1F9FC] py-4 md:py-6">
+  <div class="section-container">
+    <div class="grid gap-y-2 mb-6">
+      <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23] font-[Volkhov] font-bold text-[15px] md:text-[16px] rounded-md leading-none px-3 py-1 shadow-sm w-fit">Berita Terbaru</span>
+
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <h2 class="heading-stroke font-[Volkhov] font-bold text-[18px] sm:text-[20px] md:text-[24px] lg:text-[28px] leading-snug">Jangan lewatkan kabar terbaru dari UPT PTKK</h2>
+
+        <a href="{{ route('berita.index') ?? '#' }}" class="inline-flex items-center justify-center gap-2 bg-[#1524AF] hover:bg-[#0E1E8B] text-white font-['Montserrat'] font-medium text-[12px] sm:text-[13px] md:text-[14px] px-[12px] py-[6px] rounded-xl shadow-md transition-all duration-200 active:scale-[.98]">
+          <span class="leading-none">Lihat Semua Berita</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      @if($latestBeritas->isEmpty())
+        @for($i=1;$i<=3;$i++)
+          <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4">
+            <div class="w-full h-[160px] bg-[#E7ECF3] rounded-lg mb-4 flex items-center justify-center text-sm text-[#727272]">Belum ada berita</div>
+            <div class="flex items-center gap-2 text-[#727272] text-xs mb-2"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><span>{{ now()->format('d F Y') }}</span></div>
+            <h3 class="text-[#081526] font-semibold mb-2">Belum ada berita tersedia</h3>
+            <p class="text-sm text-[#081526] mb-3 leading-relaxed">Silakan tambahkan berita melalui panel admin.</p>
+          </article>
+        @endfor
+      @else
+        @foreach($latestBeritas as $b)
+          @php
+            $img = $b->image ?? null;
+            // normalize possible stored path
+            $imgUrl = uploaded_or_asset($img ? (Str::contains($img, 'berita') ? $img : 'berita/' . basename($img)) : null);
+            $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
+            $pubDate = $b->published_at ? $b->published_at->format('d F Y') : ($b->created_at ? $b->created_at->format('d F Y') : now()->format('d F Y'));
+            $showRoute = (Route::has('berita.show')) ? route('berita.show', $b->slug ?? $b->id) : '#';
+          @endphp
+
+          <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4">
+            <div class="w-full h-[160px] rounded-lg mb-4 overflow-hidden">
+              <img src="{{ $imgUrl }}" alt="{{ $b->title }}" class="w-full h-full object-cover">
+            </div>
+
+            <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <span>{{ $pubDate }}</span>
+            </div>
+
+            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">{{ $b->title }}</h3>
+
+            <p class="text-sm text-[#081526] mb-3 leading-relaxed">{!! e($excerpt) !!}</p>
+
+            <a href="{{ $showRoute }}" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium">Baca Selengkapnya →</a>
+          </article>
+        @endforeach
+      @endif
+    </div>
+  </div>
+</section>
+
+{{-- SECTION: Sorotan Pelatihan (ringkasan dari halaman sorotan) --}}
+<section class="relative bg-[#F1F9FC] py-4 md:py-6">
+  <div class="section-container text-center flex flex-col items-center">
+    <div class="inline-block bg-[#FDECEC] text-[#861D23] text-[18px] md:text-[20px] font-[Volkhov] font-bold px-4 py-[6px] rounded-md mb-4">Sorotan Pelatihan</div>
+
+    <h2 class="heading-stroke text-[20px] md:text-[24px] lg:text-[26px] font-[Volkhov] font-bold text-[#0E2A7B] leading-snug mb-8">Mengasah Potensi dan Mencetak Tenaga Kerja yang Kompeten</h2>
+
+    @php
+      $sorotan = [
+        ['key'=>'mtu','label'=>'Mobil Training Unit','desc'=>'Mobil Keliling UPT. PTKK Dindik Jatim adalah program unggulan untuk menjangkau sekolah di pelosok.','files'=>['profil/MTU1.svg','profil/MTU2.svg','profil/MTU3.svg']],
+        ['key'=>'reguler','label'=>'Pelatihan Reguler','desc'=>'Pelatihan dipandu oleh asesor kompetensi profesional yang tersertifikasi.','files'=>['sorotan/reguler/reg-1.jpg','sorotan/reguler/reg-2.jpg','sorotan/reguler/reg-3.jpg']],
+        ['key'=>'akselerasi','label'=>'Pelatihan Akselerasi','desc'=>'Memiliki kompetensi tersertifikasi dan fasilitas mumpuni.','files'=>['sorotan/akselerasi/acc-1.jpg','sorotan/akselerasi/acc-2.jpg','sorotan/akselerasi/acc-3.jpg']],
+      ];
+    @endphp
+
+    <div id="sorotan-top" class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
+      <div class="shrink-0">
+        <button type="button" class="sorotan-label bg-[#DBE7F7] text-[#1524AF] font-[Volkhov] font-bold text-[18px] md:text-[20px] rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">{{ $sorotan[0]['label'] }}</button>
+      </div>
+      <p id="sorotan-desc" class="mt-2 md:mt-0 text-sm md:text-base font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">{{ $sorotan[0]['desc'] }}</p>
+    </div>
+
+    <div class="w-full mb-8 md:mb-10 lg:mb-12">
+      @foreach($sorotan as $i => $cat)
+        @php $files = $cat['files']; @endphp
+        <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
+          <div class="relative overflow-hidden">
+            <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]" data-key="{{ $cat['key'] }}">
+              @for($loopIdx=0;$loopIdx<2;$loopIdx++)
+                @foreach($files as $fname)
+                  <div class="relative h-[130px] md:h-[150px] lg:h-[170px] w-[220px] md:w-[260px] lg:w-[280px] rounded-2xl overflow-hidden shrink-0">
+                    <img src="{{ uploaded_or_asset($fname) }}" alt="{{ $cat['label'] }}" loading="lazy" class="w-full h-full object-cover">
+                  </div>
+                @endforeach
+              @endfor
+            </div>
+            <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+
+    <div class="mt-2 flex items-center justify-center gap-6">
+      <button id="tabPrev" class="w-8 h-8 rounded-full border border-[#B6BBE6] text-[#0E2A7B]">‹</button>
+      <div id="tabDots" class="flex items-center gap-2"></div>
+      <button id="tabNext" class="w-8 h-8 rounded-full border border-[#B6BBE6] text-[#0E2A7B]">›</button>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const tabOrder = ['mtu','reguler','akselerasi'];
+      const panes = document.querySelectorAll('.sorotan-pane');
+      const label = document.querySelector('.sorotan-label');
+      const desc  = document.getElementById('sorotan-desc');
+
+      const meta = {
+        mtu:       { label: 'Mobil Training Unit',   desc: @json($sorotan[0]['desc']) },
+        reguler:   { label: 'Pelatihan Reguler',     desc: @json($sorotan[1]['desc']) },
+        akselerasi:{ label: 'Pelatihan Akselerasi',  desc: @json($sorotan[2]['desc']) },
+      };
+
+      function currentKey(){ const active = Array.from(panes).find(p=>!p.classList.contains('hidden')); return active ? active.dataset.pane : tabOrder[0]; }
+      function currentIndex(){ return tabOrder.indexOf(currentKey()); }
+
+      const prev = document.getElementById('tabPrev');
+      const next = document.getElementById('tabNext');
+      const tabDots = document.getElementById('tabDots');
+
+      if (prev) prev.addEventListener('click', ()=>showByIndex(currentIndex()-1));
+      if (next) next.addEventListener('click', ()=>showByIndex(currentIndex()+1));
+
+      function paintTabDots(){
+        if(!tabDots) return;
+        const idx = currentIndex();
+        tabDots.innerHTML = '';
+        tabOrder.forEach((k,i)=>{
+          const b=document.createElement('button'); b.type='button';
+          b.className='w-2.5 h-2.5 rounded-full transition ' + (i===idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
+          b.setAttribute('aria-label', meta[k].label); b.setAttribute('aria-current', i===idx ? 'true' : 'false');
+          b.addEventListener('click', ()=>showByIndex(i));
+          tabDots.appendChild(b);
+        });
+      }
+
+      function showByIndex(i){
+        const idx = (i < 0) ? tabOrder.length-1 : (i >= tabOrder.length ? 0 : i);
+        setActive(tabOrder[idx]);
+      }
+
+      function setActive(key){
+        panes.forEach(p => p.classList.toggle('hidden', p.dataset.pane !== key));
+        if (label && meta[key]) label.textContent = meta[key].label;
+        if (desc  && meta[key]) desc.textContent  = meta[key].desc;
+        paintTabDots();
+      }
+
+      setActive(tabOrder[0]);
+
+      // auto-scroll for tracks
+      (function(){
+        const tracks = document.querySelectorAll('.sorotan-track');
+        const SPEED = 0.8;
+        tracks.forEach((track) => {
+          let offset = 0;
+          function animate() {
+            const halfWidth = track.scrollWidth / 2;
+            offset -= SPEED;
+            if (Math.abs(offset) >= halfWidth) { offset += halfWidth; }
+            track.style.transform = translateX(${offset}px);
+            requestAnimationFrame(animate);
+          }
+          requestAnimationFrame(animate);
+        });
+      })();
+
+    })();
+  </script>
+</section>
+
+{{-- SECTION: Kompetensi Pelatihan --}}
+<section class="relative bg-[#F1F9FC] py-4 md:py-6">
+  <div class="section-container">
+    <div class="text-center mb-6">
+      <div class="inline-block bg-[#F3E8E9] text-[#861D23] text-[18px] md:text-[20px] px-4 py-2 rounded-md font-[Volkhov] font-bold mb-4">Kompetensi Pelatihan</div>
+      <h2 class="heading-stroke text-[20px] md:text-[24px] font-[Volkhov] font-bold text-[#0E2A7B]">Belajar dengan didampingi oleh instruktur yang ahli</h2>
+    </div>
+
+    @php
+      $items = [
+        'Tata Busana' => 'tata-busana.svg',
+        'Tata Boga' => 'tata-boga.svg',
+        'Tata Kecantikan' => 'tata-kecantikan.svg',
+        'Teknik Pemesinan' => 'teknik-pemesinan.svg',
+        'Teknik Otomotif' => 'teknik-otomotif.svg',
+        'Teknik Pendingin' => 'teknik-pendingin.svg',
+        'Teknik Pengelasan' => 'teknik-pengelasan.svg',
+        'Desain Grafis' => 'mjc-desain-grafis.svg',
+        'Web Desain' => 'mjc-web-desain.svg',
+        'Animasi' => 'mjc-animasi.svg',
+        'Fotografi' => 'mjc-fotografi.svg',
+        'Videografi' => 'mjc-videografi.svg',
+      ];
+    @endphp
+
+    <div id="kompetensi-track" class="flex gap-4 md:gap-5 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-1">
+      @foreach($items as $nama => $file)
+        <div class="shrink-0 snap-start relative w-[260px] h-[180px] rounded-lg overflow-hidden group transition-all duration-300">
+          <img src="{{ uploaded_or_asset('profil/'.$file) }}" alt="{{ $nama }}" class="w-full h-full object-cover">
+          <div class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100 group-hover:opacity-0" style="background: linear-gradient(180deg, rgba(219,231,247,0.5) 0%, rgba(21,36,175,0.8) 100%);"></div>
+          <div class="absolute bottom-3 left-0 right-0 z-10 text-center">
+            <h3 class="text-white font-[Montserrat] font-medium text-[16px]">{{ $nama }}</h3>
+          </div>
+        </div>
+      @endforeach
+    </div>
+
+    <div class="flex gap-3 justify-center md:justify-start mt-6">
+      <button id="prevBtn" class="w-8 h-8 rounded-full border border-[#B6BBE6] bg-white">‹</button>
+      <button id="nextBtn" class="w-8 h-8 rounded-full border border-[#B6BBE6] bg-white">›</button>
+    </div>
+
+    <script>
+      (function () {
+        const track  = document.getElementById('kompetensi-track');
+        const prev   = document.getElementById('prevBtn');
+        const next   = document.getElementById('nextBtn');
+        if (!track) return;
+
+        function getStep() {
+          const first = track.querySelector(':scope > *');
+          if (!first) return 280;
+          const rect = first.getBoundingClientRect();
+          const gap  = parseFloat(getComputedStyle(track).gap || '0');
+          return Math.round(rect.width + gap);
+        }
+
+        if (next) next.addEventListener('click', () => { track.scrollBy({ left: getStep(), behavior: 'smooth' }); });
+        if (prev) prev.addEventListener('click', () => { track.scrollBy({ left: -getStep(), behavior: 'smooth' }); });
+      })();
     </script>
-  </body>
+  </div>
+</section>
+
+{{-- SECTION: Data Statistik --}}
+<section class="relative bg-[#F1F9FC] py-4 md:py-6">
+  <div class="section-container">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div class="lg:col-span-4">
+        <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-3"><span class="text-[#861D23] font-[Volkhov] font-bold text-[16px]">Data Statistik</span></div>
+        <h2 class="heading-stroke font-[Volkhov] font-bold text-[24px] mb-3">Rekapitulasi Rata-Rata Program Pelatihan</h2>
+        <p class="text-sm text-slate-700 leading-relaxed mb-5">Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta, terbukti dari kenaikan nilai rata-rata pre-test ke post-test.</p>
+
+        <ul id="listPelatihan" class="space-y-2">
+          <li><button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="0"><span class="dot w-2 h-2 rounded-full bg-[#1524AF]"></span><span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#1524AF]">Judul Pelatihan 1</span></button><div class="divider h-[1px] bg-[#1524AF]"></div></li>
+          <li><button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="1"><span class="dot w-2 h-2 rounded-full bg-[#000]"></span><span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#000]">Judul Pelatihan 2</span></button><div class="divider h-[1px] bg-[#000]"></div></li>
+          <li><button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="2"><span class="dot w-2 h-2 rounded-full bg-[#000]"></span><span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#000]">Judul Pelatihan 3</span></button><div class="divider h-[1px] bg-[#000]"></div></li>
+          <li><button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="3"><span class="dot w-2 h-2 rounded-full bg-[#000]"></span><span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#000]">Judul Pelatihan 4</span></button><div class="divider h-[1px] bg-[#000]"></div></li>
+        </ul>
+
+        <a href="#" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#1524AF] text-white mt-6 shadow-sm">Cari Tahu Lebih</a>
+      </div>
+
+      <div class="lg:col-span-8 mt-6 lg:mt-0">
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+          <div class="rounded-xl bg-[#DBE7F7] p-3 text-center"><div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">63.48</div><div class="text-[10px] sm:text-xs font-[Montserrat]">Rata-Rata Pre-Test</div></div>
+          <div class="rounded-xl bg-[#DBE7F7] p-3 text-center"><div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">90</div><div class="text-[10px] sm:text-xs font-[Montserrat]">Praktek</div></div>
+          <div class="rounded-xl bg-[#DBE7F7] p-3 text-center"><div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">80.76</div><div class="text-[10px] sm:text-xs font-[Montserrat]">Rata-Rata Post-Test</div></div>
+        </div>
+
+        <div class="rounded-2xl bg-white border-2 border-[#1524AF] p-4 md:p-5">
+          <div class="relative w-full h-[320px]">
+            <canvas id="statistikChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+  const canvas = document.getElementById('statistikChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const pelatihanLabels = ['Teknik Pengelasan', 'Teknik Mesin Bubut', 'Teknik Mesin CNC', 'Teknik Elektro'];
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: pelatihanLabels,
+      datasets: [
+        { label: 'Pre-Test', data: [8,22,12,29], borderColor: '#FF6107', pointBackgroundColor: '#FF6107', borderWidth:2, tension:.35, pointRadius:4, fill:false },
+        { label: 'Post-Test', data: [24,53,75,94], borderColor: '#2F4BFF', pointBackgroundColor: '#2F4BFF', borderWidth:2, tension:.35, pointRadius:4, fill:false },
+        { label: 'Praktek', data: [38,70,35,60], borderColor: '#6B2C47', pointBackgroundColor: '#6B2C47', borderWidth:2, tension:.35, pointRadius:4, fill:false },
+        { label: 'Rata-Rata', data: [52,10,26,49], borderColor: '#DBCC8F', pointBackgroundColor: '#DBCC8F', borderWidth:2, tension:.35, pointRadius:4, fill:false },
+      ]
+    },
+    options: {
+      maintainAspectRatio:false,
+      layout:{ padding:{ top:10, right:16, left:16, bottom:8 } },
+      plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, pointStyle:'circle', color:'#081526', font:{ size:13, weight:'600' } } }, tooltip:{ callbacks:{ label: (ctx)=>${ctx.dataset.label}: ${ctx.formattedValue} } } },
+      scales:{ x:{ ticks:{ color:'#8787A3', font:{ size:12 } }, grid:{ display:true, color:'#8787A3', lineWidth:1 }, border:{ display:true, color:'#8787A3', width:1.5 } }, y:{ beginAtZero:true, min:0, max:100, ticks:{ stepSize:20, color:'#8787A3', font:{ size:12 } }, grid:{ color:(ctx)=> (ctx.tick.value===0 ? '#8787A3' : 'transparent'), lineWidth:(ctx)=> (ctx.tick.value===0?1.5:0) }, border:{ display:true, color:'#8787A3', width:1.5 } } }
+    }
+  });
+})();
+</script>
+
+<script>
+  // Toggle active pelatihan
+  (function(){
+    const list = document.getElementById('listPelatihan');
+    if (!list || list.dataset.inited) return;
+    list.dataset.inited = '1';
+
+    const ACTIVE_TEXT = 'text-[#1524AF]';
+    const INACTIVE_TEXT = 'text-[#000000]';
+    const ACTIVE_DOT = 'bg-[#1524AF]';
+    const INACTIVE_DOT = 'bg-[#000000]';
+    const ACTIVE_DIV = 'bg-[#1524AF]';
+    const INACTIVE_DIV = 'bg-[#000000]';
+
+    function setActive(idx){
+      list.querySelectorAll('li').forEach((li,i)=>{
+        const label = li.querySelector('.label');
+        const dot   = li.querySelector('.dot');
+        const div   = li.querySelector('.divider');
+        if (!label || !dot || !div) return;
+        label.classList.remove(ACTIVE_TEXT); label.classList.add(INACTIVE_TEXT);
+        dot.classList.remove(ACTIVE_DOT);     dot.classList.add(INACTIVE_DOT);
+        div.classList.remove(ACTIVE_DIV);     div.classList.add(INACTIVE_DIV);
+        if (i === idx){
+          label.classList.remove(INACTIVE_TEXT); label.classList.add(ACTIVE_TEXT);
+          dot.classList.remove(INACTIVE_DOT);     dot.classList.add(ACTIVE_DOT);
+          div.classList.remove(INACTIVE_DIV);     div.classList.add(ACTIVE_DIV);
+        }
+      });
+    }
+
+    setActive(0);
+
+    list.addEventListener('click',(e)=>{
+      const btn = e.target.closest('.pel-btn');
+      if (!btn) return;
+      const idx = parseInt(btn.dataset.index,10) || 0;
+      setActive(idx);
+    });
+  })();
+</script>
+
+{{-- SECTION: Panduan Pelatihan (video + CTA) --}}
+<section class="relative bg-[#F1F9FC] py-6">
+  <div class="section-container">
+    <div class="relative rounded-2xl overflow-hidden">
+      <div class="w-full h-[220px] sm:h-[240px] md:h-[300px] lg:h-[380px] bg-cover bg-center relative" style="background-image: url('{{ uploaded_or_asset('bgvideo.svg') }}');">
+        <div class="absolute inset-0" style="background: linear-gradient(270deg, rgba(21,36,175,1) 29%, rgba(21,36,175,0.34) 66%, rgba(21,36,175,0) 100%);"></div>
+      </div>
+
+      <div class="absolute inset-0 grid grid-cols-2 gap-x-3 md:gap-x-4 lg:gap-x-8 px-3 sm:px-5 md:px-8 lg:px-10 py-5 md:py-6 lg:py-0">
+        <div class="relative flex items-center justify-center">
+          <a href="https://www.youtube.com/watch?v=JZXEx5i6U9o" target="_blank" rel="noopener" class="flex items-center justify-center">
+            <img src="{{ uploaded_or_asset('icons/play.svg') }}" alt="Play Icon" class="w-11 h-11 md:w-14 md:h-14 lg:w-20 lg:h-20 object-contain select-none">
+          </a>
+        </div>
+
+        <div class="relative flex items-center justify-end">
+          <div class="bg-[#DBE7F7]/95 text-[#0E2A7B] rounded-xl shadow-md w-full max-w-[360px] md:max-w-[540px] p-4 md:p-6">
+            <h2 class="heading-stroke text-left text-[14px] md:text-[18px] lg:text-[24px] font-[Volkhov] font-bold mb-2">Bersama, Kita Cetak Pendidikan Vokasi yang Unggul</h2>
+            <p class="text-[12px] md:text-[13px] lg:text-[16px] leading-relaxed mb-3">Pahami alur permohonan peserta untuk mengikuti program pelatihan di UPT PTKK guna memastikan kelancaran proses.</p>
+            <a href="#panduan" class="inline-flex items-center gap-2 bg-[#1524AF] text-white px-4 py-2 rounded-md">Lihat Panduan</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{{-- SECTION: Sejarah (ringkasan timeline & gambar) --}}
+<section class="relative bg-[#F1F9FC] pt-20 pb-[300px]">
+  <div class="section-container">
+    <div class="text-center mb-16">
+      <div class="w-full flex justify-center mb-[15px]"><span class="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-[#F3E8E9] text-[#861D23] font-bold text-base md:text-lg font-[Volkhov]">Sejarah</span></div>
+      <h2 class="font-[Volkhov] font-bold text-[22px] md:text-[26px] text-[#1524AF] text-center stroke-yellow">Perjalanan Panjang UPT PTKK Membangun Pendidikan Vokasi Jawa Timur</h2>
+    </div>
+
+    <div class="timeline-container relative h-[1400px] mx-auto px-6 md:px-12 lg:px-[80px] overflow-visible">
+      <span class="absolute left-1/2 top-0 -translate-x-1/2 w-[5px] h-full bg-[#D1EDF5] z-10"></span>
+
+      <span class="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 w-[25px] h-[25px] rounded-full bg-[#1524AF] z-20"></span>
+      <span class="absolute left-1/2 top-[25%] -translate-x-1/2 w-[25px] h-[25px] rounded-full bg-[#1524AF] z-20"></span>
+      <span class="absolute left-1/2 top-[50%] -translate-x-1/2 w-[25px] h-[25px] rounded-full bg-[#1524AF] z-20"></span>
+      <span class="absolute left-1/2 top-[75%] -translate-x-1/2 w-[25px] h-[25px] rounded-full bg-[#1524AF] z-20"></span>
+      <span class="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 w-[25px] h-[25px] rounded-full bg-[#1524AF] z-20"></span>
+
+      {{-- 1974 --}}
+      <div class="absolute top-[3%] left-1/2 w-full max-w-7xl -translate-x-1/2">
+        <div class="grid grid-cols-2 gap-x-[100px] items-start">
+          <div class="timeline-left-col flex justify-center md:justify-end items-center -mt-10 pr-[40px]">
+            <img src="{{ uploaded_or_asset('profil/sejarah1974.svg') }}" alt="Sejarah 1974" class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
+          </div>
+          <div class="-mt-6 md:pl-[32px] lg:pl-[40px]">
+            <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">1974</h4>
+            <p class="sejarah-text font-[Montserrat] text-[#000] text-[16px] leading-relaxed text-justify">Dipimpin oleh Ir. Yutadi ... (isian lengkap sesuai konten profil Anda).</p>
+          </div>
+        </div>
+      </div>
+
+      {{-- 1978 --}}
+      <div class="absolute top-[23%] left-1/2 w-full max-w-7xl -translate-x-1/2">
+        <div class="grid grid-cols-2 gap-x-[100px] items-start">
+          <div class="timeline-right-col flex justify-center md:justify-start items-center -mt-10 md:pl-[40px] lg:pl-[48px] order-1 md:order-2">
+            <img src="{{ uploaded_or_asset('profil/sejarah1978.svg') }}" alt="Sejarah 1978" class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
+          </div>
+          <div class="mt-2 md:mt-2 pr-0 md:pr-[40px] text-left md:text-right order-2 md:order-1">
+            <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">1978</h4>
+            <p class="sejarah-text font-[Montserrat] text-[#000] text-[16px] leading-relaxed text-justify">Melalui Keputusan Menteri Pendidikan dan Kebudayaan Nomor: 0271/0/1978 ...</p>
+          </div>
+        </div>
+      </div>
+
+      {{-- 2008 --}}
+      <div class="absolute top-[47%] left-1/2 w-full max-w-7xl -translate-x-1/2">
+        <div class="grid grid-cols-2 gap-x-[100px] items-start">
+          <div class="timeline-left-col flex justify-center md:justify-end items-center -mt-10 pr-[40px]">
+            <img src="{{ uploaded_or_asset('profil/sejarah2008.svg') }}" alt="Sejarah 2008" class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
+          </div>
+          <div class="mt-14 md:pl-[32px] lg:pl-[40px]">
+            <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2008</h4>
+            <p class="sejarah-text font-[Montserrat] text-[#000] text-[16px] leading-relaxed text-justify">Diterbitkannya Peraturan Gubernur Jawa Timur Nomor 120 Tahun 2008 ...</p>
+          </div>
+        </div>
+      </div>
+
+      {{-- 2016 --}}
+      <div class="absolute top-[75%] left-1/2 w-full max-w-7xl -translate-x-1/2">
+        <div class="grid grid-cols-2 gap-x-[100px] items-start">
+          <div class="timeline-right-col flex justify-center md:justify-start items-center -mt-10 md:pl-[40px] lg:pl-[48px] order-1 md:order-2">
+            <img src="{{ uploaded_or_asset('profil/sejarah2016.svg') }}" alt="Sejarah 2016" class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
+          </div>
+          <div class="mt-2 md:mt-2 pr-0 md:pr-[40px] text-left md:text-right order-2 md:order-1">
+            <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2016</h4>
+            <p class="sejarah-text font-[Montserrat] text-[#000] text-[16px] leading-relaxed text-justify">Terjadi perubahan Peraturan Gubernur Jawa Timur Nomor 95 Tahun 2016 ...</p>
+          </div>
+        </div>
+      </div>
+
+      {{-- 2019 --}}
+      <div class="absolute top-[100%] left-1/2 w-full max-w-7xl -translate-x-1/2 -translate-y-1/2 translate-y-[0px]">
+        <div class="grid grid-cols-2 gap-x-[100px] items-start">
+          <div class="timeline-left-col flex justify-center md:justify-end items-start pr-[40px]">
+            <img src="{{ uploaded_or_asset('profil/sejarah2019.svg') }}" alt="Sejarah 2019" class="sejarah-img w-[300px] md:w-[340px]" loading="lazy">
+          </div>
+          <div class="md:pl-[32px] lg:pl-[40px] mt-4 md:mt-0">
+            <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2019</h4>
+            <p class="sejarah-text font-[Montserrat] text-[#000] text-[16px] leading-relaxed text-justify">Sesuai dengan Peraturan Gubernur Jawa Timur Nomor 1 Tahun 2019 ...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{{-- SECTION: Tujuan --}}
+<section id="tujuan" class="section-compact bg-[#F1F9FC]">
+  <div class="section-container">
+    <div class="w-full flex justify-center mb-[15px]"><span class="inline-flex items-center justify-center w-[126px] h-[41px] rounded-lg bg-[#F3E8E9] text-[#861D23] font-bold text-base md:text-lg font-[Volkhov]">Tujuan</span></div>
+    <h2 class="font-['Volkhov'] font-bold text-[22px] md:text-[26px] text-[var(--biru-brand)] stroke-yellow text-center mb-[30px]">Komitmen Kami Untuk Masyarakat Jawa Timur</h2>
+
+    <div class="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-x-[72px] lg:gap-y-[72px]">
+      @for($i=1;$i<=6;$i++)
+        <div class="tujuan-card relative w-full min-h-[236px] p-6">
+          <span class="tujuan-badge">{{ str_pad($i,2,'0', STR_PAD_LEFT) }}</span>
+          <div class="flex flex-col gap-4 h-full justify-center">
+            <img src="{{ uploaded_or_asset('icons/tujuan-'.$i.'.svg') }}" alt="Ikon Tujuan {{$i}}" class="tujuan-icon w-[50px] h-[50px]" loading="lazy">
+            <p class="tujuan-text font-[Montserrat] font-medium text-[20px] leading-snug text-gray-800">
+              @switch($i)
+                @case(1) Membangun Sumber Daya Manusia (SDM) yang kreatif, kompetitif, dan adaptif. @break
+                @case(2) Membentuk mindset tangguh berbasis literasi dan kolaborasi. @break
+                @case(3) Mendorong transformasi edukasi vokasi yang relevan dan inklusif. @break
+                @case(4) Meningkatkan pengakuan kompetensi melalui sertifikasi nasional. @break
+                @case(5) Memperkuat konektivitas antara dunia pendidikan dan dunia industri. @break
+                @case(6) Mewujudkan generasi muda yang mandiri dan berjiwa wirausaha. @break
+              @endswitch
+            </p>
+          </div>
+        </div>
+      @endfor
+    </div>
+  </div>
+</section>
+
+{{-- SECTION: Manfaat --}}
+<section class="section-compact bg-[#F1F9FC]">
+  <div class="section-container text-center">
+    <div class="inline-flex items-center justify-center mb-4 px-5 py-2 bg-[#F3E8E9] rounded-lg"><span class="font-['Volkhov'] font-bold text-[#861D23] text-[18px]">Manfaat</span></div>
+    <h2 class="font-['Volkhov'] font-bold text-[22px] md:text-[26px] mb-10 text-[var(--biru-brand)] stroke-yellow">Untuk Jawa Timur yang Lebih Maju dan Berdaya Saing</h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-5 gap-8">
+      @for($i=1;$i<=5;$i++)
+        @php
+          $extra = '';
+          if ($i===1) $extra='md:col-span-2 lg:col-span-1';
+          if ($i===2) $extra='md:col-span-2 lg:col-span-1';
+          if ($i===3) $extra='md:col-span-2 lg:col-span-1';
+          if ($i===4) $extra='md:col-span-2 md:col-start-2 lg:col-span-1';
+          if ($i===5) $extra='md:col-span-2 md:col-start-4 lg:col-span-1';
+        @endphp
+        <div class="card-manfaat shadow-5x p-6 flex flex-col items-center justify-start transition-transform duration-200 hover:-translate-y-1 {{ $extra }}">
+          <img src="{{ uploaded_or_asset('icons/manfaat'.$i.'.svg') }}" class="w-[50px] h-[50px] mb-[30px]" loading="lazy">
+          <p class="text-[#081526] font-[Montserrat] font-medium text-[15px] leading-snug text-center">
+            @switch($i)
+              @case(1) Peningkatan Produktivitas dan Inovasi Guru dan Siswa SMA/SMK @break
+              @case(2) Penguatan Ekosistem Ekonomi Kreatif Nasional @break
+              @case(3) Meningkatkan Kemampuan Adaptasi Terhadap Transformasi Digital @break
+              @case(4) Terciptanya Ekosistem Kolaboratif Antara Pendidikan dan Industri @break
+              @case(5) Pembentukan Karakter dan Etika Profesional di Era Digital @break
+            @endswitch
+          </p>
+        </div>
+      @endfor
+    </div>
+  </div>
+</section>
+
+{{-- SECTION: Tugas & Fungsi --}}
+<section class="section-compact bg-[#F1F9FC]">
+  <div class="section-container">
+    <div class="text-center mb-[50px]">
+      <span class="inline-block bg-[#F3E8E9] text-[#861D23] font-['Volkhov'] font-bold text-[18px] px-5 py-2 rounded-md mb-[15px]">Tugas Dan Fungsi</span>
+      <h2 class="font-['Volkhov'] font-bold text-[22px] md:text-[26px] text-[var(--biru-brand)] stroke-yellow">Mandat dan Tanggung Jawab UPT PTKK</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:[grid-template-columns:2fr_minmax(0,1.3fr)] lg:grid-cols-3 gap-6 md:gap-8 items-start text-[14px] md:text-[16px]">
+      <div class="md:col-span-1 lg:col-span-2 bg-[#FFFFFF] rounded-2xl shadow-sm ring-1 ring-black/5 p-5 md:p-8 text-justify">
+        <p class="mb-5">Peraturan Gubernur Jawa Timur Nomor 1 Tahun 2019 tentang Perubahan atas Peraturan Gubernur Jawa Timur Nomor 43 Tahun 2018, tentang nomenklatur, susunan organisasi, uraian tugas dan fungsi serta tata kerja Unit Pelaksana Teknis Dinas Pendidikan Provinsi Jawa Timur.</p>
+        <hr class="border-t-1 border-[#000000] mb-5">
+        <p class="mb-4">Untuk melaksanakan tugas sebagaimana dimaksud dalam Pasal 8C, UPT Pengembangan Teknis dan Keterampilan Kejuruan mempunyai fungsi:</p>
+        <ul class="list-disc pl-5 md:pl-6 space-y-2">
+          <li>Penyusunan perencanaan program dan kegiatan UPT.</li>
+          <li>Penyusunan dan pengembangan materi teknis keterampilan kejuruan.</li>
+          <li>Penyelenggaraan pelatihan dan bimbingan teknis keterampilan kejuruan.</li>
+          <li>Pengembangan media teknis pelatihan dan bimbingan keterampilan kejuruan.</li>
+          <li>Pelaksanaan dukungan kerjasama pelatihan dan bimbingan teknis keterampilan kejuruan.</li>
+          <li>Pelaksanaan tugas-tugas ketatausahaan dan pelayanan masyarakat.</li>
+          <li>Pelaksanaan monitoring, evaluasi, dan pelaporan.</li>
+          <li>Pelaksanaan tugas-tugas lain yang diberikan oleh Kepala Dinas.</li>
+        </ul>
+      </div>
+
+      <div class="bg-[#FFFFFF] rounded-2xl shadow-sm ring-1 ring-black/5 p-5 md:p-7 flex flex-col justify-between gap-5 text-[14px] md:text-[15px]">
+        <div class="space-y-3">
+          <div class="flex items-center gap-2"><span class="text-xl">📄</span><h3 class="font-['Volkhov'] font-bold text-[#000] text-[17px]">File Peraturan</h3></div>
+          <p class="leading-snug">Pergub No. 1 Tahun 2019 ttg Perubahan Pergub 43 Tahun 2018 tentang UPT Dinas Pendidikan.pdf</p>
+          <hr class="border-t border-[#000] mt-2 mb-1 md:my-3">
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="#" class="inline-flex items-center justify-center gap-2 w-full sm:w-1/2 px-4 py-3 bg-[#1524AF] text-white rounded-lg font-semibold hover:bg-[#0F1D8F]">
+            <img src="{{ uploaded_or_asset('icons/mata.svg') }}" class="w-5 h-5" alt="Lihat"> Lihat
+          </a>
+          <a href="#" class="inline-flex items-center justify-center gap-2 w-full sm:w-1/2 px-4 py-3 bg-[#1524AF] text-white rounded-lg font-semibold hover:bg-[#0F1D8F]">
+            <img src="{{ uploaded_or_asset('icons/download.svg') }}" class="w-5 h-5" alt="Download"> Download
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{-- FOOTER --}}
+@include('components.layouts.app.footer')
+
+@stack('scripts')
+</body>
 </html>

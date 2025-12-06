@@ -1,4 +1,3 @@
-{{-- resources/views/components/layouts/app/navbarlanding.blade.php --}}
 @php use Illuminate\Support\Facades\Route; @endphp
 @php
   $items = [
@@ -44,6 +43,15 @@
   $others    = collect($nav)->reject(fn($i) => $i['label'] === 'Beranda')->values();
   $loginHref  = Route::has('masuk') ? route('masuk') : url('/masuk');
 $daftarHref = Route::has('daftar') ? route('daftar') : url('/daftar');
+
+  // --- PERBAIKAN DI SINI SESUAI WEB.PHP ---
+  // Route group: prefix('dashboard') -> name('dashboard.')
+  // Route item:  name('home')
+  // Gabungan:    'dashboard.home' (Mengarah ke DashboardController::home)
+  $loginHref  = Route::has('dashboard.home') ? route('dashboard.home') : url('/dashboard');
+
+  // Tombol Daftar tetap ke registrasi
+  $daftarHref = Route::has('pendaftaran.create') ? route('pendaftaran.create') : url('/pendaftaran');
 @endphp
 
 <header id="siteHeader"
@@ -53,7 +61,7 @@ $daftarHref = Route::has('daftar') ? route('daftar') : url('/daftar');
     <div class="h-[56px] md:h-[64px] lg:h-[72px] flex items-center justify-between gap-3 md:gap-4">
 
       {{-- KIRI: Logo + identitas --}}
-      <a href="{{ Route::has('home') ? route('home') : url('/') }}"
+      <a href="{{ Route::has('landing') ? route('landing') : url('/') }}"
          class="flex items-center gap-2 md:gap-3 flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1524AF]/30 rounded">
         <img src="{{ asset('images/logo-provinsi-jawa-timur.png') }}"
              alt="Logo Provinsi Jawa Timur"

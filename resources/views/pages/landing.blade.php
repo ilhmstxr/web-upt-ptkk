@@ -1,4 +1,3 @@
-{{-- resources/views/pages/landing.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -9,209 +8,255 @@
   {{-- Tailwind --}}
   <script src="https://cdn.tailwindcss.com"></script>
 
-  {{-- Font Volkhov --}}
+  {{-- Fonts --}}
   <link href="https://fonts.googleapis.com/css2?family=Volkhov:wght@700&display=swap" rel="stylesheet">
-
-  {{-- Font Montserrat --}}
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
 
   <style>
-    {{-- Style kustom untuk efek stroke merah --}}
-    .upt-stroke {
-      text-shadow:
-        -1px -1px 0 #861D23,
-         1px -1px 0 #861D23,
-        -1px  1px 0 #861D23,
-         1px  1px 0 #861D23;
-    }
-    {{-- Custom Style untuk efek stroke kuning --}}
-.heading-stroke {
-  color: #1524AF;                    /* isi teks biru */
-  -webkit-text-fill-color: #1524AF; /* khusus WebKit—pastikan fill tetap biru */
-  text-shadow:
-    -1px -1px 0 #FFDE59,
-     1px -1px 0 #FFDE59,
-    -1px  1px 0 #FFDE59,
-     1px  1px 0 #FFDE59;             /* efek stroke kuning via text-shadow */
-}
+    /* gaya singkat */
+    .upt-stroke { text-shadow:-1px -1px 0 #861D23,1px -1px 0 #861D23,-1px 1px 0 #861D23,1px 1px 0 #861D23; }
+    .heading-stroke { color:#1524AF; -webkit-text-fill-color:#1524AF; text-shadow:-1px -1px 0 #FFDE59,1px -1px 0 #FFDE59,-1px 1px 0 #FFDE59,1px 1px 0 #FFDE59; }
 
-
-    .tujuan-card{
-      background:#FEFEFE;
-      box-shadow:
-        0 2px 4px rgba(0,0,0,.06),
-        0 12px 24px rgba(0,0,0,.08),
-        0 40px 80px rgba(0,0,0,.08);
-    }
-
-    .hero-card {
-      background: linear-gradient(135deg,rgba(67,56,202,.75) 0%,rgba(79,70,229,.65) 100%);
-      backdrop-filter: blur(15px);
-    }
-
-    .bg-blur { backdrop-filter: blur(8px); }
-    .glass-nav { background: rgba(255,255,255,.95); backdrop-filter: blur(12px); }
-    .soft-shadow {
-      box-shadow: 0 10px 25px -3px rgba(0,0,0,.1),
-                  0 4px 6px -2px rgba(0,0,0,.05);
-    }
-    .blue-gradient-bg {
-      background: linear-gradient(135deg,#f0f4ff 0%,#e0e7ff 50%,#c7d2fe 100%);
-    }
-
-    @keyframes fadeInUp {
-      0% { opacity: 0; transform: translateY(20px) scale(0.95); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
+    @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
     .animate-badge { animation: fadeInUp 0.8s ease-out forwards; }
-  </style>
-</head>
 
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+  @stack('styles')
+</head>
 <body class="bg-[#F1F9FC] antialiased">
 
-  {{-- TOPBAR --}}
-  @include('components.layouts.app.topbar')
+@php
+use Illuminate\Support\Facades\Storage;
+use App\Models\Banner;
+use App\Models\Berita;
+use App\Models\ProfilUPT;
+use Illuminate\Support\Str;
 
-  {{-- NAVBAR --}}
-  @include('components.layouts.app.navbarlanding')
+/* Ambil banners */
+$banners = Banner::query()
+    ->where('is_active', true)
+    ->orderBy('sort_order', 'asc')
+    ->get();
+$realCount = $banners->count() > 0 ? $banners->count() : 3;
+$cloneCount = min(2, $realCount);
 
-{{-- HERO: Slider dengan infinite loop dan scale effect --}}
+// Ambil Profil UPT
+$profil = ProfilUPT::first();
+// Teks Default jika database kosong
+$defaultSejarah = "Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis.";
+
+// Definisikan variabel $teksCerita
+$teksCerita = $profil && !empty($profil->sejarah) ? $profil->sejarah : $defaultSejarah;
+
+/* Ambil 3 berita terbaru */
+$latestBeritas = Berita::query()
+    ->where('is_published', true)
+    ->whereNotNull('published_at')
+    ->orderBy('published_at', 'desc')
+    ->take(3)
+    ->get();
+@endphp
+
+
+{{-- TOPBAR --}}
+@include('components.layouts.app.topbar')
+
+{{-- NAVBAR --}}
+@include('components.layouts.app.navbarlanding')
+
+{{-- ================== HERO: Slider Dinamis (tabel banners) ================== --}}
+@php
+  /**
+   * Variabel dari controller:
+   *  - $banners : koleksi Banner (id, image, title, description, is_active, sort_order)
+   */
+
+  $slides = ($banners ?? collect())->values();
+
+  // minimal harus ada 1 banner aktif
+  $slide0 = $slides[0] ?? null;
+
+  if ($slide0) {
+      // kalau cuma ada 1–2 banner, tetap dipaksa jadi 3 slot
+      $slide1 = $slides[1] ?? $slide0;
+      $slide2 = $slides[2] ?? $slide1 ?? $slide0;
+
+      $img = function ($item) {
+          // biasanya field image berisi path relatif seperti "banners/xxx.jpg"
+          return asset('storage/' . $item->image);
+      };
+  }
+@endphp
+
+@if ($slide0)
 <header class="w-full bg-[#F1F9FC]">
   <div class="w-full px-6 md:px-12 lg:px-[80px] py-4 md:py-6">
-    <div id="hero" class="relative">
+    {{-- -mx-* supaya track bisa keluar dari padding container --}}
+    <div id="hero" class="relative -mx-6 md:-mx-12 lg:-mx-[80px]">
 
-      {{-- TRACK: beri padding horizontal supaya slide next/prev kelihatan (peek) --}}
+      {{-- TRACK: slide dengan peek kiri/kanan --}}
       <div
         id="hero-track"
         class="flex items-center gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none py-8"
         style="scrollbar-width:none;-ms-overflow-style:none;"
       >
-
-        <!-- LEFT GUTTER (untuk centering) -->
+        {{-- LEFT GUTTER (ruang kosong buat centering) --}}
         <div
           aria-hidden="true"
-          class="shrink-0 snap-none pointer-events-none w-[15%] md:w-[12%] lg:w-[10%]"
+          class="shrink-0 snap-none pointer-events-none
+                 w-[10%] md:w-[9%] lg:w-[72px] xl:w-[72px]"
         ></div>
 
-        <!-- CLONES KIRI (untuk unlimited scroll kiri) -->
+        {{-- ========== CLONES KIRI ========== --}}
+        {{-- index 0: clone(real1) --}}
         <div
-          class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          class="hero-slide hero-slide-inner clone shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
           data-real="1"
         >
           <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
           >
             <img
-              src="{{ asset('images/beranda/slide2.jpg') }}"
-              alt="Slide 2"
+              src="{{ $img($slide1) }}"
+              alt="{{ $slide1->title ?? 'Slide 2' }}"
               class="w-full h-full object-cover select-none"
               draggable="false"
             >
           </div>
         </div>
 
+        {{-- index 1: clone(real2) --}}
         <div
-          class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          class="hero-slide hero-slide-inner clone shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
           data-real="2"
         >
           <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
           >
             <img
-              src="{{ asset('images/beranda/slide3.jpg') }}"
-              alt="Slide 3"
+              src="{{ $img($slide2) }}"
+              alt="{{ $slide2->title ?? 'Slide 3' }}"
               class="w-full h-full object-cover select-none"
               draggable="false"
             >
           </div>
         </div>
 
-        <!-- SLIDE ASLI -->
+        {{-- ========== SLIDE ASLI (real 0,1,2) ========== --}}
+        {{-- index 2: real0 --}}
         <div
-          class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          class="hero-slide hero-slide-inner shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
           data-real="0"
         >
           <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
           >
             <img
-              src="{{ asset('images/beranda/slide1.jpg') }}"
-              alt="Slide 1"
+              src="{{ $img($slide0) }}"
+              alt="{{ $slide0->title ?? 'Slide 1' }}"
               class="w-full h-full object-cover select-none"
               draggable="false"
             >
           </div>
         </div>
 
+        {{-- index 3: real1 --}}
         <div
-          class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          class="hero-slide hero-slide-inner shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
           data-real="1"
         >
           <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
           >
             <img
-              src="{{ asset('images/beranda/slide2.jpg') }}"
-              alt="Slide 2"
+              src="{{ $img($slide1) }}"
+              alt="{{ $slide1->title ?? 'Slide 2' }}"
               class="w-full h-full object-cover select-none"
               draggable="false"
             >
           </div>
         </div>
 
+        {{-- index 4: real2 --}}
         <div
-          class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          class="hero-slide hero-slide-inner shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
           data-real="2"
         >
           <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
           >
             <img
-              src="{{ asset('images/beranda/slide3.jpg') }}"
-              alt="Slide 3"
+              src="{{ $img($slide2) }}"
+              alt="{{ $slide2->title ?? 'Slide 3' }}"
               class="w-full h-full object-cover select-none"
               draggable="false"
             >
           </div>
         </div>
 
-        <!-- CLONES KANAN (untuk unlimited scroll kanan) -->
+        {{-- ========== CLONES KANAN ========== --}}
+        {{-- index 5: clone(real0) --}}
         <div
-          class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          class="hero-slide hero-slide-inner clone shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
           data-real="0"
         >
           <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
           >
             <img
-              src="{{ asset('images/beranda/slide1.jpg') }}"
-              alt="Slide 1"
+              src="{{ $img($slide0) }}"
+              alt="{{ $slide0->title ?? 'Slide 1' }}"
               class="w-full h-full object-cover select-none"
               draggable="false"
             >
           </div>
         </div>
 
+        {{-- index 6: clone(real1) --}}
         <div
-          class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300"
+          class="hero-slide hero-slide-inner clone shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
           data-real="1"
         >
           <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
           >
             <img
-              src="{{ asset('images/beranda/slide2.jpg') }}"
-              alt="Slide 2"
+              src="{{ $img($slide1) }}"
+              alt="{{ $slide1->title ?? 'Slide 2' }}"
               class="w-full h-full object-cover select-none"
               draggable="false"
             >
           </div>
         </div>
 
-        <!-- RIGHT GUTTER (untuk centering) -->
+        {{-- RIGHT GUTTER --}}
         <div
           aria-hidden="true"
-          class="shrink-0 snap-none pointer-events-none w-[15%] md:w-[12%] lg:w-[10%]"
+          class="shrink-0 snap-none pointer-events-none
+                 w-[10%] md:w-[9%] lg:w-[72px] xl:w-[72px]"
         ></div>
       </div>
 
@@ -272,30 +317,38 @@
     transform: scale(1);
     opacity: 1;
   }
+
+  /* ✅ Di desktop:
+       - lebar slide utama = min(1200px, 100% - 144px)
+       - 144px = 2 * 72px gutter kiri/kanan
+       -> jarak ke cuplikan selalu konstan meski window dibesarkan / dikecilkan */
+ @media (min-width: 1024px) {
+  .hero-slide-inner {
+    /* max 1120px, dan sisakan ±48px peek di kanan–kiri */
+    width: min(1120px, calc(100% - 240px));
+  }
+}
+
 </style>
 
 <script>
   (function () {
     const track = document.getElementById('hero-track');
-    const slides = Array.from(track.querySelectorAll('.hero-slide')); // hanya slide (tanpa gutter)
+    const slides = Array.from(track.querySelectorAll('.hero-slide'));
     const dots = Array.from(document.getElementById('hero-dots').children);
     const prev = document.getElementById('hero-prev');
     const next = document.getElementById('hero-next');
 
-    // Urutan di DOM (tanpa gutter):
-    // 0: clone(real1) | 1: clone(real2) | 2: real0 | 3: real1 | 4: real2 | 5: clone(real0) | 6: clone(real1)
     const FIRST_REAL = 2; // real0
-    const LAST_REAL = 4; // real2
+    const LAST_REAL = 4;  // real2
     const LEFT_CLONE_BEFORE_FIRST = 1; // clone real2
-    const RIGHT_CLONE_AFTER_LAST = 5; // clone real0
+    const RIGHT_CLONE_AFTER_LAST = 5;  // clone real0
     const REAL_COUNT = 3;
-    const ANIM = 300,
-      BUF = 40; // durasi + buffer
+    const ANIM = 300, BUF = 40;
 
     let currentIndex = FIRST_REAL;
     let isTransitioning = false;
 
-    // ===== Util dasar =====
     const realOf = (idx) =>
       idx >= FIRST_REAL && idx <= LAST_REAL
         ? idx - FIRST_REAL
@@ -315,25 +368,21 @@
       slides[idx].offsetLeft -
       (track.clientWidth - slides[idx].clientWidth) / 2;
 
-    // Scroll ke index tertentu (center) dengan behavior pilihan
     const scrollToIndex = (idx, smooth = true) =>
       track.scrollTo({
         left: centerOffset(idx),
         behavior: smooth ? 'smooth' : 'auto',
       });
 
-    // Menunggu sampai posisi scroll benar-benar mencapai target (lebih stabil dari setTimeout)
     function smoothScrollToIndex(idx, cb) {
       const prevSnap = track.style.scrollSnapType;
-      track.style.scrollSnapType = 'none'; // hindari snap melawan arah
+      track.style.scrollSnapType = 'none';
 
       const target = centerOffset(idx);
 
       track.scrollTo({ left: target, behavior: 'smooth' });
 
-      const t0 = performance.now(),
-        MAX = ANIM + 300,
-        EPS = 1;
+      const t0 = performance.now(), MAX = ANIM + 300, EPS = 1;
 
       function tick() {
         const atTarget = Math.abs(track.scrollLeft - target) <= EPS;
@@ -351,12 +400,10 @@
       requestAnimationFrame(tick);
     }
 
-    // rAF ganda untuk memastikan eksekusi setelah browser menyelesaikan paint terakhir
     function rafSwap(fn) {
       requestAnimationFrame(() => requestAnimationFrame(fn));
     }
 
-    // Tukar posisi clone→real secara relatif (delta) tanpa gerakan tambahan (side-peek tetap)
     function seamlessSwapByDelta(fromCloneIdx, toRealIdx) {
       const prevBehavior = track.style.scrollBehavior;
       const prevSnap = track.style.scrollSnapType;
@@ -364,10 +411,8 @@
       track.style.scrollBehavior = 'auto';
       track.style.scrollSnapType = 'none';
 
-      const delta =
-        centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
-
-      track.scrollLeft += delta; // geser relatif → tidak terlihat loncat
+      const delta = centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
+      track.scrollLeft += delta;
 
       track.style.scrollBehavior = prevBehavior || '';
       track.style.scrollSnapType = prevSnap || '';
@@ -377,20 +422,17 @@
       setDots(realOf(currentIndex));
     }
 
-    // ===== Panah NEXT: kanan satu langkah; 3→1 halus (via clone kanan) =====
     function goNext() {
       if (isTransitioning) return;
       isTransitioning = true;
 
       if (currentIndex === LAST_REAL) {
-        // target akhir = real0; kunci visual aktif ke tujuan supaya scale/opacity konsisten
         setActive(FIRST_REAL);
         setDots(0);
 
-        const cloneIdx = RIGHT_CLONE_AFTER_LAST; // index clone kanan
+        const cloneIdx = RIGHT_CLONE_AFTER_LAST;
 
         smoothScrollToIndex(cloneIdx, () => {
-          // setelah benar-benar di clone, swap delta ke real tanpa gerakan tambahan
           rafSwap(() => {
             seamlessSwapByDelta(cloneIdx, FIRST_REAL);
             isTransitioning = false;
@@ -408,17 +450,15 @@
       }
     }
 
-    // ===== Panah PREV: kiri satu langkah; 1→3 halus (via clone kiri) =====
     function goPrev() {
       if (isTransitioning) return;
       isTransitioning = true;
 
       if (currentIndex === FIRST_REAL) {
-        // target akhir = real2
         setActive(LAST_REAL);
         setDots(2);
 
-        const cloneIdx = LEFT_CLONE_BEFORE_FIRST; // index clone kiri
+        const cloneIdx = LEFT_CLONE_BEFORE_FIRST;
 
         smoothScrollToIndex(cloneIdx, () => {
           rafSwap(() => {
@@ -438,7 +478,6 @@
       }
     }
 
-    // ===== Dots: pilih jarak terdekat, tetap step 1 berulang (arah konsisten) =====
     function step(dir, times) {
       if (times <= 0) return;
 
@@ -459,15 +498,14 @@
         const curReal = realOf(currentIndex);
         if (targetReal === curReal) return;
 
-        const r = (targetReal - curReal + 3) % 3;
-        const l = (curReal - targetReal + 3) % 3;
+        const r = (targetReal - curReal + REAL_COUNT) % REAL_COUNT;
+        const l = (curReal - targetReal + REAL_COUNT) % REAL_COUNT;
 
         if (r <= l) step(1, r);
         else step(-1, l);
       });
     });
 
-    // ===== Sinkron ketika user swipe manual; normalisasi bila mendarat di clone =====
     let debounce = null;
 
     track.addEventListener(
@@ -479,8 +517,7 @@
 
         debounce = setTimeout(() => {
           const mid = track.scrollLeft + track.clientWidth / 2;
-          let nearest = currentIndex,
-            best = Infinity;
+          let nearest = currentIndex, best = Infinity;
 
           for (let i = 0; i < slides.length; i++) {
             const center =
@@ -493,12 +530,9 @@
             }
           }
 
-          // Jika user berhenti di clone, swap delta ke real padanannya agar loop mulus
           if (nearest < FIRST_REAL) {
-            // clone kiri → real terakhir
             rafSwap(() => seamlessSwapByDelta(nearest, LAST_REAL));
           } else if (nearest > LAST_REAL) {
-            // clone kanan → real pertama
             rafSwap(() => seamlessSwapByDelta(nearest, FIRST_REAL));
           } else {
             currentIndex = nearest;
@@ -510,16 +544,15 @@
       { passive: true }
     );
 
-    // ===== Init awal: center di real0, set indikator =====
     scrollToIndex(FIRST_REAL, false);
     setActive(FIRST_REAL);
     setDots(0);
 
-    // ===== Event tombol =====
     next.addEventListener('click', goNext);
     prev.addEventListener('click', goPrev);
   })();
 </script>
+@endif
 
 
 {{-- SECTION: Cerita Kami --}}
@@ -530,141 +563,91 @@
       {{-- Kolom Kiri: Foto --}}
       <div class="w-full flex justify-center md:justify-start md:pl-2 lg:pl-4">
         <div class="rounded-2xl overflow-hidden shadow-xl ring-2 ring-[#1524AF] max-w-[420px] md:max-w-[480px] lg:max-w-[520px]">
-          <img src="{{ asset('images/cerita-kami.svg') }}"
-               alt="Kegiatan UPT PTKK"
-               class="w-full h-auto object-cover">
+          @php
+            $ceritaFilename = 'profil/cerita-kami.svg';
+            $ceritaSrc = Storage::disk('public')->exists($ceritaFilename)
+                         ? Storage::url($ceritaFilename)
+                         : asset('images/cerita-kami.svg');
+          @endphp
+          <img src="{{ $ceritaSrc }}" alt="Kegiatan UPT PTKK" class="w-full h-auto object-cover">
         </div>
       </div>
 
       {{-- Kolom Kanan: Teks --}}
       <div class="flex flex-col">
-
         {{-- Badge Cerita Kami --}}
         <div class="inline-flex self-start items-center justify-center mb-[20px] px-2 py-2 bg-[#F3E8E9] rounded-md">
-          <span class="font-['Volkhov'] font-bold text-[#861D23] text-[22px] md:text-[24px] leading-none">
-            Cerita Kami
-          </span>
+          <span class="font-['Volkhov'] font-bold text-[#861D23] text-[22px] md:text-[24px] leading-none">Cerita Kami</span>
         </div>
 
         {{-- Heading --}}
-        <h2 class="mb-[20px] md:mb-[24px]
-                   font-['Volkhov'] font-bold
-                   text-[24px] md:text-[30px] lg:text-[34px]
-                   leading-tight text-[#1524AF] heading-stroke
-                   max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch]">
-          UPT Pengembangan Teknis
-          <br class="hidden lg:block" />
-          Dan Keterampilan Kejuruan
+        <h2 class="mb-[20px] md:mb-[24px] font-['Volkhov'] font-bold text-[24px] md:text-[30px] lg:text-[34px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch]">
+          UPT Pengembangan Teknis <br class="hidden lg:block" /> Dan Keterampilan Kejuruan
         </h2>
 
-        {{-- Paragraf --}}
-        <p class="mb-[24px] md:mb-[28px]
-               font-['Montserrat'] font-medium text-[#081526]
-               leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
-         Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur
-         yang mempunyai tugas dan fungsi  memberikan fasilitas melalui pelatihan berbasis kompetensi
-         dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK)
-         di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi, UPT PTKK terus memperkuat
-        posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata. Melalui upaya tersebut,
-        UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada kemajuan pendidikan di Jawa Timur.
+        {{-- Paragraf DINAMIS (Dari Model ProfilUPT) --}}
+        <p class="mb-[24px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
+          {!! nl2br(e($teksCerita)) !!}
         </p>
 
-      {{-- Button --}}
-<a href="#"
-   class="inline-flex items-center justify-center gap-2 w-max
-          px-5 py-2           {{-- HP kecil --}}
-          sm:px-6 sm:py-2.5   {{-- Sedikit naik untuk screen > 640px --}}
-          md:px-8 md:py-3     {{-- Kembali besar di tablet & desktop --}}
-          rounded-xl bg-[#1524AF]
-          text-white font-['Montserrat'] font-medium
-          text-[14px] sm:text-[16px] md:text-[18px]   {{-- HP lebih kecil --}}
-          shadow-md hover:bg-[#0F1D8F]
-          active:scale-[.99] transition-all duration-200 ease-out">
-  <span class="leading-none">Cari tahu lebih</span>
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px]"
-       viewBox="0 0 24 24" fill="none"
-       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
-  </svg>
-</a>
-
+        {{-- Button --}}
+        <a href="#" class="inline-flex items-center justify-center gap-2 w-max px-5 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 rounded-xl bg-[#1524AF] text-white font-['Montserrat'] font-medium text-[14px] sm:text-[16px] md:text-[18px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+          <span class="leading-none">Cari tahu lebih</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M19 12l-4-4m0 8l4-4" /></svg>
+        </a>
       </div>
-
     </div>
   </div>
 </section>
 {{-- /SECTION: Cerita Kami --}}
 
-
-{{-- SECTION: Jatim Bangkit (oval slim, bigger icons, tighter gap) --}}
+{{-- SECTION: Jatim Bangkit --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <style>
     @keyframes jatim-scroll-x {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
     }
-    @media (prefers-reduced-motion: reduce) {
-      .jatim-marquee { animation: none !important; }
-    }
   </style>
 
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="relative">
 
-      {{-- BG oval lebih tinggi sedikit --}}
-      <div class="relative bg-[#DBE7F7] rounded-full overflow-hidden
-                  h-[54px] md:h-[58px] lg:h-[62px] flex items-center">
+      <div class="relative bg-[#DBE7F7] rounded-full overflow-hidden h-[54px] md:h-[58px] lg:h-[62px] flex items-center">
 
-        {{-- Viewport --}}
         <div class="relative w-full overflow-hidden">
 
-          {{-- TRACK --}}
-          <div class="jatim-marquee flex w-[200%] items-center
-                      animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
+          <div class="jatim-marquee flex w-[200%] items-center animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
 
-            {{-- Bagian 1 --}}
-            <div class="flex w-1/2 items-center justify-between
-                        px-6 md:px-10 lg:px-16
-                        gap-4 md:gap-6 lg:gap-8">
-
-              <img src="{{ asset('images/icons/cetar.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Cetar">
-              <img src="{{ asset('images/icons/dindik.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Dindik">
-              <img src="{{ asset('images/icons/jatim.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Jatim">
-              <img src="{{ asset('images/icons/berakhlak.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Berakhlak">
-              <img src="{{ asset('images/icons/optimis.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Optimis">
-
+            {{-- Loop Pertama --}}
+            <div class="flex w-1/2 items-center justify-between px-6 md:px-10 lg:px-16 gap-4 md:gap-6 lg:gap-8">
+              @foreach(['cetar', 'dindik', 'jatim', 'berakhlak', 'optimis'] as $iconName)
+                @php
+                    $path = 'icons/' . $iconName . '.svg';
+                    $src = Illuminate\Support\Facades\Storage::disk('public')->exists($path)
+                            ? Illuminate\Support\Facades\Storage::url($path)
+                            : asset('images/icons/' . $iconName . '.svg');
+                @endphp
+                <img src="{{ $src }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="{{ ucfirst($iconName) }}">
+              @endforeach
             </div>
 
-            {{-- Bagian 2 (duplikat) --}}
-            <div class="flex w-1/2 items-center justify-between
-                        px-6 md:px-10 lg:px-16
-                        gap-4 md:gap-6 lg:gap-8"
-                 aria-hidden="true">
-
-              <img src="{{ asset('images/icons/cetar.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
-              <img src="{{ asset('images/icons/dindik.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
-              <img src="{{ asset('images/icons/jatim.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
-              <img src="{{ asset('images/icons/berakhlak.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
-              <img src="{{ asset('images/icons/optimis.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
-
+            {{-- Loop Kedua (Duplikat) --}}
+            <div class="flex w-1/2 items-center justify-between px-6 md:px-10 lg:px-16 gap-4 md:gap-6 lg:gap-8" aria-hidden="true">
+              @foreach(['cetar', 'dindik', 'jatim', 'berakhlak', 'optimis'] as $iconName)
+                @php
+                    $path = 'icons/' . $iconName . '.svg';
+                    $src = Illuminate\Support\Facades\Storage::disk('public')->exists($path)
+                            ? Illuminate\Support\Facades\Storage::url($path)
+                            : asset('images/icons/' . $iconName . '.svg');
+                @endphp
+                <img src="{{ $src }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+              @endforeach
             </div>
 
           </div>
 
-          {{-- Fade kiri–kanan --}}
-          <div class="pointer-events-none absolute inset-0
-                      [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
-          </div>
+          <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]"></div>
 
         </div>
 
@@ -673,95 +656,61 @@
     </div>
   </div>
 </section>
-{{-- /SECTION --}}
 
-{{-- SECTION: Berita Terbaru --}}
-<section class="relative bg-[#F1F9FC] py-4 md:py-6">
+{{-- SECTION: Berita Terbaru (DINAMIS) --}}
+<section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-
-    {{-- HEADER --}}
-    <div class="grid gap-y-2 mb-10">
-
-      {{-- Badge --}}
-      <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23]
-                   font-[Volkhov] font-bold text-[15px] md:text-[16px]
-                   rounded-md leading-none px-3 py-1 shadow-sm w-fit">
-        Berita Terbaru
-      </span>
-
-      {{-- Judul + CTA --}}
+    <div class="grid gap-y-2 mb-6">
+      <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23] font-[Volkhov] font-bold text-[15px] md:text-[16px] rounded-md leading-none px-3 py-1 shadow-sm w-fit">Berita Terbaru</span>
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-
-        {{-- Judul --}}
-        <h2 class="heading-stroke font-[Volkhov] font-bold
-                   text-[18px] sm:text-[20px] md:text-[24px] lg:text-[28px]
-                   leading-snug">
-          Jangan lewatkan kabar terbaru dari UPT PTKK
-        </h2>
-
-      {{-- CTA --}}
-<a href="#"
-   class="inline-flex items-center justify-center gap-2
-          bg-[#1524AF] hover:bg-[#0E1E8B]
-          text-white font-['Montserrat'] font-medium
-          text-[12px] sm:text-[13px] md:text-[14px]
-          px-[12px] py-[6px] sm:px-[14px] sm:py-[7px] md:px-[16px] md:py-[8px]
-          rounded-xl shadow-md transition-all duration-200
-          self-start md:self-center active:scale-[.98]">
-
-  <span class="leading-none">Cari tahu lebih</span>
-
-  {{-- Ikon panah sama seperti CTA Cerita Kami --}}
-  <svg xmlns="http://www.w3.org/2000/svg"
-       class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px]"
-       viewBox="0 0 24 24" fill="none"
-       stroke="currentColor" stroke-width="2"
-       stroke-linecap="round" stroke-linejoin="round">
-      <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
-  </svg>
-
-</a>
-
+        <h2 class="heading-stroke font-[Volkhov] font-bold text-[18px] sm:text-[20px] md:text-[24px] lg:text-[28px] leading-snug">Jangan lewatkan kabar terbaru dari UPT PTKK</h2>
+        <a href="{{ route('berita.index') ?? '#' }}" class="inline-flex items-center justify-center gap-2 bg-[#1524AF] hover:bg-[#0E1E8B] text-white font-['Montserrat'] font-medium text-[12px] sm:text-[13px] md:text-[14px] px-[12px] py-[6px] sm:px-[14px] sm:py-[7px] md:px-[16px] md:py-[8px] rounded-xl shadow-md transition-all duration-200 self-start md:self-center active:scale-[.98]">
+          <span class="leading-none">Lihat Semua Berita</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M19 12l-4-4m0 8l4-4" /></svg>
+        </a>
       </div>
     </div>
-
-    {{-- GRID BERITA --}}
-    <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
-      @for ($i = 0; $i < 3; $i++)
-      <article
-        class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4
-               transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
-
-        <div class="w-full h-[160px] bg-[#E7ECF3] rounded-lg mb-4"></div>
-
-        <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
-               viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span>22 Oktober 2024</span>
-        </div>
-
-        <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">
-          Judul Berita...
-        </h3>
-
-        <p class="text-sm text-[#081526] mb-3 leading-relaxed">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ornare ligula...
-        </p>
-
-        <a href="#" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">
-          Baca Selengkapnya →
-        </a>
-      </article>
-      @endfor
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      @if($latestBeritas->isEmpty())
+        @for($i=1;$i<=3;$i++)
+          <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
+            <div class="w-full h-[160px] bg-[#E7ECF3] rounded-lg mb-4 flex items-center justify-center text-sm text-[#727272]">Belum ada berita</div>
+            <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <span>{{ now()->format('d F Y') }}</span>
+            </div>
+            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">Belum ada berita tersedia</h3>
+            <p class="text-sm text-[#081526] mb-3 leading-relaxed">Silakan tambahkan berita melalui panel admin.</p>
+            <a href="#" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">Baca Selengkapnya →</a>
+          </article>
+        @endfor
+      @else
+        @foreach($latestBeritas as $b)
+          @php
+            $imgUrl = $b->image ? Storage::url($b->image) : asset('images/berita/placeholder.jpg');
+            $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
+            $pubDate = optional($b->published_at ?? $b->created_at)->format('d F Y');
+          @endphp
+          <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
+            <div class="w-full h-[160px] rounded-lg mb-4 overflow-hidden">
+               <img src="{{ $imgUrl }}" alt="{{ $b->title }}" class="w-full h-full object-cover rounded-lg shadow-md" loading="lazy">
+            </div>
+            <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <span>{{ $pubDate }}</span>
+            </div>
+            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">{{ $b->title }}</h3>
+            <p class="text-sm text-[#081526] mb-3 leading-relaxed">{!! e($excerpt) !!}</p>
+            <a href="{{ route('berita.show', $b->slug ?? $b->id) ?? '#' }}" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">Baca Selengkapnya →</a>
+          </article>
+        @endforeach
+      @endif
     </div>
-
   </div>
 </section>
+{{-- /SECTION: Berita Terbaru --}}
 
-{{-- SECTION: Sorotan Pelatihan --}}
+ {{-- SECTION: Sorotan Pelatihan --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <style>
     @keyframes sorotan-scroll-x {
@@ -1519,4 +1468,8 @@
 
   @stack('scripts')
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> bb957f848c51108415c7a5beee75061bfb673daf
