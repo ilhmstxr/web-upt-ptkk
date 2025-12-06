@@ -9,21 +9,21 @@ use Throwable; // <-- PENTING: Tambahkan ini agar try/catch berfungsi!
 class Banner extends Model
 {
     protected $table = 'banners'; // Tambahkan deklarasi tabel (Opsional, tapi praktik yang baik)
-    
+
     /**
      * The attributes that are mass assignable.
      * Termasuk 'is_featured' untuk kompatibilitas dengan form dan migrasi.
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'image',
-        'title',
-        'description',
-        'is_active',
-        'is_featured',
-        'sort_order',
-    ];
+   protected $fillable = [
+    'image',
+    'title',
+    'description',
+    'is_active',
+    'is_featured',
+    'sort_order',
+];
 
     /**
      * The attributes that should be cast.
@@ -46,7 +46,7 @@ class Banner extends Model
     {
         // Tentukan Fallback
         // Ganti 'images/fallback.jpg' dengan path gambar default Anda yang PASTI ada di folder public/images/
-        $defaultFallback = asset('images/fallback.jpg'); 
+        $defaultFallback = asset('images/fallback.jpg');
 
         // 1. Cek jika kolom 'image' kosong di database
         if (empty($this->image)) {
@@ -59,8 +59,8 @@ class Banner extends Model
         if (filter_var($path, FILTER_VALIDATE_URL)) {
             return $path;
         }
-        
-        // 3. Normalisasi path: hapus awalan 'public/' jika ada 
+
+        // 3. Normalisasi path: hapus awalan 'public/' jika ada
         if (str_starts_with($path, 'public/')) {
             $path = str_replace('public/', '', $path);
         }
@@ -80,7 +80,7 @@ class Banner extends Model
         if (file_exists(public_path($this->image))) {
              return asset($this->image);
         }
-        
+
         // Final fallback jika file tidak ditemukan
         return $defaultFallback;
     }

@@ -64,9 +64,9 @@ return [
     */
 
    'temporary_file_upload' => [
-     'disk' => 'public',      // ✅ pakai disk local (storage/app)
+    'disk' => 'local',          // ⬅️ ganti ke local
     'rules' => ['file', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
-    'directory' => 'livewire-tmp',    // ✅ folder temp
+    'directory' => 'livewire-tmp',
     'middleware' => null,
     'preview_mimes' => [
         'png', 'gif', 'bmp', 'svg', 'wav', 'mp4',
@@ -76,6 +76,7 @@ return [
     'max_upload_time' => 5,
     'cleanup' => true,
 ],
+
 
 
     /*

@@ -30,27 +30,16 @@ class BannerResource extends Resource
                     ->description('Atur gambar, teks, dan status banner.')
                     ->columns(2)
                     ->schema([
-
-                        /**
-                         * Primary file upload: simpan ke kolom 'gambar' (lebih eksplisit).
-                         * Kalau projectmu masih memakai 'image', db tetap bisa diisi manual/legacy.
-                         */
-                        Forms\Components\FileUpload::make('gambar')
+                        // Upload langsung ke kolom 'image' (sesuai struktur tabel banners)
+                        Forms\Components\FileUpload::make('image')
                             ->label('Gambar Banner (unggah)')
                             ->image()
                             ->directory('banners')
                             ->disk('public')
-                            ->maxSize(4096) // KB, ubah sesuai kebutuhan
+                            ->maxSize(4096) // KB
                             ->imageCropAspectRatio('16:9')
                             ->columnSpanFull()
-                            ->helperText('Unggah file gambar (jpg, png, webp). Jika migrasi dari kolom "image", bisa isi juga URL di field Image (opsional).'),
-
-                        // Optional: kolom legacy/URL (jika ada data lama yang menyimpan full URL atau path di `image`)
-                        Forms\Components\TextInput::make('image')
-                            ->label('Image (URL / path legacy)')
-                            ->placeholder('Contoh: banners/xxx.jpg atau https://... (opsional)')
-                            ->columnSpanFull()
-                            ->helperText('Isi hanya jika Anda menyimpan path/url gambar lama di kolom `image`. Jika diisi, akan digunakan jika kolom `gambar` kosong.'),
+                            ->helperText('Unggah file gambar (jpg, png, webp).'),
 
                         Forms\Components\TextInput::make('title')
                             ->label('Judul/Teks Singkat')
@@ -69,11 +58,6 @@ class BannerResource extends Resource
                             ->default(true)
                             ->helperText('Nonaktifkan untuk menyembunyikan banner tanpa menghapusnya.'),
 
-                        Forms\Components\Toggle::make('is_featured')
-                            ->label('Banner Utama/Featured')
-                            ->default(false)
-                            ->helperText('Tandai sebagai banner utama atau yang diprioritaskan.'),
-
                         Forms\Components\TextInput::make('sort_order')
                             ->label('Urutan Tampil')
                             ->numeric()
@@ -88,49 +72,16 @@ class BannerResource extends Resource
     {
         return $table
             ->columns([
-                /**
-                 * ImageColumn: ambil prioritas dari 'gambar' -> 'image' -> null.
-                 * Gunakan getStateUsing agar selalu menampilkan gambar meski kolom berbeda.
-                 */
-                Tables\Columns\ImageColumn::make('gambar')
+                // Tampilkan thumbnail dari kolom 'image'
+                Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
                     ->size(80)
-                    ->getStateUsing(function ($record) {
-                        // $record bisa berupa model atau array
-                        $r = is_array($record) ? (object)$record : $record;
-
-                        // prioritas: gambar (disk public path stored by FileUpload) -> image (legacy) -> null
-                        $path = $r->gambar ?? $r->image ?? null;
-
-                        // jika kosong, return null (Filament akan menampilkan placeholder default)
-                        if (!$path) return null;
-
-                        // Jika path sudah full URL, kembalikan apa adanya
-                        if (preg_match('/^https?:\\/\\//i', $path)) {
-                            return $path;
-                        }
-
-                        // Jika path terlihat seperti stored path di disk public (banners/...), ubah menjadi url storage
-                        // Kita tidak bisa memanggil Storage di resource (berisiko), tapi Filament akan resolve /storage/...
-                        // Pastikan kamu sudah menjalankan php artisan storage:link
-                        // Normalisasi: jangan ganda 'storage/' jika pengguna sudah menyimpan 'storage/...'
-                        $normalized = preg_replace('#^public\/+#i', '', $path);
-                        $normalized = preg_replace('#^storage\/+#i', '', $normalized);
-
-                        return '/storage/' . ltrim($normalized, '/');
-                    }),
+                    ->disk('public'),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Judul')
                     ->searchable()
                     ->limit(50),
-
-                Tables\Columns\TextColumn::make('is_featured')
-                    ->label('Featured')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => $state ? 'Utama' : 'Reguler')
-                    ->color(fn ($state): string => $state ? 'primary' : 'gray')
-                    ->sortable(),
 
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Aktif'),
@@ -151,10 +102,6 @@ class BannerResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Status Aktif')
                     ->placeholder('Semua'),
-
-                Tables\Filters\Filter::make('is_featured')
-                    ->label('Banner Utama')
-                    ->query(fn (Builder $query): Builder => $query->where('is_featured', true)),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
