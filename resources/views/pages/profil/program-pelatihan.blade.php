@@ -218,24 +218,23 @@
       {{-- Judul --}}
       <h2 class="font-['Volkhov'] font-bold text-[22px]
                  text-[#1524AF] yellow-stroke mb-3 text-center">
-        Diklat Peningkatan Kompetensi
+        {{ $program->judul }}
       </h2>
 
       {{-- Foto Utama --}}
+      @if($program->hero_image)
       <div class="flex justify-center mb-3">
-        <img src="{{ asset('images/profil/Diklat1.svg') }}"
-             alt="Diklat Peningkatan Kompetensi - UPT PTKK"
-             class="w-full max-w-[360px] h-auto"
-             loading="lazy">
+        <img src="{{ asset('storage/' . $program->hero_image) }}"
+               alt="{{ $program->judul }} - UPT PTKK"
+               class="w-full max-w-[360px] h-auto"
+               loading="lazy">
+      @endif
       </div>
 
       {{-- Teks --}}
       <p class="font-[Montserrat] text-[15px]
                 text-[#081526] leading-relaxed text-justify">
-        Proses peningkatan kompetensi di UPT. PTKK dipandu oleh para asesor kompetensi profesional yang telah
-        tersertifikasi. Ini adalah bukti nyata komitmen Pemerintah Provinsi Jawa Timur membangun sumber daya
-        manusia yang unggul dan siap menghadapi tantangan global serta menjadi garda terdepan yang menjamin
-        mutu sumber daya manusia di Jawa Timur.
+        {{ $program->deskripsi }}
       </p>
     </div>
 
@@ -244,10 +243,12 @@
 
       {{-- Kolom KIRI: Gambar Utama --}}
       <div class="flex justify-center md:justify-start">
-        <img src="{{ asset('images/profil/Diklat1.svg') }}"
-             alt="Diklat Peningkatan Kompetensi - UPT PTKK"
-             class="w-full max-w-[440px] lg:max-w-[720px] h-auto"
-             loading="lazy">
+        @if($program->hero_image)
+          <img src="{{ asset('storage/' . $program->hero_image) }}"
+               alt="{{ $program->judul }} - UPT PTKK"
+               class="w-full max-w-[440px] lg:max-w-[720px] h-auto"
+               loading="lazy">
+        @endif
       </div>
 
       {{-- Kolom KANAN: Judul + Deskripsi --}}
@@ -255,39 +256,27 @@
         <h2 class="font-['Volkhov'] font-bold
                    md:text-[22px] lg:text-[26px]
                    text-[#1524AF] yellow-stroke mb-2">
-          Diklat Peningkatan Kompetensi
+          {{ $program->judul }}
         </h2>
+
 
         <p class="font-[Montserrat]
                   md:text-[15px] lg:text-[17px]
                   text-[#081526] leading-relaxed text-justify">
-          Proses peningkatan kompetensi di UPT. PTKK dipandu oleh para asesor kompetensi profesional yang telah
-          tersertifikasi. Ini adalah bukti nyata komitmen Pemerintah Provinsi Jawa Timur membangun sumber daya
-          manusia yang unggul dan siap menghadapi tantangan global serta menjadi garda terdepan yang menjamin
-          mutu sumber daya manusia di Jawa Timur.
+          {{ $program->deskripsi }}
         </p>
       </div>
-
     </div>
 
     {{-- 3 Foto Bawah (HP/Tablet/Desktop): Foto 1 → Foto 2 → Foto 3 --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 md:gap-6 lg:gap-8">
-      <img src="{{ asset('images/profil/Diklat2.svg') }}"
-           alt="Praktik Kompetensi Bidang Kuliner"
-           class="w-full h-auto"
-           loading="lazy">
-
-      <img src="{{ asset('images/profil/Diklat3.svg') }}"
-           alt="Asesmen Kompetensi Teknologi Informasi"
-           class="w-full h-auto"
-           loading="lazy">
-
-      <img src="{{ asset('images/profil/Diklat4.svg') }}"
-           alt="Pembimbingan dan Umpan Balik Asesor"
-           class="w-full h-auto"
-           loading="lazy">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+      @foreach(json_decode($program->galeri ?? '[]') as $foto)
+        <img src="{{ asset('storage/' . $foto) }}"
+             alt="Foto {{ $program->judul }}"
+             class="w-full h-auto"
+             loading="lazy">
+      @endforeach
     </div>
-
   </div>
 </section>
 
@@ -299,19 +288,18 @@
     {{-- =================== MOBILE (HP ONLY) =================== --}}
     <div class="block md:hidden mb-8">
 
-      <h2 class="font-['Volkhov'] font-bold
-                 text-[22px]
-                 text-[#1524AF] yellow-stroke
-                 leading-tight mb-3 text-center">
-        Sertifikasi Berbasis KKNI<br>
-        Bertaraf Nasional
+      <h2 class="font-['Volkhov'] font-bold text-[22px]
+                 text-[#1524AF] yellow-stroke leading-tight mb-3 text-center">
+        {{ $sertifikasi->judul }}
       </h2>
 
       <div class="flex justify-center mb-4">
-        <img src="{{ asset('images/profil/Sertifikasi1.svg') }}"
-             alt="Sertifikasi Berbasis KKNI Bertaraf Nasional"
-             class="w-full max-w-[340px] h-auto object-contain"
-             loading="lazy">
+        @if($sertifikasi->hero_image)
+          <img src="{{ asset('storage/' . $sertifikasi->hero_image) }}"
+               alt="{{ $sertifikasi->judul }}"
+               class="w-full max-w-[340px] h-auto object-contain"
+               loading="lazy">
+        @endif
       </div>
 
       <div class="flex gap-4 items-center">
@@ -320,14 +308,9 @@
              class="w-[40px] h-auto object-contain shrink-0"
              loading="lazy">
 
-        <p class="font-[Montserrat]
-                  text-[16px]
-                  text-[#081526]
-                  leading-relaxed text-justify">
-          UPT PTKK memiliki 6 kompetensi yang tersertifikasi oleh Kemendikdasmen sebagai tempat uji kompetensi
-          yang memiliki fasilitas mumpuni. Dari TUK UPT PTKK dipercaya mengembangkan 9 skema kompetensi, yang mana
-          akan mengantarkan para peserta pelatihan baik guru dan siswa untuk memperoleh pengakuan kompetensi mereka
-          dengan standar nasional maupun internasional.
+        <p class="font-[Montserrat] text-[16px]
+                text-[#081526] leading-relaxed text-justify">
+          {{ $sertifikasi->deskripsi }}
         </p>
       </div>
 
@@ -339,66 +322,50 @@
 
       {{-- LOGO --}}
       <div class="flex justify-center md:justify-start md:col-span-2">
-        <img src="{{ asset('images/profil/logosertifikasi.svg') }}"
-             alt="Logo Sertifikasi KKNI"
-            class="w-[70px] md:w-auto md:h-[300px] h-auto object-contain"
-             loading="lazy">
+        @if(!empty(json_decode($sertifikasi->galeri ?? '[]')))
+          <img src="{{ asset('storage/' . json_decode($sertifikasi->galeri)[0]) }}"
+               alt="Logo {{ $sertifikasi->judul }}"
+               class="w-[70px] md:w-auto md:h-[300px] h-auto object-contain"
+               loading="lazy">
+        @endif
       </div>
 
       {{-- TEKS --}}
       <div class="md:col-span-5 md:-ml-10 lg:-ml-6">
         <h2 class="font-['Volkhov'] font-bold
-                   text-[22px] md:text-[22px] lg:text-[26px]
-                   text-[#1524AF] yellow-stroke
-                   leading-tight mb-3">
-          Sertifikasi Berbasis KKNI<br>
-          Bertaraf Nasional
+                   text-[22px] lg:text-[26px]
+                   text-[#1524AF] yellow-stroke leading-tight mb-3">
+          {{ $sertifikasi->judul }}
         </h2>
 
         <p class="font-[Montserrat]
-                  text-[16px] md:text-[15px] lg:text-[17px]
-                  text-[#081526]
-                  leading-relaxed text-justify">
-          UPT PTKK memiliki 6 kompetensi yang tersertifikasi oleh Kemendikdasmen sebagai tempat uji kompetensi
-          yang memiliki fasilitas mumpuni. Dari TUK UPT PTKK dipercaya mengembangkan 9 skema kompetensi, yang mana
-          akan mengantarkan para peserta pelatihan baik guru dan siswa untuk memperoleh pengakuan kompetensi mereka
-          dengan standar nasional maupun internasional.
+                  text-[16px] lg:text-[17px]
+                  text-[#081526] leading-relaxed text-justify">
+          {{ $sertifikasi->deskripsi }}
         </p>
       </div>
 
       {{-- GAMBAR UTAMA --}}
       <div class="flex justify-center md:justify-end md:col-span-5">
-        <img src="{{ asset('images/profil/Sertifikasi1.svg') }}"
-             alt="Sertifikasi Berbasis KKNI Bertaraf Nasional"
-             class="w-full max-w-[520px] md:max-w-[640px] md:h-[340px] lg:max-w-[520px] lg:h-auto object-contain"
-             loading="lazy">
+        @if($sertifikasi->hero_image)
+          <img src="{{ asset('storage/' . $sertifikasi->hero_image) }}"
+               alt="{{ $sertifikasi->judul }}"
+               class="w-full max-w-[520px] md:max-w-[640px] md:h-[340px] lg:max-w-[520px] lg:h-auto object-contain"
+               loading="lazy">
+        @endif
       </div>
-
     </div>
-
     {{-- =================== FOTO BAWAH (TETAP) =================== --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-
-      <img src="{{ asset('images/profil/Sertifikasi2.svg') }}"
-           alt="Pelatihan Uji Kompetensi KKNI"
-           class="w-full h-auto"
-           loading="lazy">
-
-      <img src="{{ asset('images/profil/Sertifikasi3.svg') }}"
-           alt="Peserta Sertifikasi Nasional"
-           class="w-full h-auto"
-           loading="lazy">
-
-      <img src="{{ asset('images/profil/Sertifikasi4.svg') }}"
-           alt="Proses Sertifikasi Kompetensi"
-           class="w-full h-auto"
-           loading="lazy">
-
+      @foreach(json_decode($sertifikasi->galeri ?? '[]') as $foto)
+        <img src="{{ asset('storage/' . $foto) }}"
+             alt="Foto {{ $sertifikasi->judul }}"
+             class="w-full h-auto"
+             loading="lazy">
+      @endforeach
     </div>
-
   </div>
 </section>
-
 
  {{-- FOOTER --}}
   @include('components.layouts.app.footer')

@@ -14,6 +14,8 @@ use App\Http\Controllers\PostTestController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Public\LandingController;
 use App\Http\Controllers\Public\CeritaKamiController;
+use App\Http\Controllers\KontenProgramPelatihanController;
+
 
 use App\Models\Peserta;
 use App\Mail\TestMail;
@@ -46,7 +48,9 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 //Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
 Route::get('/cerita-kami', [CeritaKamiController::class, 'index'])->name('cerita-kami');
 
-Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
+Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'index'])
+    ->name('program-pelatihan.index');
+
 Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
 
 Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301); 
