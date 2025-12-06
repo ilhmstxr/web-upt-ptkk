@@ -127,7 +127,7 @@
                             @error('school_address') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                         </div>
                         <div>
-                            <label class="text-sm font-medium text-gray-700 mb-1">Kompetensi/Bidang Keahlian</label>
+                            <label class="text-sm font-medium text-gray-700 mb-1">Kompetensi/Kompetensi Keahlian</label>
                             <select wire:model="competence" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5c76c1]">
                                 <option value="">Pilih Kompetensi</option>
                                 <option value="Tata Boga">Tata Boga</option>

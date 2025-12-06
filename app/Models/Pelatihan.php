@@ -25,6 +25,9 @@ class Pelatihan extends Model
         'deskripsi',
         'jumlah_peserta',
         'sasaran',
+        'syarat_ketentuan',
+        'jadwal_text',
+        'lokasi_text',
     ];
 
     protected $casts = [
@@ -58,7 +61,7 @@ class Pelatihan extends Model
     }
 
         /**
-     * Mendapatkan semua sesi/jadwal (bidang_pelatihan) di bawah pelatihan ini.
+     * Mendapatkan semua sesi/jadwal (kompetensi_pelatihan) di bawah pelatihan ini.
      */
     /**
      * Mendapatkan semua sesi/jadwal (kompetensi_pelatihan) di bawah pelatihan ini.
@@ -75,33 +78,33 @@ class Pelatihan extends Model
     }
     /**
      * Mendapatkan semua pendaftaran untuk pelatihan ini
-     * (melalui tabel perantara bidang_pelatihan).
+     * (melalui tabel perantara kompetensi_pelatihan).
      */
     // public function pendaftaranPelatihan()
     // {
     //     return $this->hasManyThrough(
     //         PendaftaranPelatihan::class,      // Model Akhir
-    //         BidangPelatihan::class,         // Model Perantara
-    //         'pelatihan_id',                 // Foreign key di BidangPelatihan
-    //         'bidang_pelatihan_id',          // Foreign key di PendaftaranPelatihan
+    //         KompetensiPelatihan::class,         // Model Perantara
+    //         'pelatihan_id',                 // Foreign key di KompetensiPelatihan
+    //         'kompetensi_pelatihan_id',          // Foreign key di PendaftaranPelatihan
     //         'id',                           // Local key di Pelatihan (model ini)
-    //         'id'                            // Local key di BidangPelatihan
+    //         'id'                            // Local key di KompetensiPelatihan
     //     );
     // }
 
     /**
-     * Mendapatkan semua bidang (materi) yang ada di pelatihan ini
-     * (melalui tabel perantara bidang_pelatihan).
+     * Mendapatkan semua kompetensi (materi) yang ada di pelatihan ini
+     * (melalui tabel perantara kompetensi_pelatihan).
      */
-    // public function bidang()
+    // public function kompetensi()
     // {
     //     return $this->hasManyThrough(
-    //         Bidang::class,
-    //         BidangPelatihan::class,
-    //         'pelatihan_id', // Foreign key di BidangPelatihan
-    //         'id',           // Foreign key di Bidang
+    //         Kompetensi::class,
+    //         KompetensiPelatihan::class,
+    //         'pelatihan_id', // Foreign key di KompetensiPelatihan
+    //         'id',           // Foreign key di Kompetensi
     //         'id',           // Local key di Pelatihan (model ini)
-    //         'bidang_id'     // Local key di BidangPelatihan
+    //         'kompetensi_id'     // Local key di KompetensiPelatihan
     //     );
     // }
 

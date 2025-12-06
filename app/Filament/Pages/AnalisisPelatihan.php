@@ -2,10 +2,10 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Pages\ViewBidangDetail;
-use App\Filament\Widgets\BidangScoresChart;
-use App\Filament\Widgets\BidangSummaryTable;
-use App\Models\Bidang;
+use App\Filament\Pages\ViewKompetensiDetail;
+use App\Filament\Widgets\KompetensiScoresChart;
+use App\Filament\Widgets\KompetensiSummaryTable;
+use App\Models\Kompetensi;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -27,25 +27,25 @@ class AnalisisPelatihan extends Page implements HasTable
     protected function getHeaderWidgets(): array
     {
         return [
-            // BidangScoresChart::class,
-            // BidangSummaryTable::class,
+            // KompetensiScoresChart::class,
+            // KompetensiSummaryTable::class,
         ];
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->query(Bidang::query())
-            ->heading('Detail per Bidang Pelatihan')
+            ->query(Kompetensi::query())
+            ->heading('Detail per Kompetensi Pelatihan')
             ->columns([
-                TextColumn::make('nama_bidang')->label('Nama Bidang')->searchable(),
+                TextColumn::make('nama_kompetensi')->label('Nama Kompetensi')->searchable(),
                 TextColumn::make('pelatihan.nama_pelatihan')->label('Bagian dari Pelatihan'),
             ])
             ->actions([
                 Action::make('view_detail')
                     ->label('Lihat Detail Peserta')
                     ->icon('heroicon-o-arrow-right')
-                    // ->url(fn(Bidang $record): string => ViewBidangDetail::getUrl(['record' => $record])),
+                    // ->url(fn(Kompetensi $record): string => ViewKompetensiDetail::getUrl(['record' => $record])),
             ])
             ->paginated(false);
     }

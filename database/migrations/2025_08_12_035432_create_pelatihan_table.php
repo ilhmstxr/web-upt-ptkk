@@ -24,12 +24,15 @@ return new class extends Migration
             $table->string('nama_pelatihan');
             $table->string('slug')->nullable()->unique();
             $table->string('gambar')->nullable();
-            $table->string('status')->nullable()->default('belum dimulai');
+            $table->enum('status',['belum dimulai','aktif','selesai'])->nullable()->default('belum dimulai');
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->text('deskripsi')->nullable();
             $table->Integer('jumlah_peserta')->nullable();
             $table->Enum('sasaran',['siswa','guru','instruktur'])->nullable();
+            $table->longText('syarat_ketentuan')->nullable();
+            $table->longText('jadwal_text')->nullable();
+            $table->longText('lokasi_text')->nullable();
             $table->timestamps();
         });
     }

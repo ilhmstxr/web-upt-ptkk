@@ -40,7 +40,7 @@ class PendaftaranController extends Controller
 
     // 👉 ambil SATU pelatihan aktif, yang tanggalnya masih jalan
     $pelatihan = Pelatihan::with(['kompetensiPelatihan.kompetensi', 'kompetensiPelatihan.instruktur'])
-        ->where('status', 'aktif')
+        ->where('status', 'Pendaftaran Buka')
         ->whereDate('tanggal_selesai', '>=', now())
         ->orderBy('tanggal_mulai', 'asc')
         ->first();
@@ -68,7 +68,7 @@ class PendaftaranController extends Controller
 
         // 👉 ambil SATU pelatihan aktif, yang tanggalnya masih jalan
         $pelatihan = Pelatihan::with(['kompetensiPelatihan.kompetensi', 'kompetensiPelatihan.instruktur'])
-            ->where('status', 'aktif')
+            ->where('status', 'Pendaftaran Buka')
             ->whereDate('tanggal_selesai', '>=', now())
             ->orderBy('tanggal_mulai', 'asc')
             ->first();
@@ -191,7 +191,7 @@ class PendaftaranController extends Controller
             $peserta = Peserta::create([
                 'pelatihan_id'  => $validatedData['pelatihan_id'],
                 'instansi_id'   => $instansi->id,
-                // 'bidang_id'     => $validatedData['bidang_keahlian'], // Removed as discussed
+                // 'kompetensi_id'     => $validatedData['kompetensi_keahlian'], // Removed as discussed
                 'user_id'       => $user->id,
                 'nama'          => $validatedData['nama'],
                 'nik'           => $validatedData['nik'],
@@ -403,7 +403,8 @@ class PendaftaranController extends Controller
         $tp->setValue('asal_instansi', $p->asal_instansi ?? '');
         $tp->setValue('alamat_instansi', $p->alamat_instansi ?? '');
         $tp->setValue('kelas', $pendaftaran->kelas ?? '');
-        $tp->setValue('nama_bidang', $k->nama_kompetensi ?? ''); // Template variable might still be 'nama_bidang'
+        $tp->setValue('nama_kompetensi', $k->nama_kompetensi ?? ''); // Template variable might still be 'nama_kompetensi'
+        $tp->setValue('nama_kompetensi', $k->nama_kompetensi ?? '');
         $tp->setValue('judul', $pl->nama_pelatihan ?? '');
         $tp->setValue('tanggal_kegiatan', optional($pl->tanggal_mulai)?->translatedFormat('d F Y') ?? '');
 

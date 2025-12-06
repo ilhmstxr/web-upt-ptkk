@@ -115,7 +115,7 @@ class ListInstansis extends ListRecords
                 'no_telepon' => $this->newInstansi['phone'],
                 'kota_id' => '3204', // Default mock
                 'kota' => 'Bandung', // Default mock
-                'bidang_keahlian' => 'IT', // Default mock
+                'kompetensi_keahlian' => 'IT', // Default mock
                 'kelas' => 'A', // Default mock
                 'cabangDinas_id' => 1, // Default mock
             ]);

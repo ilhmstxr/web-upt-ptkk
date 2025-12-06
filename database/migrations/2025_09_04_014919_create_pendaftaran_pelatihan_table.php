@@ -15,16 +15,16 @@ return new class extends Migration
             $table->id();
             $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
             $table->foreignId('pelatihan_id')->constrained('pelatihan')->cascadeOnDelete();
-            // $table->foreignId('bidang_id')
-            //     ->constrained('bidang')
+            // $table->foreignId('kompetensi_id')
+            //     ->constrained('kompetensi')
             //     ->cascadeOnDelete();
-            $table->foreignId('bidang_pelatihan_id')->nullable()
-                ->constrained('bidang_pelatihan')
+            $table->foreignId('kompetensi_pelatihan_id')->nullable()
+                ->constrained('kompetensi_pelatihan')
                 ->cascadeOnDelete();
             $table->string('kelas')->nullable();
 
-            // IMPROVE: menambahkan bidang id 
-            // $table->foreignId('bidang_id')->constrained('bidang')->cascadeOnDelete();
+            // IMPROVE: menambahkan kompetensi id 
+            // $table->foreignId('kompetensi_id')->constrained('kompetensi')->cascadeOnDelete();
             $table->Integer('nilai_pre_test')->default(0);
             $table->Integer('nilai_post_test')->default(0);
             $table->Integer('nilai_praktek')->default(0);

@@ -25,22 +25,22 @@ return new class extends Migration
             }
 
             // 2. Hapus kolom lama jika ada
-            if (Schema::hasColumn('pendaftaran_pelatihan', 'bidang_pelatihan_id')) {
+            if (Schema::hasColumn('pendaftaran_pelatihan', 'kompetensi_pelatihan_id')) {
                 // Drop foreign key dulu jika memungkinkan, tapi karena namanya auto-generated dan kita tidak tahu pastinya, 
                 // kita coba drop column langsung. Namun di beberapa DB (referential integrity) ini bisa gagal jika FK masih ada.
                 // Laravel biasanya handle dropColumn dengan FK jika constrained() digunakan saat create, tapi kadang butuh dropForeign.
                 // Kita coba best effort.
                 
                 try {
-                     $table->dropForeign(['bidang_pelatihan_id']);
+                     $table->dropForeign(['kompetensi_pelatihan_id']);
                 } catch (\Exception $e) {
                     // Ignore, maybe FK doesn't exist
                 }
-                $table->dropColumn('bidang_pelatihan_id');
+                $table->dropColumn('kompetensi_pelatihan_id');
             }
 
-             if (Schema::hasColumn('pendaftaran_pelatihan', 'urutan_per_bidang')) {
-                $table->dropColumn('urutan_per_bidang');
+             if (Schema::hasColumn('pendaftaran_pelatihan', 'urutan_per_kompetensi')) {
+                $table->dropColumn('urutan_per_kompetensi');
             }
         });
     }

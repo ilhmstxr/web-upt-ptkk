@@ -11,8 +11,8 @@ class PelatihanDetailController extends Controller
     {
         $pelatihan = Pelatihan::where('slug', $slug)
             ->with([
-                'bidangPelatihan.instruktur',
-                'bidangPelatihan.bidang',
+                'kompetensiPelatihan.instruktur',
+                'kompetensiPelatihan.kompetensi',
                 'pendaftaranPelatihan.peserta',
                 'instansi'
             ])

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Bidang;
+use App\Models\Kompetensi;
 use App\Models\Pelatihan;
 use App\Models\Instansi;
 use App\Models\Peserta;
@@ -21,7 +21,7 @@ class PelatihanSeeder extends Seeder
         // $smkn1_sby = Instansi::create([
         //     'asal_instansi' => 'SMKN 1 Surabaya',
         //     'alamat_instansi' => 'Jl. Smea No.4, Wonokromo, Surabaya',
-        //     'bidang_keahlian' => 'Teknik Komputer dan Jaringan',
+        //     'kompetensi_keahlian' => 'Teknik Komputer dan Jaringan',
         //     'kelas' => 'XII TKJ 1',
         //     'cabang_dinas_wilayah' => 'Wilayah Surabaya',
         // ]);
@@ -29,7 +29,7 @@ class PelatihanSeeder extends Seeder
         // $smkn3_mlg = Instansi::create([
         //     'asal_instansi' => 'SMKN 3 Malang',
         //     'alamat_instansi' => 'Jl. Surabaya No.1, Klojen, Malang',
-        //     'bidang_keahlian' => 'Tata Busana',
+        //     'kompetensi_keahlian' => 'Tata Busana',
         //     'kelas' => 'XII Busana 2',
         //     'cabang_dinas_wilayah' => 'Wilayah Malang',
         // ]);

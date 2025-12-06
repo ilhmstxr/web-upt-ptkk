@@ -43,11 +43,11 @@ class AngkatanTesPage extends Page implements Tables\Contracts\HasTable
                     ->sortable(),
             ])
             ->actions([
-                Tables\Actions\Action::make('lihat_bidang')
-                    ->label('Lihat Bidang')
+                Tables\Actions\Action::make('lihat_kompetensi')
+                    ->label('Lihat Kompetensi')
                     ->button()
                     ->icon('heroicon-o-arrow-right')
-                    ->url(fn ($record) => route('filament.resources.tes-percobaans.bidang', [
+                    ->url(fn ($record) => route('filament.resources.tes-percobaans.kompetensi', [
                         'pelatihan' => $this->pelatihan->id,
                         'angkatan' => $record->id,
                     ])),

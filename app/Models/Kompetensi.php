@@ -28,18 +28,18 @@ class Kompetensi extends Model
     // {
     //     return $this->belongsToMany(
     //         Pelatihan::class,       // Model yang dihubungkan
-    //         'bidang_pelatihan',     // Nama tabel pivot
-    //         'bidang_id',            // Foreign key di tabel pivot untuk model ini (Bidang)
+    //         'kompetensi_pelatihan',     // Nama tabel pivot
+    //         'kompetensi_id',            // Foreign key di tabel pivot untuk model ini (Kompetensi)
     //         'pelatihan_id'          // Foreign key di tabel pivot untuk model Pelatihan
     //     )
     //         // <-- TAMBAHAN: Beritahu Eloquent untuk menggunakan Model Pivot kustom Anda
-    //         ->using(BidangPelatihan::class)
+    //         ->using(KompetensiPelatihan::class)
 
     //         // <-- TAMBAHAN: Tentukan kolom ekstra di pivot yang ingin Anda akses
     //         ->withPivot([
     //             'lokasi',
     //             'kota',
-    //             'kode_bidang_pelatihan',
+    //             'kode_kompetensi_pelatihan',
     //             'rata_rata_peningkatan',
     //             'status_performa',
     //         ]);
@@ -49,15 +49,15 @@ class Kompetensi extends Model
     // {
     //     return $this->hasManyThrough(
     //         PendaftaranPelatihan::class, // Model akhir yang dituju
-    //         BidangPelatihan::class,      // Model perantara
+    //         KompetensiPelatihan::class,      // Model perantara
 
-    //         // Kunci relasi Bidang -> BidangPelatihan
-    //         'bidang_pelatihan_id', // Foreign key di tabel 'bidang_pelatihan'
-    //         'id',        // Local key di tabel 'bidang'
+    //         // Kunci relasi Kompetensi -> KompetensiPelatihan
+    //         'kompetensi_pelatihan_id', // Foreign key di tabel 'kompetensi_pelatihan'
+    //         'id',        // Local key di tabel 'kompetensi'
 
-    //         // Kunci relasi BidangPelatihan -> PendaftaranPelatihan
-    //         'bidang_id', // Foreign key di tabel 'pendaftaran_pelatihan' (yang merujuk ke bidang_pelatihan.id)
-    //         'id'         // Local key di tabel 'bidang_pelatihan'
+    //         // Kunci relasi KompetensiPelatihan -> PendaftaranPelatihan
+    //         'kompetensi_id', // Foreign key di tabel 'pendaftaran_pelatihan' (yang merujuk ke kompetensi_pelatihan.id)
+    //         'id'         // Local key di tabel 'kompetensi_pelatihan'
     //     );
     // }
 }

@@ -33,7 +33,7 @@ class PendaftaranPdfExporter
 
         $peserta  = $pendaftaran->peserta;
         $pelatihan = $pendaftaran->pelatihan;
-        $bidang   = $pendaftaran->bidang;
+        $kompetensi = $pendaftaran->kompetensi;
 
         // mapping placeholder sesuai template «...»
         $tp->setValue('nama', $peserta->nama ?? '');
@@ -46,7 +46,11 @@ class PendaftaranPdfExporter
         $tp->setValue('asal_instansi', $peserta->asal_instansi ?? '');
         $tp->setValue('alamat_instansi', $peserta->alamat_instansi ?? '');
         $tp->setValue('kelas', $pendaftaran->kelas ?? '');
-        $tp->setValue('nama_bidang', $bidang->nama ?? '');
+        
+        // Support legacy template key 'nama_kompetensi' and new key 'nama_kompetensi'
+        $namaKompetensi = $kompetensi->nama_kompetensi ?? '';
+        $tp->setValue('nama_kompetensi', $namaKompetensi);
+        $tp->setValue('nama_kompetensi', $namaKompetensi);
 
         // contoh judul/tanggal kegiatan dari template (opsional)
         $tp->setValue('judul', $pelatihan->nama_pelatihan ?? '');

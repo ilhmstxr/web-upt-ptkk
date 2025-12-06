@@ -2,8 +2,8 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\BidangStatsOverview;
-use App\Models\Bidang;
+use App\Filament\Widgets\KompetensiStatsOverview;
+use App\Models\Kompetensi;
 use App\Models\Percobaan;
 use App\Models\Peserta;
 use Filament\Pages\Page;

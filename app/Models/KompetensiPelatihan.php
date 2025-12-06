@@ -24,6 +24,7 @@ class KompetensiPelatihan extends Model
         'jam_mulai',
         'jam_selesai',
         'instruktur_id',
+        'nama_instruktur',
     ];
 
     public function pelatihan()

@@ -27,7 +27,7 @@ Bagian 2 dari 2
 Selamat mengerjakan, semoga sukses!',
             'tipe' => 'tes',
             'sub_tipe' => 'pre-test',
-            'bidang_id' => 1, // sesuaikan dengan data bidang yang ada
+            'kompetensi_id' => 1, // sesuaikan dengan data kompetensi yang ada
             'pelatihan_id' => 1, // sesuaikan dengan data pelatihan yang ada
             'durasi_menit' => 60,
             'created_at' => now(),

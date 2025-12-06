@@ -5,7 +5,7 @@ KONSEP ARSITEKTUR
 =================================================================
 IMPLEMENTASI
 =================================================================
-siap—kita fokus “membongkar” controller pendaftaran yang gemuk jadi potongan kecil yang rapi. Karena kamu minta **belum menulis kode**, di bawah ini adalah **daftar file** + **peran masing-masing** yang biasanya diperlukan untuk kasus pendaftaran peserta (dengan entitas: peserta, user/operator, instansi, bidang, pelatihan, lampiran, dan alur status).
+siap—kita fokus “membongkar” controller pendaftaran yang gemuk jadi potongan kecil yang rapi. Karena kamu minta **belum menulis kode**, di bawah ini adalah **daftar file** + **peran masing-masing** yang biasanya diperlukan untuk kasus pendaftaran peserta (dengan entitas: peserta, user/operator, instansi, kompetensi, pelatihan, lampiran, dan alur status).
 
 ---
 
@@ -33,7 +33,7 @@ Taruh semua aturan validasi di sini, bukan di controller.
 -   `app/Http/Requests/Pendaftaran/ChangeStatusRequest.php` (opsional)
 -   `app/Http/Requests/Pendaftaran/UploadLampiranRequest.php`
 
-**Fokus:** aturan field, exists/unique, korelasi antar field (mis. `bidang_id` harus milik `instansi_id`), otorisasi endpoint (boleh create/edit?).
+**Fokus:** aturan field, exists/unique, korelasi antar field (mis. `kompetensi_id` harus milik `instansi_id`), otorisasi endpoint (boleh create/edit?).
 
 ---
 
@@ -69,8 +69,8 @@ Satu use-case → satu kelas. Di sinilah **transaksi DB** berlangsung.
 Supaya tidak menjejali FormRequest dengan closure panjang.
 
 -   `app/Rules/UniquePendaftaranPerPesertaPelatihan.php`
--   `app/Rules/BidangBelongsToInstansi.php`
--   `app/Rules/ValidLampiranType.php` (opsional: cek jenis berkas terhadap pelatihan/bidang)
+-   `app/Rules/KompetensiBelongsToInstansi.php`
+-   `app/Rules/ValidLampiranType.php` (opsional: cek jenis berkas terhadap pelatihan/kompetensi)
 
 ---
 
@@ -102,7 +102,7 @@ Kalau endpoint kamu JSON, bentuknya jangan di controller.
 Pisahkan hal yang berpotensi dipakai lintas aksi.
 
 -   `app/Services/Numbering/NomorRegistrasiFormatter.php`
-    (format kode, padding, pola per tahun/bidang)
+    (format kode, padding, pola per tahun/kompetensi)
 -   `app/Services/Storage/LampiranStorage.php`
     (path, direktori, rename, keamanan akses)
 -   (opsional) `app/Services/Export/PendaftaranExporter.php` (CSV/XLSX/PDF)
@@ -196,7 +196,7 @@ Jika kamu juga pakai Filament, UI admin pindah ke sini (controller makin bebas).
 -   **Cek izin** → `PendaftaranPolicy`
 -   **Generate nomor registrasi** → `Actions/GenerateNomorRegistrasi` (atau Service Numbering) + optional `Observer`
 -   **Cek unik (peserta×pelatihan)** → `Rules/UniquePendaftaranPerPesertaPelatihan`
--   **Relasi `bidang` milik `instansi`** → `Rules/BidangBelongsToInstansi`
+-   **Relasi `kompetensi` milik `instansi`** → `Rules/KompetensiBelongsToInstansi`
 -   **Simpan/hapus lampiran** → `Actions/AddLampiran/RemoveLampiran` + `Services/Storage/LampiranStorage`
 -   **Filter/search daftar** → `PendaftaranRepository`
 -   **Perubahan status (submit/verify/approve/reject)** → `Actions/ChangeStatus` (+ Policy)
@@ -394,7 +394,7 @@ SET
 
 
 
-cek bidang_id lama ke bidang_id baru
+cek kompetensi_id lama ke kompetensi_id baru
 
 COUNT(*)
 OR
@@ -402,37 +402,37 @@ OR
 SELECT
 
 pp.id AS id_pendaftaran,
-  pp.bidang_id AS id_bidang_lama,
-  bp.id AS id_bidang_baru_yang_akan_dipakai
+  pp.kompetensi_id AS id_kompetensi_lama,
+  bp.id AS id_kompetensi_baru_yang_akan_dipakai
 
 
 FROM
   `pendaftaran_pelatihan` AS pp
 JOIN
-  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`;
+  `kompetensi_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`kompetensi_id` = bp.`kompetensi_id`;
 
 
 
-update bidang_id  lama ke bidang_Id baru
+update kompetensi_id  lama ke kompetensi_Id baru
 UPDATE
   `pendaftaran_pelatihan` AS pp
 JOIN
-  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`
+  `kompetensi_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`kompetensi_id` = bp.`kompetensi_id`
 SET
-  pp.`bidang_id` = bp.`id`;
+  pp.`kompetensi_id` = bp.`id`;
 
 
 
 SELECT
 pp.id AS id_pendaftaran,
-  pp.bidang_id AS id_bidang_lama,
-  bp.id AS id_bidang_baru_yang_akan_dipakai
+  pp.kompetensi_id AS id_kompetensi_lama,
+  bp.id AS id_kompetensi_baru_yang_akan_dipakai
 
 
 FROM
   `pendaftaran_pelatihan` AS pp
 JOIN
-  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`
+  `kompetensi_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`kompetensi_id` = bp.`kompetensi_id`
   ORDER BY PP.id asc;
 
 95 ~ 114
@@ -442,7 +442,7 @@ JOIN
 
 AH KOPLAK, konsistensi data yang ada di mtu & mjc di pelatihan 10 & 11 masih belum konsisten
 
-TODO, ngulik, ngecek pendaftaran_pelatihan dan diesuaikan dengan bidang_pelatihan 
+TODO, ngulik, ngecek pendaftaran_pelatihan dan diesuaikan dengan kompetensi_pelatihan 
 
 foto - malang
 video - magetan
@@ -451,18 +451,18 @@ tptu - kediri
 tptu - tuban
 
 
-SELECT bidang_id, COUNT(*) AS jumlah_peserta
+SELECT kompetensi_id, COUNT(*) AS jumlah_peserta
 FROM peserta
 WHERE pelatihan_id = 1
-GROUP BY bidang_id;
+GROUP BY kompetensi_id;
 
 
 
 
-SELECT bidang_id, COUNT(*) AS jumlah_peserta
+SELECT kompetensi_id, COUNT(*) AS jumlah_peserta
 FROM pendaftaran_pelatihan
 WHERE pelatihan_id = 1
-GROUP BY bidang_id;
+GROUP BY kompetensi_id;
 
 
 nambahin data terbaru lalu ditampilkan 
@@ -482,8 +482,8 @@ plc               V
 
 injection 8 data pelatihan 
 DONE pelatihan
-DONE bidang
-DONE bidang_pelatihan 
+DONE kompetensi
+DONE kompetensi_pelatihan 
 TODO pretest
 TODO posttest
 TODO praktek
@@ -577,7 +577,7 @@ web-content
 - upload banner (hero)
 - Berita
 - Sorotan pelatihan (judul, keterangan, foto-foto)
-- kompetensi bidang pelatihan
+- kompetensi kompetensi pelatihan
 - statistik (iki sg rata rata pretest post test)
 - edit kepala upt (foto, nama)
 - text pelatihan (syarat ketentuan, lokasi, jadwal)
@@ -599,7 +599,7 @@ deskripsi dihapus
 tambahkan tanggal mulai ~ tanggal selesai pelatihan
 
 2. kurikulum & jadwal
-bidang awalnya disediakan 1 card saja
+kompetensi awalnya disediakan 1 card saja
 modul di komen terlebih dahulu
 tanggal mulai dihapus
 jam mulai selesai dihapus
@@ -616,7 +616,7 @@ DONE configure db
 CHECK crud filament instruktur resource 
 CHECK crud yang berhubungan dengan instruktur
 
-- create bidang (stuck instruktur)
+- create kompetensi (stuck instruktur)
 
 
 - setup tes
@@ -632,16 +632,44 @@ CHECK the error n solve
 
 TESTING BRANCH MERGE-FINAL
 - nav beranda e jek dashboard peserta
-CHECK - gambar di bidang resource ga muncul (nyimpen gambar e ubah jadi ke public aja soale sekalian di buat halaman user) 
-- ubah gambar di pelatihan susah/ gaisok -> setelah edit & save changes, nanti auto melempar ke table bidang
-TODO - bidang diganti kompetensi - Bu Nur 1 Desember 2025
-- UELEK ADMINE PELATIHAN (asu)
-- lihat gambar background tab untuk cari, filter dihapus, disamakan backgroundnya sama konten utama
-- lihat gambar filter & search di masukkin ke filternya pelatihan, yang manual dihapus
-- lihat gambar tampilan grid dihapus
-- kolom table pelatihan gambar/cover dihapus
+CHECK - gambar di bidang resource ga muncul (nyimpen gambar e ubah jadi ke public aja soale sekalian di buat halaman user)
+- ubah gambar di pelatihan susah/ gaisok // NOTE ini nanti diganti ketika deploy(config/filesystems.php:line41:branch merge-final)
+CHECK - bidang diganti kompetensi - Bu Nur 1 Desember 2025
+- UELEK ADMINE PELATIHAN
+CHECK - lihat gambar (hapusen sg tak block)
+CHECK - lihat gambar (putih putih elek iku hapuen ae)
+CHECK - lihat gambar ( si filter kategori sama status pindah ke yang tak tandain warna pink)
+CHECK - lihat gambar (gausah dikei opsi tampilan grid lek elek)
+- kolom table pelatihan gaush dikei gambar/cover
 
 
 kolom tabel instruktur
 data pribadi : nama, nik, tempat, tanggal lahir, jenis kelamin, agama, no hp
 lampiran : cv, ktp, ijazah, sertifikat kompetensi
+
+
+CHECK - lihat gambar (hybrid/zoom? pic admin? hapus ae ganti total peserta:63251876)
+- uwelek tampilan e
+CHECK - lihat gambar (bidang ganti kompetensi)
+CHECK - 3 kotak iku hapus ae stats overview
+
+
+CHECK - instruktur iku gausa digae dropdown isok ga gae format text ae (gak)
+CHECK - statusmu isine ga konsisten di filter pelatihan, di table pelatihan sama yang di detail (create, edit)
+CHECK - nama mentor e udah diubah ga tampil di card daftar bidang pelatihan. 
+CHECK - foto hapus nk bidang pelatihan
+CHECK - 12 sesi 3 tugas. lek statis gausa di gae hapus ae
+
+CHECK - data peserta terdaftar filter sama tambah peserta 22 e gabisa di pencet
+CHECK - liat data peserta iku lapu mok kei inisial nama peserta e
+CHECK - instruktur e gaisok di tambah (di bidang pelatihan)
+CHECK - tambah peserta malah error tambah pelatihan
+
+- status e uda tak buka pendaftaran tapi nk user ga metu form pendaftaran e
+- export e kabeh grg isok
+TODO - SYARAT INFORMAI JADWAL LOKASI GA KEUBAH NK DATABASE duh
+TODO - hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
+TODO -  hasil tes survey lain e blom di cek gaonk data e
+
+
+- asrama blom di cek gaoonk data e

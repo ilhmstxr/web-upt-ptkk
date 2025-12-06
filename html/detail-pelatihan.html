@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,41 +25,57 @@
             display: none;
             animation: fadeIn 0.3s ease-in-out;
         }
+
         .tab-content.active {
             display: block;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         /* Custom scrollbar for tables */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1; 
+            background: #f1f1f1;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
+            background: #cbd5e1;
             border-radius: 10px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
+            background: #94a3b8;
         }
     </style>
 </head>
+
 <body class="bg-gray-50 text-slate-800 font-sans min-h-screen pb-10">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <!-- 1. NAVIGATION / BREADCRUMBS -->
-        <nav class="flex mb-6 text-sm font-medium text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm w-fit overflow-hidden">
-            <a href="#" class="px-4 py-2 hover:bg-gray-50 flex items-center gap-2 border-r border-gray-100 bg-gray-50 transition-colors">
+        <nav
+            class="flex mb-6 text-sm font-medium text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm w-fit overflow-hidden">
+            <a href="#"
+                class="px-4 py-2 hover:bg-gray-50 flex items-center gap-2 border-r border-gray-100 bg-gray-50 transition-colors">
                 <i class="fa-solid fa-house text-gray-400"></i>
             </a>
-            <a href="#" class="px-4 py-2 hover:bg-gray-50 hover:text-primary flex items-center gap-2 border-r border-gray-100 transition-colors">
+            <a href="#"
+                class="px-4 py-2 hover:bg-gray-50 hover:text-primary flex items-center gap-2 border-r border-gray-100 transition-colors">
                 Manajemen Pelatihan
             </a>
             <span class="px-4 py-2 bg-white text-primary flex items-center gap-2 border-t-2 border-primary -mt-[2px]">
@@ -72,24 +89,30 @@
             <div>
                 <div class="flex items-center gap-3 mb-2">
                     <h1 class="text-3xl font-bold text-gray-900">Digital Marketing Batch 5</h1>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                    <span
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
                         Sedang Berlangsung
                     </span>
                 </div>
                 <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-gray-500">
-                    <span class="flex items-center gap-2"><i class="fa-regular fa-calendar text-gray-400"></i> 10 Okt - 10 Des 2024</span>
+                    <span class="flex items-center gap-2"><i class="fa-regular fa-calendar text-gray-400"></i> 10 Okt -
+                        10 Des 2024</span>
                     <span class="hidden md:inline text-gray-300">|</span>
-                    <span class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-gray-400"></i> Hybrid (Zoom & Offline)</span>
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-gray-400"></i> Hybrid
+                        (Zoom & Offline)</span>
                     <span class="hidden md:inline text-gray-300">|</span>
-                    <span class="flex items-center gap-2"><i class="fa-solid fa-user-tie text-gray-400"></i> PIC: Rina Amalia</span>
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-user-tie text-gray-400"></i> PIC: Rina
+                        Amalia</span>
                 </div>
             </div>
             <div class="flex gap-3 w-full md:w-auto">
-                <button class="flex-1 md:flex-none justify-center bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm transition-all flex items-center gap-2">
+                <button
+                    class="flex-1 md:flex-none justify-center bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm transition-all flex items-center gap-2">
                     <i class="fa-solid fa-file-arrow-down text-gray-500"></i> Export
                 </button>
-                <button class="flex-1 md:flex-none justify-center bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition-all flex items-center gap-2 shadow-blue-200">
+                <button
+                    class="flex-1 md:flex-none justify-center bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition-all flex items-center gap-2 shadow-blue-200">
                     <i class="fa-solid fa-pen-to-square"></i> Edit
                 </button>
             </div>
@@ -97,9 +120,10 @@
 
         <!-- 3. STATS OVERVIEW -->
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
-            
+
             <!-- Progress Card -->
-            <div class="md:col-span-5 bg-white p-6 rounded-xl shadow-sm border border-gray-200 relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div
+                class="md:col-span-5 bg-white p-6 rounded-xl shadow-sm border border-gray-200 relative overflow-hidden group hover:shadow-md transition-shadow">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                     <i class="fa-solid fa-clock text-6xl text-primary"></i>
                 </div>
@@ -110,8 +134,11 @@
                         <span class="text-sm text-gray-500 mb-1">/ 60 Hari</span>
                     </div>
                     <div class="w-full bg-gray-100 rounded-full h-3 mb-2 overflow-hidden">
-                        <div class="bg-primary h-3 rounded-full transition-all duration-1000 relative" style="width: 33%">
-                             <div class="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-20 w-full animate-pulse"></div>
+                        <div class="bg-primary h-3 rounded-full transition-all duration-1000 relative"
+                            style="width: 33%">
+                            <div
+                                class="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-20 w-full animate-pulse">
+                            </div>
                         </div>
                     </div>
                     <div class="flex justify-between text-xs text-gray-400 font-medium">
@@ -122,7 +149,8 @@
             </div>
 
             <!-- Total Peserta -->
-            <div class="md:col-span-3 bg-white p-6 rounded-xl shadow-sm border border-gray-200 group hover:shadow-md transition-shadow">
+            <div
+                class="md:col-span-3 bg-white p-6 rounded-xl shadow-sm border border-gray-200 group hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-4">
                     <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-users text-xl"></i>
@@ -140,14 +168,16 @@
                 </div>
             </div>
 
-            <!-- Total Bidang -->
-            <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200 group hover:shadow-md transition-shadow">
+            <!-- Total Kompetensi -->
+            <div
+                class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200 group hover:shadow-md transition-shadow">
                 <div class="flex flex-col h-full justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 bg-orange-50 text-orange-600 rounded-lg group-hover:scale-110 transition-transform">
+                        <div
+                            class="p-2 bg-orange-50 text-orange-600 rounded-lg group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-layer-group"></i>
                         </div>
-                        <h3 class="text-gray-500 text-xs uppercase tracking-wide font-semibold">Bidang</h3>
+                        <h3 class="text-gray-500 text-xs uppercase tracking-wide font-semibold">Kompetensi</h3>
                     </div>
                     <div>
                         <p class="text-3xl font-bold text-gray-900">4</p>
@@ -157,7 +187,8 @@
             </div>
 
             <!-- Absensi -->
-            <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200 group hover:shadow-md transition-shadow">
+            <div
+                class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200 group hover:shadow-md transition-shadow">
                 <div class="flex flex-col h-full justify-between">
                     <div class="flex items-center gap-3">
                         <div class="p-2 bg-teal-50 text-teal-600 rounded-lg group-hover:scale-110 transition-transform">
@@ -178,136 +209,206 @@
             <!-- Tabs Header -->
             <div class="border-b border-gray-200 px-6 overflow-x-auto">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                    <button onclick="switchTab('bidang')" id="tab-bidang" class="tab-btn active border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                        <i class="fa-solid fa-layer-group mr-2"></i>Daftar Bidang (4)
+                    <button onclick="switchTab('kompetensi')" id="tab-kompetensi"
+                        class="tab-btn active border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                        <i class="fa-solid fa-layer-group mr-2"></i>Daftar Kompetensi (4)
                     </button>
-                    <button onclick="switchTab('peserta')" id="tab-peserta" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <button onclick="switchTab('peserta')" id="tab-peserta"
+                        class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
                         <i class="fa-solid fa-users mr-2"></i>Data Peserta
                     </button>
-                    <button onclick="switchTab('jadwal')" id="tab-jadwal" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <button onclick="switchTab('jadwal')" id="tab-jadwal"
+                        class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
                         <i class="fa-regular fa-calendar-days mr-2"></i>Jadwal & Absensi
                     </button>
-                    <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                         <i class="fa-solid fa-user-shield mr-2"></i>Instruktur
+                    <button onclick="switchTab('admin')" id="tab-admin"
+                        class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                        <i class="fa-solid fa-user-shield mr-2"></i>Instruktur
                     </button>
-                    <button onclick="switchTab('asrama')" id="tab-asrama" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <button onclick="switchTab('asrama')" id="tab-asrama"
+                        class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
                         <i class="fa-solid fa-bed mr-2"></i>Asrama
-                   </button>
-                   <!-- NEW TAB: HASIL TES / SURVEY -->
-                   <button onclick="switchTab('hasil')" id="tab-hasil" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    </button>
+                    <!-- NEW TAB: HASIL TES / SURVEY -->
+                    <button onclick="switchTab('hasil')" id="tab-hasil"
+                        class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
                         <i class="fa-solid fa-chart-pie mr-2"></i>Hasil Tes & Survey
-                   </button>
+                    </button>
                 </nav>
             </div>
 
             <!-- CONTENT 1: DAFTAR BIDANG -->
-            <div id="content-bidang" class="tab-content active p-6 bg-gray-50/30 min-h-[400px]">
+            <div id="content-kompetensi" class="tab-content active p-6 bg-gray-50/30 min-h-[400px]">
                 <div class="flex justify-between items-center mb-6">
-                     <h3 class="text-lg font-bold text-gray-800">Kelas yang tersedia</h3>
-                     <div class="relative w-full max-w-xs">
-                        <input type="text" placeholder="Cari bidang..." class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-800">Kelas yang tersedia</h3>
+                    <div class="relative w-full max-w-xs">
+                        <input type="text" placeholder="Cari kompetensi..."
+                            class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 shadow-sm">
                         <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
-                     </div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Card 1: SEO -->
-                    <a href="#" class="group block bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-400 hover:shadow-md transition-all relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-blue-100"></div>
+                    <a href="#"
+                        class="group block bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-400 hover:shadow-md transition-all relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-blue-100">
+                        </div>
                         <div class="flex justify-between items-start relative z-10">
                             <div class="flex gap-4">
-                                <div class="h-14 w-14 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 text-xl font-bold border border-blue-200 shadow-sm">SEO</div>
+                                <div
+                                    class="h-14 w-14 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 text-xl font-bold border border-blue-200 shadow-sm">
+                                    SEO</div>
                                 <div>
-                                    <h4 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">SEO Specialist</h4>
+                                    <h4
+                                        class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                        SEO Specialist</h4>
                                     <div class="flex items-center gap-2 mt-1">
-                                        <div class="flex -space-x-2"><img class="w-6 h-6 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Budi+Santoso&background=random" alt="Mentor"></div>
+                                        <div class="flex -space-x-2"><img
+                                                class="w-6 h-6 rounded-full border-2 border-white"
+                                                src="https://ui-avatars.com/api/?name=Budi+Santoso&background=random"
+                                                alt="Mentor"></div>
                                         <p class="text-xs text-gray-500">Mentor: Budi Santoso</p>
                                     </div>
                                 </div>
                             </div>
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">32 Peserta</span>
+                            <span
+                                class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">32
+                                Peserta</span>
                         </div>
                         <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
                             <div class="flex gap-4 text-gray-500 text-xs">
                                 <span class="flex items-center gap-1"><i class="fa-regular fa-clock"></i> 12 Sesi</span>
-                                <span class="flex items-center gap-1"><i class="fa-solid fa-list-check"></i> 3 Tugas</span>
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-list-check"></i> 3
+                                    Tugas</span>
                             </div>
-                            <span class="text-primary font-medium text-xs flex items-center group-hover:underline">Lihat Detail <i class="fa-solid fa-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></span>
+                            <span class="text-primary font-medium text-xs flex items-center group-hover:underline">Lihat
+                                Detail <i
+                                    class="fa-solid fa-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></span>
                         </div>
                     </a>
 
                     <!-- Card 2: Social Media -->
-                    <a href="#" class="group block bg-white border border-gray-200 rounded-xl p-5 hover:border-pink-400 hover:shadow-md transition-all relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-pink-50 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-pink-100"></div>
+                    <a href="#"
+                        class="group block bg-white border border-gray-200 rounded-xl p-5 hover:border-pink-400 hover:shadow-md transition-all relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-16 h-16 bg-pink-50 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-pink-100">
+                        </div>
                         <div class="flex justify-between items-start relative z-10">
                             <div class="flex gap-4">
-                                <div class="h-14 w-14 rounded-xl bg-pink-100 flex items-center justify-center text-pink-600 text-xl font-bold border border-pink-200 shadow-sm">Ads</div>
+                                <div
+                                    class="h-14 w-14 rounded-xl bg-pink-100 flex items-center justify-center text-pink-600 text-xl font-bold border border-pink-200 shadow-sm">
+                                    Ads</div>
                                 <div>
-                                    <h4 class="text-lg font-bold text-gray-900 group-hover:text-pink-600 transition-colors">Social Media Ads</h4>
+                                    <h4
+                                        class="text-lg font-bold text-gray-900 group-hover:text-pink-600 transition-colors">
+                                        Social Media Ads</h4>
                                     <div class="flex items-center gap-2 mt-1">
-                                        <div class="flex -space-x-2"><img class="w-6 h-6 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Siti+Aminah&background=random" alt="Mentor"></div>
+                                        <div class="flex -space-x-2"><img
+                                                class="w-6 h-6 rounded-full border-2 border-white"
+                                                src="https://ui-avatars.com/api/?name=Siti+Aminah&background=random"
+                                                alt="Mentor"></div>
                                         <p class="text-xs text-gray-500">Mentor: Siti Aminah</p>
                                     </div>
                                 </div>
                             </div>
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">28 Peserta</span>
+                            <span
+                                class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">28
+                                Peserta</span>
                         </div>
                         <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
                             <div class="flex gap-4 text-gray-500 text-xs">
                                 <span class="flex items-center gap-1"><i class="fa-regular fa-clock"></i> 10 Sesi</span>
-                                <span class="flex items-center gap-1"><i class="fa-solid fa-list-check"></i> 5 Tugas</span>
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-list-check"></i> 5
+                                    Tugas</span>
                             </div>
-                            <span class="text-pink-600 font-medium text-xs flex items-center group-hover:underline">Lihat Detail <i class="fa-solid fa-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></span>
+                            <span
+                                class="text-pink-600 font-medium text-xs flex items-center group-hover:underline">Lihat
+                                Detail <i
+                                    class="fa-solid fa-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></span>
                         </div>
                     </a>
 
                     <!-- Card 3: Copywriting -->
-                    <a href="#" class="group block bg-white border border-gray-200 rounded-xl p-5 hover:border-indigo-400 hover:shadow-md transition-all relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-indigo-50 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-indigo-100"></div>
+                    <a href="#"
+                        class="group block bg-white border border-gray-200 rounded-xl p-5 hover:border-indigo-400 hover:shadow-md transition-all relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-16 h-16 bg-indigo-50 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-indigo-100">
+                        </div>
                         <div class="flex justify-between items-start relative z-10">
                             <div class="flex gap-4">
-                                <div class="h-14 w-14 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 text-xl font-bold border border-indigo-200 shadow-sm">CW</div>
+                                <div
+                                    class="h-14 w-14 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 text-xl font-bold border border-indigo-200 shadow-sm">
+                                    CW</div>
                                 <div>
-                                    <h4 class="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">Copywriting</h4>
+                                    <h4
+                                        class="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                                        Copywriting</h4>
                                     <div class="flex items-center gap-2 mt-1">
-                                        <div class="flex -space-x-2"><img class="w-6 h-6 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Andi+Wijaya&background=random" alt="Mentor"></div>
+                                        <div class="flex -space-x-2"><img
+                                                class="w-6 h-6 rounded-full border-2 border-white"
+                                                src="https://ui-avatars.com/api/?name=Andi+Wijaya&background=random"
+                                                alt="Mentor"></div>
                                         <p class="text-xs text-gray-500">Mentor: Andi Wijaya</p>
                                     </div>
                                 </div>
                             </div>
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">40 Peserta</span>
+                            <span
+                                class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">40
+                                Peserta</span>
                         </div>
                         <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
                             <div class="flex gap-4 text-gray-500 text-xs">
                                 <span class="flex items-center gap-1"><i class="fa-regular fa-clock"></i> 8 Sesi</span>
-                                <span class="flex items-center gap-1"><i class="fa-solid fa-list-check"></i> 2 Tugas</span>
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-list-check"></i> 2
+                                    Tugas</span>
                             </div>
-                            <span class="text-indigo-600 font-medium text-xs flex items-center group-hover:underline">Lihat Detail <i class="fa-solid fa-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></span>
+                            <span
+                                class="text-indigo-600 font-medium text-xs flex items-center group-hover:underline">Lihat
+                                Detail <i
+                                    class="fa-solid fa-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></span>
                         </div>
                     </a>
 
                     <!-- Card 4: Web Dev (COMPLETED) -->
-                    <a href="#" class="group block bg-white border border-gray-200 rounded-xl p-5 hover:border-teal-400 hover:shadow-md transition-all relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-teal-50 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-teal-100"></div>
+                    <a href="#"
+                        class="group block bg-white border border-gray-200 rounded-xl p-5 hover:border-teal-400 hover:shadow-md transition-all relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-16 h-16 bg-teal-50 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-teal-100">
+                        </div>
                         <div class="flex justify-between items-start relative z-10">
                             <div class="flex gap-4">
-                                <div class="h-14 w-14 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600 text-xl font-bold border border-teal-200 shadow-sm"><i class="fa-solid fa-code"></i></div>
+                                <div
+                                    class="h-14 w-14 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600 text-xl font-bold border border-teal-200 shadow-sm">
+                                    <i class="fa-solid fa-code"></i></div>
                                 <div>
-                                    <h4 class="text-lg font-bold text-gray-900 group-hover:text-teal-600 transition-colors">Web Development</h4>
+                                    <h4
+                                        class="text-lg font-bold text-gray-900 group-hover:text-teal-600 transition-colors">
+                                        Web Development</h4>
                                     <div class="flex items-center gap-2 mt-1">
-                                        <div class="flex -space-x-2"><img class="w-6 h-6 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Eko+Kurniawan&background=random" alt="Mentor"></div>
+                                        <div class="flex -space-x-2"><img
+                                                class="w-6 h-6 rounded-full border-2 border-white"
+                                                src="https://ui-avatars.com/api/?name=Eko+Kurniawan&background=random"
+                                                alt="Mentor"></div>
                                         <p class="text-xs text-gray-500">Mentor: Eko K.</p>
                                     </div>
                                 </div>
                             </div>
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">24 Peserta</span>
+                            <span
+                                class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">24
+                                Peserta</span>
                         </div>
                         <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
                             <div class="flex gap-4 text-gray-500 text-xs">
                                 <span class="flex items-center gap-1"><i class="fa-regular fa-clock"></i> 16 Sesi</span>
-                                <span class="flex items-center gap-1"><i class="fa-solid fa-list-check"></i> 8 Tugas</span>
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-list-check"></i> 8
+                                    Tugas</span>
                             </div>
-                            <span class="text-teal-600 font-medium text-xs flex items-center group-hover:underline">Lihat Detail <i class="fa-solid fa-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></span>
+                            <span
+                                class="text-teal-600 font-medium text-xs flex items-center group-hover:underline">Lihat
+                                Detail <i
+                                    class="fa-solid fa-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></span>
                         </div>
                     </a>
                 </div>
@@ -318,27 +419,43 @@
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h3 class="text-lg font-bold text-gray-800">Data Peserta Terdaftar</h3>
                     <div class="flex gap-2 w-full md:w-auto">
-                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50"><i class="fa-solid fa-filter mr-1"></i> Filter</button>
-                        <button class="px-3 py-2 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700"><i class="fa-solid fa-plus mr-1"></i> Tambah Peserta</button>
+                        <button
+                            class="px-3 py-2 border border-gray-300 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50"><i
+                                class="fa-solid fa-filter mr-1"></i> Filter</button>
+                        <button
+                            class="px-3 py-2 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700"><i
+                                class="fa-solid fa-plus mr-1"></i> Tambah Peserta</button>
                     </div>
                 </div>
-                
+
                 <div class="overflow-x-auto custom-scrollbar border border-gray-200 rounded-lg">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Peserta</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bidang</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kehadiran</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Pembayaran</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama Peserta</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Kompetensi</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Kehadiran</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status Pembayaran</th>
+                                <th
+                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200 text-sm">
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                                     <div class="flex items-center">
-                                        <div class="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 text-xs font-bold">AD</div>
+                                        <div
+                                            class="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 text-xs font-bold">
+                                            AD</div>
                                         Andi Dermawan
                                     </div>
                                 </td>
@@ -350,7 +467,8 @@
                                     <span class="text-xs text-gray-500">90% Hadir</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Lunas</span>
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Lunas</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-gray-500">
                                     <a href="#" class="text-blue-600 hover:text-blue-900 text-xs font-bold">Detail</a>
@@ -359,7 +477,9 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                                     <div class="flex items-center">
-                                        <div class="h-8 w-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mr-3 text-xs font-bold">SK</div>
+                                        <div
+                                            class="h-8 w-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mr-3 text-xs font-bold">
+                                            SK</div>
                                         Siti Komariah
                                     </div>
                                 </td>
@@ -371,7 +491,8 @@
                                     <span class="text-xs text-gray-500">60% Hadir</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Menunggu</span>
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Menunggu</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-gray-500">
                                     <a href="#" class="text-blue-600 hover:text-blue-900 text-xs font-bold">Detail</a>
@@ -388,36 +509,44 @@
                 <div class="space-y-4">
                     <!-- Day Item -->
                     <div class="flex gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50">
-                        <div class="flex flex-col items-center justify-center bg-blue-50 text-blue-600 rounded-lg w-16 h-16 shrink-0">
+                        <div
+                            class="flex flex-col items-center justify-center bg-blue-50 text-blue-600 rounded-lg w-16 h-16 shrink-0">
                             <span class="text-xs font-bold uppercase">Senin</span>
                             <span class="text-xl font-bold">25</span>
                         </div>
                         <div class="flex-1">
                             <div class="flex justify-between items-start">
                                 <h4 class="font-bold text-gray-900">Pengenalan SEO On-Page</h4>
-                                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-medium">09:00 - 12:00</span>
+                                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-medium">09:00 -
+                                    12:00</span>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1"><i class="fa-solid fa-video mr-1"></i> Zoom Meeting</p>
+                            <p class="text-sm text-gray-500 mt-1"><i class="fa-solid fa-video mr-1"></i> Zoom Meeting
+                            </p>
                             <div class="flex items-center gap-2 mt-2">
-                                <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=random" class="w-5 h-5 rounded-full">
+                                <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=random"
+                                    class="w-5 h-5 rounded-full">
                                 <span class="text-xs text-gray-500">Instruktur: Budi Santoso</span>
                             </div>
                         </div>
                     </div>
-                     <!-- Day Item -->
-                     <div class="flex gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50">
-                        <div class="flex flex-col items-center justify-center bg-gray-100 text-gray-600 rounded-lg w-16 h-16 shrink-0">
+                    <!-- Day Item -->
+                    <div class="flex gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50">
+                        <div
+                            class="flex flex-col items-center justify-center bg-gray-100 text-gray-600 rounded-lg w-16 h-16 shrink-0">
                             <span class="text-xs font-bold uppercase">Rabu</span>
                             <span class="text-xl font-bold">27</span>
                         </div>
                         <div class="flex-1">
                             <div class="flex justify-between items-start">
                                 <h4 class="font-bold text-gray-900">Copywriting untuk Landing Page</h4>
-                                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded font-medium">13:00 - 15:00</span>
+                                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded font-medium">13:00 -
+                                    15:00</span>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1"><i class="fa-solid fa-building mr-1"></i> Ruang 203, Gedung A</p>
+                            <p class="text-sm text-gray-500 mt-1"><i class="fa-solid fa-building mr-1"></i> Ruang 203,
+                                Gedung A</p>
                             <div class="flex items-center gap-2 mt-2">
-                                <img src="https://ui-avatars.com/api/?name=Andi+Wijaya&background=random" class="w-5 h-5 rounded-full">
+                                <img src="https://ui-avatars.com/api/?name=Andi+Wijaya&background=random"
+                                    class="w-5 h-5 rounded-full">
                                 <span class="text-xs text-gray-500">Instruktur: Andi Wijaya</span>
                             </div>
                         </div>
@@ -426,10 +555,11 @@
             </div>
 
             <!-- CONTENT 4: INSTRUKTUR -->
-             <div id="content-admin" class="tab-content p-6 bg-white min-h-[400px]">
+            <div id="content-admin" class="tab-content p-6 bg-white min-h-[400px]">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h3 class="text-lg font-bold text-gray-800">Daftar Instruktur & Mentor</h3>
-                    <button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition-all flex items-center gap-2">
+                    <button
+                        class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition-all flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Tambah Instruktur
                     </button>
                 </div>
@@ -437,70 +567,91 @@
                 <!-- Instructor List/Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Instructor Card 1 -->
-                    <div class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow relative group">
+                    <div
+                        class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow relative group">
                         <div class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer">
                             <i class="fa-solid fa-ellipsis-vertical"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-4">
-                            <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=random" class="w-14 h-14 rounded-full border-2 border-white shadow-sm">
+                            <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=random"
+                                class="w-14 h-14 rounded-full border-2 border-white shadow-sm">
                             <div>
                                 <h4 class="font-bold text-gray-900">Budi Santoso</h4>
-                                <p class="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full w-fit mt-1">SEO Specialist</p>
+                                <p
+                                    class="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full w-fit mt-1">
+                                    SEO Specialist</p>
                             </div>
                         </div>
                         <div class="space-y-2 text-sm text-gray-600 mb-4">
-                            <div class="flex items-center gap-2"><i class="fa-solid fa-envelope text-gray-400 w-4"></i> budi.s@example.com</div>
-                            <div class="flex items-center gap-2"><i class="fa-solid fa-phone text-gray-400 w-4"></i> 0812-3456-7890</div>
+                            <div class="flex items-center gap-2"><i class="fa-solid fa-envelope text-gray-400 w-4"></i>
+                                budi.s@example.com</div>
+                            <div class="flex items-center gap-2"><i class="fa-solid fa-phone text-gray-400 w-4"></i>
+                                0812-3456-7890</div>
                         </div>
                         <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
-                            <span class="text-xs text-green-600 font-medium flex items-center gap-1"><i class="fa-solid fa-circle text-[8px]"></i> Aktif</span>
+                            <span class="text-xs text-green-600 font-medium flex items-center gap-1"><i
+                                    class="fa-solid fa-circle text-[8px]"></i> Aktif</span>
                             <button class="text-xs text-gray-500 hover:text-primary font-medium">Lihat Profil</button>
                         </div>
                     </div>
 
                     <!-- Instructor Card 2 -->
-                    <div class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow relative group">
-                         <div class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer">
+                    <div
+                        class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow relative group">
+                        <div class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer">
                             <i class="fa-solid fa-ellipsis-vertical"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-4">
-                            <img src="https://ui-avatars.com/api/?name=Siti+Aminah&background=random" class="w-14 h-14 rounded-full border-2 border-white shadow-sm">
+                            <img src="https://ui-avatars.com/api/?name=Siti+Aminah&background=random"
+                                class="w-14 h-14 rounded-full border-2 border-white shadow-sm">
                             <div>
                                 <h4 class="font-bold text-gray-900">Siti Aminah</h4>
-                                <p class="text-xs text-pink-600 font-medium bg-pink-50 px-2 py-0.5 rounded-full w-fit mt-1">Social Media Ads</p>
+                                <p
+                                    class="text-xs text-pink-600 font-medium bg-pink-50 px-2 py-0.5 rounded-full w-fit mt-1">
+                                    Social Media Ads</p>
                             </div>
                         </div>
                         <div class="space-y-2 text-sm text-gray-600 mb-4">
-                            <div class="flex items-center gap-2"><i class="fa-solid fa-envelope text-gray-400 w-4"></i> siti.am@example.com</div>
-                            <div class="flex items-center gap-2"><i class="fa-solid fa-phone text-gray-400 w-4"></i> 0812-9876-5432</div>
+                            <div class="flex items-center gap-2"><i class="fa-solid fa-envelope text-gray-400 w-4"></i>
+                                siti.am@example.com</div>
+                            <div class="flex items-center gap-2"><i class="fa-solid fa-phone text-gray-400 w-4"></i>
+                                0812-9876-5432</div>
                         </div>
                         <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
-                            <span class="text-xs text-green-600 font-medium flex items-center gap-1"><i class="fa-solid fa-circle text-[8px]"></i> Aktif</span>
+                            <span class="text-xs text-green-600 font-medium flex items-center gap-1"><i
+                                    class="fa-solid fa-circle text-[8px]"></i> Aktif</span>
                             <button class="text-xs text-gray-500 hover:text-primary font-medium">Lihat Profil</button>
                         </div>
                     </div>
 
-                     <!-- Instructor Card 3 -->
-                     <div class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow relative group">
+                    <!-- Instructor Card 3 -->
+                    <div
+                        class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow relative group">
                         <div class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer">
-                           <i class="fa-solid fa-ellipsis-vertical"></i>
-                       </div>
-                       <div class="flex items-center gap-4 mb-4">
-                           <img src="https://ui-avatars.com/api/?name=Andi+Wijaya&background=random" class="w-14 h-14 rounded-full border-2 border-white shadow-sm">
-                           <div>
-                               <h4 class="font-bold text-gray-900">Andi Wijaya</h4>
-                               <p class="text-xs text-indigo-600 font-medium bg-indigo-50 px-2 py-0.5 rounded-full w-fit mt-1">Copywriting</p>
-                           </div>
-                       </div>
-                       <div class="space-y-2 text-sm text-gray-600 mb-4">
-                           <div class="flex items-center gap-2"><i class="fa-solid fa-envelope text-gray-400 w-4"></i> andi.w@example.com</div>
-                           <div class="flex items-center gap-2"><i class="fa-solid fa-phone text-gray-400 w-4"></i> 0857-1234-5678</div>
-                       </div>
-                       <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
-                           <span class="text-xs text-gray-400 font-medium flex items-center gap-1"><i class="fa-solid fa-circle text-[8px]"></i> Cuti</span>
-                           <button class="text-xs text-gray-500 hover:text-primary font-medium">Lihat Profil</button>
-                       </div>
-                   </div>
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </div>
+                        <div class="flex items-center gap-4 mb-4">
+                            <img src="https://ui-avatars.com/api/?name=Andi+Wijaya&background=random"
+                                class="w-14 h-14 rounded-full border-2 border-white shadow-sm">
+                            <div>
+                                <h4 class="font-bold text-gray-900">Andi Wijaya</h4>
+                                <p
+                                    class="text-xs text-indigo-600 font-medium bg-indigo-50 px-2 py-0.5 rounded-full w-fit mt-1">
+                                    Copywriting</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm text-gray-600 mb-4">
+                            <div class="flex items-center gap-2"><i class="fa-solid fa-envelope text-gray-400 w-4"></i>
+                                andi.w@example.com</div>
+                            <div class="flex items-center gap-2"><i class="fa-solid fa-phone text-gray-400 w-4"></i>
+                                0857-1234-5678</div>
+                        </div>
+                        <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <span class="text-xs text-gray-400 font-medium flex items-center gap-1"><i
+                                    class="fa-solid fa-circle text-[8px]"></i> Cuti</span>
+                            <button class="text-xs text-gray-500 hover:text-primary font-medium">Lihat Profil</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -509,12 +660,17 @@
                 <!-- Header Stats Asrama -->
                 <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
                     <div>
-                         <h3 class="text-lg font-bold text-gray-800">Manajemen Kamar Asrama</h3>
-                         <p class="text-xs text-gray-500">Kelola penempatan peserta di Gedung A (Pria) dan Gedung B (Wanita).</p>
+                        <h3 class="text-lg font-bold text-gray-800">Manajemen Kamar Asrama</h3>
+                        <p class="text-xs text-gray-500">Kelola penempatan peserta di Gedung A (Pria) dan Gedung B
+                            (Wanita).</p>
                     </div>
                     <div class="flex gap-2">
-                        <button class="bg-white border border-gray-300 px-3 py-2 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50"><i class="fa-solid fa-print mr-1"></i> Daftar Penghuni</button>
-                        <button class="bg-primary text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-700"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Auto Assign</button>
+                        <button
+                            class="bg-white border border-gray-300 px-3 py-2 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50"><i
+                                class="fa-solid fa-print mr-1"></i> Daftar Penghuni</button>
+                        <button
+                            class="bg-primary text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-700"><i
+                                class="fa-solid fa-wand-magic-sparkles mr-1"></i> Auto Assign</button>
                     </div>
                 </div>
 
@@ -522,32 +678,38 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                         <p class="text-xs text-gray-500">Kapasitas Total</p>
-                        <p class="text-xl font-bold text-gray-900 mt-1">150 <span class="text-xs font-normal text-gray-400">Bed</span></p>
+                        <p class="text-xl font-bold text-gray-900 mt-1">150 <span
+                                class="text-xs font-normal text-gray-400">Bed</span></p>
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                         <p class="text-xs text-gray-500">Terisi</p>
-                        <p class="text-xl font-bold text-green-600 mt-1">124 <span class="text-xs font-normal text-gray-400">Peserta</span></p>
+                        <p class="text-xl font-bold text-green-600 mt-1">124 <span
+                                class="text-xs font-normal text-gray-400">Peserta</span></p>
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                         <p class="text-xs text-gray-500">Sisa Slot Pria</p>
-                        <p class="text-xl font-bold text-blue-600 mt-1">12 <span class="text-xs font-normal text-gray-400">Bed</span></p>
+                        <p class="text-xl font-bold text-blue-600 mt-1">12 <span
+                                class="text-xs font-normal text-gray-400">Bed</span></p>
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                         <p class="text-xs text-gray-500">Sisa Slot Wanita</p>
-                        <p class="text-xl font-bold text-pink-600 mt-1">14 <span class="text-xs font-normal text-gray-400">Bed</span></p>
+                        <p class="text-xl font-bold text-pink-600 mt-1">14 <span
+                                class="text-xs font-normal text-gray-400">Bed</span></p>
                     </div>
                 </div>
 
                 <!-- Section: Gedung A (Pria) -->
                 <div class="mb-6">
-                    <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-mars text-blue-500"></i> Gedung A (Pria) - Lantai 1</h4>
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2"><i
+                            class="fa-solid fa-mars text-blue-500"></i> Gedung A (Pria) - Lantai 1</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <!-- Room Card 101 (Full) -->
                         <div class="bg-white p-4 rounded-lg border border-red-200 shadow-sm relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-1 h-full bg-red-400"></div>
                             <div class="flex justify-between items-start mb-2">
                                 <span class="font-bold text-gray-900">Kamar 101</span>
-                                <span class="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-medium">Penuh</span>
+                                <span
+                                    class="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-medium">Penuh</span>
                             </div>
                             <div class="flex gap-1 mb-3">
                                 <i class="fa-solid fa-bed text-gray-600 text-xs"></i>
@@ -557,21 +719,26 @@
                             </div>
                             <div class="space-y-1.5">
                                 <div class="flex items-center gap-2 text-xs text-gray-600">
-                                    <div class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[8px] font-bold">AD</div> Andi Dermawan
+                                    <div
+                                        class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[8px] font-bold">
+                                        AD</div> Andi Dermawan
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-gray-600">
-                                    <div class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[8px] font-bold">BS</div> Budi Santoso
+                                    <div
+                                        class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[8px] font-bold">
+                                        BS</div> Budi Santoso
                                 </div>
                                 <div class="text-xs text-gray-400 pl-1">+ 2 Lainnya</div>
                             </div>
                         </div>
 
-                         <!-- Room Card 102 (Partial) -->
-                         <div class="bg-white p-4 rounded-lg border border-green-200 shadow-sm relative overflow-hidden">
+                        <!-- Room Card 102 (Partial) -->
+                        <div class="bg-white p-4 rounded-lg border border-green-200 shadow-sm relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-1 h-full bg-green-400"></div>
                             <div class="flex justify-between items-start mb-2">
                                 <span class="font-bold text-gray-900">Kamar 102</span>
-                                <span class="text-xs bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-medium">Sisa 2</span>
+                                <span class="text-xs bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-medium">Sisa
+                                    2</span>
                             </div>
                             <div class="flex gap-1 mb-3">
                                 <i class="fa-solid fa-bed text-gray-600 text-xs"></i>
@@ -581,12 +748,18 @@
                             </div>
                             <div class="space-y-1.5">
                                 <div class="flex items-center gap-2 text-xs text-gray-600">
-                                    <div class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[8px] font-bold">RW</div> Rian Wijaya
+                                    <div
+                                        class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[8px] font-bold">
+                                        RW</div> Rian Wijaya
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-gray-600">
-                                    <div class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[8px] font-bold">DK</div> Diki Kurniawan
+                                    <div
+                                        class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[8px] font-bold">
+                                        DK</div> Diki Kurniawan
                                 </div>
-                                <button class="w-full mt-2 text-xs border border-dashed border-gray-300 py-1 text-gray-400 hover:text-primary hover:border-primary rounded transition-colors"><i class="fa-solid fa-plus"></i> Assign</button>
+                                <button
+                                    class="w-full mt-2 text-xs border border-dashed border-gray-300 py-1 text-gray-400 hover:text-primary hover:border-primary rounded transition-colors"><i
+                                        class="fa-solid fa-plus"></i> Assign</button>
                             </div>
                         </div>
                     </div>
@@ -594,14 +767,16 @@
 
                 <!-- Section: Gedung B (Wanita) -->
                 <div>
-                    <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-venus text-pink-500"></i> Gedung B (Wanita) - Lantai 1</h4>
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2"><i
+                            class="fa-solid fa-venus text-pink-500"></i> Gedung B (Wanita) - Lantai 1</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <!-- Room Card 201 (Full) -->
                         <div class="bg-white p-4 rounded-lg border border-red-200 shadow-sm relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-1 h-full bg-red-400"></div>
                             <div class="flex justify-between items-start mb-2">
                                 <span class="font-bold text-gray-900">Kamar 201</span>
-                                <span class="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-medium">Penuh</span>
+                                <span
+                                    class="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-medium">Penuh</span>
                             </div>
                             <div class="flex gap-1 mb-3">
                                 <i class="fa-solid fa-bed text-gray-600 text-xs"></i>
@@ -611,10 +786,14 @@
                             </div>
                             <div class="space-y-1.5">
                                 <div class="flex items-center gap-2 text-xs text-gray-600">
-                                    <div class="w-5 h-5 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-[8px] font-bold">SK</div> Siti Komariah
+                                    <div
+                                        class="w-5 h-5 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-[8px] font-bold">
+                                        SK</div> Siti Komariah
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-gray-600">
-                                    <div class="w-5 h-5 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-[8px] font-bold">DA</div> Dina Aulia
+                                    <div
+                                        class="w-5 h-5 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-[8px] font-bold">
+                                        DA</div> Dina Aulia
                                 </div>
                                 <div class="text-xs text-gray-400 pl-1">+ 2 Lainnya</div>
                             </div>
@@ -627,10 +806,12 @@
             <div id="content-hasil" class="tab-content p-6 bg-white min-h-[400px]">
                 <div class="flex justify-between items-center mb-6">
                     <div>
-                         <h3 class="text-lg font-bold text-gray-800">Laporan Hasil Evaluasi Batch 5</h3>
-                         <p class="text-xs text-gray-500">Rekapitulasi nilai pretest, posttest, dan survey kepuasan.</p>
+                        <h3 class="text-lg font-bold text-gray-800">Laporan Hasil Evaluasi Batch 5</h3>
+                        <p class="text-xs text-gray-500">Rekapitulasi nilai pretest, posttest, dan survey kepuasan.</p>
                     </div>
-                    <button class="bg-white border border-gray-300 px-3 py-2 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50"><i class="fa-solid fa-download mr-1"></i> Unduh Laporan (PDF)</button>
+                    <button
+                        class="bg-white border border-gray-300 px-3 py-2 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50"><i
+                            class="fa-solid fa-download mr-1"></i> Unduh Laporan (PDF)</button>
                 </div>
 
                 <!-- Evaluasi Summary Cards -->
@@ -641,25 +822,30 @@
                         <div class="flex items-end gap-4 h-24 mb-2">
                             <div class="w-1/2 flex flex-col items-center justify-end h-full gap-2">
                                 <div class="text-xs font-bold text-gray-500">55.4</div>
-                                <div class="w-full bg-blue-300 rounded-t-lg transition-all hover:bg-blue-400" style="height: 55%"></div>
+                                <div class="w-full bg-blue-300 rounded-t-lg transition-all hover:bg-blue-400"
+                                    style="height: 55%"></div>
                                 <div class="text-xs font-medium text-gray-600">Pretest</div>
                             </div>
                             <div class="w-1/2 flex flex-col items-center justify-end h-full gap-2">
                                 <div class="text-xs font-bold text-blue-700">82.1</div>
-                                <div class="w-full bg-blue-600 rounded-t-lg transition-all hover:bg-blue-700 shadow-sm" style="height: 82%"></div>
+                                <div class="w-full bg-blue-600 rounded-t-lg transition-all hover:bg-blue-700 shadow-sm"
+                                    style="height: 82%"></div>
                                 <div class="text-xs font-medium text-gray-600 font-bold">Posttest</div>
                             </div>
                         </div>
-                        <p class="text-xs text-center text-blue-800 font-medium bg-blue-200/50 py-1 rounded">Kenaikan +48%</p>
+                        <p class="text-xs text-center text-blue-800 font-medium bg-blue-200/50 py-1 rounded">Kenaikan
+                            +48%</p>
                     </div>
 
                     <!-- Satisfaction Score -->
-                    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex flex-col items-center justify-center">
+                    <div
+                        class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex flex-col items-center justify-center">
                         <h4 class="text-sm font-semibold text-gray-600 mb-2">Tingkat Kepuasan (CSAT)</h4>
                         <div class="relative w-24 h-24 flex items-center justify-center mb-2">
-                             <div class="absolute w-full h-full rounded-full border-4 border-gray-100"></div>
-                             <div class="absolute w-full h-full rounded-full border-4 border-green-500 border-t-transparent -rotate-45" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);"></div>
-                             <div class="text-3xl font-bold text-gray-800">4.8</div>
+                            <div class="absolute w-full h-full rounded-full border-4 border-gray-100"></div>
+                            <div class="absolute w-full h-full rounded-full border-4 border-green-500 border-t-transparent -rotate-45"
+                                style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);"></div>
+                            <div class="text-3xl font-bold text-gray-800">4.8</div>
                         </div>
                         <div class="flex gap-1 text-yellow-400 text-sm">
                             <i class="fa-solid fa-star"></i>
@@ -709,16 +895,26 @@
                 <!-- Detailed Table -->
                 <div class="border border-gray-200 rounded-lg overflow-hidden">
                     <div class="bg-gray-50 px-6 py-3 border-b border-gray-200 flex justify-between items-center">
-                        <h4 class="font-bold text-sm text-gray-700">Rincian Nilai per Bidang</h4>
+                        <h4 class="font-bold text-sm text-gray-700">Rincian Nilai per Kompetensi</h4>
                     </div>
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-white">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Bidang</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Pretest</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Posttest</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Kepuasan</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama Kompetensi</th>
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Avg Pretest</th>
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Avg Posttest</th>
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Kepuasan</th>
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200 text-sm">
@@ -727,28 +923,35 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-gray-500">60.5</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-green-600">85.0</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-yellow-500 font-bold">4.9</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center"><span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded">Sangat Baik</span></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center"><span
+                                        class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded">Sangat
+                                        Baik</span></td>
                             </tr>
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Social Media Ads</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-gray-500">58.0</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-green-600">80.2</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-yellow-500 font-bold">4.7</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center"><span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded">Baik</span></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center"><span
+                                        class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded">Baik</span></td>
                             </tr>
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Copywriting</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-gray-500">65.0</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-green-600">88.5</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-yellow-500 font-bold">4.8</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center"><span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded">Sangat Baik</span></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center"><span
+                                        class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded">Sangat
+                                        Baik</span></td>
                             </tr>
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Web Development</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-gray-500">45.0</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-green-600">75.0</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-yellow-500 font-bold">4.5</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center"><span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-0.5 rounded">Cukup</span></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center"><span
+                                        class="bg-yellow-100 text-yellow-700 text-xs px-2 py-0.5 rounded">Cukup</span>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -756,7 +959,7 @@
             </div>
 
         </div>
-        
+
         <!-- 5. BOTTOM WIDGETS -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <!-- Needs Attention -->
@@ -767,15 +970,21 @@
                 <ul class="space-y-3">
                     <li class="flex justify-between items-center text-sm border-b border-gray-50 pb-2 last:border-0">
                         <span class="text-gray-600">Peserta absensi &lt; 50%</span>
-                        <span class="bg-red-50 text-red-600 px-2 py-0.5 rounded text-xs font-bold border border-red-100">5 Org</span>
+                        <span
+                            class="bg-red-50 text-red-600 px-2 py-0.5 rounded text-xs font-bold border border-red-100">5
+                            Org</span>
                     </li>
                     <li class="flex justify-between items-center text-sm border-b border-gray-50 pb-2 last:border-0">
                         <span class="text-gray-600">Jadwal belum diisi</span>
-                        <span class="bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded text-xs font-bold border border-yellow-100">1 Sesi</span>
+                        <span
+                            class="bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded text-xs font-bold border border-yellow-100">1
+                            Sesi</span>
                     </li>
                     <li class="flex justify-between items-center text-sm pb-1">
                         <span class="text-gray-600">Konfirmasi pembayaran</span>
-                        <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold border border-blue-100">3 Org</span>
+                        <span
+                            class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold border border-blue-100">3
+                            Org</span>
                     </li>
                 </ul>
             </div>
@@ -786,8 +995,10 @@
                     <i class="fa-solid fa-paperclip text-gray-400"></i> File & Dokumen
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
-                        <div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-red-500 text-lg group-hover:bg-red-100 transition-colors">
+                    <div
+                        class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-red-500 text-lg group-hover:bg-red-100 transition-colors">
                             <i class="fa-solid fa-file-pdf"></i>
                         </div>
                         <div>
@@ -796,15 +1007,17 @@
                         </div>
                         <i class="fa-solid fa-download ml-auto text-gray-300 group-hover:text-gray-500"></i>
                     </div>
-                    <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
-                        <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center text-green-500 text-lg group-hover:bg-green-100 transition-colors">
+                    <div
+                        class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center text-green-500 text-lg group-hover:bg-green-100 transition-colors">
                             <i class="fa-solid fa-file-excel"></i>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-900">Data_Peserta_Final.xlsx</p>
                             <p class="text-xs text-gray-500">Diupdate kemarin • 1.1 MB</p>
                         </div>
-                         <i class="fa-solid fa-download ml-auto text-gray-300 group-hover:text-gray-500"></i>
+                        <i class="fa-solid fa-download ml-auto text-gray-300 group-hover:text-gray-500"></i>
                     </div>
                 </div>
             </div>
@@ -819,7 +1032,7 @@
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
-            
+
             // Remove active styles from all buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active', 'border-primary', 'text-primary');
@@ -828,7 +1041,7 @@
 
             // Show selected content
             document.getElementById('content-' + tabId).classList.add('active');
-            
+
             // Add active styles to clicked button
             const activeBtn = document.getElementById('tab-' + tabId);
             activeBtn.classList.remove('border-transparent', 'text-gray-500');
@@ -836,4 +1049,5 @@
         }
     </script>
 </body>
+
 </html>

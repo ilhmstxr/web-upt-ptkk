@@ -9,7 +9,7 @@ INSERT INTO
     `deskripsi`,
     `tipe`,
     `sub_tipe`,
-    `bidang_id`,
+    `kompetensi_id`,
     `pelatihan_id`,
     `durasi_menit`,
     `created_at`,

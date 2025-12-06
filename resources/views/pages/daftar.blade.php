@@ -144,7 +144,7 @@
             <ul class="space-y-2 text-[14px] font-medium text-[#000000]">
               <li class="flex gap-2">
                 <span class="text-[#1524AF] inline-block font-bold leading-none text-[17px]">></span>
-                Calon peserta kelas XI dengan bidang kompetensi sesuai kegiatan pelatihan.
+                Calon peserta kelas XI dengan kompetensi keahlian sesuai kegiatan pelatihan.
               </li>
 
               <li class="flex gap-2">
@@ -801,25 +801,25 @@
                         >
                       </div>
 
-                      {{-- Kompetensi / Bidang Pelatihan --}}
+                      {{-- Kompetensi / Kompetensi Pelatihan --}}
                       <div>
                         <label
-                          for="bidang_keahlian"
+                          for="kompetensi_keahlian"
                           class="block text-sm font-semibold text-blue-900 mb-2"
                         >
-                          Kompetensi / Bidang Pelatihan
+                          Kompetensi / Kompetensi Pelatihan
                         </label>
                         <select
-                          id="bidang_keahlian"
-                          name="bidang_keahlian"
+                          id="kompetensi_keahlian"
+                          name="kompetensi_keahlian"
                           required
                           class="w-full rounded-lg border border-[#B6BBE6] bg-white px-3 py-2.5
                                  text-[13px] md:text-[14px] text-slate-800
                                  focus:outline-none focus:ring-2 focus:ring-[#1524AF]/40 focus:border-[#1524AF]"
                         >
                           <option value="">Pilih Kompetensi</option>
-                          @foreach ($bidang as $b)
-                            <option value="{{ $b->id }}">{{ $b->nama_bidang }}</option>
+                          @foreach ($kompetensi as $b)
+                            <option value="{{ $b->id }}">{{ $b->nama_kompetensi }}</option>
                           @endforeach
                         </select>
                       </div>

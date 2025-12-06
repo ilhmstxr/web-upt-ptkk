@@ -128,10 +128,10 @@
 
                 <!-- Filter Kompetensi -->
                 <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Kompetensi/Bidang</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Kompetensi Keahlian</label>
                     <select wire:model.live="filterCompetency"
                         class="w-full py-2 px-3 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:ring-primary-600 focus:border-primary-600 bg-white dark:bg-gray-800 dark:text-white">
-                        <option value="">Semua Bidang</option>
+                        <option value="">Semua Kompetensi</option>
                         @foreach($this->competencies as $competency)
                             <option value="{{ $competency }}">{{ $competency }}</option>
                         @endforeach
@@ -192,11 +192,7 @@
                             <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700"
-                                                src="https://ui-avatars.com/api/?name={{ urlencode($p->peserta->nama ?? 'Unknown') }}&background=random"
-                                                alt="">
-                                        </div>
+
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $p->peserta->nama ?? '-' }}</div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">{{ $p->peserta->user->email ?? '-' }}</div>
@@ -211,7 +207,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @php
                                         $badgeColor = 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200';
-                                        $comp = $p->bidangPelatihan->bidang->nama_bidang ?? '-';
+                                        $comp = $p->kompetensi->nama_kompetensi ?? $p->kompetensiPelatihan->kompetensi->nama_kompetensi ?? '-';
                                         if (str_contains($comp, 'SEO')) $badgeColor = 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-500/20';
                                         elseif (str_contains($comp, 'Ads')) $badgeColor = 'bg-pink-50 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 border-pink-100 dark:border-pink-500/20';
                                         elseif (str_contains($comp, 'Backend')) $badgeColor = 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-100 dark:border-purple-500/20';

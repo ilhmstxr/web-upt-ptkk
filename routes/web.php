@@ -45,7 +45,7 @@ Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
 Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
 Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
 
-Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
+Route::redirect('/kompetensi-pelatihan', '/kompetensi-pelatihan', 301);
 
 Route::view('/berita',  'pages.berita')->name('news');
 Route::view('/panduan', 'pages.panduan')->name('panduan');

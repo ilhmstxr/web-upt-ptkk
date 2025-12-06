@@ -71,22 +71,22 @@
 
                 {{-- Kolom 3: Kompetensi --}}
                 <div>
-                    <label for="bidang_id" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <label for="kompetensi_id" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                         <i class="fas fa-graduation-cap text-indigo-500 mr-2"></i> Kompetensi
                     </label>
-                    <select id="bidang_id" name="bidang_id"
-                        class="form-select w-full px-4 py-3 border {{ $errors->has('bidang_id') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                    <select id="kompetensi_id" name="kompetensi_id"
+                        class="form-select w-full px-4 py-3 border {{ $errors->has('kompetensi_id') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                         required>
                         <option value="" disabled selected>Pilih Kompetensi</option>
-                        @foreach ($bidang as $b)
-                            <option value="{{ $b->id }}" {{ old('bidang_id') == $b->id ? 'selected' : '' }}>
-                                {{ $b->nama_bidang }}
+                        @foreach ($kompetensi as $b)
+                            <option value="{{ $b->id }}" {{ old('kompetensi_id') == $b->id ? 'selected' : '' }}>
+                                {{ $b->nama_kompetensi }}
                             </option>
                         @endforeach
                     </select>
 
-                    @if ($errors->has('bidang_id'))
-                        <p class="text-red-500 text-xs mt-1">{{ $errors->first('bidang_id') }}</p>
+                    @if ($errors->has('kompetensi_id'))
+                        <p class="text-red-500 text-xs mt-1">{{ $errors->first('kompetensi_id') }}</p>
                     @endif
                 </div>
 

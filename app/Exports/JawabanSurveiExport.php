@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\JawabanSurvei;
+use App\Models\JawabanUser;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
@@ -14,10 +14,10 @@ class JawabanSurveiExport implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        return JawabanSurvei::with([
-                'peserta:id,nama,kompetensi_id,instansi_id',
-                'peserta.kompetensi:id,nama_kompetensi',
-                'peserta.instansi:id,asal_instansi',
+        return \App\Models\JawabanUser::with([
+                'percobaan.peserta:id,nama,kompetensi_id,instansi_id',
+                'percobaan.peserta.kompetensi:id,nama_kompetensi',
+                'percobaan.peserta.instansi:id,asal_instansi',
                 'pertanyaan:id,judul',
                 'opsiJawaban:id,judul,apakah_benar',
             ])
@@ -26,9 +26,9 @@ class JawabanSurveiExport implements FromCollection, WithHeadings
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'peserta_nama' => $item->peserta->nama ?? '-',
-                    'kompetensi' => $item->peserta->kompetensi->nama_kompetensi ?? '-',
-                    'instansi' => $item->peserta->instansi->asal_instansi ?? '-',
+                    'peserta_nama' => $item->percobaan->peserta->nama ?? '-',
+                    'kompetensi' => $item->percobaan->peserta->kompetensi->nama_kompetensi ?? '-',
+                    'instansi' => $item->percobaan->peserta->instansi->asal_instansi ?? '-',
                     'pertanyaan' => $item->pertanyaan->judul ?? '-',
                     'jawaban_id' => $item->opsi_jawaban_id ?? null,
                     'jawaban_text' => $item->opsiJawaban->judul ?? ($item->jawaban_teks ?? null),

@@ -273,7 +273,7 @@
     {{-- 3 Foto Bawah (HP/Tablet/Desktop): Foto 1 → Foto 2 → Foto 3 --}}
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 md:gap-6 lg:gap-8">
       <img src="{{ asset('images/profil/Diklat2.svg') }}"
-           alt="Praktik Kompetensi Bidang Kuliner"
+           alt="Praktik Kompetensi Kompetensi Kuliner"
            class="w-full h-auto"
            loading="lazy">
 

@@ -15,9 +15,9 @@ class Pelatihan extends Cluster
     // Enable sub-navigation to show resources as tabs
     protected static bool $shouldRegisterNavigation = true;
     
-    // Redirect to Bidang resource when cluster is clicked
+    // Redirect to Kompetensi resource when cluster is clicked
     public static function getNavigationUrl(): string
     {
-        return \App\Filament\Clusters\Pelatihan\Resources\BidangResource::getUrl('index');
+        return \App\Filament\Clusters\Pelatihan\Resources\KompetensiResource::getUrl('index');
     }
 }

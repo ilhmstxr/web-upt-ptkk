@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('instruktur', function (Blueprint $table) {
             $table->id();
-            // $table->string('kompetensi'); // bidang
+            // $table->string('kompetensi'); // kompetensi
             // $table->date('tanggal_mulai'); // pelatihan
             // $table->date('tanggal_akhir'); // pelatihan
-            $table->foreignId('bidang_id')->constrained('bidang')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('kompetensi_id')->constrained('kompetensi')->onUpdate('cascade')->onDelete('cascade');
 
             $table->foreignId('user_id')
                 ->constrained('users')

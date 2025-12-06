@@ -3,8 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\JawabanSurveiResource\Pages\PelatihanReport;
-use App\Filament\Widgets\BidangScoresChart;
-use App\Filament\Widgets\BidangSummaryTable;
+use App\Filament\Widgets\KompetensiScoresChart;
+use App\Filament\Widgets\KompetensiSummaryTable;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;

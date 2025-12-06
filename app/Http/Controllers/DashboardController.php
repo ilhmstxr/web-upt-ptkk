@@ -497,7 +497,7 @@ class DashboardController extends Controller
         $peserta = ($key === 'peserta_id') ? Peserta::find($id) : null;
         if (!$peserta) return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
 
-        $tes = Tes::where('bidang_id', $peserta->bidang_id)->get();
+        $tes = Tes::where('kompetensi_id', $peserta->kompetensi_id)->get();
         return view('dashboard.pages.pre-test.pretest', compact('tes','peserta'));
     }
 
@@ -612,7 +612,7 @@ class DashboardController extends Controller
         $peserta = ($key === 'peserta_id') ? Peserta::find($id) : null;
         if (!$peserta) return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
 
-        $tes = Tes::where('bidang_id', $peserta->bidang_id)->get();
+        $tes = Tes::where('kompetensi_id', $peserta->kompetensi_id)->get();
 
         $tesWithStatus = $tes->map(function($t) use ($key, $id) {
             $done = Percobaan::where('tes_id',$t->id)->where($key,$id)->whereNotNull('waktu_selesai')->exists();

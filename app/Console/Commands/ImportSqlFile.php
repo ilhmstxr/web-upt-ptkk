@@ -39,7 +39,7 @@ class ImportSqlFile extends Command
 
         // 1. Tentukan urutan eksekusi tabel yang benar
         $tableOrder1 = [
-            'bidang',
+            'kompetensi',
             'cabang_dinas',
             'instansi',
             'pelatihan',
@@ -53,7 +53,7 @@ class ImportSqlFile extends Command
             'lampiran',
             'percobaan',
             'jawaban_user',
-            'bidang_pelatihan',
+            'kompetensi_pelatihan',
             'pendaftaran_pelatihan',
             'instruktur'
         ];

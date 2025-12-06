@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             // PelatihanSeeder::class,
             // CabangDinasSeeder::class,
             // PelatihanSeeder::class,
-            // BidangSeeder::class,
+            // KompetensiSeeder::class,
             // PesertaSeeder::class,
             // SurveySeeder::class,
             // ProductionSeeder::class,

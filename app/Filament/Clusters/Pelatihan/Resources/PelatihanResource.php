@@ -52,13 +52,12 @@ class PelatihanResource extends Resource
 
                                             Forms\Components\Select::make('status')
                                                 ->options([
-                                                    'Pendaftaran Buka' => 'Pendaftaran Buka',
-                                                    'Sedang Berjalan' => 'Sedang Berjalan',
-                                                    'Selesai' => 'Selesai',
-                                                    'Mendatang' => 'Mendatang',
+                                                    'belum dimulai' => 'Belum Dimulai',
+                                                    'aktif' => 'Aktif',
+                                                    'selesai' => 'Selesai',
                                                 ])
                                                 ->required()
-                                                ->default('Mendatang'),
+                                                ->default('belum dimulai'),
                                             
                                             Forms\Components\TextInput::make('angkatan')
                                                 ->label('Angkatan')
@@ -88,10 +87,10 @@ class PelatihanResource extends Resource
                                                 ->label('Materi / Kompetensi')
                                                 ->columnSpan(2),
                                             
-                                            Forms\Components\Select::make('instruktur_id')
-                                                ->relationship('instruktur', 'nama')
-                                                ->label('Instruktur')
-                                                ->searchable(),
+                                            Forms\Components\TextInput::make('nama_instruktur')
+                                                ->label('Nama Instruktur')
+                                                ->placeholder('Masukkan nama instruktur')
+                                                ->maxLength(255),
                                             
                                             Forms\Components\TextInput::make('lokasi')
                                                 ->label('Lokasi / Ruangan')
@@ -127,12 +126,6 @@ class PelatihanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('gambar')
-                    ->label('Cover')
-                    ->square()
-                    ->size(60)
-                    ->defaultImageUrl('https://via.placeholder.com/150'),
-
                 Tables\Columns\TextColumn::make('nama_pelatihan')
                     ->label('Nama Pelatihan')
                     ->searchable()
@@ -146,9 +139,9 @@ class PelatihanResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Sedang Berjalan' => 'success',
-                        'Pendaftaran Buka' => 'info',
-                        'Selesai' => 'gray',
+                        'aktif' => 'success',
+                        'belum dimulai' => 'info',
+                        'selesai' => 'gray',
                         default => 'gray',
                     })
                     ->alignCenter(),
@@ -168,6 +161,12 @@ class PelatihanResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('instansi')
                     ->relationship('instansi', 'asal_instansi'),
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'belum dimulai' => 'Belum Dimulai',
+                        'aktif' => 'Aktif',
+                        'selesai' => 'Selesai',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

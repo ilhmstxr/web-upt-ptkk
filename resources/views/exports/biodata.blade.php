@@ -30,7 +30,7 @@
         <tr><td>Asal Lembaga</td><td>: {{ $peserta->instansi->asal_instansi ?? '-' }}</td></tr>
         <tr><td>Alamat Lembaga</td><td>: {{ $peserta->instansi->alamat_instansi ?? '-' }}</td></tr>
         <tr><td>Kelas</td><td>: {{ $peserta->instansi->kelas ?? '-' }}</td></tr>
-        <tr><td>Kompetensi Keahlian</td><td>: {{ $peserta->instansi->bidang_keahlian ?? '-' }}</td></tr>
+        <tr><td>Kompetensi Keahlian</td><td>: {{ $peserta->instansi->kompetensi_keahlian ?? '-' }}</td></tr>
     </table>
 
     <div class="signature">

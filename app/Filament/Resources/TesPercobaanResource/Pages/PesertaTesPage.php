@@ -4,7 +4,7 @@ namespace App\Filament\Resources\TesPercobaanResource\Pages;
 
 use App\Models\Pelatihan;
 use App\Models\Angkatan;
-use App\Models\Bidang;
+use App\Models\Kompetensi;
 use App\Models\Peserta;
 use Filament\Resources\Pages\Page;
 use Filament\Tables;
@@ -19,18 +19,18 @@ class PesertaTesPage extends Page implements Tables\Contracts\HasTable
 
     public Pelatihan $pelatihan;
     public Angkatan $angkatan;
-    public Bidang $bidang;
+    public Kompetensi $kompetensi;
 
-    public function mount($pelatihan, $angkatan, $bidang)
+    public function mount($pelatihan, $angkatan, $kompetensi)
     {
         $this->pelatihan = Pelatihan::findOrFail($pelatihan);
         $this->angkatan = Angkatan::findOrFail($angkatan);
-        $this->bidang = Bidang::findOrFail($bidang);
+        $this->kompetensi = Kompetensi::findOrFail($kompetensi);
     }
 
     public function getTitle(): string
     {
-        return "Peserta - {$this->bidang->nama_bidang}";
+        return "Peserta - {$this->kompetensi->nama_kompetensi}";
     }
 
     public function table(Table $table): Table
@@ -38,7 +38,7 @@ class PesertaTesPage extends Page implements Tables\Contracts\HasTable
         return $table
             ->query(
                 Peserta::query()
-                    ->where('bidang_id', $this->bidang->id)
+                    ->where('kompetensi_id', $this->kompetensi->id)
                     ->where('angkatan_id', $this->angkatan->id)
             )
             ->columns([
@@ -46,7 +46,7 @@ class PesertaTesPage extends Page implements Tables\Contracts\HasTable
                 TextColumn::make('email')->label('Email'),
                 TextColumn::make('instansi')->label('Instansi')->placeholder('-'),
             ])
-            ->emptyStateHeading('Belum ada peserta untuk bidang ini')
+            ->emptyStateHeading('Belum ada peserta untuk kompetensi ini')
             ->paginated(false);
     }
 }

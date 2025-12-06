@@ -4,7 +4,7 @@ namespace App\Filament\Resources\TesPercobaanResource\Pages;
 
 use App\Models\Pelatihan;
 use App\Models\Angkatan;
-use App\Models\Bidang;
+
 use Filament\Resources\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Table;

@@ -258,9 +258,7 @@
                         <input type="text" placeholder="Cari nama..." class="pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-600 focus:border-primary-600 w-full md:w-48 bg-white dark:bg-gray-700 dark:text-white dark:placeholder-gray-400">
                         <x-heroicon-o-magnifying-glass class="w-4 h-4 absolute left-3 top-2.5 text-gray-400 dark:text-gray-500" />
                     </div>
-                    <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 flex items-center gap-2 shadow-sm">
-                        <x-heroicon-o-user-plus class="w-4 h-4" /> Tambah Peserta
-                    </button>
+                    {{ $this->addParticipantAction }}
                 </div>
             </div>
 
@@ -280,9 +278,7 @@
                         @forelse($this->peserta as $peserta)
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                             <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs">
-                                    {{ substr($peserta->nama, 0, 2) }}
-                                </div>
+
                                 {{ $peserta->nama }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center text-gray-600 dark:text-gray-300">-</td>

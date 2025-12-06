@@ -3,8 +3,8 @@
 namespace App\Filament\Clusters\Kesiswaan\Resources\PendaftaranResource\Pages;
 
 use App\Filament\Clusters\Kesiswaan\Resources\PendaftaranResource;
-use App\Models\Bidang;
-use App\Models\BidangPelatihan;
+use App\Models\Kompetensi;
+use App\Models\KompetensiPelatihan;
 use App\Models\Pelatihan;
 use App\Models\PendaftaranPelatihan;
 use App\Models\Peserta;
@@ -47,7 +47,7 @@ class ListPendaftarans extends ListRecords
     public function getPendaftaransProperty()
     {
         return PendaftaranPelatihan::query()
-            ->with(['peserta.user', 'pelatihan', 'bidangPelatihan.bidang'])
+            ->with(['peserta.user', 'pelatihan', 'kompetensiPelatihan.kompetensi'])
             ->when($this->search, function (Builder $query) {
                 $query->whereHas('peserta', function (Builder $q) {
                     $q->where('nama', 'like', '%' . $this->search . '%')
@@ -63,8 +63,8 @@ class ListPendaftarans extends ListRecords
                 });
             })
             ->when($this->filterCompetency, function (Builder $query) {
-                $query->whereHas('bidangPelatihan.bidang', function (Builder $q) {
-                    $q->where('nama_bidang', $this->filterCompetency);
+                $query->whereHas('kompetensiPelatihan.kompetensi', function (Builder $q) {
+                    $q->where('nama_kompetensi', $this->filterCompetency);
                 });
             })
             ->when($this->filterStatus, function (Builder $query) {
@@ -93,7 +93,7 @@ class ListPendaftarans extends ListRecords
 
     public function getCompetenciesProperty()
     {
-        return Bidang::distinct()->pluck('nama_bidang');
+        return Kompetensi::distinct()->pluck('nama_kompetensi');
     }
 
     public function getAllProgramsProperty()
@@ -103,12 +103,12 @@ class ListPendaftarans extends ListRecords
 
     public function getAllCompetenciesProperty()
     {
-        return BidangPelatihan::with('bidang', 'pelatihan')
+        return KompetensiPelatihan::with('kompetensi', 'pelatihan')
             ->get()
             ->mapWithKeys(function ($item) {
-                $bidangName = $item->bidang->nama_bidang ?? 'Unknown';
+                $kompetensiName = $item->kompetensi->nama_kompetensi ?? 'Unknown';
                 $pelatihanName = $item->pelatihan->nama_pelatihan ?? '-';
-                return [$item->id => "$bidangName ($pelatihanName)"];
+                return [$item->id => "$kompetensiName ($pelatihanName)"];
             });
     }
 
@@ -159,7 +159,7 @@ class ListPendaftarans extends ListRecords
         PendaftaranPelatihan::create([
             'peserta_id' => $peserta->id,
             'pelatihan_id' => $this->newParticipant['program_id'],
-            'bidang_pelatihan_id' => $this->newParticipant['competency_id'],
+            'kompetensi_pelatihan_id' => $this->newParticipant['competency_id'],
             'tanggal_pendaftaran' => now(),
             'status_pendaftaran' => 'Menunggu Seleksi',
             'nomor_registrasi' => 'REG-' . time() . '-' . $peserta->id,

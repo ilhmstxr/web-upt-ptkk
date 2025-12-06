@@ -49,12 +49,12 @@ class TesResource extends Resource
                                             ->required()
                                             ->default(request()->query('pelatihan_id'))
                                             ->disabled(fn (?string $operation) => $operation === 'edit' || request()->has('pelatihan_id')),
-                                        Forms\Components\Select::make('bidang_id')
-                                            ->relationship('bidang', 'nama_bidang')
+                                        Forms\Components\Select::make('kompetensi_id')
+                                            ->relationship('kompetensi', 'nama_kompetensi')
                                             ->searchable()
                                             ->required()
-                                            ->default(request()->query('bidang_id'))
-                                            ->disabled(fn (?string $operation) => $operation === 'edit' || request()->has('bidang_id')),
+                                            ->default(request()->query('kompetensi_id'))
+                                            ->disabled(fn (?string $operation) => $operation === 'edit' || request()->has('kompetensi_id')),
                                         Forms\Components\TextInput::make('durasi_menit')
                                             ->numeric()
                                             ->label('Durasi (Menit)')

@@ -6,12 +6,7 @@
     </form> --}}
 
     {{-- Sisipkan widget chart baru di sini (langkah selanjutnya) --}}
-    {{-- @if ($this->pelatihanId && $this->bidangId)
-        @livewire(\App\Filament\Resources\JawabanSurveiResource\Widgets\JawabanPerBidangChart::class, [
-            'pelatihanId' => $this->pelatihanId,
-            'bidangId' => $this->bidangId,
-        ])
-    @endif --}}
+
     
     @if (request()->boolean('print'))
         <style>

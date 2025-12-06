@@ -80,10 +80,10 @@ class InstrukturResource extends Resource
 
                 Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\Section::make('Akun & Bidang')
+                        Forms\Components\Section::make('Akun & Kompetensi')
                             ->schema([
-                                Forms\Components\Select::make('bidang_id')
-                                    ->relationship('bidang', 'nama_bidang')
+                                Forms\Components\Select::make('kompetensi_id')
+                                    ->relationship('kompetensi', 'nama_kompetensi')
                                     ->searchable()
                                     ->preload(),
                                 Forms\Components\TextInput::make('email')
@@ -111,8 +111,8 @@ class InstrukturResource extends Resource
                     ->label('Nama')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('bidang.nama_bidang')
-                    ->label('Bidang')
+                Tables\Columns\TextColumn::make('kompetensi.nama_kompetensi')
+                    ->label('Kompetensi')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('instansi')

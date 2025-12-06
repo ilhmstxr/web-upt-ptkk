@@ -1,4 +1,4 @@
-{{-- resources/views/pages/profil/bidang-pelatihan.blade.php --}}
+{{-- resources/views/pages/profil/kompetensi-pelatihan.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -123,7 +123,7 @@
         <aside class="lg:col-span-4">
           <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-5 shadow-sm">
             <span class="font-[Volkhov] font-bold text-[#861D23] text-[16px] md:text-[17px] leading-none">
-              Bidang Pelatihan
+              Kompetensi Keahlian
             </span>
           </div>
 
@@ -161,7 +161,7 @@
               @foreach ([
                 ['tata-busana.svg', 'Tata Busana', 'Kelas Tata Busana dirancang untuk membekali peserta dengan beberapa keterampilan mulai dari pengenalan bahan dan alat, dasar-dasar menjahit, mendesain pakaian, teknik pembuatan pola, hingga finishing yang rapi dan profesional. Peserta juga akan mempelajari tren mode, perpaduan warna, dan kreativitas desain agar mampu menghasilkan karya busana yang unik dan berkualitas.'],
                 ['tata-boga.svg', 'Tata Boga', 'Kelas Tata Boga dirancang untuk membekali peserta dengan pengetahuan dan keterampilan mengolah berbagai jenis masakan. Peserta akan mempelajari teknik dasar seperti persiapan bahan, pemotongan, pengolahan, penyajian, hingga dekorasi hidangan. Peserta juga akan dibekali pengetahuan tentang keamanan pangan, pengaturan porsi, dan inovasi menu, sehingga dapat menghasilkan hidangan yang sehat, higienis, dan bercita rasa tinggi.'],
-                ['tata-kecantikan.svg', 'Tata Kecantikan', 'Kelas Tata Kecantikan dirancang untuk membekali peserta dengan keterampilan dasar dan lanjutan di bidang perawatan wajah, tata rias (make-up), hingga perawatan rambut. Kegiatan ini peserta diharapkan mampu mengembangkan kreativitas, menjaga etika profesi, dan memanfaatkan peluang usaha.'],
+                ['tata-kecantikan.svg', 'Tata Kecantikan', 'Kelas Tata Kecantikan dirancang untuk membekali peserta dengan keterampilan dasar dan lanjutan di kompetensi perawatan wajah, tata rias (make-up), hingga perawatan rambut. Kegiatan ini peserta diharapkan mampu mengembangkan kreativitas, menjaga etika profesi, dan memanfaatkan peluang usaha.'],
                 ['teknik-pemesinan.svg', 'Teknik Pemesinan', 'Peserta pelatihan akan diperkenalkan pada berbagai mesin vital seperti mesin bubut untuk membentuk benda silinder, mesin frais untuk membuat permukaan datar dan alur, untuk menghasilkan produk yang sangat presisi. Peserta pelatihan juga akan mengasah kemampuan dalam membaca gambar teknik, dan merancang komponen, mulai dari mur dan baut hingga bagian-bagian rumit dari sebuah mesin besar.'],
                 ['teknik-pendingin.svg', 'Teknik Pendingin dan Tata Udara', 'Kelas TPTU ini dirancang untuk membekali peserta dengan pengetahuan dan keterampilan teknis mulai dari prinsip kerja sistem pendingin, komponen utama, teknik instalasi, hingga perawatan dan perbaikan peralatan pendingin. Peserta juga akan diajarkan cara mendiagnosis kerusakan, menghitung beban pendingin, serta memahami prosedur keselamatan kerja dan penggunaan alat ukur khusus.'],
                 ['teknik-otomotif.svg', 'Teknik Otomotif', 'Kelas otomotif mempelajari segala hal, mulai dari bagaimana bensin diubah menjadi tenaga, hingga bagaimana sensor-sensor canggih pada mobil modern bekerja. Di sini, tidak hanya duduk mendengarkan teori, melainkan langsung turun ke bengkel, memegang kunci pas, dan merasakan langsung setiap komponen.'],

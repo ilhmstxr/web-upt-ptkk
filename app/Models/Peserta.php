@@ -99,7 +99,7 @@ class Peserta extends Model
     }
 
     /**
-     * Mendapatkan semua sesi/jadwal (bidang_pelatihan) yang pernah diikuti peserta
+     * Mendapatkan semua sesi/jadwal (kompetensi_pelatihan) yang pernah diikuti peserta
      * (melalui tabel pendaftaran_pelatihan).
      */
 

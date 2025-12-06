@@ -1,7 +1,7 @@
 <x-filament-panels::page>
     @if(empty($surveyData))
         <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-200 text-center">
-            <p class="text-gray-500">Belum ada data survey untuk bidang ini.</p>
+            <p class="text-gray-500">Belum ada data survey untuk kompetensi ini.</p>
         </div>
     @else
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Bidang;
+use App\Models\Kompetensi;
 use App\Models\Pelatihan;
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;

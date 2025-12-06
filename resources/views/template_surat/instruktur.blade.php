@@ -54,7 +54,7 @@
             <div class="header">
                 <h3>BIODATA INSTRUKTUR</h3>
                 <p>
-                    KOMPETENSI {{ strtoupper($instruktur->bidang->nama_bidang ?? '') }}<br>
+                    KOMPETENSI {{ strtoupper($instruktur->kompetensi->nama_kompetensi ?? '') }}<br>
                     {{ strtoupper($instruktur->pelatihan->nama_pelatihan ?? '') }}<br> {{-- Asumsi ada nama_pelatihan --}}
                     TANGGAL {{ $instruktur->pelatihan->tanggal_mulai->isoFormat('D') }} S/D {{ $instruktur->pelatihan->tanggal_akhir->isoFormat('D MMMM YYYY') }}
                 </p>
