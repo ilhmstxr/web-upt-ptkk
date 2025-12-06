@@ -24,6 +24,8 @@ use App\Http\Controllers\MateriController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\AssessmentAuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Public\LandingController;
+use App\Http\Controllers\Public\CeritaKamiController;
 
 // --- MODELS & OTHERS ---
 use App\Models\Peserta;
@@ -37,14 +39,14 @@ use App\Exports\LampiranSheet;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes (Gabungan Final)
+| routes/web.php (Final gabungan)
 |--------------------------------------------------------------------------
 */
 
 /* =========================
    Public: Landing & Static
    ========================= */
-Route::get('/', fn() => view('pages.landing'))->name('landing');
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 Route::get('/home', function () {
     if (auth()->check()) {
@@ -55,23 +57,27 @@ Route::get('/home', function () {
 
 Route::view('/masuk', 'pages.masuk')->name('masuk');
 
-Route::view('/cerita-kami', 'pages.profil.cerita-kami')->name('story');
+// Cerita Kami via controller (public)
+Route::get('/cerita-kami', [CeritaKamiController::class, 'index'])->name('cerita-kami');
+// compatibility alias (optional)
+Route::get('/story', fn() => redirect()->route('cerita-kami'))->name('story');
+
 Route::view('/program-pelatihan', 'pages.profil.program-pelatihan')->name('programs');
 Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
 Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
 
+Route::get('/berita', [BeritaController::class, 'index'])->name('news');
+Route::get('/berita/{slug}', [BeritaController::class, 'show'])->name('berita.show');
+
 Route::view('/panduan', 'pages.panduan')->name('panduan');
 Route::view('/kontak-kami', 'pages.kontak')->name('kontak');
 
-/* ===== Berita (Public) ===== */
-Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
-Route::get('/berita/{slug}', [BeritaController::class, 'show'])->name('berita.show');
-
 /*
 |--------------------------------------------------------------------------
-| Pendaftaran (Public)
+| Pendaftaran & Exports (Public)
 |--------------------------------------------------------------------------
 */
+Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])->name('pendaftaran.daftar');
 Route::resource('pendaftaran', PendaftaranController::class);
 Route::get('pendaftaran/selesai/{id}', [PendaftaranController::class, 'selesai'])->name('pendaftaran.selesai');
 Route::get('pendaftaran/testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
@@ -88,11 +94,11 @@ Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::cl
 Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
     ->name('exports.pendaftaran.single');
 
-// Peserta related downloads
+// Peserta downloads
 Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 
-// Step views (simple view routes for wizard steps)
+// Wizard step views (convenience)
 Route::prefix('pendaftaran/step')->group(function () {
     Route::view('1', 'peserta.pendaftaran.bio-peserta');
     Route::view('2', 'peserta.pendaftaran.bio-sekolah');
@@ -144,12 +150,8 @@ Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->n
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/', [DashboardController::class, 'home'])->name('home');
 
-    // Materi list & show (some routes use DashboardController, resource for admin editing)
-    Route::get('/materi', [DashboardController::class, 'materi'])->name('materi.index');
+    Route::get('/materi', [DashboardController::class, 'materi'])->name('materi');
     Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
-
-    // Optional resource for Materi management (protected under auth in admin group)
-    // Route::resource('materi', MateriController::class)->names('materi')->except(['index','show']);
 
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
@@ -162,7 +164,7 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
 
     Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
 
-    // Pretest & Posttest
+    // Pretest & Posttest groups
     Route::prefix('pretest')->name('pretest.')->group(function () {
         Route::get('/', [DashboardController::class, 'pretest'])->name('index');
         Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
@@ -203,7 +205,6 @@ Route::prefix('assessment')->name('assessment.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-
     // Admin dashboard (token management view)
     Route::get('/admin/dashboard', [AdminController::class, 'showTokenManagement'])->name('admin.dashboard');
 
@@ -211,10 +212,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/tokens/generate', [PendaftaranController::class, 'generateTokenMassal'])->name('admin.generate.tokens');
     Route::get('/admin/tokens/download', [PendaftaranController::class, 'downloadTokenAssessment'])->name('admin.download.tokens');
 
-    // Uploads
+    // Uploads (admin)
     Route::post('/admin/uploads', [UploadController::class, 'store'])->name('admin.uploads.store');
 
-    // Pertanyaan resource (admin)
+    // Pertanyaan resource
     Route::resource('pertanyaan', PertanyaanController::class);
 
     // Reports & Export (admin)
@@ -230,10 +231,9 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 
-    // Optional Materi resource for admin editing
+    // Materi management
     Route::resource('materi', MateriController::class)->except(['index','show']);
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -253,12 +253,12 @@ Route::get('test-pdf', function () { return view('test-pdf'); });
 
 /*
 |--------------------------------------------------------------------------
-| Additional Fix / Backward-Compatible Shortcuts
+| Backward-compatible / convenience shortcuts & fixes
 |--------------------------------------------------------------------------
 */
 Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
 Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
-Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
+Route::get('/testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
 Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
 Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 
@@ -280,7 +280,6 @@ if (App::isLocal()) {
     }
 
     Route::get('/test', function () {
-        // contoh panggil fungsi dari sandbox.php
         $result = function_exists('countBidang') ? countBidang() : ['msg' => 'helper countBidang not found'];
         return response()->json($result);
     });

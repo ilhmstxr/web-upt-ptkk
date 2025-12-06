@@ -97,7 +97,7 @@
   width: 45px;
   height: 45px;
   border-radius: 999px;
-  background: linear-gradient(90deg,#0E65CC 0%,#01A0F6 49%,#0C69CF 100%);
+  background: linear-gradient(135deg,#0B4695 0%,#5E96E3 49%,#0B4695 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -138,7 +138,7 @@
 
   .card-manfaat{
   background: var(--card-manfaat);
-  height: 300px;
+  height: 250px;
   border-radius: 1rem;
 }
 
@@ -369,27 +369,26 @@ function uploaded_or_asset($path){
   {{-- /HERO --}}
 
 {{-- SECTION: Sambutan Kepala UPT --}}
+@if($kepala)
 <section class="section-compact relative bg-[#F1F9FC]">
   <div class="section-container">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[432px_auto]
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[380px_auto]
                 md:items-stretch lg:items-start
                 gap-y-8 md:gap-y-0
-                gap-x-4 md:gap-x-6 lg:gap-x-[32px]">
+                gap-x-4 md:gap-x-6 lg:gap-x-[32px] pt-6">
 
-      {{-- KOLOM KIRI: FOTO + NAMA (HP & TABLET) --}}
-      <div class="relative flex flex-col items-center lg:items-start h-full">
+      {{-- KOLOM KIRI: FOTO + NAMA --}}
+      <div class="relative flex flex-col items-center lg:items-start h-full w-fit">
 
-{{-- WRAPPER FOTO (dibikin ikut tinggi kolom kanan di TABLET) --}}
-<div class="relative mx-auto lg:mx-0
+        {{-- WRAPPER FOTO --}}
+        <div class="relative mx-auto lg:mx-0
             w-full
-            max-w-[220px]
-            sm:max-w-[240px]
-            md:max-w-[330px]
+            max-w-[260px] sm:max-w-[280px] md:max-w-[360px]
             aspect-[432/487]
-            lg:max-w-none lg:w-[432px] lg:h-[487px]
+            lg:max-w-none lg:w-[380px] lg:h-[430px]
             flex justify-center md:justify-center
-            md:mt-20 lg:mt-0">
+            md:mt-16 lg:mt-0">
 
           <div class="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#B5CDEE] to-[#1524AF]"></div>
 
@@ -405,13 +404,13 @@ function uploaded_or_asset($path){
                decoding="async" />
         </div>
 
-        {{-- NAMA (HANYA HP & TABLET) --}}
+        {{-- NAMA (HP & TABLET) --}}
         <div class="block lg:hidden text-center mt-4">
-          <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1E3A8A]
+          <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1524AF]
                      text-[19px] md:text-[20px] tracking-tight stroke-yellow">
             {{ $profil->kepala_upt_name }}
           </h3>
-          <p class="mt-1 font-[Montserrat] text-[#1E3A8A]
+          <p class="mt-1 font-[Volkhov] text-[#861D23]
                     text-[13px] md:text-[14px]">
             Kepala UPT. PTKK
           </p>
@@ -426,12 +425,12 @@ function uploaded_or_asset($path){
           {!! nl2br(e($profil->sambutan)) !!}
         </p>
 
-        {{-- NAMA (HANYA DESKTOP: TETAP ASLI) --}}
+        {{-- NAMA (DESKTOP) --}}
         <div class="hidden lg:block">
           <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1E3A8A] text-[22px] tracking-tight stroke-yellow">
             {{ $profil->kepala_upt_name }}
           </h3>
-          <p class="mt-1 font-[Montserrat] text-[#1E3A8A] text-[15px]">
+          <p class="mt-1 font-[Volkhov] text-[#861D23] text-[20px]">
             Kepala UPT. PTKK
           </p>
         </div>
@@ -441,13 +440,15 @@ function uploaded_or_asset($path){
     </div>
   </div>
 </section>
+@endif
 
-{{-- SECTION: Visi, Misi, Motto, Sasaran (Misi ditinggikan & warna DBE7F7) --}}
-<section class="section-compact relative bg-[#F1F9FC]">
-  <div class="section-container">
 
-    {{-- Grid 2 kolom, tinggi otomatis --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[30px] gap-y-[20px] items-start">
+  {{-- SECTION: Visi, Misi, Motto, Sasaran (Misi ditinggikan & warna DBE7F7) --}}
+  <section class="section-compact relative bg-[#F1F9FC]">
+    <div class="section-container">
+
+      {{-- Grid 2 kolom, tinggi otomatis --}}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[30px] gap-y-[20px] items-start">
 
       {{-- KOLOM KIRI: VISI + MISI --}}
       <div class="flex flex-col gap-[20px] w-full">
@@ -487,48 +488,48 @@ function uploaded_or_asset($path){
         </div>
       </div>
 
-      {{-- KOLOM KANAN: MOTTO + SASARAN --}}
-      <div class="flex flex-col gap-[20px] w-full">
-        {{-- MOTTO (warna DBE7F7) --}}
-        <div class="w-full rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7]">
-          <div class="p-6 flex flex-col justify-center">
-            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[8px]">
-              Motto
-            </h3>
-            <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify italic">
-              “Mencetak Generasi Unggul Indonesia Maju”
-            </p>
+        {{-- KOLOM KANAN: MOTTO + SASARAN --}}
+        <div class="flex flex-col gap-[20px] w-full">
+          {{-- MOTTO (warna DBE7F7) --}}
+          <div class="w-full rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7]">
+            <div class="py-4 px-6 flex flex-col justify-center">
+              <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[8px]">
+                Motto
+              </h3>
+              <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-[1.5] text-justify italic">
+                “Mencetak Generasi Unggul Indonesia Maju”
+              </p>
+            </div>
+          </div>
+
+          {{-- SASARAN --}}
+          <div class="w-full rounded-2xl ring-1 ring-black/5 bg-white flex flex-col"
+              style="background-image: url('{{ asset('images/profil/sasaran.svg') }}');
+                      background-size: cover;
+                      background-position: center;">
+            <div class="py-4 px-6 flex flex-col bg-[#DBE7F7]/70 rounded-2xl">
+              <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">
+                Sasaran
+              </h3>
+              <ul class="list-disc pl-5 space-y-[1px] font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-[1.5] text-justify">
+                <li>Meningkatkan kompetensi siswa dan guru SMK/SMA di wilayah Jawa Timur.</li>
+                <li>Mengembangkan kurikulum pembelajaran.</li>
+                <li>Meningkatkan jejaring kerja UPT. PTKK.</li>
+                <li>Meningkatkan kualitas program pendidikan dan pelatihan.</li>
+                <li>Meningkatkan koordinasi dengan cabdin dan lembaga sekolah di Jawa Timur.</li>
+                <li>Mengetahui tingkat penyerapan alumni di masyarakat atau DU/DI.</li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        {{-- SASARAN --}}
-        <div class="w-full rounded-2xl ring-1 ring-black/5 bg-white flex flex-col"
-             style="background-image: url('{{ asset('images/profil/sasaran.svg') }}');
-                    background-size: cover;
-                    background-position: center;">
-          <div class="p-6 flex flex-col bg-white/80 rounded-2xl">
-            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">
-              Sasaran
-            </h3>
-            <ul class="list-disc pl-5 space-y-2 font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
-              <li>Meningkatkan kompetensi siswa dan guru SMK/SMA di wilayah Jawa Timur.</li>
-              <li>Mengembangkan kurikulum pembelajaran.</li>
-              <li>Meningkatkan jejaring kerja UPT. PTKK.</li>
-              <li>Meningkatkan kualitas program pendidikan dan pelatihan.</li>
-              <li>Meningkatkan koordinasi dengan cabdin dan lembaga sekolah di Jawa Timur.</li>
-              <li>Mengetahui tingkat penyerapan alumni di masyarakat atau DU/DI.</li>
-            </ul>
-          </div>
-        </div>
       </div>
-
     </div>
-  </div>
-</section>
+  </section>
 
 
 {{-- SECTION: Sejarah (garis tengah + 5 titik sejajar, subjudul stroke kuning) --}}
-<section class="relative bg-[#F1F9FC] pt-20 pb-[300px]">
+<section class="relative bg-[#F1F9FC] pt-6 pb-[300px]">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
 
     {{-- Heading --}}
@@ -536,7 +537,7 @@ function uploaded_or_asset($path){
       <div class="w-full flex justify-center mb-[15px]">
         <span class="inline-flex items-center justify-center
                     px-5 py-2 rounded-lg bg-[#F3E8E9] text-[#861D23]
-                    font-bold text-base md:text-lg lg:text-[24px] font-[Volkhov] shadow-sm leading-tight">
+                    font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
           Sejarah
         </span>
       </div>
@@ -681,7 +682,7 @@ function uploaded_or_asset($path){
 <div class="w-full flex justify-center mb-[15px]">
   <span class="inline-flex items-center justify-center
               w-[126px] h-[41px] rounded-lg bg-[#F3E8E9] text-[#861D23]
-              font-bold text-base md:text-lg lg:text-[24px] font-[Volkhov] shadow-sm leading-tight">
+              font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
     Tujuan
   </span>
 </div>
@@ -690,15 +691,12 @@ function uploaded_or_asset($path){
 <h2 class="font-['Volkhov'] font-bold text-[22px] md:text-[26px] text-[var(--biru-brand)] stroke-yellow text-center mb-[30px]">
   Komitmen Kami Untuk Masyarakat Jawa Timur
 </h2>
-
-
       {{-- Grid cards --}}
 <div class="grid grid-cols-2 gap-4 sm:gap-6
             md:grid-cols-2 md:gap-8
-            lg:grid-cols-3 lg:gap-x-[72px] lg:gap-y-[72px]">
-
+            lg:grid-cols-3 lg:gap-x-[45px] lg:gap-y-[40px]">
        @for ($i = 1; $i <= 6; $i++)
-  <div class="tujuan-card relative w-full min-h-[236px] p-6">
+  <div class="tujuan-card relative w-full min-h-[200px] py-4 px-6">
   <span class="tujuan-badge">
   {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
 </span>
@@ -708,7 +706,7 @@ function uploaded_or_asset($path){
            alt="Ikon Tujuan {{ $i }}"
            class="tujuan-icon w-[50px] h-[50px]" loading="lazy" decoding="async" />
 
-      <p class="tujuan-text font-[Montserrat] font-medium text-[20px] leading-snug text-gray-800">
+      <p class="tujuan-text font-[Montserrat] font-medium text-[18px] leading-snug text-gray-800">
         @switch($i)
           @case(1) Membangun Sumber Daya Manusia (SDM) yang kreatif, kompetitif, dan adaptif. @break
           @case(2) Membentuk mindset tangguh berbasis literasi dan kolaborasi. @break
@@ -721,7 +719,6 @@ function uploaded_or_asset($path){
     </div>
   </div>
 @endfor
-
       </div>
     </div>
   </section>
@@ -733,7 +730,7 @@ function uploaded_or_asset($path){
     {{-- Label Manfaat --}}
     <div class="text-center">
       <div class="inline-flex items-center justify-center mb-4 px-5 py-2 bg-[#F3E8E9] rounded-lg">
-        <span class="font-['Volkhov'] font-bold text-[#861D23] text-[18px]">Manfaat</span>
+        <span class="font-['Volkhov'] font-bold text-[#861D23] text-[20px]">Manfaat</span>
       </div>
 
       <h2 class="font-['Volkhov'] font-bold text-[22px] md:text-[26px]
@@ -833,7 +830,7 @@ function uploaded_or_asset($path){
           UPT Pengembangan Teknis dan Keterampilan Kejuruan mempunyai fungsi:
         </p>
 
-        <ul class="list-disc pl-5 md:pl-6 space-y-2">
+        <ul class="list-disc pl-5 md:pl-6 space-y-2 leading-[1.3]">
           <li>Penyusunan perencanaan program dan kegiatan UPT.</li>
           <li>Penyusunan dan pengembangan materi teknis keterampilan kejuruan.</li>
           <li>Penyelenggaraan pelatihan dan bimbingan teknis keterampilan kejuruan.</li>
@@ -854,8 +851,9 @@ function uploaded_or_asset($path){
         {{-- Judul + nama file --}}
         <div class="space-y-3">
           <div class="flex items-center gap-2">
-            {{-- pakai iconmu sendiri kalau ada, ini contoh emoji --}}
-            <span class="text-xl">📄</span>
+            <img src="{{ asset('images/icons/pdf-file.svg') }}"
+              alt="PDF File Icon"
+              class="w-[22px] h-[22px]" loading="lazy" decoding="async" />
             <h3 class="font-['Volkhov'] font-bold text-[#000000] text-[17px] md:text-[18px]">
               File Peraturan
             </h3>
@@ -871,17 +869,19 @@ function uploaded_or_asset($path){
 
         {{-- Tombol --}}
         <div class="flex flex-col sm:flex-row gap-3">
-          <a href="#"
+          <a href="{{ asset('pdf/peraturan-pergub.pdf') }}"
+            target="_blank"
              class="inline-flex items-center justify-center gap-2
                     w-full sm:w-1/2
-                    px-4 py-3 bg-[#1524AF] text-[#FFFFFF] rounded-lg
+                    px-4 py-1 bg-[#1524AF] text-[#FFFFFF] rounded-lg
                     text-[14px] md:text-[15px] font-semibold
                     hover:bg-[#0F1D8F] transition text-center">
             <img src="{{ asset('images/icons/mata.svg') }}" alt="Lihat" class="w-5 h-5">
             Lihat
           </a>
 
-          <a href="#"
+          <a href="{{ asset('pdf/peraturan-pergub.pdf') }}" 
+             download
              class="inline-flex items-center justify-center gap-2
                     w-full sm:w-1/2
                     px-4 py-3 bg-[#1524AF] text-[#FFFFFF] rounded-lg
