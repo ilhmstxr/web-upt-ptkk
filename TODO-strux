@@ -624,8 +624,6 @@ CHECK test crud test di filament
 CHECK the error n solve
 
 
-- emailing peserta
-
 TESTING BRANCH MERGE-FINAL
 - nav beranda e jek dashboard peserta
 DONE - gambar di bidang resource ga muncul (nyimpen gambar e ubah jadi ke public aja soale sekalian di buat halaman user)
@@ -664,6 +662,8 @@ user
 - export e kabeh grg isok
 TODO - hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
 TODO -  hasil tes survey lain e blom di cek gaonk data e
+
+- emailing peserta
 
 
 kolom tabel instruktur

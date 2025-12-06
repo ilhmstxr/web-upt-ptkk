@@ -60,4 +60,15 @@ class Kompetensi extends Model
     //         'id'         // Local key di tabel 'kompetensi_pelatihan'
     //     );
     // }
+    public function pendaftaranPelatihan()
+    {
+        return $this->hasManyThrough(
+            PendaftaranPelatihan::class,
+            KompetensiPelatihan::class,
+            'kompetensi_id',            // FK on kompetensi_pelatihan table
+            'kompetensi_pelatihan_id',  // FK on pendaftaran_pelatihan table
+            'id',                       // Local key on kompetensi table
+            'id'                        // Local key on kompetensi_pelatihan table
+        );
+    }
 }

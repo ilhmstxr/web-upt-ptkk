@@ -23,14 +23,9 @@ class PerformaKompetensiTableWidget extends BaseWidget
                 // Kita query model Kompetensi dan melakukan kalkulasi agregat
                 // Ini membutuhkan relasi `pendaftaranPelatihan()` di model `Kompetensi`
                 \App\Models\Kompetensi::query()
-                    ->with('kompetensiPelatihan.pendaftaranPelatihan') // Menghitung 'JUMLAH PESERTA'
-                    // ->withAvg('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (RATA²)'
-                    // ->withMin('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MIN)'
-                    // ->withMax('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MAX)'
-                    // ->withAvg('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (RATA²)'
-                    // ->withMin('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
-                    // ->withMin('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
-                    // ->withMax('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MAX)'
+                    ->with('pendaftaranPelatihan') // Menghitung 'JUMLAH PESERTA'
+                    ->withAvg('pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (RATA²)'
+                    ->withAvg('pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (RATA²)'
                     ->limit(5)
             )
             ->headerActions([

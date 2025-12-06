@@ -17,7 +17,7 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Pelatihan Aktif', Pelatihan::where('tanggal_selesai', '>=', Carbon::now())->count())
+            Stat::make('Pelatihan Aktif', Pelatihan::where('status', 'aktif')->count())
                 ->description('Pelatihan yang sedang atau akan berjalan')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success'),
