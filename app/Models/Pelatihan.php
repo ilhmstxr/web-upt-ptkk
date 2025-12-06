@@ -5,15 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Pelatihan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pelatihan';
+    // Pastikan nama tabel benar
+    protected $table = 'pelatihan'; 
 
     protected $fillable = [
         'instansi_id',
+        'asrama_id', // DITAMBAHKAN (Dari migration)
         'angkatan',
         'jenis_program',
         'nama_pelatihan',
@@ -23,6 +28,9 @@ class Pelatihan extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'deskripsi',
+        'syarat_ketentuan', // DITAMBAHKAN (Dari migration)
+        'jadwal_text',       // DITAMBAHKAN (Dari migration)
+        'lokasi_text',       // DITAMBAHKAN (Dari migration)
         'jumlah_peserta',
         'sasaran',
     ];
@@ -32,89 +40,116 @@ class Pelatihan extends Model
         'tanggal_selesai' => 'date',
     ];
 
-    public function instansi()
+    // --- RELASI BELONGS TO ---
+
+    public function instansi(): BelongsTo
     {
         return $this->belongsTo(Instansi::class);
     }
 
-    public function peserta()
+    /**
+     * Relasi ke model Asrama (dari asrama_id).
+     */
+    public function asrama(): BelongsTo
+    {
+        return $this->belongsTo(Asrama::class);
+    }
+    
+    // --- RELASI HAS MANY ---
+
+    public function peserta(): HasMany
     {
         return $this->hasMany(Peserta::class);
     }
 
-    public function tes()
+    public function tes(): HasMany
     {
         return $this->hasMany(Tes::class);
     }
 
-    public function percobaans()
+    /**
+     * Mendapatkan semua sesi/jadwal (BidangPelatihan) di bawah pelatihan ini.
+     */
+    public function bidangPelatihan(): HasMany
+    {
+        // Secara default sudah mencari 'pelatihan_id'
+        return $this->hasMany(BidangPelatihan::class); 
+    }
+    
+    // --- RELASI HAS MANY THROUGH ---
+
+    /**
+     * Mendapatkan semua Percobaan (tests/quizzes results) yang terkait dengan pelatihan ini 
+     * melalui tabel 'tes'.
+     */
+    public function percobaans(): HasManyThrough
     {
         return $this->hasManyThrough(
-            Percobaan::class, // Model akhir yang ingin diakses
-            Tes::class,       // Model perantara/jembatan
+            Percobaan::class,
+            Tes::class,
             'pelatihan_id', // Foreign key di tabel 'tes' (perantara)
-            'tes_id'          // Foreign key di tabel 'percobaan' (akhir)
+            'tes_id'        // Foreign key di tabel 'percobaan' (akhir)
+        );
+    }
+    
+    /**
+     * Mendapatkan semua pendaftaran (PendaftaranPelatihan) yang terkait dengan pelatihan ini 
+     * melalui tabel 'bidang_pelatihan'.
+     * Catatan: Relasi ini sebelumnya dinonaktifkan, sekarang diaktifkan kembali.
+     */
+    public function semuaPendaftaran(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            PendaftaranPelatihan::class,      // Model Akhir
+            BidangPelatihan::class,         // Model Perantara
+            'pelatihan_id',                 // Foreign key di BidangPelatihan
+            'bidang_pelatihan_id',          // Foreign key di PendaftaranPelatihan
+            'id',                           // Local key di Pelatihan (model ini)
+            'id'                            // Local key di BidangPelatihan
         );
     }
 
-        /**
-     * Mendapatkan semua sesi/jadwal (bidang_pelatihan) di bawah pelatihan ini.
+    /**
+     * Mendapatkan semua Bidang (materi) yang diajarkan dalam pelatihan ini 
+     * melalui tabel perantara 'bidang_pelatihan'.
+     * Catatan: Relasi ini sebelumnya dinonaktifkan, sekarang diaktifkan kembali.
      */
-    public function bidangPelatihan()
+    public function bidangMateri(): HasManyThrough
     {
-        // Terhubung ke BidangPelatihan::class melalui 'pelatihan_id'
-        return $this->hasMany(BidangPelatihan::class, 'pelatihan_id');
+        return $this->hasManyThrough(
+            Bidang::class,
+            BidangPelatihan::class,
+            'pelatihan_id', // Foreign key di BidangPelatihan
+            'id',           // Foreign key di Bidang (ini field id di tabel 'bidang')
+            'id',           // Local key di Pelatihan (model ini)
+            'bidang_id'     // Local key (bidang_id) di BidangPelatihan
+        );
     }
 
-    public function pendaftaranPelatihan()
+    // --- ACCESOR (Dulu dinonaktifkan, sekarang diaktifkan sebagai contoh) ---
+
+    /**
+     * Mendefinisikan status pelatihan secara dinamis berdasarkan tanggal.
+     */
+    protected function statusPelatihan(): Attribute
     {
-        return $this->hasMany(PendaftaranPelatihan::class,'pelatihan_id');
+        return Attribute::make(
+            get: function (): string {
+                // Gunakan kolom tanggal_mulai dan tanggal_selesai yang sudah di-cast ke 'date'
+                if (!$this->tanggal_mulai || !$this->tanggal_selesai) {
+                    return $this->status ?? 'Tidak Terjadwal';
+                }
+                
+                $now = now();
+                
+                if ($now->isBefore($this->tanggal_mulai)) {
+                    return 'Mendatang';
+                }
+                if ($now->between($this->tanggal_mulai, $this->tanggal_selesai)) {
+                    return 'Aktif';
+                }
+                return 'Selesai';
+            },
+        );
     }
-    /**
-     * Mendapatkan semua pendaftaran untuk pelatihan ini
-     * (melalui tabel perantara bidang_pelatihan).
-     */
-    // public function pendaftaranPelatihan()
-    // {
-    //     return $this->hasManyThrough(
-    //         PendaftaranPelatihan::class,      // Model Akhir
-    //         BidangPelatihan::class,         // Model Perantara
-    //         'pelatihan_id',                 // Foreign key di BidangPelatihan
-    //         'bidang_pelatihan_id',          // Foreign key di PendaftaranPelatihan
-    //         'id',                           // Local key di Pelatihan (model ini)
-    //         'id'                            // Local key di BidangPelatihan
-    //     );
-    // }
-
-    /**
-     * Mendapatkan semua bidang (materi) yang ada di pelatihan ini
-     * (melalui tabel perantara bidang_pelatihan).
-     */
-    // public function bidang()
-    // {
-    //     return $this->hasManyThrough(
-    //         Bidang::class,
-    //         BidangPelatihan::class,
-    //         'pelatihan_id', // Foreign key di BidangPelatihan
-    //         'id',           // Foreign key di Bidang
-    //         'id',           // Local key di Pelatihan (model ini)
-    //         'bidang_id'     // Local key di BidangPelatihan
-    //     );
-    // }
-
-    // protected function status(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: function (): string {
-    //             $now = now();
-    //             if ($now->isBefore($this->tanggal_mulai)) {
-    //                 return 'Mendatang';
-    //             }
-    //             if ($now->between($this->tanggal_mulai, $this->tanggal_selesai)) {
-    //                 return 'Aktif';
-    //             }
-    //             return 'Selesai';
-    //         },
-    //     );
-    // }
 }

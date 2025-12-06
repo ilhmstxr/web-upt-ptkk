@@ -559,22 +559,19 @@ $latestBeritas = Berita::query()
 </script>
 @endif
 
-{{-- SECTION: Cerita Kami --}}
+{{-- SECTION: Cerita Kami (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start md:items-center">
       {{-- Kolom Kiri: Foto --}}
       <div class="w-full flex justify-center md:justify-start md:pl-2 lg:pl-4">
         <div class="rounded-2xl overflow-hidden shadow-xl ring-2 ring-[#1524AF] max-w-[420px] md:max-w-[480px] lg:max-w-[520px]">
-          @php
-            // Logika Sederhana (Storage URL)
-            $ceritaFilename = 'profil/cerita-kami.svg';
-            // Cek simple exists atau langsung URL
-            $ceritaSrc = Storage::disk('public')->exists($ceritaFilename) 
-                         ? Storage::url($ceritaFilename) 
-                         : asset('images/cerita-kami.svg');
-          @endphp
-          <img src="{{ $ceritaSrc }}" alt="Kegiatan UPT PTKK" class="w-full h-auto object-cover">
+          @if(!empty($cerita) && $cerita->image_url)
+            <img src="{{ $cerita->image_url }}" alt="{{ $cerita->title ?? 'Cerita Kami' }}" class="w-full h-auto object-cover" />
+          @else
+            {{-- fallback static --}}
+            <img src="{{ asset('images/cerita-kami.svg') }}" alt="Kegiatan UPT PTKK" class="w-full h-auto object-cover" />
+          @endif
         </div>
       </div>
 
@@ -585,18 +582,42 @@ $latestBeritas = Berita::query()
           <span class="font-['Volkhov'] font-bold text-[#861D23] text-[22px] md:text-[24px] leading-none">Cerita Kami</span>
         </div>
 
-        {{-- Heading --}}
+        {{-- Heading (dinamis: kalau ada title gunakan itu, jika tidak pakai default) --}}
         <h2 class="mb-[20px] md:mb-[24px] font-['Volkhov'] font-bold text-[24px] md:text-[30px] lg:text-[34px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch]">
-          UPT Pengembangan Teknis <br class="hidden lg:block" /> Dan Keterampilan Kejuruan
+          {{ $cerita->title ?? 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan' }}
         </h2>
 
-        {{-- Paragraf --}}
+        {{-- Excerpt / Content ringkas --}}
         <p class="mb-[24px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
-          Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi, UPT PTKK terus memperkuat posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata. Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada kemajuan pendidikan di Jawa Timur.
+          @if(!empty($cerita) && !empty($cerita->excerpt))
+            {{ $cerita->excerpt }}
+          @elseif(!empty($cerita) && !empty($cerita->content))
+            {{-- strip_tags lalu limit jika hanya content panjang --}}
+            {{ \Illuminate\Support\Str::limit(strip_tags($cerita->content), 320) }}
+          @else
+            Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi...
+          @endif
         </p>
 
-        {{-- Button --}}
-        <a href="#" class="inline-flex items-center justify-center gap-2 w-max px-5 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 rounded-xl bg-[#1524AF] text-white font-['Montserrat'] font-medium text-[14px] sm:text-[16px] md:text-[18px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+        {{-- Tombol: ke halaman cerita lengkap (jika ada slug / route) --}}
+        @php
+          $ceritaUrl = '#';
+          if(!empty($cerita)) {
+              if(!empty($cerita->slug) && \Illuminate\Support\Facades\Route::has('cerita-kami.show')) {
+                  $ceritaUrl = route('cerita-kami.show', $cerita->slug);
+              } elseif(\Illuminate\Support\Facades\Route::has('cerita-kami')) {
+                  $ceritaUrl = route('cerita-kami');
+              } elseif(\Illuminate\Support\Facades\Route::has('story')) {
+                  $ceritaUrl = route('story');
+              } else {
+                  $ceritaUrl = url('/cerita-kami');
+              }
+          } else {
+              $ceritaUrl = \Illuminate\Support\Facades\Route::has('cerita-kami') ? route('cerita-kami') : '#';
+          }
+        @endphp
+
+        <a href="{{ $ceritaUrl }}" class="inline-flex items-center justify-center gap-2 w-max px-5 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 rounded-xl bg-[#1524AF] text-white font-['Montserrat'] font-medium text-[14px] sm:text-[16px] md:text-[18px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
           <span class="leading-none">Cari tahu lebih</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M19 12l-4-4m0 8l4-4" /></svg>
         </a>
@@ -715,14 +736,44 @@ $latestBeritas = Berita::query()
 </section>
 {{-- /SECTION: Berita Terbaru --}}
 
- {{-- SECTION: Sorotan Pelatihan --}}
+{{-- SECTION: Sorotan Pelatihan (dynamic with full static fallback) --}}
+@php
+  // Accept either $sorotans or $sorotan from controller (backwards compatibility)
+  $collection = collect([]);
+  if (isset($sorotans) && $sorotans instanceof \Illuminate\Support\Collection) {
+      $collection = $sorotans;
+  } elseif (isset($sorotan) && $sorotan instanceof \Illuminate\Support\Collection) {
+      $collection = $sorotan;
+  }
+
+  // Normalizer: return absolute URL for a stored path or asset fallback
+  $normalizeUrl = function ($path) {
+      if (!$path) return asset('images/placeholder_kunjungan.jpg');
+      if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) return $path;
+
+      // try storage public
+      try {
+          if (\Storage::disk('public')->exists($path)) {
+              return \Storage::url($path);
+          }
+      } catch (\Throwable $e) {
+          // ignore
+      }
+
+      // try as public path
+      if (file_exists(public_path($path))) return asset($path);
+
+      // try inside images folder as fallback
+      return asset($path);
+  };
+@endphp
+
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <style>
     @keyframes sorotan-scroll-x {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); } /* karena konten digandakan 2x */
     }
-
     @media (prefers-reduced-motion: reduce) {
       .sorotan-marquee { animation: none !important; }
     }
@@ -750,158 +801,269 @@ $latestBeritas = Berita::query()
       </span>
     </h2>
 
-    @php
-      $sorotanData = $sorotan->map(function ($item) {
-        return [
-          'key'   => 'spotlight-' . $item->id,
-          'label' => $item->title,
-          'desc'  => $item->description,
-          'files' => $item->fotos->pluck('path')->map(fn($p) => 'storage/' . $p)->toArray(),
+    {{-- === CASE 1: DATABASE KOSONG -> tampilkan versi STATIS penuh (default) === --}}
+    @if($collection->isEmpty())
+      @php
+        $sorotan = [
+          [
+            'key'   => 'mtu',
+            'label' => 'Mobil Training Unit',
+            'desc'  => 'Mobil Keliling UPT. PTKK Dindik Jatim adalah sebuah program unggulan yang dirancang khusus untuk menjangkau sekolah di pelosok-pelosok Jawa Timur.',
+            'files' => [
+              'profil/MTU1.svg','profil/MTU2.svg','profil/MTU3.svg','profil/MTU4.svg','profil/MTU5.svg','profil/MTU6.svg',
+            ],
+          ],
+          [
+            'key'   => 'reguler',
+            'label' => 'Pelatihan Reguler',
+            'desc'  => 'Proses peningkatan kompetensi di UPT. PTKK dipandu oleh para asesor kompetensi profesional yang tersertifikasi.',
+            'files' => [
+              'sorotan/reguler/reg-1.jpg','sorotan/reguler/reg-2.jpg','sorotan/reguler/reg-3.jpg',
+              'sorotan/reguler/reg-4.jpg','sorotan/reguler/reg-5.jpg','sorotan/reguler/reg-6.jpg',
+            ],
+          ],
+          [
+            'key'   => 'akselerasi',
+            'label' => 'Pelatihan Akselerasi',
+            'desc'  => 'UPT. PTKK memiliki 6 kompetensi yang tersertifikasi oleh Kemendikdasmen sebagai tempat uji kompetensi yang memiliki fasilitas mumpuni.',
+            'files' => [
+              'sorotan/akselerasi/acc-1.jpg','sorotan/akselerasi/acc-2.jpg','sorotan/akselerasi/acc-3.jpg',
+              'sorotan/akselerasi/acc-4.jpg','sorotan/akselerasi/acc-5.jpg','sorotan/akselerasi/acc-6.jpg',
+            ],
+          ],
         ];
-      });
-    @endphp
+      @endphp
 
-@if($sorotanData->isNotEmpty())
-  {{-- NAMA PELATIHAN + DESKRIPSI --}}
-  <div id="sorotan-top" class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
-    <div class="shrink-0">
-      <button type="button"
-              class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
-                     font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
-                     rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
-        {{ $sorotanData[0]['label'] }}
-      </button>
-    </div>
-
-    <p id="sorotan-desc"
-       class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px]
-              font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">
-      {{ $sorotanData[0]['desc'] }}
-    </p>
-  </div>
-
-  {{-- SLIDER FOTO --}}
-  <div class="w-full mb-8 md:mb-10 lg:mb-12">
-    @foreach($sorotanData as $i => $cat)
-      @php $files = $cat['files']; @endphp
-
-      <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
-        <div class="relative">
-          <div class="overflow-hidden">
-            <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]" data-key="{{ $cat['key'] }}">
-              @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
-                @foreach($files as $fname)
-                  <div class="relative h-[130px] md:h-[150px] lg:h-[170px] w-[220px] md:w-[260px] lg:w-[280px] rounded-2xl overflow-hidden shrink-0">
-                    <img src="{{ asset($fname) }}" alt="{{ $cat['label'] }}" loading="lazy" class="w-full h-full object-cover">
-                  </div>
-                @endforeach
-              @endfor
-            </div>
-            <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
-          </div>
+      {{-- NAMA + DESKRIPSI --}}
+      <div id="sorotan-top"
+           class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
+        <div class="shrink-0">
+          <button type="button"
+                  class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
+                         font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
+                         rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
+            {{ $sorotan[0]['label'] }}
+          </button>
         </div>
+
+        <p id="sorotan-desc"
+           class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px]
+                  font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">
+          {{ $sorotan[0]['desc'] }}
+        </p>
       </div>
-    @endforeach
-  </div>
 
-  {{-- KONTROL KATEGORI --}}
-  <div class="mt-2 flex items-center justify-center gap-6">
-    <button id="tabPrev" class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6] text-[#0E2A7B] hover:bg-[#1524AF] hover:text-white transition" aria-label="Kategori sebelumnya" type="button">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-      </svg>
-    </button>
+      {{-- SLIDER FOTO (statics) --}}
+      <div class="w-full mb-8 md:mb-10 lg:mb-12">
+        @foreach($sorotan as $i => $cat)
+          @php $files = $cat['files']; @endphp
 
-    <div id="tabDots" class="flex items-center gap-2" aria-label="Indikator kategori"></div>
+          <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
+            <div class="relative">
+              <div class="overflow-hidden">
+                <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]" data-key="{{ $cat['key'] }}">
+                  @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
+                    @foreach($files as $fname)
+                      <div class="relative h-[130px] md:h-[150px] lg:h-[170px] w-[220px] md:w-[260px] lg:w-[280px] rounded-2xl overflow-hidden shrink-0">
+                        <img src="{{ asset('images/'.$fname) }}" alt="{{ $cat['label'] }}" loading="lazy" class="w-full h-full object-cover">
+                      </div>
+                    @endforeach
+                  @endfor
+                </div>
+                <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
 
-    <button id="tabNext" class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6] text-[#0E2A7B] hover:bg-[#1524AF] hover:text-white transition" aria-label="Kategori selanjutnya" type="button">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-      </svg>
-    </button>
-  </div>
+      {{-- CONTROLS --}}
+      <div class="mt-2 flex items-center justify-center gap-6">
+        <button id="tabPrev" class="w-8 h-8 ...">‹</button>
+        <div id="tabDots" class="flex items-center gap-2"></div>
+        <button id="tabNext" class="w-8 h-8 ...">›</button>
+      </div>
 
-  {{-- SCRIPT --}}
-  <script>
-    (function(){
-      const tabOrder = @json($sorotanData->pluck('key'));
-      const panes = document.querySelectorAll('.sorotan-pane');
-      const label = document.querySelector('.sorotan-label');
-      const desc  = document.getElementById('sorotan-desc');
+      {{-- SCRIPT untuk statics (kategori + auto-scroll) --}}
+      <script>
+        (function(){
+          const tabOrder = ['mtu','reguler','akselerasi'];
+          const panes = document.querySelectorAll('.sorotan-pane');
+          const label = document.querySelector('.sorotan-label');
+          const desc  = document.getElementById('sorotan-desc');
 
-      const meta = @json(
-        $sorotanData->mapWithKeys(fn($s) => [
-          $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']]
-        ])
-      );
+          const meta = {
+            mtu:       { label: 'Mobil Training Unit',   desc: @json($sorotan[0]['desc']) },
+            reguler:   { label: 'Pelatihan Reguler',     desc: @json($sorotan[1]['desc']) },
+            akselerasi:{ label: 'Pelatihan Akselerasi',  desc: @json($sorotan[2]['desc']) },
+          };
 
-      function currentKey(){
-        const active = Array.from(panes).find(p=>!p.classList.contains('hidden'));
-        return active ? active.dataset.pane : tabOrder[0];
-      }
-      function currentIndex(){ return tabOrder.indexOf(currentKey()); }
+          function currentKey(){ const active = Array.from(panes).find(p=>!p.classList.contains('hidden')); return active ? active.dataset.pane : tabOrder[0]; }
+          function currentIndex(){ return tabOrder.indexOf(currentKey()); }
 
-      const prev = document.getElementById('tabPrev');
-      const next = document.getElementById('tabNext');
-      const tabDots = document.getElementById('tabDots');
+          const prev = document.getElementById('tabPrev');
+          const next = document.getElementById('tabNext');
+          const tabDots = document.getElementById('tabDots');
 
-      prev.addEventListener('click', ()=>showByIndex(currentIndex()-1));
-      next.addEventListener('click', ()=>showByIndex(currentIndex()+1));
+          prev.addEventListener('click', ()=>showByIndex(currentIndex()-1));
+          next.addEventListener('click', ()=>showByIndex(currentIndex()+1));
 
-      function paintTabDots(){
-        if(!tabDots) return;
-        const idx = currentIndex();
-        tabDots.innerHTML = '';
-        tabOrder.forEach((k,i)=>{
-          const b=document.createElement('button');
-          b.type='button';
-          b.className='w-2.5 h-2.5 rounded-full transition ' + (i===idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
-          b.setAttribute('aria-label', meta[k].label);
-          b.setAttribute('aria-current', i===idx ? 'true' : 'false');
-          b.addEventListener('click', ()=>showByIndex(i));
-          tabDots.appendChild(b);
-        });
-      }
-
-      function showByIndex(i){
-        const idx = (i < 0) ? tabOrder.length-1 : (i >= tabOrder.length ? 0 : i);
-        setActive(tabOrder[idx]);
-      }
-
-      function setActive(key){
-        panes.forEach(p => p.classList.toggle('hidden', p.dataset.pane !== key));
-        if (label && meta[key]) label.textContent = meta[key].label;
-        if (desc  && meta[key]) desc.textContent  = meta[key].desc;
-        paintTabDots();
-      }
-
-      setActive(tabOrder[0]);
-    })();
-
-    (function(){
-      const tracks = document.querySelectorAll('.sorotan-track');
-      const SPEED = 0.8;
-
-      tracks.forEach((track) => {
-        let offset = 0;
-        function animate() {
-          const halfWidth = track.scrollWidth / 2;
-          offset -= SPEED;
-          if (Math.abs(offset) >= halfWidth) {
-            offset += halfWidth;
+          function paintTabDots(){
+            if(!tabDots) return;
+            const idx = currentIndex(); tabDots.innerHTML = '';
+            tabOrder.forEach((k,i)=>{
+              const b=document.createElement('button');
+              b.type='button';
+              b.className='w-2.5 h-2.5 rounded-full transition ' + (i===idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
+              b.setAttribute('aria-label', meta[k].label);
+              b.setAttribute('aria-current', i===idx ? 'true' : 'false');
+              b.addEventListener('click', ()=>showByIndex(i));
+              tabDots.appendChild(b);
+            });
           }
-          track.style.transform = `translateX(${offset}px)`;
-          requestAnimationFrame(animate);
-        }
-        requestAnimationFrame(animate);
-      });
-    })();
-  </script>
-  @else
-  <p class="text-center text-gray-500">Belum ada sorotan pelatihan yang dipublikasikan.</p>
-@endif
 
+          function showByIndex(i){ const idx = (i < 0) ? tabOrder.length-1 : (i >= tabOrder.length ? 0 : i); setActive(tabOrder[idx]); }
+          function setActive(key){
+            panes.forEach(p => p.classList.toggle('hidden', p.dataset.pane !== key));
+            if (label && meta[key]) label.textContent = meta[key].label;
+            if (desc  && meta[key]) desc.textContent  = meta[key].desc;
+            paintTabDots();
+          }
 
+          setActive(tabOrder[0]);
+        })();
+
+        // Auto-scroll
+        (function(){
+          const tracks = document.querySelectorAll('.sorotan-track');
+          const SPEED = 0.8;
+          tracks.forEach((track) => {
+            let offset = 0;
+            function animate() {
+              const halfWidth = track.scrollWidth / 2;
+              offset -= SPEED;
+              if (Math.abs(offset) >= halfWidth) offset += halfWidth;
+              track.style.transform = `translateX(${offset}px)`;
+              requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+          });
+        })();
+      </script>
+
+    {{-- === CASE 2: DATABASE ADA -> tampilkan versi DINAMIS === --}}
+    @else
+      @php
+        // map DB items to view structure
+        $sorotanData = $collection->map(function($item) use ($normalizeUrl) {
+          $files = collect($item->fotos ?? [])->pluck('path')->map($normalizeUrl)->toArray();
+          if (empty($files)) $files[] = asset('images/placeholder_kunjungan.jpg');
+          return [
+            'key' => 'spotlight-'.$item->id,
+            'label' => $item->title,
+            'desc' => $item->description,
+            'files' => $files,
+          ];
+        })->values();
+      @endphp
+
+      {{-- header nama + desc --}}
+      <div id="sorotan-top" class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:gap-6 text-left">
+        <div class="shrink-0">
+          <button class="sorotan-label bg-[#DBE7F7] text-[#1524AF] font-[Volkhov] font-bold text-[18px] rounded-md px-5 py-2.5">
+            {{ $sorotanData[0]['label'] }}
+          </button>
+        </div>
+
+        <p id="sorotan-desc" class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px] font-[Montserrat] font-medium leading-relaxed">
+          {{ $sorotanData[0]['desc'] }}
+        </p>
+      </div>
+
+      {{-- slider (dynamic) --}}
+      <div class="w-full mb-8 md:mb-10 lg:mb-12">
+        @foreach($sorotanData as $i => $cat)
+          <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
+            <div class="relative overflow-hidden">
+              <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6" data-key="{{ $cat['key'] }}">
+                @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
+                  @foreach($cat['files'] as $img)
+                    <div class="h-[130px] md:h-[150px] lg:h-[170px] w-[220px] md:w-[260px] lg:w-[280px] rounded-2xl overflow-hidden shrink-0">
+                      <img src="{{ $img }}" class="w-full h-full object-cover" loading="lazy" alt="{{ $cat['label'] }}">
+                    </div>
+                  @endforeach
+                @endfor
+              </div>
+              <div class="absolute inset-0 pointer-events-none [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+
+      {{-- controls --}}
+      <div class="mt-2 flex items-center justify-center gap-6">
+        <button id="tabPrev" class="w-8 h-8 ...">‹</button>
+        <div id="tabDots" class="flex items-center gap-2"></div>
+        <button id="tabNext" class="w-8 h-8 ...">›</button>
+      </div>
+
+      {{-- script dynamic (uses sorotanData content) --}}
+      <script>
+        (function(){
+          const tabOrder = @json($sorotanData->pluck('key'));
+          const panes = document.querySelectorAll('.sorotan-pane');
+          const label = document.querySelector('.sorotan-label');
+          const desc  = document.getElementById('sorotan-desc');
+
+          const meta = @json($sorotanData->mapWithKeys(function($s){ return [$s['key'] => ['label'=>$s['label'],'desc'=>$s['desc']]]; }));
+
+          function currentKey(){ const active = Array.from(panes).find(p=>!p.classList.contains('hidden')); return active ? active.dataset.pane : tabOrder[0]; }
+          function currentIndex(){ return tabOrder.indexOf(currentKey()); }
+
+          function setActive(key){
+            panes.forEach(p => p.classList.toggle('hidden', p.dataset.pane !== key));
+            if (label && meta[key]) label.textContent = meta[key].label;
+            if (desc && meta[key]) desc.textContent = meta[key].desc;
+            paintDots();
+          }
+
+          function paintDots(){
+            const wrap = document.getElementById('tabDots');
+            wrap.innerHTML = '';
+            tabOrder.forEach((k,i)=>{
+              const b = document.createElement('button');
+              b.className = "w-2.5 h-2.5 rounded-full transition " + (i===currentIndex() ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
+              b.onclick = ()=> setActive(k);
+              wrap.appendChild(b);
+            });
+          }
+
+          document.getElementById('tabPrev').onclick = ()=> setActive(tabOrder[(currentIndex()-1+tabOrder.length)%tabOrder.length]);
+          document.getElementById('tabNext').onclick = ()=> setActive(tabOrder[(currentIndex()+1)%tabOrder.length]);
+
+          setActive(tabOrder[0]);
+        })();
+
+        // Auto-scroll
+        (function(){
+          const tracks = document.querySelectorAll('.sorotan-track');
+          const SPEED = 0.8;
+          tracks.forEach(track=>{
+            let offset=0;
+            function animate(){
+              const half = track.scrollWidth/2;
+              offset -= SPEED;
+              if (Math.abs(offset) >= half) offset += half;
+              track.style.transform = `translateX(${offset}px)`;
+              requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+          });
+        })();
+      </script>
+
+    @endif {{-- end database empty / not empty --}}
+  </div>
 </section>
 
 {{-- SECTION: Kompetensi Pelatihan (gambar SVG lokal) --}}
@@ -1027,94 +1189,101 @@ $latestBeritas = Berita::query()
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-      <!-- Left Column -->
       <div class="lg:col-span-4 flex flex-col justify-between">
         <div>
           <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-3">
             <span class="text-[#861D23] font-[Volkhov] font-bold text-[16px]">Data Statistik</span>
           </div>
-        <h2 class="heading-stroke font-[Volkhov] font-bold text-[24px] md:text-[28px] leading-snug mb-3">
-  Rekapitulasi Rata-Rata<br/>Program Pelatihan
-</h2>
+
+          <h2 class="heading-stroke font-[Volkhov] font-bold text-[24px] md:text-[28px] leading-snug mb-3">
+            Rekapitulasi Rata-Rata<br/>Program Pelatihan
+          </h2>
+
           <p class="text-sm text-slate-700 leading-relaxed mb-5">
             Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
             terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
           </p>
 
-         <!-- Bagian list judul pelatihan (ubah hanya bagian ini) -->
-<ul id="listPelatihan" class="space-y-2">
-  <li>
-    <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="0">
-      <span class="dot w-2 h-2 rounded-full bg-[#1524AF]"></span>
-      <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#1524AF]">Judul Pelatihan 1</span>
-    </button>
-    <div class="divider h-[1px] bg-[#1524AF]"></div>
-  </li>
-  <li>
-    <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="1">
-      <span class="dot w-2 h-2 rounded-full bg-[#000000]"></span>
-      <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#000000]">Judul Pelatihan 2</span>
-    </button>
-    <div class="divider h-[1px] bg-[#000000]"></div>
-  </li>
-  <li>
-    <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="2">
-      <span class="dot w-2 h-2 rounded-full bg-[#000000]"></span>
-      <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#000000]">Judul Pelatihan 3</span>
-    </button>
-    <div class="divider h-[1px] bg-[#000000]"></div>
-  </li>
-  <li>
-    <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="3">
-      <span class="dot w-2 h-2 rounded-full bg-[#000000]"></span>
-      <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#000000]">Judul Pelatihan 4</span>
-    </button>
-    <div class="divider h-[1px] bg-[#000000]"></div>
-  </li>
-</ul>
+          <ul id="listPelatihan" class="space-y-2">
+            {{-- PERBAIKAN 1: Tambahkan ?? [] untuk mencegah Undefined Variable --}}
+            @forelse($pelatihans ?? [] as $pel) 
+              @php
+                $idx = $loop->index;
+                // warna aktif/inaktif: gunakan kolom warna jika tersedia, atau fallback
+                $colorActive = $pel->warna ?? '#1524AF';
+                $colorInactive = $pel->warna_inactive ?? '#000000';
+                $isFirst = $loop->first;
+              @endphp
+              <li>
+                <button
+                  type="button"
+                  class="pel-btn w-full flex items-center gap-2 py-1.5 text-left"
+                  data-index="{{ $idx }}"
+                  data-color-active="{{ $colorActive }}"
+                  data-color-inactive="{{ $colorInactive }}"
+                >
+                  <span class="dot w-2 h-2 rounded-full"
+                        style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></span>
+
+                  <span class="label flex-1 text-[14px] font-[Montserrat] font-medium"
+                        style="color: {{ $isFirst ? $colorActive : $colorInactive }};">
+                    {{ Str::limit($pel->nama_pelatihan ?? 'Pelatihan', 60) }}
+                  </span>
+                </button>
+
+                <div class="divider h-[1px]"
+                    style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></div>
+              </li>
+            @empty
+              <li>
+                <div class="text-sm text-slate-600 py-2">
+                  Belum ada data pelatihan untuk ditampilkan.
+                </div>
+              </li>
+            @endforelse
+          </ul>
         </div>
 
-        <a href="#" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#1524AF] text-white text-[14px] mt-6 shadow-sm hover:shadow transition-all duration-200 self-start">Cari Tahu Lebih
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        {{-- PERBAIKAN 2: Blok try...catch untuk mengamankan route('pelatihan.index') --}}
+        @php
+            try {
+                $pelatihanIndexUrl = route('pelatihan.index');
+            } catch (\Throwable $e) {
+                // Fallback ke URL statis jika route tidak ditemukan
+                $pelatihanIndexUrl = '/pelatihan'; 
+            }
+        @endphp
+        
+        <a href="{{ $pelatihanIndexUrl }}" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#1524AF] text-white text-[14px] mt-6 shadow-sm hover:shadow transition-all duration-200 self-start">
+          Cari Tahu Lebih
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
         </a>
       </div>
-<!-- Right Column (Chart) -->
-<div class="lg:col-span-8 mt-6 lg:mt-0">
-  <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
-    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
-      <div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">
-        63.48
-      </div>
-      <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
-        Rata-Rata Pre-Test
-      </div>
-    </div>
+      
+      <div class="lg:col-span-8 mt-6 lg:mt-0">
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+          <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
+            <div id="stat-pre" class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">0</div>
+            <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">Rata-Rata Pre-Test</div>
+          </div>
+          <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
+            <div id="stat-prak" class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">0</div>
+            <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">Praktek</div>
+          </div>
+          <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
+            <div id="stat-post" class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">0</div>
+            <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">Rata-Rata Post-Test</div>
+          </div>
+        </div>
 
-    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
-      <div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">
-        90
+        <div class="rounded-2xl bg-white border-2 border-[#1524AF] p-4 md:p-5">
+          <div class="relative w-full h-[320px]">
+            <canvas id="statistikChart"></canvas>
+          </div>
+        </div>
       </div>
-      <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
-        Praktek
-      </div>
-    </div>
-
-    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
-      <div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">
-        80.76
-      </div>
-      <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
-        Rata-Rata Post-Test
-      </div>
-    </div>
-  </div>
-
-  <div class="rounded-2xl bg-white border-2 border-[#1524AF] p-4 md:p-5">
-    <div class="relative w-full h-[320px]">
-      <canvas id="statistikChart"></canvas>
-    </div>
-  </div>
-</div>
 
     </div>
   </div>
@@ -1122,176 +1291,140 @@ $latestBeritas = Berita::query()
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
 <script>
+  // Chart data diambil dari server (Blade -> JS)
+  const chartLabels = {!! json_encode($labels ?? []) !!};
+  const chartPre    = {!! json_encode($pre ?? []) !!};
+  const chartPost   = {!! json_encode($post ?? []) !!};
+  const chartPrak   = {!! json_encode($prak ?? []) !!};
+  const chartRata   = {!! json_encode($rata ?? []) !!};
+
+  // Update angka ringkasan (ambil rata-rata across semua pelatihan, round 2)
+  function safeAvg(arr){
+    if (!Array.isArray(arr) || arr.length === 0) return 0;
+    const s = arr.reduce((a,b)=>a+Number(b||0),0);
+    return Math.round((s/arr.length) * 100) / 100;
+  }
+  document.getElementById('stat-pre').textContent = safeAvg(chartPre);
+  document.getElementById('stat-post').textContent = safeAvg(chartPost);
+  document.getElementById('stat-prak').textContent = safeAvg(chartPrak);
+
+  // inisialisasi Chart.js
   const ctx = document.getElementById('statistikChart').getContext('2d');
-
-  const pelatihanLabels = ['Teknik Pengelasan', 'Teknik Mesin Bubut', 'Teknik Mesin CNC', 'Teknik Elektro'];
-
-  new Chart(ctx, {
+  const statistikChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: pelatihanLabels,
+      labels: chartLabels,
       datasets: [
         {
           label: 'Pre-Test',
-          data: [8, 22, 12, 29],
-          borderColor: '#FF6107',        // oranye
+          data: chartPre,
+          borderColor: '#FF6107',
           pointBackgroundColor: '#FF6107',
           pointBorderColor: '#FF6107',
-          borderWidth: 2,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 5,
-          fill: false
+          borderWidth: 2, tension: 0.35, pointRadius: 4, pointHoverRadius: 5, fill: false
         },
         {
           label: 'Post-Test',
-          data: [24, 53, 75, 94],
-          borderColor: '#2F4BFF',        // biru
+          data: chartPost,
+          borderColor: '#2F4BFF',
           pointBackgroundColor: '#2F4BFF',
           pointBorderColor: '#2F4BFF',
-          borderWidth: 2,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 5,
-          fill: false
+          borderWidth: 2, tension: 0.35, pointRadius: 4, pointHoverRadius: 5, fill: false
         },
         {
           label: 'Praktek',
-          data: [38, 70, 35, 60],
-          borderColor: '#6B2C47',        // maroon/ungu tua
+          data: chartPrak,
+          borderColor: '#6B2C47',
           pointBackgroundColor: '#6B2C47',
           pointBorderColor: '#6B2C47',
-          borderWidth: 2,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 5,
-          fill: false
+          borderWidth: 2, tension: 0.35, pointRadius: 4, pointHoverRadius: 5, fill: false
         },
         {
           label: 'Rata-Rata',
-          data: [52, 10, 26, 49],
-          borderColor: '#DBCC8F',        // beige/kuning muda
+          data: chartRata,
+          borderColor: '#DBCC8F',
           pointBackgroundColor: '#DBCC8F',
           pointBorderColor: '#DBCC8F',
-          borderWidth: 2,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 5,
-          fill: false
+          borderWidth: 2, tension: 0.35, pointRadius: 4, pointHoverRadius: 5, fill: false
         }
       ]
     },
     options: {
       maintainAspectRatio: false,
-      layout: {
-        padding: { top: 10, right: 16, left: 16, bottom: 8 }
-      },
+      layout: { padding: { top: 10, right: 16, left: 16, bottom: 8 } },
       plugins: {
         legend: {
-          position: 'top',
-          align: 'center',
-          labels: {
-            usePointStyle: true,
-            pointStyle: 'circle',
-            boxWidth: 10,
-            boxHeight: 10,
-            padding: 12,
-            color: '#081526',
-            font: { size: 13, weight: '600' }
-          }
+          position: 'top', align: 'center',
+          labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 10, boxHeight: 10, padding: 12, color: '#081526', font: { size: 13, weight: '600' } }
         },
         tooltip: {
-          callbacks: {
-            // tooltip ringkas: “Label Dataset: Angka”
-            label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}`
-          }
+          callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}` }
         }
       },
       scales: {
         x: {
           offset: true,
-          ticks: {
-            font: { size: 12 },
-            color: '#8787A3'
-          },
-          grid: {
-            display: true,                 // garis vertikal seperti contoh
-            drawTicks: false,
-            color: '#8787A3',
-            lineWidth: 1
-          },
-          border: {
-            display: true,
-            color: '#8787A3',
-            width: 1.5
-          }
+          ticks: { font: { size: 12 }, color: '#8787A3' },
+          grid: { display: true, drawTicks: false, color: '#8787A3', lineWidth: 1 },
+          border: { display: true, color: '#8787A3', width: 1.5 }
         },
         y: {
-          beginAtZero: true,
-          min: 0,
-          max: 100,
-          ticks: {
-            stepSize: 20,
-            font: { size: 12 },
-            color: '#8787A3'
-          },
-          grid: {
-            // hanya garis 0 yang terlihat (baseline)
-            color: (ctx) => (ctx.tick.value === 0 ? '#8787A3' : 'transparent'),
-            lineWidth: (ctx) => (ctx.tick.value === 0 ? 1.5 : 0),
-            drawTicks: false
-          },
-          border: {
-            display: true,
-            color: '#8787A3',
-            width: 1.5
-          }
+          beginAtZero: true, min: 0, max: 100,
+          ticks: { stepSize: 20, font: { size: 12 }, color: '#8787A3' },
+          grid: { color: (ctx) => (ctx.tick.value === 0 ? '#8787A3' : 'transparent'), lineWidth: (ctx) => (ctx.tick.value === 0 ? 1.5 : 0), drawTicks: false },
+          border: { display: true, color: '#8787A3', width: 1.5 }
         }
       }
     }
   });
 </script>
 
-
 <script>
-  // Toggle active state (ubah bagian dot, label, divider warna)
+  // Toggle active state — versi yang meng-handle inline color (data-color-*)
   (function(){
     const list = document.getElementById('listPelatihan');
     if (!list || list.dataset.inited) return;
     list.dataset.inited = '1';
 
-    const ACTIVE_TEXT = 'text-[#1524AF]';
-    const INACTIVE_TEXT = 'text-[#000000]';
-    const ACTIVE_DOT = 'bg-[#1524AF]';
-    const INACTIVE_DOT = 'bg-[#000000]';
-    const ACTIVE_DIV = 'bg-[#1524AF]';
-    const INACTIVE_DIV = 'bg-[#000000]';
-
     function setActive(idx){
-      list.querySelectorAll('li').forEach((li,i)=>{
+      const lis = Array.from(list.querySelectorAll('li'));
+      lis.forEach((li, i) => {
+        const btn = li.querySelector('.pel-btn');
         const label = li.querySelector('.label');
-        const dot   = li.querySelector('.dot');
-        const div   = li.querySelector('.divider');
-        if (!label || !dot || !div) return;
-        label.classList.remove(ACTIVE_TEXT); label.classList.add(INACTIVE_TEXT);
-        dot.classList.remove(ACTIVE_DOT);     dot.classList.add(INACTIVE_DOT);
-        div.classList.remove(ACTIVE_DIV);     div.classList.add(INACTIVE_DIV);
+        const dot = li.querySelector('.dot');
+        const div = li.querySelector('.divider');
+        if (!btn || !label || !dot || !div) return;
+
+        const colorActive = btn.dataset.colorActive || '#1524AF';
+        const colorInactive = btn.dataset.colorInactive || '#000000';
+
         if (i === idx){
-          label.classList.remove(INACTIVE_TEXT); label.classList.add(ACTIVE_TEXT);
-          dot.classList.remove(INACTIVE_DOT);     dot.classList.add(ACTIVE_DOT);
-          div.classList.remove(INACTIVE_DIV);     div.classList.add(ACTIVE_DIV);
+          // aktif
+          label.style.color = colorActive;
+          dot.style.backgroundColor = colorActive;
+          div.style.backgroundColor = colorActive;
+        } else {
+          // non-aktif
+          label.style.color = colorInactive;
+          dot.style.backgroundColor = colorInactive;
+          div.style.backgroundColor = colorInactive;
         }
       });
     }
 
+    // set default active = index 0 (jika ada)
     setActive(0);
 
-    list.addEventListener('click',(e)=>{
+    list.addEventListener('click', (e) => {
       const btn = e.target.closest('.pel-btn');
       if (!btn) return;
-      const idx = parseInt(btn.dataset.index,10) || 0;
+      const idx = parseInt(btn.dataset.index, 10) || 0;
       setActive(idx);
+
+      // Opsional: saat klik, zoom/scroll ke grafik atau highlight di chart
+      // contoh: highlight dataset point (bisa dikembangkan)
     });
   })();
 </script>

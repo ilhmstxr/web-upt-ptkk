@@ -1,5 +1,4 @@
-INSERT INTO
-  `bidang` (
+INSERT IGNORE INTO `bidang` (
     `id`,
     `nama_bidang`,
     `deskripsi`,
@@ -92,8 +91,7 @@ VALUES
 --
 -- Dumping data for table `cabang_dinas`
 --
-INSERT INTO
-  `cabang_dinas` (
+INSERT IGNORE INTO `cabang_dinas` (
     `id`,
     `nama`,
     `alamat`,
@@ -298,8 +296,7 @@ VALUES
 --
 -- Dumping data for table `instansi`
 --
-INSERT INTO
-  `instansi` (
+INSERT IGNORE INTO `instansi` (
     `id`,
     `asal_instansi`,
     `alamat_instansi`,
@@ -2553,7 +2550,7 @@ VALUES
 --
 -- Dumping data for table `pelatihan`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `pelatihan` (
     `id`,
     `instansi_id`,
@@ -2602,7 +2599,7 @@ VALUES
 -- Dumping data for table `tes`
 --
 -- Rebuilt INSERT for `tes` (no sub_tipe)
-INSERT INTO
+INSERT IGNORE INTO
   `tes` (
     `id`,
     `judul`,
@@ -2718,7 +2715,7 @@ VALUES
 --
 -- Dumping data for table `pertanyaan`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `pertanyaan` (
     `id`,
     `tes_id`,
@@ -4763,7 +4760,7 @@ VALUES
 
 -- tes pertanyaan
 -- INSERT for `tes_pertanyaan` (flags)
-INSERT INTO
+INSERT IGNORE INTO
   `tes_pertanyaan` (
     `tes_id`,
     `pertanyaan_id`,
@@ -4980,7 +4977,7 @@ VALUES
 --
 -- Dumping data for table `opsi_jawaban`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `opsi_jawaban` (
     `id`,
     `pertanyaan_id`,
@@ -8260,7 +8257,7 @@ VALUES
 --
 -- Dumping data for table `pivot_jawaban`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `pivot_jawaban` (
     `pertanyaan_id`,
     `template_pertanyaan_id`,
@@ -8312,7 +8309,7 @@ VALUES
 --
 -- Dumping data for table `peserta_survei`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `peserta_survei` (
     `id`,
     `nama`,
@@ -8888,7 +8885,7 @@ VALUES
 --
 -- Dumping data for table `users`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `users` (
     `id`,
     `name`,
@@ -11314,7 +11311,7 @@ VALUES
 --
 -- Dumping data for table `peserta`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `peserta` (
     `id`,
     `pelatihan_id`,
@@ -14972,7 +14969,7 @@ VALUES
     '2025-09-19 03:45:21'
   );
 
-INSERT INTO
+INSERT IGNORE INTO
   `peserta` (
     `id`,
     `pelatihan_id`,
@@ -15012,7 +15009,7 @@ VALUES
 --
 -- Dumping data for table `lampiran`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `lampiran` (
     `id`,
     `peserta_id`,
@@ -17067,7 +17064,7 @@ VALUES
     '2025-09-15 22:51:53'
   );
 
-INSERT INTO
+INSERT IGNORE INTO
   `lampiran` (
     `id`,
     `peserta_id`,
@@ -17565,7 +17562,7 @@ VALUES
 --
 -- Dumping data for table `percobaan`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `percobaan` (
     `id`,
     `peserta_id`,
@@ -22768,7 +22765,7 @@ VALUES
     '2025-09-26 08:04:36'
   );
 
-INSERT INTO
+INSERT IGNORE INTO
   `percobaan` (
     `id`,
     `peserta_id`,
@@ -23240,7 +23237,7 @@ VALUES
   );
 
 -- -- percobaan
--- INSERT INTO
+-- INSERT IGNORE INTO
 --   `percobaan` (
 --     `id`,
 --     `peserta_id`,
@@ -24077,7 +24074,7 @@ VALUES
 --
 -- Dumping data for table `jawaban_user`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `jawaban_user` (
     `id`,
     `opsi_jawaban_id`,
@@ -30190,7 +30187,7 @@ VALUES
     '2025-08-29 01:45:32'
   );
 
-INSERT INTO
+INSERT IGNORE INTO
   `jawaban_user` (
     `id`,
     `opsi_jawaban_id`,
@@ -35553,7 +35550,7 @@ VALUES
     '2025-08-29 02:09:03'
   );
 
-INSERT INTO
+INSERT IGNORE INTO
   `jawaban_user` (
     `id`,
     `opsi_jawaban_id`,
@@ -41496,7 +41493,7 @@ VALUES
     '2025-08-29 03:43:30'
   );
 
-INSERT INTO
+INSERT IGNORE INTO
   `jawaban_user` (
     `id`,
     `opsi_jawaban_id`,
@@ -46752,7 +46749,7 @@ VALUES
 --
 -- Dumping data for table `pendaftaran_pelatihan`
 --
-INSERT INTO
+INSERT IGNORE INTO
   `pendaftaran_pelatihan` (
     `id`,
     `peserta_id`,

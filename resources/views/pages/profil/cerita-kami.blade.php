@@ -56,8 +56,8 @@
   border-radius: 1rem;
   border: 1px solid #E0E7FF;
   box-shadow:
-    0 4px 8px rgba(0,0,0,.12),
-    0 12px 24px rgba(0,0,0,.18);
+    0 2px 4px rgba(0,0,0,.04),
+    0 10px 20px rgba(0,0,0,.08);
   overflow: visible;  /* biarkan lingkaran keluar 1/4 */
   transition:
     transform 220ms ease,
@@ -75,7 +75,7 @@
   right: 0;
   bottom: 0;
   height: 10px;
-  background: linear-gradient(90deg,#0B4695 0%,#5E96E3 50%,#0B4695 100%);
+  background: linear-gradient(90deg,#0E65CC 0%,#01A0F6 50%,#0C69CF 100%);
   border-radius: 0 0 1rem 1rem;   /* sudut bawah ikut kartu */
   opacity: 0;
   transform: translateY(100%);
@@ -86,8 +86,8 @@
 
 .tujuan-card:hover{
   transform: translateY(-6px);
-  border-color: #0B4695;
-  background-color: #D9F1FE;
+  border-color: #0E65CC;
+  background-color: #E8F3FF;
   box-shadow:
     0 4px 8px rgba(0,0,0,.05),
     0 22px 45px rgba(0,0,0,.14);
@@ -371,22 +371,23 @@ section + section {
 
           <div class="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#B5CDEE] to-[#1524AF]"></div>
 
-          @if($kepala->foto)
-            <img src="{{ asset('storage/'.$kepala->foto) }}"
-                alt="Foto Kepala UPT"
-                class="absolute bottom-0 left-1/2 -translate-x-1/2
-                        h-[260px] sm:h-[320px] md:h-[400px] lg:h-[500px]
-                        w-auto object-contain drop-shadow-md z-10"
-                loading="lazy"
-                decoding="async" />
-          @endif
+          <img src="{{ asset('images/profil/Kepala-UPT.svg') }}"
+               alt="Kepala UPT PTKK"
+               class="absolute bottom-0 left-1/2 -translate-x-1/2
+                      h-[260px]
+                      sm:h-[300px]
+                      md:h-[420px]
+                      lg:h-[540px]
+                      w-auto object-contain drop-shadow-md z-10"
+               loading="lazy"
+               decoding="async" />
         </div>
 
         {{-- NAMA (HP & TABLET) --}}
         <div class="block lg:hidden text-center mt-4">
           <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1524AF]
                      text-[19px] md:text-[20px] tracking-tight stroke-yellow">
-            {{ $kepala->nama_kepala_upt }}
+            ENDANG WINARSIH, S. Sos, M. Si
           </h3>
           <p class="mt-1 font-[Volkhov] text-[#861D23]
                     text-[13px] md:text-[14px]">
@@ -399,14 +400,18 @@ section + section {
       {{-- KOLOM KANAN: TEKS SAMBUTAN --}}
       <div class="w-full h-full flex flex-col lg:pt-[8px] lg:-mt-[6px]">
 
-        <div class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-1.6 text-justify prose max-w-none">
-          {!! $kepala->sambutan !!}
-        </div>
+        <p class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
+          Puji syukur ke hadirat Tuhan Yang Maha Esa atas limpahan rahmat-Nya sehingga UPT PTKK dapat melaksanakan setiap program pelatihan dengan baik. Program pelatihan kami disusun sebagai wujud nyata komitmen UPT PTKK dalam mendukung kebijakan Merdeka Belajar dan perubahan paradigma pendidikan vokasi agar selaras dengan kebutuhan industri, khususnya dalam meningkatkan kompetensi guru dan siswa di pendidikan kejuruan Jawa Timur.
+        </p>
+
+        <p class="mt-4 font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
+          Kami menyadari bahwa pencapaian tujuan besar ini tidak dapat terwujud tanpa kerja sama dan dukungan dari berbagai pihak, baik internal Dinas Pendidikan maupun eksternal. Untuk itu, kami mengucapkan terima kasih atas segala bentuk dukungan dan kontribusi yang telah diberikan. Semoga program pelatihan kami dapat menjadi landasan kuat dalam menciptakan SDM vokasi yang unggul, adaptif, kompetitif serta mampu membawa pendidikan kejuruan Jawa Timur semakin maju.
+        </p>
 
         {{-- NAMA (DESKTOP) --}}
         <div class="hidden lg:block">
           <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1E3A8A] text-[22px] tracking-tight stroke-yellow">
-            {{ $kepala->nama_kepala_upt }}
+            ENDANG WINARSIH, S. Sos, M. Si
           </h3>
           <p class="mt-1 font-[Volkhov] text-[#861D23] text-[20px]">
             Kepala UPT. PTKK
@@ -428,38 +433,39 @@ section + section {
       {{-- Grid 2 kolom, tinggi otomatis --}}
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[30px] gap-y-[20px] items-start">
 
-        {{-- KOLOM KIRI: VISI + MISI --}}
-        <div class="flex flex-col gap-[20px] w-full">
-          {{-- VISI --}}
-          <div class="w-full rounded-2xl ring-1 ring-black/5 bg-white"
-              style="background-image: url('{{ asset('images/profil/visi.svg') }}');
-                      background-size: cover;
-                      background-position: center;">
-            <div class="py-4 px-6 flex flex-col bg-[#DBE7F7]/70 rounded-2xl">
-              <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">
-                Visi
-              </h3>
-              <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-[1.5] text-justify">
-                Profesional dalam pelayanan guna meningkatkan kualitas SDM dalam pelatihan yang berintegritas
-                dan berkompeten sesuai kebutuhan perkembangan pasar global.
-              </p>
-            </div>
-          </div>
-
-          {{-- MISI (ditambah tinggi khusus tablet agar selaras dengan Sasaran) --}}
-          <div class="w-full rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7] flex flex-col">
-            <div class="py-4 px-6 flex flex-col h-full">
-              <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">
-                Misi
-              </h3>
-              <ul class="list-disc pl-5 space-y-[1px] font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-[1.5] text-justify">
-                <li>Memberikan pelayanan prima guna mendukung program pemerintah.</li>
-                <li>Mengembangkan sistem pelatihan yang cerdas, berwawasan, terampil, adaptif, dan berkompeten.</li>
-                <li>Meningkatkan keterampilan SDM berbasis vokasi siap kerja, berwirausaha, atau melanjutkan ke jenjang lebih tinggi.</li>
-              </ul>
-            </div>
+      {{-- KOLOM KIRI: VISI + MISI --}}
+      <div class="flex flex-col gap-[20px] w-full">
+        {{-- VISI --}}
+        <div class="w-full rounded-2xl ring-1 ring-black/5 bg-white"
+             style="background-image: url('{{ asset('images/profil/visi.svg') }}');
+                    background-size: cover;
+                    background-position: center;">
+          <div class="p-6 flex flex-col bg-white/80 rounded-2xl">
+            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">
+              Visi
+            </h3>
+            <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
+              Profesional dalam pelayanan guna meningkatkan kualitas SDM dalam pelatihan yang berintegritas
+              dan berkompeten sesuai kebutuhan perkembangan pasar global.
+            </p>
           </div>
         </div>
+
+        {{-- MISI (ditambah tinggi khusus tablet agar selaras dengan Sasaran) --}}
+        <div class="w-full rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7]
+                    h-[325px] md:h-[380px] lg:h-[325px] flex flex-col">
+          <div class="p-6 flex flex-col h-full">
+            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">
+              Misi
+            </h3>
+            <ul class="list-disc pl-5 space-y-2 font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
+              <li>Memberikan pelayanan prima guna mendukung program pemerintah.</li>
+              <li>Mengembangkan sistem pelatihan yang cerdas, berwawasan, terampil, adaptif, dan berkompeten.</li>
+              <li>Meningkatkan keterampilan SDM berbasis vokasi siap kerja, berwirausaha, atau melanjutkan ke jenjang lebih tinggi.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
         {{-- KOLOM KANAN: MOTTO + SASARAN --}}
         <div class="flex flex-col gap-[20px] w-full">

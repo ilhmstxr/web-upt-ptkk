@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SorotanPelatihan extends Model
 {
-    // Kolom yang bisa diisi mass-assignment
+    // Nama tabel default: sorotan_pelatihans (sesuaikan jika berbeda)
     protected $fillable = [
         'title',
         'description',
@@ -17,10 +18,14 @@ class SorotanPelatihan extends Model
         'is_published' => 'boolean',
     ];
 
-    // Relasi: satu sorotan punya banyak foto
-    public function fotos()
+    /**
+     * Relasi: satu SorotanPelatihan punya banyak foto.
+     * Urutkan berdasarkan kolom 'order' jika ada.
+     *
+     * @return HasMany
+     */
+    public function fotos(): HasMany
     {
-        return $this->hasMany(SorotanPelatihanFoto::class);
+        return $this->hasMany(SorotanFoto::class, 'sorotan_pelatihan_id')->orderBy('order');
     }
-
 }

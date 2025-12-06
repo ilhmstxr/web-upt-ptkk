@@ -6,8 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
+        // Diperbaiki: Menggunakan nama tabel tunggal 'pelatihan' 
+        // agar sesuai dengan $table->constrained('pelatihan') di tabel 'peserta'.
         Schema::create('pelatihan', function (Blueprint $table) {
             $table->id();
 
@@ -23,7 +28,7 @@ return new class extends Migration
             $table->enum('jenis_program', ['reguler','akselerasi','mtu'])
                   ->default('reguler');
 
-            // Relasi ke asrama (kolom baru yang kamu perlukan)
+            // Relasi ke asrama
             $table->foreignId('asrama_id')
                   ->nullable()
                   ->constrained('asrama')
@@ -40,8 +45,11 @@ return new class extends Migration
             $table->date('tanggal_mulai')->nullable();
             $table->date('tanggal_selesai')->nullable();
 
-            // Deskripsi
+            // Deskripsi dan Data Text Tambahan
             $table->text('deskripsi')->nullable();
+            $table->text('syarat_ketentuan')->nullable();
+            $table->text('jadwal_text')->nullable();
+            $table->text('lokasi_text')->nullable();
 
             // Data tambahan
             $table->integer('jumlah_peserta')->nullable();
@@ -52,8 +60,12 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
+        // Diperbaiki: Menghapus tabel tunggal 'pelatihan'
         Schema::dropIfExists('pelatihan');
     }
 };
