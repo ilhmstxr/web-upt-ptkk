@@ -11,6 +11,8 @@ class ListPelatihans extends ListRecords
 {
     protected static string $resource = PelatihanResource::class;
 
+    protected static string $view = 'filament-panels::resources.pages.list-records';
+
     public function getPaginator()
     {
         return $this->paginateTableQuery($this->getFilteredTableQuery());

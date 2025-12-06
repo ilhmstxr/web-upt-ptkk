@@ -630,46 +630,66 @@ CHECK the error n solve
 
 
 
-TESTING BRANCH MERGE-FINAL
-- nav beranda e jek dashboard peserta
-CHECK - gambar di bidang resource ga muncul (nyimpen gambar e ubah jadi ke public aja soale sekalian di buat halaman user)
-- ubah gambar di pelatihan susah/ gaisok // NOTE ini nanti diganti ketika deploy(config/filesystems.php:line41:branch merge-final)
-CHECK - bidang diganti kompetensi - Bu Nur 1 Desember 2025
-- UELEK ADMINE PELATIHAN
-CHECK - lihat gambar (hapusen sg tak block)
-CHECK - lihat gambar (putih putih elek iku hapuen ae)
-CHECK - lihat gambar ( si filter kategori sama status pindah ke yang tak tandain warna pink)
-CHECK - lihat gambar (gausah dikei opsi tampilan grid lek elek)
-- kolom table pelatihan gaush dikei gambar/cover
-
-
 kolom tabel instruktur
 data pribadi : nama, nik, tempat, tanggal lahir, jenis kelamin, agama, no hp
 lampiran : cv, ktp, ijazah, sertifikat kompetensi
 
 
-CHECK - lihat gambar (hybrid/zoom? pic admin? hapus ae ganti total peserta:63251876)
+
+
+TESTING BRANCH MERGE-FINAL
+- nav beranda e jek dashboard peserta
+DONE - gambar di bidang resource ga muncul (nyimpen gambar e ubah jadi ke public aja soale sekalian di buat halaman user)
+DONE- ubah gambar di pelatihan susah/ gaisok // NOTE ini nanti diganti ketika deploy(config/filesystems.php:line41:branch merge-final)
+DONE - bidang diganti kompetensi - Bu Nur 1 Desember 2025
+- UELEK ADMINE PELATIHAN
+DONE - lihat gambar (hapusen sg tak block)
+DONE - lihat gambar (putih putih elek iku hapuen ae)
+DONE - lihat gambar ( si filter kategori sama status pindah ke yang tak tandain warna pink)
+DONE - lihat gambar (gausah dikei opsi tampilan grid lek elek)
+DONE - kolom table pelatihan gaush dikei gambar/cover
+
+
+
+
+
+DONE - lihat gambar (hybrid/zoom? pic admin? hapus ae ganti total peserta:63251876)
 - uwelek tampilan e
-CHECK - lihat gambar (bidang ganti kompetensi)
-CHECK - 3 kotak iku hapus ae stats overview
+DONE - lihat gambar (bidang ganti kompetensi)
+DONE - 3 kotak iku hapus ae stats overview
+
+DONE - statusmu isine ga konsisten di filter pelatihan, di table pelatihan sama yang di detail (create, edit)
+DONE - nama mentor e udah diubah ga tampil di card daftar bidang pelatihan. 
+DONE - foto hapus nk bidang pelatihan
+DONE - 12 sesi 3 tugas. lek statis gausa di gae hapus ae
+
+DONE - data peserta terdaftar filter sama tambah peserta 22 e gabisa di pencet 
+DONE - liat data peserta iku lapu mok kei inisial nama peserta e
+DONE - instruktur e gaisok di tambah (di bidang pelatihan)
+DONE - SYARAT INFORMAI JADWAL LOKASI GA KEUBAH NK DATABASE duh
+DONE - tambah peserta malah error tambah pelatihan
 
 
+
+
+- nav beranda e jek dashboard peserta
+- asrama blom di cek gaoonk data e
+- hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
+-  hasil tes survey lain e blom di cek gaonk data e
+- status e uda tak buka pendaftaran tapi nk user ga metu form pendaftaran e
+- export e kabeh grg isok
+
+
+
+
+
+
+TODO - hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
+TODO -  hasil tes survey lain e blom di cek gaonk data e
 CHECK - instruktur iku gausa digae dropdown isok ga gae format text ae (gak)
-CHECK - statusmu isine ga konsisten di filter pelatihan, di table pelatihan sama yang di detail (create, edit)
-CHECK - nama mentor e udah diubah ga tampil di card daftar bidang pelatihan. 
-CHECK - foto hapus nk bidang pelatihan
-CHECK - 12 sesi 3 tugas. lek statis gausa di gae hapus ae
 
-CHECK - data peserta terdaftar filter sama tambah peserta 22 e gabisa di pencet
-CHECK - liat data peserta iku lapu mok kei inisial nama peserta e
-CHECK - instruktur e gaisok di tambah (di bidang pelatihan)
-CHECK - tambah peserta malah error tambah pelatihan
+
 
 - status e uda tak buka pendaftaran tapi nk user ga metu form pendaftaran e
 - export e kabeh grg isok
-TODO - SYARAT INFORMAI JADWAL LOKASI GA KEUBAH NK DATABASE duh
-TODO - hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
-TODO -  hasil tes survey lain e blom di cek gaonk data e
-
-
 - asrama blom di cek gaoonk data e

@@ -31,7 +31,7 @@ class PesertaPelatihanTable extends BaseWidget
                 Tables\Columns\TextColumn::make('peserta.instansi.asal_instansi')
                     ->label('Instansi')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('kompetensi.nama_kompetensi')
+                Tables\Columns\TextColumn::make('kompetensiPelatihan.kompetensi.nama_kompetensi')
                     ->label('Kompetensi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')

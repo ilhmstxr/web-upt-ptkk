@@ -14,13 +14,16 @@ class ViewPelatihan extends ViewRecord
     public function addInstructorAction(): \Filament\Actions\Action
     {
         return \Filament\Actions\Action::make('addInstructor')
-            ->label('Tambah Instruktur')
+            ->label('Tambah Bidang')
             ->icon('heroicon-o-plus')
             ->color('primary')
             ->form([
                 \Filament\Forms\Components\Select::make('kompetensi_id')
                     ->label('Kompetensi')
-                    ->options(\App\Models\Kompetensi::query()->pluck('nama_kompetensi', 'id'))
+                    ->options(function () {
+                        $existingIds = $this->record->kompetensiPelatihan->pluck('kompetensi_id');
+                        return \App\Models\Kompetensi::whereNotIn('id', $existingIds)->pluck('nama_kompetensi', 'id');
+                    })
                     ->searchable()
                     ->required(),
                 \Filament\Forms\Components\Select::make('instruktur_id')

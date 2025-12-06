@@ -87,10 +87,21 @@ class PelatihanResource extends Resource
                                                 ->label('Materi / Kompetensi')
                                                 ->columnSpan(2),
                                             
-                                            Forms\Components\TextInput::make('nama_instruktur')
+                                            Forms\Components\Select::make('instruktur_id')
                                                 ->label('Nama Instruktur')
-                                                ->placeholder('Masukkan nama instruktur')
-                                                ->maxLength(255),
+                                                ->relationship('instruktur', 'nama')
+                                                ->searchable()
+                                                ->preload()
+                                                ->required()
+                                                ->reactive()
+                                                ->afterStateUpdated(fn ($state, callable $set) => $set('nama_instruktur', \App\Models\Instruktur::find($state)?->nama))
+                                                ->createOptionForm([
+                                                    Forms\Components\TextInput::make('nama')
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                ]),
+
+                                            Forms\Components\Hidden::make('nama_instruktur'),
                                             
                                             Forms\Components\TextInput::make('lokasi')
                                                 ->label('Lokasi / Ruangan')
