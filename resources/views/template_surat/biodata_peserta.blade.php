@@ -5,7 +5,7 @@
     <title>Biodata Peserta Massal</title>
     <style>
         body {
-            font-family: 'Times New Roman', Times, serif;
+            font-family: 'Arial', sans-serif;
             font-size: 12pt;
             margin: 2cm;
         }
@@ -21,18 +21,19 @@
         }
         .title {
             font-weight: bold;
-            font-size: 14pt;
+            font-size: 18pt;
             text-decoration: underline;
             margin-bottom: 5px;
         }
         .subtitle {
-            font-size: 12pt;
+            font-size: 14pt;
             font-weight: bold;
         }
         .content-table {
             width: 100%;
             margin-top: 10px;
             border-collapse: collapse;
+            font-size: 12pt;
         }
         .content-table td {
             padding: 5px 0;
@@ -60,9 +61,10 @@
             margin-right: 20px;
         }
         .signature-section {
-            margin-top: 50px;
+            margin-top: 80px;
             width: 100%;
             display: table;
+            font-size: 12pt;
         }
         .signature-right {
             display: table-cell;
@@ -88,26 +90,24 @@
     @foreach ($peserta as $p)
         <div class="container">
             <div class="header">
-                <div class="title">BIODATA PESERTA PELATIHAN</div>
-                <div class="subtitle">
-                    {{ strtoupper($p->pelatihan->nama_pelatihan ?? 'PROGRAM PELATIHAN') }}<br>
-                    TAHUN {{ date('Y') }}
+                <div class="title" style="text-decoration: none; margin-bottom: 20px;">BIODATA PESERTA</div>
+                <div class="subtitle" style="font-weight: normal; font-size: 14pt; margin-bottom: 20px;">
+                    {{ $p->pelatihan->nama_pelatihan ?? 'Kegiatan Pelatihan' }} <br>
+                    Angkatan {{ $p->pelatihan->angkatan ?? '...' }} Tahun {{ date('Y') }}
+                </div>
+                <div style="font-size: 12pt;">
+                    Tanggal {{ $p->pelatihan->tanggal_mulai ? $p->pelatihan->tanggal_mulai->isoFormat('D') : '...' }} s/d {{ $p->pelatihan->tanggal_selesai ? $p->pelatihan->tanggal_selesai->isoFormat('D MMMM YYYY') : '...' }}
                 </div>
             </div>
 
             <table class="content-table">
                 <tr>
-                    <td class="label">Nama Lengkap</td>
+                    <td class="label">Nama</td>
                     <td class="separator">:</td>
                     <td class="data"><b>{{ $p->nama }}</b></td>
                 </tr>
                 <tr>
-                    <td class="label">NIK</td>
-                    <td class="separator">:</td>
-                    <td class="data">{{ $p->nik ?? '-' }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Tempat, Tanggal Lahir</td>
+                    <td class="label">Tempat / tgl Lahir</td>
                     <td class="separator">:</td>
                     <td class="data">{{ $p->tempat_lahir ?? '-' }}, {{ $p->tanggal_lahir ? $p->tanggal_lahir->isoFormat('D MMMM YYYY') : '-' }}</td>
                 </tr>
@@ -122,43 +122,40 @@
                     <td class="data">{{ $p->agama ?? '-' }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Alamat Rumah</td>
-                    <td class="separator">:</td>
-                    <td class="data">{{ $p->alamat ?? '-' }}</td>
-                </tr>
-                <tr>
-                    <td class="label">No. HP / WhatsApp</td>
+                    <td class="label">No. HP</td>
                     <td class="separator">:</td>
                     <td class="data">{{ $p->no_hp ?? '-' }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Email</td>
+                    <td class="label">Nomor Induk Siswa</td>
                     <td class="separator">:</td>
-                    <td class="data">{{ $p->user->email ?? '-' }}</td>
+                    <td class="data">{{ $p->nik ?? '-' }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Program Pelatihan</td>
+                    <td class="label">Asal Lembaga</td>
+                    <td class="separator">:</td>
+                    <td class="data">{{ $p->instansi->asal_instansi ?? ($p->asal_sekolah ?? '-') }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Alamat Lembaga</td>
+                    <td class="separator">:</td>
+                    <td class="data">{{ $p->instansi->alamat_instansi ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Kelas</td>
+                    <td class="separator">:</td>
+                    <td class="data">-</td>
+                </tr>
+                <tr>
+                    <td class="label">Kompetensi Keahlian</td>
                     <td class="separator">:</td>
                     <td class="data">{{ $p->pelatihan->nama_pelatihan ?? '-' }}</td>
                 </tr>
-                <tr>
-                    <td class="label">Angkatan</td>
-                    <td class="separator">:</td>
-                    <td class="data">{{ $p->pelatihan->angkatan ?? '-' }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Asal Lembaga / Sekolah</td>
-                    <td class="separator">:</td>
-                    <td class="data">{{ $p->instansi->name ?? ($p->asal_sekolah ?? '-') }}</td>
-                </tr>
-                {{-- Add conditional fields if they exist in schema, usually helpful to be defensive --}}
             </table>
 
             <div class="signature-section">
-                <!-- Can add left signature like "Mengetahui" if needed, keeping simple based on request -->
                 <div class="signature-right">
                     <p>
-                        {{-- Generic validation date or from created_at --}}
                         Malang, {{ now()->isoFormat('D MMMM YYYY') }}<br>
                         Peserta Pelatihan,
                     </p>
@@ -167,10 +164,10 @@
                 </div>
             </div>
 
-            <!-- Optional: Photo Placeholder -->
-            {{-- <div class="photo-box">
-                FOTO 3x4
-            </div> --}}
+            <div style="margin-top: 60px; font-size: 12pt; text-align: left; width: 60%;">
+                <p style="margin-bottom: 5px;"><b>Catatan :</b> Mohon Melampirkan Surat Tugas, Fc Kartu Pelajar/KTP/KK/Ijazah</p>
+                <div style="border-bottom: 3px solid black; width: 100%;"></div>
+            </div>
             
         </div>
 

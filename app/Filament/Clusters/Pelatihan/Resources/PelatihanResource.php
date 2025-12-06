@@ -93,16 +93,14 @@ class PelatihanResource extends Resource
                                                 ->searchable()
                                                 ->preload()
                                                 ->required()
-                                                ->reactive()
-                                                ->afterStateUpdated(fn ($state, callable $set) => $set('nama_instruktur', \App\Models\Instruktur::find($state)?->nama))
                                                 ->createOptionForm([
                                                     Forms\Components\TextInput::make('nama')
                                                         ->required()
                                                         ->maxLength(255),
+                                                    Forms\Components\Select::make('kompetensi_id')
+                                                        ->relationship('kompetensi', 'nama_kompetensi')
+                                                        ->required(),
                                                 ]),
-
-                                            Forms\Components\Hidden::make('nama_instruktur')
-                                                ->dehydrated(false),
                                             
                                             Forms\Components\TextInput::make('lokasi')
                                                 ->label('Lokasi / Ruangan')
