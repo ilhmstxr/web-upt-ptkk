@@ -5,23 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bidang extends Model
+class Kompetensi extends Model
 {
     use HasFactory;
 
-    protected $table = 'bidang';
+    protected $table = 'kompetensi';
 
     protected $fillable = [
-        'nama_bidang',
+        'nama_kompetensi',
         'deskripsi',
         'kode',
         'kelas_keterampilan',
         'gambar',
     ];
 
-    public function bidangPelatihan()
+    public function kompetensiPelatihan()
     {
-        return $this->hasMany(BidangPelatihan::class);
+        return $this->hasMany(KompetensiPelatihan::class);
     }
 
     // public function pelatihans()

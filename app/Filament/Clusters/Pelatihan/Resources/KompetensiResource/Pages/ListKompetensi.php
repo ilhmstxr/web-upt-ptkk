@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Clusters\Pelatihan\Resources\BidangResource\Pages;
+namespace App\Filament\Clusters\Pelatihan\Resources\KompetensiResource\Pages;
 
-use App\Filament\Clusters\Pelatihan\Resources\BidangResource;
+use App\Filament\Clusters\Pelatihan\Resources\KompetensiResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Contracts\View\View;
 
-class ListBidangs extends ListRecords
+class ListKompetensi extends ListRecords
 {
-    protected static string $resource = BidangResource::class;
+    protected static string $resource = KompetensiResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -21,7 +21,7 @@ class ListBidangs extends ListRecords
     public function getHeader(): ?View
     {
         return view('filament.clusters.pelatihan.components.resource-tabs', [
-            'activeTab' => 'bidangs'
+            'activeTab' => 'kompetensi'
         ]);
     }
 }

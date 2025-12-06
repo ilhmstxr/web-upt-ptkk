@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets\Dashboard;
 
-use App\Models\Bidang;
+use App\Models\Kompetensi;
 use App\Models\Instruktur;
 use App\Models\Pelatihan;
 use App\Models\Peserta;
@@ -32,8 +32,8 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('warning'),
 
-            Stat::make('Total Bidang', Bidang::count())
-                ->description('Jumlah bidang keahlian')
+            Stat::make('Total Kompetensi', Kompetensi::count())
+                ->description('Jumlah kompetensi keahlian')
                 ->descriptionIcon('heroicon-m-academic-cap')
                 ->color('primary'),
         ];

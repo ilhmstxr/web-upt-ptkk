@@ -320,11 +320,11 @@
           {{-- Isi --}}
           <div class="px-3 md:px-4 pb-4 pt-2 text-[14px] text-[#000] font-medium">
             <ul class="space-y-3 text-[14px] font-medium text-[#000000]">
-              @forelse($pelatihan->bidangPelatihan as $bp)
+              @forelse($pelatihan->kompetensiPelatihan as $bp)
               <li class="relative pl-6">
                 <span class="absolute left-0 top-[4px] text-[#1524AF] inline-block font-bold leading-none text-[17px]">></span>
                 <div class="space-y-1">
-                  <p class="font-semibold">{{ $bp->bidang->nama_bidang ?? 'Kejuruan' }}</p>
+                  <p class="font-semibold">{{ $bp->kompetensi->nama_kompetensi ?? 'Kejuruan' }}</p>
                   <div class="flex items-start gap-2">
                     <span class="mt-[2px] inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#1524AF]">
                       <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#FFFFFF">

@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BidangPelatihan extends Model
+class KompetensiPelatihan extends Model
 {
     use HasFactory;
-    protected $table = 'bidang_pelatihan';
+    protected $table = 'kompetensi_pelatihan';
     
     protected $fillable = [
         'pelatihan_id',
-        'bidang_id',
+        'kompetensi_id',
         'lokasi',
         'kota',
-        'kode_bidang_pelatihan',
+        'kode_kompetensi_pelatihan',
         'rata_rata_peningkatan',
         'status_performa',
         'metode',
@@ -32,9 +32,9 @@ class BidangPelatihan extends Model
     }
 
 
-    public function bidang()
+    public function kompetensi()
     {
-        return $this->belongsTo(Bidang::class);
+        return $this->belongsTo(Kompetensi::class);
     }
 
     /**
@@ -42,8 +42,8 @@ class BidangPelatihan extends Model
      */
     public function pendaftaranPelatihan()
     {
-        // Terhubung ke PendaftaranPelatihan::class melalui 'bidang_pelatihan_id'
-        return $this->hasMany(PendaftaranPelatihan::class, 'bidang_pelatihan_id');
+        // Terhubung ke PendaftaranPelatihan::class melalui 'kompetensi_pelatihan_id'
+        return $this->hasMany(PendaftaranPelatihan::class, 'kompetensi_pelatihan_id');
     }
 
     /**
@@ -55,9 +55,9 @@ class BidangPelatihan extends Model
         return $this->hasManyThrough(
             Peserta::class,
             PendaftaranPelatihan::class,
-            'bidang_pelatihan_id', // Foreign key di PendaftaranPelatihan
+            'kompetensi_pelatihan_id', // Foreign key di PendaftaranPelatihan
             'id',                    // Foreign key di Peserta
-            'id',                    // Local key di BidangPelatihan
+            'id',                    // Local key di KompetensiPelatihan
             'peserta_id'             // Local key di PendaftaranPelatihan
         );
     }

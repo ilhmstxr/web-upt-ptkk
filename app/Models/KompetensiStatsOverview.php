@@ -7,35 +7,35 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 
-class BidangStatsOverview extends BaseWidget
+class KompetensiStatsOverview extends BaseWidget
 {
     /**
-     * Menyimpan model Bidang yang akan digunakan di widget.
+     * Menyimpan model Kompetensi yang akan digunakan di widget.
      * Bisa null agar tidak error sebelum diinisialisasi.
      */
-    public ?Bidang $bidang = null;
+    public ?\App\Models\Kompetensi $kompetensi = null;
 
     /**
-     * Mendapatkan statistik untuk widget Bidang.
+     * Mendapatkan statistik untuk widget Kompetensi.
      */
     protected function getStats(): array
     {
-        // Jika widget tidak menerima bidang tertentu → tampilkan total semua
-        if (!$this->bidang) {
-            $totalBidang = Bidang::count();
+        // Jika widget tidak menerima kompetensi tertentu → tampilkan total semua
+        if (!$this->kompetensi) {
+            $totalKompetensi = \App\Models\Kompetensi::count();
 
             return [
-                Stat::make('Total Bidang', $totalBidang)
-                    ->description($totalBidang > 0
-                        ? "Terdapat {$totalBidang} bidang yang terdaftar"
-                        : "Belum ada bidang yang terdaftar")
-                    ->color($totalBidang > 0 ? 'success' : 'warning')
+                Stat::make('Total Kompetensi', $totalKompetensi)
+                    ->description($totalKompetensi > 0
+                        ? "Terdapat {$totalKompetensi} kompetensi yang terdaftar"
+                        : "Belum ada kompetensi yang terdaftar")
+                    ->color($totalKompetensi > 0 ? 'success' : 'warning')
                     ->icon('heroicon-o-briefcase'),
             ];
         }
 
-        // Kalau menerima 1 bidang dari halaman detail → tampilkan statistik spesifik
-        $averages = $this->bidang->peserta()
+        // Kalau menerima 1 kompetensi dari halaman detail → tampilkan statistik spesifik
+        $averages = $this->kompetensi->peserta()
             ->join('tes', 'tes.peserta_id', '=', 'peserta.id')
             ->join('percobaan', 'percobaan.tes_id', '=', 'tes.id')
             ->select(

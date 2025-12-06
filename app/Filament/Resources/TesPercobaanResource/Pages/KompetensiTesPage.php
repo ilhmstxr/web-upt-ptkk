@@ -11,7 +11,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\Action;
 
-class BidangTesPage extends Page implements Tables\Contracts\HasTable
+class KompetensiTesPage extends Page implements Tables\Contracts\HasTable
 {
     use Tables\Concerns\InteractsWithTable;
 
@@ -28,15 +28,15 @@ class BidangTesPage extends Page implements Tables\Contracts\HasTable
 
     public function getTitle(): string
     {
-        return "Bidang - {$this->angkatan->nama_angkatan}";
+        return "Kompetensi - {$this->angkatan->nama_angkatan}";
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->query(Bidang::query()->where('angkatan_id', $this->angkatan->id))
+            ->query(\App\Models\Kompetensi::query()->where('angkatan_id', $this->angkatan->id))
             ->columns([
-                TextColumn::make('nama_bidang')->label('Nama Bidang')->sortable()->searchable(),
+                TextColumn::make('nama_kompetensi')->label('Nama Kompetensi')->sortable()->searchable(),
                 TextColumn::make('deskripsi')->label('Deskripsi')->limit(50)->placeholder('-'),
             ])
             ->actions([
@@ -47,10 +47,10 @@ class BidangTesPage extends Page implements Tables\Contracts\HasTable
                     ->url(fn($record) => route('filament.resources.tes-percobaans.peserta', [
                         'pelatihan' => $this->pelatihan->id,
                         'angkatan' => $this->angkatan->id,
-                        'bidang' => $record->id,
+                        'kompetensi' => $record->id,
                     ])),
             ])
-            ->emptyStateHeading('Belum ada bidang untuk angkatan ini')
+            ->emptyStateHeading('Belum ada kompetensi untuk angkatan ini')
             ->paginated(false);
     }
 }

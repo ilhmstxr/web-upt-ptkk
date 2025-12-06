@@ -229,7 +229,7 @@ Route::get('/send', fn() => Mail::to('23082010166@student.upnjatim.ac.id')->send
 | Data Peserta API
 |--------------------------------------------------------------------------
 */
-Route::get('api/peserta', fn() => Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')->get());
+Route::get('api/peserta', fn() => Peserta::with('lampiran', 'kompetensi', 'pelatihan', 'instansi')->get());
 
 /*
 |--------------------------------------------------------------------------
@@ -292,7 +292,7 @@ if (App::isLocal()) {
         // UNTUK MENGETES LOGIKA YANG BERBEDA.
 
         // $result = SurveyHasilKegiatan();
-        $result = countBidang();
+        $result = countKompetensi();
         // $result = testCreateDummyUser();
         // $result = testSomethingElse();
 

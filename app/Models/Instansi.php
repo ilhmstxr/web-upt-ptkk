@@ -16,7 +16,7 @@ class Instansi extends Model
     protected $fillable = [
         'asal_instansi',
         'alamat_instansi',
-        'bidang_keahlian',
+        'kompetensi_keahlian',
         'kota',
         'kota_id',
         // 'kelas', // Removed

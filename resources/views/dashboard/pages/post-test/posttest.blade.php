@@ -13,7 +13,7 @@
                     <p class="text-gray-600 mb-3">{{ \Illuminate\Support\Str::limit($t->deskripsi ?? '-', 140) }}</p>
 
                     <div class="text-sm text-gray-500 space-y-1">
-                        <div>Bidang: <strong class="text-gray-700">{{ $t->bidang->nama_bidang ?? '-' }}</strong></div>
+                        <div>Kompetensi: <strong class="text-gray-700">{{ $t->kompetensi->nama_kompetensi ?? '-' }}</strong></div>
                         <div>Pelatihan: <strong class="text-gray-700">{{ $t->pelatihan->nama_pelatihan ?? '-' }}</strong></div>
                         @if(!empty($t->durasi_menit))
                             <div>Durasi: <strong>{{ $t->durasi_menit }} menit</strong></div>

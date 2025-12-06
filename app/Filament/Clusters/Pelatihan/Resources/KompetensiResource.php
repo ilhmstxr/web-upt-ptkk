@@ -3,9 +3,9 @@
 namespace App\Filament\Clusters\Pelatihan\Resources;
 
 use App\Filament\Clusters\Pelatihan;
-use App\Filament\Clusters\Pelatihan\Resources\BidangResource\Pages;
-use App\Filament\Clusters\Pelatihan\Resources\BidangResource\RelationManagers;
-use App\Models\Bidang;
+use App\Filament\Clusters\Pelatihan\Resources\KompetensiResource\Pages;
+use App\Filament\Clusters\Pelatihan\Resources\KompetensiResource\RelationManagers;
+use App\Models\Kompetensi;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,9 +14,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class BidangResource extends Resource
+class KompetensiResource extends Resource
 {
-    protected static ?string $model = Bidang::class;
+    protected static ?string $model = \App\Models\Kompetensi::class;
 
     protected static ?string $cluster = Pelatihan::class;
 
@@ -32,17 +32,17 @@ class BidangResource extends Resource
             ->schema([
                 Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\Section::make('Informasi Bidang')
+                        Forms\Components\Section::make('Informasi Kompetensi')
                             ->schema([
                                 Forms\Components\Grid::make(2)
                                     ->schema([
-                                        Forms\Components\TextInput::make('nama_bidang')
-                                            ->label('Nama Bidang')
+                                        Forms\Components\TextInput::make('nama_kompetensi')
+                                            ->label('Nama Kompetensi')
                                             ->required()
                                             ->maxLength(255),
                                             
                                         Forms\Components\TextInput::make('kode')
-                                            ->label('Kode Bidang')
+                                            ->label('Kode Kompetensi')
                                             ->maxLength(255),
                                             
                                         Forms\Components\TextInput::make('kelas_keterampilan')
@@ -64,7 +64,7 @@ class BidangResource extends Resource
                         Forms\Components\Section::make('Media')
                             ->schema([
                                 Forms\Components\FileUpload::make('gambar')
-                                    ->label('Gambar/Icon Bidang')
+                                    ->label('Gambar/Icon Kompetensi')
                                     ->image()
                                     ->imageEditor()
                                     ->imageEditorAspectRatios([
@@ -73,7 +73,7 @@ class BidangResource extends Resource
                                         '16:9',
                                     ])
                                     ->maxSize(2048) // 2MB
-                                    ->directory('bidang-images')
+                                    ->directory('kompetensi-images')
                                     ->visibility('public')
                                     ->disk('public'),
                             ]),
@@ -93,11 +93,11 @@ class BidangResource extends Resource
                     // Image at top
                     Tables\Columns\ImageColumn::make('gambar')
                         ->height(150)
-                        ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->nama_bidang) . '&size=300&background=random')
+                        ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->nama_kompetensi) . '&size=300&background=random')
                         ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3'])
                         ->disk('public'),
                     
-                    Tables\Columns\TextColumn::make('nama_bidang')
+                    Tables\Columns\TextColumn::make('nama_kompetensi')
                         ->weight('bold')
                         ->size('lg')
                         ->icon('heroicon-o-academic-cap')
@@ -150,9 +150,9 @@ class BidangResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBidangs::route('/'),
-            'create' => Pages\CreateBidang::route('/create'),
-            'edit' => Pages\EditBidang::route('/{record}/edit'),
+            'index' => Pages\ListKompetensi::route('/'),
+            'create' => Pages\CreateKompetensi::route('/create'),
+            'edit' => Pages\EditKompetensi::route('/{record}/edit'),
         ];
     }
 }

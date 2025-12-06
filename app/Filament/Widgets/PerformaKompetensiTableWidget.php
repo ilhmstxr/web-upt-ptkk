@@ -9,9 +9,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
-class PerformaBidangTableWidget extends BaseWidget
+class PerformaKompetensiTableWidget extends BaseWidget
 {
-    protected static ?string $heading = 'Analisis Detail Per Bidang Pelatihan';
+    protected static ?string $heading = 'Analisis Detail Per Kompetensi Pelatihan';
     protected static ?int $sort = 6;
 
     protected int | string | array $columnSpan = 'full';
@@ -20,30 +20,30 @@ class PerformaBidangTableWidget extends BaseWidget
     {
         return $table
             ->query(
-                // Kita query model Bidang dan melakukan kalkulasi agregat
-                // Ini membutuhkan relasi `pendaftaranPelatihan()` di model `Bidang`
-                Bidang::query()
-                    ->with('bidangPelatihan.pendaftaranPelatihan') // Menghitung 'JUMLAH PESERTA'
-                    // ->withAvg('bidangPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (RATA²)'
-                    // ->withMin('bidangPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MIN)'
-                    // ->withMax('bidangPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MAX)'
-                    // ->withAvg('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (RATA²)'
-                    // ->withMin('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
-                    // ->withMin('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
-                    // ->withMax('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MAX)'
+                // Kita query model Kompetensi dan melakukan kalkulasi agregat
+                // Ini membutuhkan relasi `pendaftaranPelatihan()` di model `Kompetensi`
+                \App\Models\Kompetensi::query()
+                    ->with('kompetensiPelatihan.pendaftaranPelatihan') // Menghitung 'JUMLAH PESERTA'
+                    // ->withAvg('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (RATA²)'
+                    // ->withMin('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MIN)'
+                    // ->withMax('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MAX)'
+                    // ->withAvg('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (RATA²)'
+                    // ->withMin('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
+                    // ->withMin('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
+                    // ->withMax('kompetensiPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MAX)'
                     ->limit(5)
             )
             ->headerActions([
                 Tables\Actions\Action::make('Lihat Semua')
-                    ->url('#') // Ganti dengan URL resource yang sesuai, misal: BidangResource::getUrl('index')
+                    ->url('#') // Ganti dengan URL resource yang sesuai, misal: KompetensiResource::getUrl('index')
                     ->button()
                     ->color('gray')
                     ->size('xs'),
             ])
             ->paginated(false)
             ->columns([
-                TextColumn::make('nama_bidang')
-                    ->label('BIDANG PELATIHAN'),
+                TextColumn::make('nama_kompetensi')
+                    ->label('KOMPETENSI PELATIHAN'),
 
                 TextColumn::make('pendaftaran_pelatihan_count')
                     ->label('JUMLAH PESERTA')
@@ -67,7 +67,7 @@ class PerformaBidangTableWidget extends BaseWidget
                 // --- KOLOM PENINGKATAN ---
                 TextColumn::make('peningkatan')
                     ->label('% PENINGKATAN')
-                    ->getStateUsing(function (Bidang $record): ?float {
+                    ->getStateUsing(function (\App\Models\Kompetensi $record): ?float {
                         $avgPre = $record->pendaftaran_pelatihan_avg_nilai_pre_test;
                         $avgPost = $record->pendaftaran_pelatihan_avg_nilai_post_test;
 
@@ -84,7 +84,7 @@ class PerformaBidangTableWidget extends BaseWidget
                 // --- KOLOM STATUS ---
                 TextColumn::make('status')
                     ->label('STATUS')
-                    ->getStateUsing(function (Bidang $record): string {
+                    ->getStateUsing(function (\App\Models\Kompetensi $record): string {
                         // Kalkulasi ulang % peningkatan
                         $avgPre = $record->pendaftaran_pelatihan_avg_nilai_pre_test;
                         $avgPost = $record->pendaftaran_pelatihan_avg_nilai_post_test;

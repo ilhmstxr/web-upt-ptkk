@@ -14,7 +14,7 @@ class Instruktur extends Model
 
     protected $fillable = [
         'user_id',
-        'bidang_id',
+        'kompetensi_id',
         'nama',
         'tempat_lahir',
         'tgl_lahir',
@@ -30,9 +30,9 @@ class Instruktur extends Model
         'pendidikan_terakhir',
         'pengalaman_kerja'
     ];
-    public function bidang()
+    public function kompetensi()
     {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
+        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 
     public function pelatihan()

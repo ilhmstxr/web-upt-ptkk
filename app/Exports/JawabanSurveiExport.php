@@ -15,8 +15,8 @@ class JawabanSurveiExport implements FromCollection, WithHeadings
     public function collection()
     {
         return JawabanSurvei::with([
-                'peserta:id,nama,bidang_id,instansi_id',
-                'peserta.bidang:id,nama_bidang',
+                'peserta:id,nama,kompetensi_id,instansi_id',
+                'peserta.kompetensi:id,nama_kompetensi',
                 'peserta.instansi:id,asal_instansi',
                 'pertanyaan:id,judul',
                 'opsiJawaban:id,judul,apakah_benar',
@@ -27,7 +27,7 @@ class JawabanSurveiExport implements FromCollection, WithHeadings
                 return [
                     'id' => $item->id,
                     'peserta_nama' => $item->peserta->nama ?? '-',
-                    'bidang' => $item->peserta->bidang->nama_bidang ?? '-',
+                    'kompetensi' => $item->peserta->kompetensi->nama_kompetensi ?? '-',
                     'instansi' => $item->peserta->instansi->asal_instansi ?? '-',
                     'pertanyaan' => $item->pertanyaan->judul ?? '-',
                     'jawaban_id' => $item->opsi_jawaban_id ?? null,
@@ -48,7 +48,7 @@ class JawabanSurveiExport implements FromCollection, WithHeadings
         return [
             'ID',
             'Nama Peserta',
-            'Bidang',
+            'Kompetensi',
             'Instansi',
             'Pertanyaan',
             'Jawaban ID',

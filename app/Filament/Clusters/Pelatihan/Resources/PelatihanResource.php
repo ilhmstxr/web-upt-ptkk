@@ -79,13 +79,13 @@ class PelatihanResource extends Resource
                             Forms\Components\Section::make('Materi & Jadwal')
                                 ->description('Atur kurikulum dan jadwal pelatihan')
                                 ->schema([
-                                    Forms\Components\Repeater::make('bidangPelatihan')
+                                    Forms\Components\Repeater::make('kompetensiPelatihan')
                                         ->relationship()
                                         ->schema([
-                                            Forms\Components\Select::make('bidang_id')
-                                                ->relationship('bidang', 'nama_bidang')
+                                            Forms\Components\Select::make('kompetensi_id')
+                                                ->relationship('kompetensi', 'nama_kompetensi')
                                                 ->required()
-                                                ->label('Materi / Bidang')
+                                                ->label('Materi / Kompetensi')
                                                 ->columnSpan(2),
                                             
                                             Forms\Components\Select::make('instruktur_id')
@@ -100,7 +100,7 @@ class PelatihanResource extends Resource
                                         ->columns(2)
                                         ->defaultItems(1)
                                         ->addActionLabel('Tambah Sesi')
-                                        ->itemLabel(fn (array $state): ?string => $state['bidang_id'] ?? null),
+                                        ->itemLabel(fn (array $state): ?string => $state['kompetensi_id'] ?? null),
                                 ]),
                         ]),
                          // ======================== STEP 3: KONTEN HALAMAN PENDAFTARAN ========================
@@ -195,8 +195,8 @@ class PelatihanResource extends Resource
             'create' => Pages\CreatePelatihan::route('/create'),
             'view' => Pages\ViewPelatihan::route('/{record}'),
             'edit' => Pages\EditPelatihan::route('/{record}/edit'),
-            'view-bidang' => Pages\ViewBidangPelatihan::route('/{record}/bidang/{bidang_id}'),
-            'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/bidang/{bidang_id}/monev'),
+            'view-kompetensi' => Pages\ViewKompetensiPelatihan::route('/{record}/kompetensi/{kompetensi_id}'),
+            'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/kompetensi/{kompetensi_id}/monev'),
         ];
     }
 }

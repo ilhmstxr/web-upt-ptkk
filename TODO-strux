@@ -633,16 +633,15 @@ CHECK the error n solve
 TESTING BRANCH MERGE-FINAL
 - nav beranda e jek dashboard peserta
 CHECK - gambar di bidang resource ga muncul (nyimpen gambar e ubah jadi ke public aja soale sekalian di buat halaman user) 
-- ubah gambar di pelatihan susah/ gaisok
+- ubah gambar di pelatihan susah/ gaisok -> setelah edit & save changes, nanti auto melempar ke table bidang
 TODO - bidang diganti kompetensi - Bu Nur 1 Desember 2025
-- UELEK ADMINE PELATIHAN
-- Hapus untuk keterangan 
-- lihat gambar (putih putih elek iku hapuen ae)
-- lihat gambar ( si filter kategori sama status pindah ke yang tak tandain warna pink)
-- lihat gambar (gausah dikei opsi tampilan grid lek elek)
-- kolom table pelatihan gaush dikei gambar/cover
+- UELEK ADMINE PELATIHAN (asu)
+- lihat gambar background tab untuk cari, filter dihapus, disamakan backgroundnya sama konten utama
+- lihat gambar filter & search di masukkin ke filternya pelatihan, yang manual dihapus
+- lihat gambar tampilan grid dihapus
+- kolom table pelatihan gambar/cover dihapus
 
 
 kolom tabel instruktur
 data pribadi : nama, nik, tempat, tanggal lahir, jenis kelamin, agama, no hp
-lampirran : cv, ktp, ijazah, sertifikat kompetensi
+lampiran : cv, ktp, ijazah, sertifikat kompetensi

@@ -13,8 +13,8 @@ class PendaftaranPelatihan extends Model
     protected $fillable = [
         'peserta_id',
         'pelatihan_id',
-        'bidang_id',
-        'bidang_pelatihan_id', // Added missing field from usage
+        'kompetensi_id',
+        'kompetensi_pelatihan_id', // Added missing field from usage
         'nomor_registrasi',
         'tanggal_pendaftaran',
         'kelas', // Added
@@ -26,7 +26,7 @@ class PendaftaranPelatihan extends Model
         'nilai_survey',
         'status',
         'status_pendaftaran',
-        'urutan_per_bidang', // Added missing field from usage
+        'urutan_per_kompetensi', // Added missing field from usage
     ];
 
     protected $casts = [
@@ -41,12 +41,12 @@ class PendaftaranPelatihan extends Model
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
-    public function bidangPelatihan()
+    public function kompetensiPelatihan()
     {
-        return $this->belongsTo(BidangPelatihan::class, 'bidang_pelatihan_id');
+        return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
     }
-    public function bidang()
+    public function kompetensi()
     {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
+        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 }

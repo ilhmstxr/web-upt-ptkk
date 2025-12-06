@@ -12,26 +12,26 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 
-class ViewBidangDetail extends Page implements HasTable
+class ViewKompetensiDetail extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static string $view = 'filament.pages.view-bidang-detail';
+    protected static string $view = 'filament.pages.view-kompetensi-detail';
 
     // Menyembunyikan halaman ini dari sidebar utama
     protected static bool $shouldRegisterNavigation = false;
 
-    public Bidang $record;
+    public \App\Models\Kompetensi $record;
 
     public function getTitle(): string
     {
-        return 'Rekap Bidang: ' . $this->record->nama_bidang;
+        return 'Rekap Kompetensi: ' . $this->record->nama_kompetensi;
     }
 
     protected function getHeaderWidgets(): array
     {
         return [
-            BidangStatsOverview::make(['bidang' => $this->record]),
+            \App\Filament\Widgets\KompetensiStatsOverview::make(['kompetensi' => $this->record]),
         ];
     }
 
@@ -40,7 +40,7 @@ class ViewBidangDetail extends Page implements HasTable
         return $table
             ->query(
                 Peserta::query()
-                    ->where('bidang_id', $this->record->id)
+                    ->where('kompetensi_id', $this->record->id)
                     ->addSelect(['pre_test_score' => Percobaan::select('nilai')->join('tes', 'tes.id', '=', 'percobaans.tes_id')->whereColumn('tes.peserta_id', 'pesertas.id')->where('tes.jenis_tes', 'pre-test')->latest()->limit(1)])
                     ->addSelect(['post_test_score' => Percobaan::select('nilai')->join('tes', 'tes.id', '=', 'percobaans.tes_id')->whereColumn('tes.peserta_id', 'pesertas.id')->where('tes.jenis_tes', 'post-test')->latest()->limit(1)])
                     ->addSelect(['practice_score' => Percobaan::select('nilai')->join('tes', 'tes.id', '=', 'percobaans.tes_id')->whereColumn('tes.peserta_id', 'pesertas.id')->where('tes.jenis_tes', 'praktek')->latest()->limit(1)])

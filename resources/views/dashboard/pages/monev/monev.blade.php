@@ -10,7 +10,7 @@
             <h3 class="font-bold text-lg mb-2">{{ $t->judul }}</h3>
             <p class="text-gray-600 mb-4">{{ $t->deskripsi }}</p>
             <p class="text-sm text-gray-500">
-                Bidang: {{ $t->bidang->nama_bidang ?? '-' }}
+                Kompetensi: {{ $t->kompetensi->nama_kompetensi ?? '-' }}
             </p>
             <p class="text-sm text-gray-500">
                 Pelatihan: {{ $t->pelatihan->nama_pelatihan ?? '-' }}

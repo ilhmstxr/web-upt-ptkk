@@ -60,10 +60,13 @@ class Pelatihan extends Model
         /**
      * Mendapatkan semua sesi/jadwal (bidang_pelatihan) di bawah pelatihan ini.
      */
-    public function bidangPelatihan()
+    /**
+     * Mendapatkan semua sesi/jadwal (kompetensi_pelatihan) di bawah pelatihan ini.
+     */
+    public function kompetensiPelatihan()
     {
-        // Terhubung ke BidangPelatihan::class melalui 'pelatihan_id'
-        return $this->hasMany(BidangPelatihan::class, 'pelatihan_id');
+        // Terhubung ke KompetensiPelatihan::class melalui 'pelatihan_id'
+        return $this->hasMany(KompetensiPelatihan::class, 'pelatihan_id');
     }
 
     public function pendaftaranPelatihan()

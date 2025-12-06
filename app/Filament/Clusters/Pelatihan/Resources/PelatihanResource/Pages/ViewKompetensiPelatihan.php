@@ -8,11 +8,11 @@ use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
 
-class ViewBidangPelatihan extends Page
+class ViewKompetensiPelatihan extends Page
 {
     protected static string $resource = PelatihanResource::class;
 
-    protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-bidang-pelatihan';
+    protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-kompetensi-pelatihan';
 
     protected function getActions(): array
     {
@@ -20,35 +20,35 @@ class ViewBidangPelatihan extends Page
             \Filament\Actions\Action::make('detail_monev')
                 ->label('Detail Survey Monev')
                 ->icon('heroicon-o-chart-pie')
-                ->url(fn () => ViewMonevDetail::getUrl(['record' => $this->record->id, 'bidang_id' => $this->bidangPelatihan->id]))
+                ->url(fn () => ViewMonevDetail::getUrl(['record' => $this->record->id, 'kompetensi_id' => $this->kompetensiPelatihan->id]))
                 ->color('primary'),
         ];
     }
 
     public Pelatihan $record;
-    public BidangPelatihan $bidangPelatihan;
+    public KompetensiPelatihan $kompetensiPelatihan;
 
-    public function mount(Pelatihan $record, $bidang_id): void
+    public function mount(Pelatihan $record, $kompetensi_id): void
     {
         $this->record = $record;
-        $this->bidangPelatihan = BidangPelatihan::findOrFail($bidang_id);
+        $this->kompetensiPelatihan = KompetensiPelatihan::findOrFail($kompetensi_id);
     }
 
     public function getTitle(): string | Htmlable
     {
-        return $this->bidangPelatihan->bidang->nama_bidang ?? 'Detail Bidang';
+        return $this->kompetensiPelatihan->kompetensi->nama_kompetensi ?? 'Detail Kompetensi';
     }
 
     public function getTesProperty()
     {
         return \App\Models\Tes::where('pelatihan_id', $this->record->id)
-            ->where('bidang_id', $this->bidangPelatihan->bidang_id)
+            ->where('kompetensi_id', $this->kompetensiPelatihan->kompetensi_id)
             ->get();
     }
 
     public function getPesertaProperty()
     {
-        return $this->bidangPelatihan->peserta;
+        return $this->kompetensiPelatihan->peserta;
     }
 
     public function getStatistikProperty()

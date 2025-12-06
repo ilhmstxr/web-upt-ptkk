@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\PesertaExport;
-use App\Models\Bidang;
+use App\Models\Kompetensi;
 use App\Models\CabangDinas;
 use App\Models\Instansi;
 use App\Models\Instruktur;
@@ -35,11 +35,11 @@ class PendaftaranController extends Controller
    public function showDaftar()
 {
     // data master untuk form (dropdown)
-    $bidang      = Bidang::all();
+    $kompetensi      = Kompetensi::all();
     $cabangDinas = CabangDinas::all();
 
     // 👉 ambil SATU pelatihan aktif, yang tanggalnya masih jalan
-    $pelatihan = Pelatihan::with(['bidangPelatihan.bidang', 'bidangPelatihan.instruktur'])
+    $pelatihan = Pelatihan::with(['kompetensiPelatihan.kompetensi', 'kompetensiPelatihan.instruktur'])
         ->where('status', 'aktif')
         ->whereDate('tanggal_selesai', '>=', now())
         ->orderBy('tanggal_mulai', 'asc')
@@ -51,7 +51,7 @@ class PendaftaranController extends Controller
     $formData    = [];
 
     return view('pages.daftar', compact(
-        'bidang',
+        'kompetensi',
         'cabangDinas',
         'pelatihan',
         'currentStep',
@@ -63,11 +63,11 @@ class PendaftaranController extends Controller
     public function index()
     {
         // data master untuk form (dropdown)
-        $bidang      = Bidang::all();
+        $kompetensi      = Kompetensi::all();
         $cabangDinas = CabangDinas::all();
 
         // 👉 ambil SATU pelatihan aktif, yang tanggalnya masih jalan
-        $pelatihan = Pelatihan::with(['bidangPelatihan.bidang', 'bidangPelatihan.instruktur'])
+        $pelatihan = Pelatihan::with(['kompetensiPelatihan.kompetensi', 'kompetensiPelatihan.instruktur'])
             ->where('status', 'aktif')
             ->whereDate('tanggal_selesai', '>=', now())
             ->orderBy('tanggal_mulai', 'asc')
@@ -79,7 +79,7 @@ class PendaftaranController extends Controller
         $formData    = [];
 
         return view('pages.daftar', compact(
-            'bidang',
+            'kompetensi',
             'cabangDinas',
             'pelatihan',
             'currentStep',
@@ -107,10 +107,10 @@ class PendaftaranController extends Controller
                 return view('peserta.pendaftaran.bio-peserta', compact('currentStep', 'allowedStep', 'formData', 'cabangDinas'));
             case 2:
                 $pelatihan = Pelatihan::where('status', 'aktif')->get();
-                $bidang = Bidang::all();
+                $kompetensi = Kompetensi::all();
                 $cabangDinas = CabangDinas::all();
                 // return $pelatihan;
-                return view('peserta.pendaftaran.bio-sekolah', compact('currentStep', 'allowedStep', 'formData', 'pelatihan', 'bidang', 'cabangDinas'));
+                return view('peserta.pendaftaran.bio-sekolah', compact('currentStep', 'allowedStep', 'formData', 'pelatihan', 'kompetensi', 'cabangDinas'));
             case 3:
                 $pelatihanId = $formData['pelatihan_id'] ?? null;
                 // return $pelatihanId;
@@ -141,7 +141,7 @@ class PendaftaranController extends Controller
             'alamat_instansi' => 'required|string',
             'kota' => 'required|string|max:100',
             'kota_id' => 'required|integer',
-            'bidang_keahlian' => 'required|string|max:255',
+            'kompetensi_keahlian' => 'required|string|max:255',
             'kelas' => 'required|string|max:100',
             'cabangDinas_id' => 'required|string|max:255',
             'pelatihan_id' => 'required|string', // Hidden input
@@ -168,7 +168,7 @@ class PendaftaranController extends Controller
                     'kota_id'           => $validatedData['kota_id'],
                 ],
                 [
-                    'bidang_keahlian' => $validatedData['bidang_keahlian'],
+                    'kompetensi_keahlian' => $validatedData['kompetensi_keahlian'],
                     'cabangDinas_id'  => $validatedData['cabangDinas_id'],
                 ]
             );
@@ -191,7 +191,7 @@ class PendaftaranController extends Controller
             $peserta = Peserta::create([
                 'pelatihan_id'  => $validatedData['pelatihan_id'],
                 'instansi_id'   => $instansi->id,
-                'bidang_id'     => $validatedData['bidang_keahlian'],
+                // 'bidang_id'     => $validatedData['bidang_keahlian'], // Removed as discussed
                 'user_id'       => $user->id,
                 'nama'          => $validatedData['nama'],
                 'nik'           => $validatedData['nik'],
@@ -204,7 +204,7 @@ class PendaftaranController extends Controller
             ]);
 
             // D. Generate Token
-            ['nomor' => $nomorReg, 'urutan' => $urutBidang] = $this->generateToken($validatedData['pelatihan_id'], $validatedData['bidang_keahlian']);
+            ['nomor' => $nomorReg, 'urutan' => $urutKompetensi] = $this->generateToken($validatedData['pelatihan_id'], $validatedData['kompetensi_keahlian']);
 
             // E. Lampiran
             $lampiranData = [
@@ -217,7 +217,8 @@ class PendaftaranController extends Controller
             foreach ($fileFields as $field) {
                 if ($request->hasFile($field)) {
                     $file = $request->file($field);
-                    $fileName = $peserta->id . '_' . $peserta->bidang_id . '_' . $peserta->instansi_id
+                    // Use kompetensi_keahlian or similar for naming if needed, but here simple ID is consistent
+                    $fileName = $peserta->id . '_' . $peserta->instansi_id
                         . '_' . $field . '.' . $file->extension();
 
                     $targetDirectory = public_path(self::LAMPIRAN_DESTINATION);
@@ -236,14 +237,14 @@ class PendaftaranController extends Controller
             PendaftaranPelatihan::create([
                 'peserta_id'            => $peserta->id,
                 'pelatihan_id'          => $validatedData['pelatihan_id'],
-                'bidang_id'             => $validatedData['bidang_keahlian'],
-                'urutan_per_bidang'     => $urutBidang,
+                'kompetensi_id'             => $validatedData['kompetensi_keahlian'],
+                'urutan_per_kompetensi'     => $urutKompetensi,
                 'nomor_registrasi'      => $nomorReg,
                 'tanggal_pendaftaran'   => now(),
                 'kelas'                 => $validatedData['kelas'],
             ]);
 
-            return PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
+            return PendaftaranPelatihan::with('peserta', 'pelatihan', 'kompetensi')
                 ->latest('id')
                 ->first();
         });
@@ -265,7 +266,7 @@ class PendaftaranController extends Controller
 
         // Kalau tidak ada (misal user reload / akses ulang lewat URL), ambil dari DB
         if (!$pendaftaran) {
-            $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'bidang')
+            $pendaftaran = PendaftaranPelatihan::with('peserta', 'pelatihan', 'kompetensi')
                 ->findOrFail($id);
         }
 
@@ -275,7 +276,8 @@ class PendaftaranController extends Controller
 
     public function generateMassal()
     {
-        $instruktur = Instruktur::with(['bidang', 'pelatihan'])->get();
+        // Adjust Instruktur relation loading
+        $instruktur = Instruktur::with(['kompetensi', 'pelatihan'])->get();
         $pdf = Pdf::loadView('Instruktur.cetak_massal', ['Instruktur' => $instruktur])
             ->setPaper('A4', 'portrait');
         $fileName = 'Biodata_Instruktur_Massal_' . Carbon::now()->format('Y-m-d') . '.pdf';
@@ -334,7 +336,7 @@ class PendaftaranController extends Controller
 
     public function exportBulk(Pelatihan $pelatihan)
     {
-        $pendaftarans = PendaftaranPelatihan::with(['peserta', 'pelatihan', 'bidang'])
+        $pendaftarans = PendaftaranPelatihan::with(['peserta', 'pelatihan', 'kompetensi'])
             ->where('pelatihan_id', $pelatihan->id)
             ->get();
 
@@ -360,7 +362,7 @@ class PendaftaranController extends Controller
 
     public function exportSample(Pelatihan $pelatihan)
     {
-        $pendaftaran = PendaftaranPelatihan::with(['peserta', 'pelatihan', 'bidang'])
+        $pendaftaran = PendaftaranPelatihan::with(['peserta', 'pelatihan', 'kompetensi'])
             ->where('pelatihan_id', $pelatihan->id)
             ->latest('id')
             ->firstOrFail();
@@ -371,7 +373,7 @@ class PendaftaranController extends Controller
 
     public function exportSingle(PendaftaranPelatihan $pendaftaran)
     {
-        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
+        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'kompetensi']);
         $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
         return response()->download($pdfPath)->deleteFileAfterSend(true);
     }
@@ -385,10 +387,10 @@ class PendaftaranController extends Controller
 
         $tp = new TemplateProcessor($templatePath);
 
-        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'bidang']);
+        $pendaftaran->loadMissing(['peserta', 'pelatihan', 'kompetensi']);
         $p = $pendaftaran->peserta;
         $pl = $pendaftaran->pelatihan;
-        $b = $pendaftaran->bidang;
+        $k = $pendaftaran->kompetensi;
 
         // isi placeholder sesuai template
         $tp->setValue('nama', $p->nama ?? '');
@@ -401,7 +403,7 @@ class PendaftaranController extends Controller
         $tp->setValue('asal_instansi', $p->asal_instansi ?? '');
         $tp->setValue('alamat_instansi', $p->alamat_instansi ?? '');
         $tp->setValue('kelas', $pendaftaran->kelas ?? '');
-        $tp->setValue('nama_bidang', $b->nama ?? '');
+        $tp->setValue('nama_bidang', $k->nama_kompetensi ?? ''); // Template variable might still be 'nama_bidang'
         $tp->setValue('judul', $pl->nama_pelatihan ?? '');
         $tp->setValue('tanggal_kegiatan', optional($pl->tanggal_mulai)?->translatedFormat('d F Y') ?? '');
 
@@ -474,17 +476,17 @@ class PendaftaranController extends Controller
         return Str::squish($normalized);
     }
 
-    private function generateToken(int $pelatihanId, int $bidangId): array
+    private function generateToken(int $pelatihanId, int $kompetensiId): array
     {
         // [Langkah 1] Memulai transaction, jika gagal akan di-rollback otomatis
-        return DB::transaction(function () use ($pelatihanId, $bidangId) {
-            $bidang     = Bidang::findOrFail($bidangId);
-            $kodeBidang = $bidang->kode ?? $this->akronim($bidang->nama);
+        return DB::transaction(function () use ($pelatihanId, $kompetensiId) {
+            $kompetensi     = Kompetensi::findOrFail($kompetensiId);
+            $kodeKompetensi = $kompetensi->kode ?? $this->akronim($kompetensi->nama_kompetensi);
 
             // [Langkah 2] Kunci semua baris yang relevan
             // Proses lain yang mencoba mengakses baris ini akan disuruh MENUNGGU
             PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('bidang_id', $bidangId)
+                ->where('kompetensi_id', $kompetensiId)
                 ->select('id')
                 ->lockForUpdate()
                 ->get();
@@ -493,12 +495,12 @@ class PendaftaranController extends Controller
             // [Langkah 3] Hitung jumlah pendaftar
             // Karena proses lain menunggu, hitungan ini DIJAMIN akurat
             $jumlah = PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('bidang_id', $bidangId)
+                ->where('kompetensi_id', $kompetensiId)
                 ->count();
 
             // [Langkah 4] Buat nomor unik yang sudah pasti aman
             $nextUrut = $jumlah + 1;
-            $nomor    = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeBidang), $nextUrut);
+            $nomor    = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeKompetensi), $nextUrut);
 
             return ['nomor' => $nomor, 'urutan' => $nextUrut];
         }, 3); // Coba ulang 3 kali jika terjadi deadlock

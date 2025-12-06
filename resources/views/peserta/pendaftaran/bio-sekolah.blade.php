@@ -61,25 +61,25 @@
             <!-- Kompetensi & Kelas -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                    <label for="bidang_keahlian" class="block text-sm lg:text-base font-semibold text-blue-900 mb-2">Kompetensi/Bidang Keahlian</label>
+                    <label for="kompetensi_keahlian" class="block text-sm lg:text-base font-semibold text-blue-900 mb-2">Kompetensi Keahlian</label>
                     <div class="relative">
-                        <select id="bidang_keahlian" name="bidang_keahlian" required
-                            class="w-full border-2 border-blue-200 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-sm lg:text-base text-blue-900 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('bidang_keahlian') border-red-500 focus:ring-red-500 @enderror">
+                        <select id="kompetensi_keahlian" name="kompetensi_keahlian" required
+                            class="w-full border-2 border-blue-200 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-sm lg:text-base text-blue-900 focus:ring-2 focus:ring-blue-400 focus:outline-none @error('kompetensi_keahlian') border-red-500 focus:ring-red-500 @enderror">
                             <option value="">Pilih Kompetensi</option>
-                            @foreach ($bidang as $b)
-                                <option value="{{ $b->id }}" @selected(old('bidang_keahlian', $formData['bidang_keahlian'] ?? '') == $b->id)>
-                                    {{ $b->nama_bidang }}
+                            @foreach ($kompetensi as $b)
+                                <option value="{{ $b->id }}" @selected(old('kompetensi_keahlian', $formData['kompetensi_keahlian'] ?? '') == $b->id)>
+                                    {{ $b->nama_kompetensi }}
                                 </option>
                             @endforeach
                         </select>
-                        <div id="bidang_keahlianError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
+                        <div id="kompetensi_keahlianError" class="error-popup absolute bottom-full mb-2 w-full p-2 bg-red-600 text-white text-xs rounded-md shadow-lg flex items-center hidden">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
                             <span class="error-message-text"></span>
                         </div>
                     </div>
-                    @error('bidang_keahlian')
+                    @error('kompetensi_keahlian')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>

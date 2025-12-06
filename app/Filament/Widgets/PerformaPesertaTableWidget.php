@@ -48,8 +48,8 @@ class PerformaPesertaTableWidget extends BaseWidget
                     ->label('PELATIHAN')
                     ->limit(30),
 
-                TextColumn::make('bidang.nama_bidang') // Asumsi 'nama_bidang' ada di model Bidang
-                    ->label('BIDANG'),
+                TextColumn::make('kompetensi.nama_kompetensi') // Asumsi 'nama_kompetensi' ada di model Kompetensi
+                    ->label('KOMPETENSI'),
 
                 TextColumn::make('rata_rata')
                     ->label('RATA-RATA NILAI')
