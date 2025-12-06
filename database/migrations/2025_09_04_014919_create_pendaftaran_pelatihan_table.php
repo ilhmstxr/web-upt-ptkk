@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('pelatihan_id')->constrained('pelatihan')->cascadeOnDelete();
             
             // PENTING: Uncomment ini jika Controller Anda memakai 'bidang_id'
-            $table->foreignId('bidang_id')->constrained('bidang')->cascadeOnDelete(); 
+            // $table->foreignId('bidang_id')->constrained('bidang')->cascadeOnDelete(); 
 
             $table->foreignId('bidang_pelatihan_id')->nullable()
                 ->constrained('bidang_pelatihan')
