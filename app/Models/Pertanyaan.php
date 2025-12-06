@@ -26,6 +26,7 @@ class Pertanyaan extends Model
         'tes_id',
         'nomor',
         'teks_pertanyaan',
+        'kategori',
         'gambar',
         'tipe_jawaban',
     ];

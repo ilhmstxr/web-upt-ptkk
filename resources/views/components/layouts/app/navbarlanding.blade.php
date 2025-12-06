@@ -312,6 +312,8 @@ $items = [
     setHeaderH();
     if (window.ResizeObserver) {
       new ResizeObserver(setHeaderH).observe(header);
+    } else {
+      window.addEventListener('resize', setHeaderH, { passive: true });
     }
 
     // Dropdown Profil (desktop/tablet)

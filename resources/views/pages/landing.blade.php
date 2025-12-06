@@ -65,7 +65,6 @@ $latestBeritas = Berita::query()
     ->get();
 @endphp
 
-
 {{-- TOPBAR --}}
 @include('components.layouts.app.topbar')
 
@@ -560,19 +559,19 @@ $latestBeritas = Berita::query()
 </script>
 @endif
 
-
 {{-- SECTION: Cerita Kami --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start md:items-center">
-
       {{-- Kolom Kiri: Foto --}}
       <div class="w-full flex justify-center md:justify-start md:pl-2 lg:pl-4">
         <div class="rounded-2xl overflow-hidden shadow-xl ring-2 ring-[#1524AF] max-w-[420px] md:max-w-[480px] lg:max-w-[520px]">
           @php
+            // Logika Sederhana (Storage URL)
             $ceritaFilename = 'profil/cerita-kami.svg';
-            $ceritaSrc = Storage::disk('public')->exists($ceritaFilename)
-                         ? Storage::url($ceritaFilename)
+            // Cek simple exists atau langsung URL
+            $ceritaSrc = Storage::disk('public')->exists($ceritaFilename) 
+                         ? Storage::url($ceritaFilename) 
                          : asset('images/cerita-kami.svg');
           @endphp
           <img src="{{ $ceritaSrc }}" alt="Kegiatan UPT PTKK" class="w-full h-auto object-cover">
@@ -591,9 +590,9 @@ $latestBeritas = Berita::query()
           UPT Pengembangan Teknis <br class="hidden lg:block" /> Dan Keterampilan Kejuruan
         </h2>
 
-        {{-- Paragraf DINAMIS (Dari Model ProfilUPT) --}}
+        {{-- Paragraf --}}
         <p class="mb-[24px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
-          {!! nl2br(e($teksCerita)) !!}
+          Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi, UPT PTKK terus memperkuat posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata. Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada kemajuan pendidikan di Jawa Timur.
         </p>
 
         {{-- Button --}}
@@ -610,55 +609,34 @@ $latestBeritas = Berita::query()
 {{-- SECTION: Jatim Bangkit --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <style>
-    @keyframes jatim-scroll-x {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
+    @keyframes jatim-scroll-x { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   </style>
-
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="relative">
-
       <div class="relative bg-[#DBE7F7] rounded-full overflow-hidden h-[54px] md:h-[58px] lg:h-[62px] flex items-center">
-
         <div class="relative w-full overflow-hidden">
-
           <div class="jatim-marquee flex w-[200%] items-center animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
-
-            {{-- Loop Pertama --}}
-            <div class="flex w-1/2 items-center justify-between px-6 md:px-10 lg:px-16 gap-4 md:gap-6 lg:gap-8">
-              @foreach(['cetar', 'dindik', 'jatim', 'berakhlak', 'optimis'] as $iconName)
-                @php
-                    $path = 'icons/' . $iconName . '.svg';
-                    $src = Illuminate\Support\Facades\Storage::disk('public')->exists($path)
-                            ? Illuminate\Support\Facades\Storage::url($path)
-                            : asset('images/icons/' . $iconName . '.svg');
+             {{-- icons sederhana --}}
+             @foreach(['cetar','dindik','jatim','berakhlak','optimis'] as $icon)
+                @php 
+                    $iconPath = 'icons/'.$icon.'.svg';
+                    $iconSrc = Storage::disk('public')->exists($iconPath) ? Storage::url($iconPath) : asset('images/icons/'.$icon.'.svg');
                 @endphp
-                <img src="{{ $src }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="{{ ucfirst($iconName) }}">
-              @endforeach
-            </div>
-
-            {{-- Loop Kedua (Duplikat) --}}
-            <div class="flex w-1/2 items-center justify-between px-6 md:px-10 lg:px-16 gap-4 md:gap-6 lg:gap-8" aria-hidden="true">
-              @foreach(['cetar', 'dindik', 'jatim', 'berakhlak', 'optimis'] as $iconName)
-                @php
-                    $path = 'icons/' . $iconName . '.svg';
-                    $src = Illuminate\Support\Facades\Storage::disk('public')->exists($path)
-                            ? Illuminate\Support\Facades\Storage::url($path)
-                            : asset('images/icons/' . $iconName . '.svg');
+                <img src="{{ $iconSrc }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0 mx-4" alt="{{ ucfirst($icon) }}">
+             @endforeach
+             
+             {{-- duplikat untuk marquee --}}
+             @foreach(['cetar','dindik','jatim','berakhlak','optimis'] as $icon)
+                @php 
+                    $iconPath = 'icons/'.$icon.'.svg';
+                    $iconSrc = Storage::disk('public')->exists($iconPath) ? Storage::url($iconPath) : asset('images/icons/'.$icon.'.svg');
                 @endphp
-                <img src="{{ $src }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
-              @endforeach
-            </div>
-
+                <img src="{{ $iconSrc }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0 mx-4" alt="">
+             @endforeach
           </div>
-
           <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]"></div>
-
         </div>
-
       </div>
-
     </div>
   </div>
 </section>
@@ -666,6 +644,7 @@ $latestBeritas = Berita::query()
 {{-- SECTION: Berita Terbaru (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
+    
     <div class="grid gap-y-2 mb-6">
       <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23] font-[Volkhov] font-bold text-[15px] md:text-[16px] rounded-md leading-none px-3 py-1 shadow-sm w-fit">Berita Terbaru</span>
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
@@ -676,8 +655,10 @@ $latestBeritas = Berita::query()
         </a>
       </div>
     </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       @if($latestBeritas->isEmpty())
+        {{-- fallback ketika belum ada berita --}}
         @for($i=1;$i<=3;$i++)
           <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
             <div class="w-full h-[160px] bg-[#E7ECF3] rounded-lg mb-4 flex items-center justify-center text-sm text-[#727272]">Belum ada berita</div>
@@ -693,21 +674,39 @@ $latestBeritas = Berita::query()
       @else
         @foreach($latestBeritas as $b)
           @php
+            // --- LOGIKA COPY PASTE DARI BERITA SHOW ---
+            // Cukup gunakan Storage::url jika ada image, fallback ke asset jika tidak
             $imgUrl = $b->image ? Storage::url($b->image) : asset('images/berita/placeholder.jpg');
+
             $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
+            
+            // Format tanggal meniru berita_show (menggunakan optional)
             $pubDate = optional($b->published_at ?? $b->created_at)->format('d F Y');
           @endphp
+
           <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
+            
+            {{-- MARKUP GAMBAR --}}
             <div class="w-full h-[160px] rounded-lg mb-4 overflow-hidden">
                <img src="{{ $imgUrl }}" alt="{{ $b->title }}" class="w-full h-full object-cover rounded-lg shadow-md" loading="lazy">
             </div>
+
             <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
               <span>{{ $pubDate }}</span>
             </div>
-            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">{{ $b->title }}</h3>
-            <p class="text-sm text-[#081526] mb-3 leading-relaxed">{!! e($excerpt) !!}</p>
-            <a href="{{ route('berita.show', $b->slug ?? $b->id) ?? '#' }}" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">Baca Selengkapnya →</a>
+
+            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">
+              {{ $b->title }}
+            </h3>
+
+            <p class="text-sm text-[#081526] mb-3 leading-relaxed">
+              {!! e($excerpt) !!}
+            </p>
+
+            <a href="{{ route('berita.show', $b->slug ?? $b->id) ?? '#' }}" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">
+              Baca Selengkapnya →
+            </a>
           </article>
         @endforeach
       @endif

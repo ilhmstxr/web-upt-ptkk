@@ -22,59 +22,84 @@ class InstrukturResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\Select::make('bidang_id')
-                    ->relationship('bidang', 'nama_bidang')
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\TextInput::make('email')
-                    ->label('Email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255)
-                    ->unique('users', 'email'),
-                Forms\Components\TextInput::make('password')
-                    ->label('Password')
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nama')
-                    ->label('Nama')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('tempat_lahir')
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('tgl_lahir')
-                    ->label('Tanggal Lahir'),
-                Forms\Components\Select::make('jenis_kelamin')
-                    ->options([
-                        'L' => 'Laki-laki',
-                        'P' => 'Perempuan',
-                    ]),
-                Forms\Components\TextInput::make('agama')
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('alamat_rumah')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('no_hp')
-                    ->label('No HP')
-                    ->tel()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('instansi')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('npwp')
-                    ->label('NPWP')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nik')
-                    ->label('NIK')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nama_bank')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('no_rekening')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('pendidikan_terakhir')
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('pengalaman_kerja')
-                    ->columnSpanFull(),
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Informasi Pribadi')
+                            ->schema([
+                                Forms\Components\TextInput::make('nama')
+                                    ->label('Nama Lengkap')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('nik')
+                                    ->label('NIK')
+                                    ->maxLength(255),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('tempat_lahir')
+                                            ->maxLength(255),
+                                        Forms\Components\DatePicker::make('tgl_lahir')
+                                            ->label('Tanggal Lahir'),
+                                    ]),
+                                Forms\Components\Select::make('jenis_kelamin')
+                                    ->options([
+                                        'L' => 'Laki-laki',
+                                        'P' => 'Perempuan',
+                                    ]),
+                                Forms\Components\TextInput::make('agama')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('no_hp')
+                                    ->label('No HP')
+                                    ->tel()
+                                    ->maxLength(255),
+                                Forms\Components\Textarea::make('alamat_rumah')
+                                    ->columnSpanFull(),
+                            ])->columns(2),
+
+                        Forms\Components\Section::make('Data Administrasi')
+                            ->schema([
+                                Forms\Components\TextInput::make('instansi')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('npwp')
+                                    ->label('NPWP')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('pendidikan_terakhir')
+                                    ->maxLength(255),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('nama_bank')
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('no_rekening')
+                                            ->maxLength(255),
+                                    ]),
+                                Forms\Components\Textarea::make('pengalaman_kerja')
+                                    ->columnSpanFull(),
+                            ])->columns(2),
+                    ])->columnSpan(['lg' => 2]),
+
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Akun & Bidang')
+                            ->schema([
+                                Forms\Components\Select::make('bidang_id')
+                                    ->relationship('bidang', 'nama_bidang')
+                                    ->searchable()
+                                    ->preload(),
+                                Forms\Components\TextInput::make('email')
+                                    ->label('Email')
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique('users', 'email', ignoreRecord: true),
+                                Forms\Components\TextInput::make('password')
+                                    ->label('Password')
+                                    ->password()
+                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->required(fn (string $context): bool => $context === 'create')
+                                    ->maxLength(255),
+                            ]),
+                    ])->columnSpan(['lg' => 1]),
             ]);
     }
 

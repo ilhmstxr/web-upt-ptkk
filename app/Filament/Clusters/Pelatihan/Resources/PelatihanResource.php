@@ -154,6 +154,7 @@ class PelatihanResource extends Resource
             'view' => Pages\ViewPelatihan::route('/{record}'),
             'edit' => Pages\EditPelatihan::route('/{record}/edit'),
             'view-bidang' => Pages\ViewBidangPelatihan::route('/{record}/bidang/{bidang_id}'),
+            'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/bidang/{bidang_id}/monev'),
         ];
     }
 }
