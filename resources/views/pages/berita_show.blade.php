@@ -1,3 +1,4 @@
+
 {{-- resources/views/pages/berita_show.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">

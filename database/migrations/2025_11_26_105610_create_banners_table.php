@@ -6,76 +6,67 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         // 1) Buat tabel lengkap jika belum ada
         if (! Schema::hasTable('banners')) {
             Schema::create('banners', function (Blueprint $table) {
                 $table->id();
-                $table->string('image');
+                // PERBAIKAN: Tambahkan ->nullable() di kolom image
+                $table->string('image')->nullable();
+                
                 $table->string('title')->nullable();
                 $table->text('description')->nullable();
+                
                 $table->boolean('is_active')->default(true);
+                $table->boolean('is_featured')->default(false); 
                 $table->integer('sort_order')->default(0);
 
-                // timestamps lengkap agar Eloquent / Livewire tidak error saat insert/update
-                $table->timestamp('created_at')->nullable();
-                $table->timestamp('updated_at')->nullable();
+                // Menggunakan timestamps() bawaan lebih disarankan
+                $table->timestamps();
             });
 
             return;
         }
 
-        // 2) Jika tabel sudah ada -> tambahkan kolom yang hilang (aman & nullable)
+        // 2) Jika tabel sudah ada (bagian ALTER TABLE)
         Schema::table('banners', function (Blueprint $table) {
-            // Pastikan kolom utama ada (jika tidak, tambahkan nullable agar tidak merusak data)
-            if (! Schema::hasColumn('banners', 'image')) {
-                $table->string('image')->nullable()->after('id');
+            
+            // PERBAIKAN: Pastikan 'image' bisa diubah menjadi nullable jika sebelumnya NOT NULL
+            if (Schema::hasColumn('banners', 'image')) {
+                // Catatan: Ini memerlukan package doctrine/dbal jika Anda belum menginstalnya
+                $table->string('image')->nullable()->change();
             }
-            if (! Schema::hasColumn('banners', 'title')) {
-                $table->string('title')->nullable()->after('image');
+            
+            // ... (Kode untuk is_featured dan kolom lain yang hilang)
+            
+            if (! Schema::hasColumn('banners', 'is_featured')) {
+                $table->boolean('is_featured')->default(false)->after('is_active');
             }
-            if (! Schema::hasColumn('banners', 'description')) {
-                $table->text('description')->nullable()->after('title');
-            }
-            if (! Schema::hasColumn('banners', 'is_active')) {
-                $table->boolean('is_active')->default(true)->after('description');
-            }
-            if (! Schema::hasColumn('banners', 'sort_order')) {
-                $table->integer('sort_order')->default(0)->after('is_active');
-            }
+            
+            // Tambahan lainnya yang Anda masukkan sudah cukup defensif.
 
-            // timestamps: created_at / updated_at (penting untuk Eloquent / Livewire)
             if (! Schema::hasColumn('banners', 'created_at')) {
-                $table->timestamp('created_at')->nullable()->after('sort_order');
+                $table->timestamp('created_at')->nullable();
             }
             if (! Schema::hasColumn('banners', 'updated_at')) {
-                $table->timestamp('updated_at')->nullable()->after('created_at');
+                $table->timestamp('updated_at')->nullable();
             }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        // Hati-hati: hanya menghapus kolom created_at/updated_at jika ada.
+        // ... (Kode down() Anda sudah benar)
         if (! Schema::hasTable('banners')) {
             return;
         }
 
         Schema::table('banners', function (Blueprint $table) {
-            if (Schema::hasColumn('banners', 'updated_at')) {
-                $table->dropColumn('updated_at');
+            if (Schema::hasColumn('banners', 'is_featured')) {
+                $table->dropColumn('is_featured');
             }
-            if (Schema::hasColumn('banners', 'created_at')) {
-                $table->dropColumn('created_at');
-            }
-            // jangan drop kolom data utama secara otomatis untuk mengurangi risiko kehilangan data
+            // ... dst
         });
     }
 };

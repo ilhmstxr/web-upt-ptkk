@@ -148,18 +148,31 @@
                 <div class="flex justify-between items-center flex-wrap gap-1">
                     <span class="text-slate-600">Nomor Registrasi:</span>
                     <span class="font-bold text-blue-600">{{ $pendaftaran->nomor_registrasi }}</span>
-                    {{-- <span class="font-bold text-blue-600">2-TTBG-001</span> --}}
                 </div>
                 <div class="flex justify-between items-start flex-wrap gap-1">
                     <span class="text-slate-600 flex-shrink-0">Nama Peserta:</span>
-                    <span class="font-semibold text-slate-800 text-right">{{ $pendaftaran->peserta->name }}</span>
-                    {{-- <span class="font-semibold text-slate-800 text-right">Ilham Bintang Herliambang</span> --}}
+                    <span class="font-semibold text-slate-800 text-right">{{ $pendaftaran->peserta->nama }}</span>
                 </div>
             </div>
             <div class="mt-3 p-3 bg-white/70 rounded border border-blue-100 text-slate-600 text-xs">
-                <strong>Pelatihan:</strong> Kegiatan Pelatihan Kompetensi Vokasi bagi Siswa SMK/SMA (MILEA) melalui
-                Mobile Training Unit (MTU) Angkatan II Tahun 2025
+                <strong>Pelatihan:</strong> {{ $pendaftaran->pelatihan->nama_pelatihan ?? 'Pelatihan Kompetensi Vokasi' }}
             </div>
+        </div>
+
+        <!-- Token Assessment (NEW SECTION) -->
+        <div class="fade-up bg-indigo-50 border border-indigo-200 rounded-lg p-6 text-center mb-6" style="animation-delay:.7s">
+            <h3 class="text-lg font-semibold text-indigo-900">Token Assessment Anda</h3>
+            <p class="text-sm text-indigo-600 mb-3">Gunakan token ini untuk masuk ke dashboard ujian/materi.</p>
+            
+            <div class="text-3xl font-mono font-bold text-indigo-700 tracking-wider select-all bg-white border border-indigo-100 py-3 px-4 rounded-md inline-block mb-1">
+                {{ $pendaftaran->assessment_token }}
+            </div>
+
+            @if($pendaftaran->token_expires_at)
+                <p class="text-xs text-gray-500 mt-2">
+                    Berlaku hingga: {{ \Carbon\Carbon::parse($pendaftaran->token_expires_at)->format('d F Y') }}
+                </p>
+            @endif
         </div>
 
         <!-- Tombol -->
@@ -177,7 +190,6 @@
     </div>
 
     <script>
-        src = "https://cdn.tailwindcss.com"
         // efek confetti
         function createConfetti() {
             const colors = ['#60a5fa', '#3b82f6', '#1d4ed8', '#2563eb', '#1e40af'];
