@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Export Semual Pelatihan (Multi-Sheet)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .sheet {
+            margin-bottom: 40px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .sheet-title {
+            background-color: #e0e0e0;
+            padding: 10px;
+            font-weight: bold;
+            border: 1px solid #999;
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Preview Export Excel (Multi-Sheet)</h1>
+    <p>Setiap pelatihan akan berada di sheet yang berbeda. Foto peserta akan otomatis tertanam (embedded) di dalam sel
+        Excel.</p>
+
+    <!-- SHEET 1 -->
+    <div class="sheet">
+        <div class="sheet-title">Sheet: Web Development (Angkatan 1)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="11" style="font-weight: bold; font-size: 14px; text-align: center;">Data Peserta
+                        Pelatihan: Web Development</th>
+                </tr>
+                <tr>
+                    <th colspan="11" style="text-align: center;">Angkatan 1</th>
+                </tr>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Lengkap</th>
+                    <th>Email</th>
+                    <th>Asal Lembaga</th>
+                    <th>Kelas</th>
+                    <th>Cabdin</th>
+                    <th>Jenis Pelatihan</th>
+                    <th>Kompetensi</th>
+                    <th>Angkatan</th>
+                    <th>No HP</th>
+                    <th>Pas Foto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center">1</td>
+                    <td>Andi Saputra</td>
+                    <td>andi@example.com</td>
+                    <td>SMKN 1 Surabaya</td>
+                    <td>XII</td>
+                    <td>Cabdin Sidoarjo</td>
+                    <td>Reguler</td>
+                    <td>Web Dev</td>
+                    <td>1</td>
+                    <td>08123456789</td>
+                    <td class="text-center">
+                        <!-- Contoh representasi foto embedded -->
+                        <img src="https://via.placeholder.com/80x100" alt="Foto Peserta"
+                            style="width: 80px; height: 100px; object-fit: cover;">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SHEET 2 -->
+    <div class="sheet">
+        <div class="sheet-title">Sheet: Desain Grafis (Angkatan 2)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="11" style="font-weight: bold; font-size: 14px; text-align: center;">Data Peserta
+                        Pelatihan: Desain Grafis</th>
+                </tr>
+                <tr>
+                    <th colspan="11" style="text-align: center;">Angkatan 2</th>
+                </tr>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Lengkap</th>
+                    <th>Email</th>
+                    <th>Asal Lembaga</th>
+                    <th>Kelas</th>
+                    <th>Cabdin</th>
+                    <th>Jenis Pelatihan</th>
+                    <th>Kompetensi</th>
+                    <th>Angkatan</th>
+                    <th>No HP</th>
+                    <th>Pas Foto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center">1</td>
+                    <td>Budi Santoso</td>
+                    <td>budi@example.com</td>
+                    <td>SMKN 4 Malang</td>
+                    <td>XI</td>
+                    <td>Cabdin Malang</td>
+                    <td>Reguler</td>
+                    <td>Desain</td>
+                    <td>2</td>
+                    <td>08987654321</td>
+                    <td class="text-center">
+                        <!-- Contoh representasi foto embedded -->
+                        <img src="https://via.placeholder.com/80x100" alt="Foto Peserta"
+                            style="width: 80px; height: 100px; object-fit: cover;">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>

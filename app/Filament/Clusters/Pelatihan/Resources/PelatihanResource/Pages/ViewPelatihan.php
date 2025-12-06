@@ -11,6 +11,34 @@ class ViewPelatihan extends ViewRecord
 
     protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-pelatihan';
 
+    public function getTitle(): string | \Illuminate\Contracts\Support\Htmlable
+    {
+        return $this->record->nama_pelatihan;
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('index') => 'Manajemen Pelatihan',
+            '#' => $this->record->nama_pelatihan,
+        ];
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('export_excel')
+                ->label('Export Peserta')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('gray')
+                ->action(function () {
+                    return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\PerPelatihanExport($this->record->id), 'peserta_' . \Illuminate\Support\Str::slug($this->record->nama_pelatihan) . '.xlsx');
+                }),
+            \Filament\Actions\EditAction::make()
+                ->label('Edit Pelatihan'),
+        ];
+    }
+
     public function addInstructorAction(): \Filament\Actions\Action
     {
         return \Filament\Actions\Action::make('addInstructor')

@@ -660,6 +660,20 @@ user
 
 - status e uda tak buka pendaftaran tapi nk user ga metu form pendaftaran e
 - export e kabeh grg isok
+export peserta pelatihan: 
+excel
+nama lengkap, 
+email, 
+asal lembaga (sekolah), 
+kelas, 
+cabdin,
+jenis pelatihan,
+kompetensi pelatihan (bidangnya apa misal fotografi), 
+nama angkatan pelatihannya (misal milea...),
+no hp,
+link drive pas foto
+
+
 TODO - hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
 TODO -  hasil tes survey lain e blom di cek gaonk data e
 
@@ -678,20 +692,9 @@ no hp
 lampiran : cv, ktp, ijazah, sertifikat kompetensi
 
 
-export peserta pelatihan: 
-excel
-nama lengkap, 
-email, 
-asal lembaga (sekolah), 
-kelas, 
-cabdin,
-jenis pelatihan,
-kompetensi pelatihan (bidangnya apa misal fotografi), 
-nama angkatan pelatihannya (misal milea...),
-no hp,
-link drive pas foto
-
 pdf: biodata peserta
 
 nambah data pretest, posttest, monev
 
+export full pelatihan
+export per pelatihan 

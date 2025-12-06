@@ -1,23 +1,9 @@
 <x-filament-panels::page>
-    <!-- 1. NAVIGATION / BREADCRUMBS -->
-    <nav class="flex mb-6 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm w-fit overflow-hidden">
-        <a href="{{ \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('index') }}" class="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 border-r border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 transition-colors">
-            <x-heroicon-o-home class="w-4 h-4 text-gray-400 dark:text-gray-500" />
-        </a>
-        <a href="{{ \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('index') }}" class="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400 flex items-center gap-2 border-r border-gray-100 dark:border-gray-700 transition-colors">
-            Manajemen Pelatihan
-        </a>
-        <span class="px-4 py-2 bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 flex items-center gap-2 border-t-2 border-primary-600 dark:border-primary-400 -mt-[2px]">
-            <x-heroicon-o-folder-open class="w-4 h-4" />
-            {{ $record->nama_pelatihan }}
-        </span>
-    </nav>
-
-    <!-- 2. HERO SECTION -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <!-- HERO SECTION (Info Only) -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
         <div>
             <div class="flex items-center gap-3 mb-2">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $record->nama_pelatihan }}</h1>
+                <!-- Status Badge -->
                 @php
                     $statusColor = match($record->status) {
                         'aktif' => 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
@@ -34,7 +20,7 @@
                 @endphp
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }} border">
                     <span class="w-1.5 h-1.5 {{ $dotColor }} rounded-full mr-1.5 animate-pulse"></span>
-                    {{ $record->status }}
+                    {{ ucfirst($record->status) }}
                 </span>
             </div>
             <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-gray-500 dark:text-gray-400">
@@ -42,14 +28,6 @@
                 <span class="hidden md:inline text-gray-300 dark:text-gray-600">|</span>
                 <span class="flex items-center gap-2"><x-heroicon-o-users class="w-4 h-4 text-gray-400 dark:text-gray-500" /> Total Peserta: {{ $record->pendaftaranPelatihan()->count() }}</span>
             </div>
-        </div>
-        <div class="flex gap-3 w-full md:w-auto">
-            <button class="flex-1 md:flex-none justify-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm transition-all flex items-center gap-2">
-                <x-heroicon-o-arrow-down-tray class="w-4 h-4 text-gray-500 dark:text-gray-400" /> Export
-            </button>
-            <a href="{{ \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('edit', ['record' => $record]) }}" class="flex-1 md:flex-none justify-center bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 shadow-sm transition-all flex items-center gap-2 shadow-blue-200 dark:shadow-none">
-                <x-heroicon-o-pencil-square class="w-4 h-4" /> Edit
-            </a>
         </div>
     </div>
 
