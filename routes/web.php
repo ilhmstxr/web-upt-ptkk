@@ -19,6 +19,9 @@ use App\Http\Controllers\SuratController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\PostTestController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Public\CeritaKamiController;
+use App\Http\Controllers\KontenProgramPelatihanController;
+
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\BeritaController;
@@ -49,14 +52,19 @@ use App\Models\Bidang;
    ========================= */
 Route::get('/', fn() => view('pages.landing'))->name('landing');
 
-// PROFIL (dropdown navbar)
-Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
-Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
-// route kompetensi pelatihan
-Route::get('/kompetensi-pelatihan', [KompetensiPelatihanController::class, 'index'])
-    ->name('kompetensi');
+// PROFIL
+//Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
+Route::get('/cerita-kami', [CeritaKamiController::class, 'index'])->name('cerita-kami');
 
-    // 🔹 TAMBAHKAN INI UNTUK PANDUAN
+Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'index'])
+    ->name('program-pelatihan.index');
+
+Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
+
+Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301); 
+
+Route::view('/berita',  'pages.berita')->name('news');
+
 Route::view('/panduan', 'pages.panduan')->name('panduan');
 
 // Legacy redirect
