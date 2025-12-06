@@ -26,7 +26,6 @@ use App\Http\Controllers\MateriController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\AssessmentAuthController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Public\LandingController;
 use App\Http\Controllers\Public\CeritaKamiController;
 use App\Http\Controllers\Public\PelatihanController as PublicPelatihanController; // Controller Index Pelatihan (NEW)
 use App\Http\Controllers\PelatihanDetailController; // Controller Detail Pelatihan (EXISTING)
@@ -61,7 +60,7 @@ Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'inde
 
 Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
 
-Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301); 
+Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
 
 Route::view('/berita',  'pages.berita')->name('news');
 
@@ -163,10 +162,10 @@ Route::prefix('survey')->name('survey.')->group(function () {
     Route::get('/', [SurveyController::class, 'index'])->name('index');
     Route::get('/create', [SurveyController::class, 'create'])->name('create');
     Route::post('/', [SurveyController::class, 'store'])->name('store');
-    
+
     // Perbaikan: Rute resource harus di atas rute spesifik jika tidak menggunakan except
     Route::resource('/', SurveyController::class)->except(['index', 'create', 'store']);
-    
+
     Route::get('/complete', [SurveyController::class, 'complete'])->name('complete');
     Route::post('/start', [SurveyController::class, 'start'])->name('start');
     Route::post('/check-credentials', [SurveyController::class, 'checkCredentials'])->name('checkCredentials');
@@ -195,7 +194,7 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
     Route::post('unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
     Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
-    
+
     // AJAX
     Route::get('ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
         ->name('ajax.peserta.instansiByNama');
