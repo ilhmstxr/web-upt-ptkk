@@ -24,7 +24,7 @@ class KepalaUptResource extends Resource
 
     protected static ?string $navigationLabel = "Kepala UPT";
 
-    protected static ?string $modelLabel = 'Kepala UPT'; 
+    protected static ?string $modelLabel = 'Kepala UPT';
 
     protected static ?string $pluralModelLabel = 'Kepala UPT';
 

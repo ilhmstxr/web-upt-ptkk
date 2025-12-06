@@ -64,7 +64,7 @@ return [
     */
 
    'temporary_file_upload' => [
-    'disk' => 'local',          // ⬅️ ganti ke local
+    'disk' => 'public',          // ⬅️ ganti ke local
     'rules' => ['file', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
     'directory' => 'livewire-tmp',
     'middleware' => null,

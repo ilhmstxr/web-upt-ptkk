@@ -28,7 +28,7 @@ class LandingController extends Controller
         $post = [];
         $prak = [];
         $rata = [];
-        
+
         $banners = collect();
         $beritas = collect();
         $profil = null;
@@ -151,43 +151,16 @@ class LandingController extends Controller
             Log::error("Gagal memuat Cerita Kami: " . $e->getMessage());
         }
 
-        // 6) Sorotan Pelatihan (published + fotos) (cache 1 jam)
-        try {
-            $sorotans = Cache::remember('sorotan_pelatihan', 3600, function () {
-                return SorotanPelatihan::where('is_published', true)->with('fotos')->get();
-            });
-            // Normalisasi URL untuk masing-masing foto sorotan
-            $sorotans = $sorotans->map(function ($s) {
-                $s->fotos = $s->fotos->map(function ($foto) {
-                    $p = $foto->path ?? $foto->file ?? $foto->filepath ?? null;
-                    $url = null;
-                    if ($p) {
-                        $p = ltrim($p, '/');
-                        if (Storage::disk('public')->exists($p)) {
-                            $url = Storage::url($p);
-                        } elseif (file_exists(public_path($p))) {
-                            $url = asset($p);
-                        } elseif (file_exists(public_path("images/{$p}"))) {
-                            $url = asset("images/{$p}");
-                        } else {
-                            $basename = basename($p);
-                            if (Storage::disk('public')->exists($basename)) {
-                                $url = Storage::url($basename);
-                            } elseif (file_exists(public_path("images/{$basename}"))) {
-                                $url = asset("images/{$basename}");
-                            } else {
-                                $url = null;
-                            }
-                        }
-                    }
-                    $foto->url = $url;
-                    return $foto;
-                });
-                return $s;
-            });
-        } catch (Throwable $e) {
-            Log::error("Gagal memuat Sorotan Pelatihan: " . $e->getMessage());
-        }
+       // 6) Sorotan Pelatihan (cache 1 jam)
+try {
+    $sorotans = Cache::remember('sorotan_pelatihan', 3600, function () {
+        return SorotanPelatihan::where('is_published', true)->get();
+    });
+} catch (Throwable $e) {
+    Log::error("Gagal memuat Sorotan Pelatihan: " . $e->getMessage());
+    $sorotans = collect();
+}
+
 
         // --- PELATIHAN (dynamic statistik untuk section)
         try {
@@ -217,7 +190,7 @@ class LandingController extends Controller
             'kepala',
             'cerita',
             'sorotans',
-            'pelatihans', 
+            'pelatihans',
             'labels',
             'pre',
             'post',

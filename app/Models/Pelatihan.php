@@ -14,7 +14,7 @@ class Pelatihan extends Model
     use HasFactory;
 
     // Pastikan nama tabel benar
-    protected $table = 'pelatihan'; 
+    protected $table = 'pelatihan';
 
     protected $fillable = [
         'instansi_id',
@@ -54,7 +54,7 @@ class Pelatihan extends Model
     {
         return $this->belongsTo(Asrama::class);
     }
-    
+
     // --- RELASI HAS MANY ---
 
     public function peserta(): HasMany
@@ -73,13 +73,13 @@ class Pelatihan extends Model
     public function bidangPelatihan(): HasMany
     {
         // Secara default sudah mencari 'pelatihan_id'
-        return $this->hasMany(BidangPelatihan::class); 
+        return $this->hasMany(BidangPelatihan::class);
     }
-    
+
     // --- RELASI HAS MANY THROUGH ---
 
     /**
-     * Mendapatkan semua Percobaan (tests/quizzes results) yang terkait dengan pelatihan ini 
+     * Mendapatkan semua Percobaan (tests/quizzes results) yang terkait dengan pelatihan ini
      * melalui tabel 'tes'.
      */
     public function percobaans(): HasManyThrough
@@ -91,9 +91,9 @@ class Pelatihan extends Model
             'tes_id'        // Foreign key di tabel 'percobaan' (akhir)
         );
     }
-    
+
     /**
-     * Mendapatkan semua pendaftaran (PendaftaranPelatihan) yang terkait dengan pelatihan ini 
+     * Mendapatkan semua pendaftaran (PendaftaranPelatihan) yang terkait dengan pelatihan ini
      * melalui tabel 'bidang_pelatihan'.
      * Catatan: Relasi ini sebelumnya dinonaktifkan, sekarang diaktifkan kembali.
      */
@@ -109,8 +109,25 @@ class Pelatihan extends Model
         );
     }
 
+        /**
+     * Mendapatkan semua pendaftaran (PendaftaranPelatihan) yang terkait dengan pelatihan ini
+     * melalui tabel 'bidang_pelatihan'.
+     * Catatan: Relasi ini sebelumnya dinonaktifkan, sekarang diaktifkan kembali.
+     */
+    public function semuaPendaftaran(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            PendaftaranPelatihan::class,   // Model Akhir
+            BidangPelatihan::class,        // Model Perantara
+            'pelatihan_id',                // Foreign key di BidangPelatihan
+            'bidang_pelatihan_id',         // Foreign key di PendaftaranPelatihan
+            'id',                          // Local key di Pelatihan (model ini)
+            'id'                           // Local key di BidangPelatihan
+        );
+    }
+
     /**
-     * Mendapatkan semua Bidang (materi) yang diajarkan dalam pelatihan ini 
+     * Mendapatkan semua Bidang (materi) yang diajarkan dalam pelatihan ini
      * melalui tabel perantara 'bidang_pelatihan'.
      * Catatan: Relasi ini sebelumnya dinonaktifkan, sekarang diaktifkan kembali.
      */
@@ -119,10 +136,10 @@ class Pelatihan extends Model
         return $this->hasManyThrough(
             Bidang::class,
             BidangPelatihan::class,
-            'pelatihan_id', // Foreign key di BidangPelatihan
-            'id',           // Foreign key di Bidang (ini field id di tabel 'bidang')
-            'id',           // Local key di Pelatihan (model ini)
-            'bidang_id'     // Local key (bidang_id) di BidangPelatihan
+            'pelatihan_id',  // Foreign key di BidangPelatihan
+            'id',            // Foreign key di Bidang (field id di tabel 'bidang')
+            'id',            // Local key di Pelatihan (model ini)
+            'bidang_id'      // Local key (bidang_id) di BidangPelatihan
         );
     }
 
@@ -139,9 +156,9 @@ class Pelatihan extends Model
                 if (!$this->tanggal_mulai || !$this->tanggal_selesai) {
                     return $this->status ?? 'Tidak Terjadwal';
                 }
-                
+
                 $now = now();
-                
+
                 if ($now->isBefore($this->tanggal_mulai)) {
                     return 'Mendatang';
                 }

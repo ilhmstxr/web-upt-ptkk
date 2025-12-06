@@ -8,11 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('bidang', function (Blueprint $table) {
-            $table->string('gambar')
-                ->nullable()
-                ->after('kelas_keterampilan'); // atau after('kode') kalau mau
-        });
+       
     }
 
     public function down(): void

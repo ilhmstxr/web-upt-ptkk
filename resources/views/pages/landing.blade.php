@@ -31,7 +31,6 @@
 use Illuminate\Support\Facades\Storage;
 use App\Models\Banner;
 use App\Models\Berita;
-use App\Models\ProfilUPT;
 use App\Models\Bidang;
 use Illuminate\Support\Str;
 
@@ -42,19 +41,6 @@ $banners = Banner::query()
     ->get();
 $realCount = $banners->count() > 0 ? $banners->count() : 3;
 $cloneCount = min(2, $realCount);
-
-// Ambil Profil UPT
-$profil = ProfilUPT::first();
-// Ambil data Bidang untuk Kompetensi
-$bidangItems = Bidang::query()
-    ->orderBy('nama_bidang', 'asc')
-    ->get();
-
-// Teks Default jika database kosong
-$defaultSejarah = "Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis.";
-
-// Definisikan variabel $teksCerita
-$teksCerita = $profil && !empty($profil->sejarah) ? $profil->sejarah : $defaultSejarah;
 
 /* Ambil 3 berita terbaru */
 $latestBeritas = Berita::query()
@@ -639,16 +625,16 @@ $latestBeritas = Berita::query()
           <div class="jatim-marquee flex w-[200%] items-center animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
              {{-- icons sederhana --}}
              @foreach(['cetar','dindik','jatim','berakhlak','optimis'] as $icon)
-                @php 
+                @php
                     $iconPath = 'icons/'.$icon.'.svg';
                     $iconSrc = Storage::disk('public')->exists($iconPath) ? Storage::url($iconPath) : asset('images/icons/'.$icon.'.svg');
                 @endphp
                 <img src="{{ $iconSrc }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0 mx-4" alt="{{ ucfirst($icon) }}">
              @endforeach
-             
+
              {{-- duplikat untuk marquee --}}
              @foreach(['cetar','dindik','jatim','berakhlak','optimis'] as $icon)
-                @php 
+                @php
                     $iconPath = 'icons/'.$icon.'.svg';
                     $iconSrc = Storage::disk('public')->exists($iconPath) ? Storage::url($iconPath) : asset('images/icons/'.$icon.'.svg');
                 @endphp
@@ -665,7 +651,7 @@ $latestBeritas = Berita::query()
 {{-- SECTION: Berita Terbaru (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    
+
     <div class="grid gap-y-2 mb-6">
       <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23] font-[Volkhov] font-bold text-[15px] md:text-[16px] rounded-md leading-none px-3 py-1 shadow-sm w-fit">Berita Terbaru</span>
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
@@ -700,13 +686,13 @@ $latestBeritas = Berita::query()
             $imgUrl = $b->image ? Storage::url($b->image) : asset('images/berita/placeholder.jpg');
 
             $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
-            
+
             // Format tanggal meniru berita_show (menggunakan optional)
             $pubDate = optional($b->published_at ?? $b->created_at)->format('d F Y');
           @endphp
 
           <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
-            
+
             {{-- MARKUP GAMBAR --}}
             <div class="w-full h-[160px] rounded-lg mb-4 overflow-hidden">
                <img src="{{ $imgUrl }}" alt="{{ $b->title }}" class="w-full h-full object-cover rounded-lg shadow-md" loading="lazy">
@@ -736,43 +722,87 @@ $latestBeritas = Berita::query()
 </section>
 {{-- /SECTION: Berita Terbaru --}}
 
-{{-- SECTION: Sorotan Pelatihan (dynamic with full static fallback) --}}
+{{-- SECTION: Sorotan Pelatihan --}}
 @php
-  // Accept either $sorotans or $sorotan from controller (backwards compatibility)
-  $collection = collect([]);
-  if (isset($sorotans) && $sorotans instanceof \Illuminate\Support\Collection) {
-      $collection = $sorotans;
-  } elseif (isset($sorotan) && $sorotan instanceof \Illuminate\Support\Collection) {
-      $collection = $sorotan;
-  }
 
-  // Normalizer: return absolute URL for a stored path or asset fallback
-  $normalizeUrl = function ($path) {
-      if (!$path) return asset('images/placeholder_kunjungan.jpg');
-      if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) return $path;
+    // koleksi dari controller (bisa kosong)
+    $collection = ($sorotans ?? collect());
 
-      // try storage public
-      try {
-          if (\Storage::disk('public')->exists($path)) {
-              return \Storage::url($path);
-          }
-      } catch (\Throwable $e) {
-          // ignore
-      }
+    // META DEFAULT UNTUK 3 KELAS (statis di Blade)
+    $defaultMeta = [
+        'mtu' => [
+            'key'   => 'mtu',
+            'label' => 'Mobil Training Unit',
+            'desc'  => 'Mobil Keliling UPT. PTKK Dindik Jatim adalah sebuah program unggulan yang dirancang khusus untuk menjangkau sekolah di pelosok-pelosok Jawa Timur.',
+        ],
+        'reguler' => [
+            'key'   => 'reguler',
+            'label' => 'Pelatihan Reguler',
+            'desc'  => 'Proses peningkatan kompetensi di UPT. PTKK dipandu oleh para asesor kompetensi profesional yang tersertifikasi.',
+        ],
+        'akselerasi' => [
+            'key'   => 'akselerasi',
+            'label' => 'Pelatihan Akselerasi',
+            'desc'  => 'UPT. PTKK memiliki 6 kompetensi yang tersertifikasi sebagai tempat uji kompetensi dengan fasilitas mumpuni.',
+        ],
+    ];
 
-      // try as public path
-      if (file_exists(public_path($path))) return asset($path);
+    // urutan tab
+    $order = ['mtu', 'reguler', 'akselerasi'];
 
-      // try inside images folder as fallback
-      return asset($path);
-  };
+    // BANGUN ARRAY sorotanData: 3 item pasti (mtu, reguler, akselerasi)
+    $sorotanData = collect($order)->map(function ($kelas) use ($collection, $defaultMeta) {
+        $base = $defaultMeta[$kelas];
+
+        /** @var \App\Models\SorotanPelatihan|null $row */
+        $row = $collection->firstWhere('kelas', $kelas);
+
+        // judul & deskripsi:
+        // kalau DB diisi -> override; kalau kosong -> pakai default
+        $label = $row?->title       ?: $base['label'];
+        $desc  = $row?->description ?: $base['desc'];
+
+        // foto:
+        if ($row && !empty($row->photo_urls)) {
+            // accessor di model SorotanPelatihan
+            $files = $row->photo_urls;
+        } else {
+            // fallback static per kelas (boleh kamu ubah sesuai aset lokal)
+            $files = match ($kelas) {
+                'mtu' => [
+                    asset('images/profil/MTU1.svg'),
+                    asset('images/profil/MTU2.svg'),
+                    asset('images/profil/MTU3.svg'),
+                    asset('images/profil/MTU4.svg'),
+                ],
+                'reguler' => [
+                    asset('images/sorotan/reguler/reg-1.jpg'),
+                    asset('images/sorotan/reguler/reg-2.jpg'),
+                    asset('images/sorotan/reguler/reg-3.jpg'),
+                ],
+                'akselerasi' => [
+                    asset('images/sorotan/akselerasi/acc-1.jpg'),
+                    asset('images/sorotan/akselerasi/acc-2.jpg'),
+                    asset('images/sorotan/akselerasi/acc-3.jpg'),
+                ],
+                default => [asset('images/placeholder_kunjungan.jpg')],
+            };
+        }
+
+        return [
+            'key'   => $base['key'],
+            'label' => $label,
+            'desc'  => $desc,
+            'files' => $files,
+        ];
+    })->values();
 @endphp
 
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <style>
     @keyframes sorotan-scroll-x {
       from { transform: translateX(0); }
-      to   { transform: translateX(-50%); } /* karena konten digandakan 2x */
+      to   { transform: translateX(-50%); }
     }
     @media (prefers-reduced-motion: reduce) {
       .sorotan-marquee { animation: none !important; }
@@ -801,388 +831,322 @@ $latestBeritas = Berita::query()
       </span>
     </h2>
 
-    {{-- === CASE 1: DATABASE KOSONG -> tampilkan versi STATIS penuh (default) === --}}
-    @if($collection->isEmpty())
-      @php
-        $sorotan = [
-          [
-            'key'   => 'mtu',
-            'label' => 'Mobil Training Unit',
-            'desc'  => 'Mobil Keliling UPT. PTKK Dindik Jatim adalah sebuah program unggulan yang dirancang khusus untuk menjangkau sekolah di pelosok-pelosok Jawa Timur.',
-            'files' => [
-              'profil/MTU1.svg','profil/MTU2.svg','profil/MTU3.svg','profil/MTU4.svg','profil/MTU5.svg','profil/MTU6.svg',
-            ],
-          ],
-          [
-            'key'   => 'reguler',
-            'label' => 'Pelatihan Reguler',
-            'desc'  => 'Proses peningkatan kompetensi di UPT. PTKK dipandu oleh para asesor kompetensi profesional yang tersertifikasi.',
-            'files' => [
-              'sorotan/reguler/reg-1.jpg','sorotan/reguler/reg-2.jpg','sorotan/reguler/reg-3.jpg',
-              'sorotan/reguler/reg-4.jpg','sorotan/reguler/reg-5.jpg','sorotan/reguler/reg-6.jpg',
-            ],
-          ],
-          [
-            'key'   => 'akselerasi',
-            'label' => 'Pelatihan Akselerasi',
-            'desc'  => 'UPT. PTKK memiliki 6 kompetensi yang tersertifikasi oleh Kemendikdasmen sebagai tempat uji kompetensi yang memiliki fasilitas mumpuni.',
-            'files' => [
-              'sorotan/akselerasi/acc-1.jpg','sorotan/akselerasi/acc-2.jpg','sorotan/akselerasi/acc-3.jpg',
-              'sorotan/akselerasi/acc-4.jpg','sorotan/akselerasi/acc-5.jpg','sorotan/akselerasi/acc-6.jpg',
-            ],
-          ],
-        ];
-      @endphp
-
-      {{-- NAMA + DESKRIPSI --}}
-      <div id="sorotan-top"
-           class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
-        <div class="shrink-0">
-          <button type="button"
-                  class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
-                         font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
-                         rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
-            {{ $sorotan[0]['label'] }}
-          </button>
-        </div>
-
-        <p id="sorotan-desc"
-           class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px]
-                  font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">
-          {{ $sorotan[0]['desc'] }}
-        </p>
+    {{-- HEADER NAMA + DESKRIPSI --}}
+    <div id="sorotan-top"
+         class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
+      <div class="shrink-0">
+        <button type="button"
+                class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
+                       font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
+                       rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
+          {{ $sorotanData[0]['label'] }}
+        </button>
       </div>
 
-      {{-- SLIDER FOTO (statics) --}}
-      <div class="w-full mb-8 md:mb-10 lg:mb-12">
-        @foreach($sorotan as $i => $cat)
-          @php $files = $cat['files']; @endphp
+      <p id="sorotan-desc"
+         class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px]
+                font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">
+        {{ $sorotanData[0]['desc'] }}
+      </p>
+    </div>
 
-          <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
-            <div class="relative">
-              <div class="overflow-hidden">
-                <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]" data-key="{{ $cat['key'] }}">
-                  @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
-                    @foreach($files as $fname)
-                      <div class="relative h-[130px] md:h-[150px] lg:h-[170px] w-[220px] md:w-[260px] lg:w-[280px] rounded-2xl overflow-hidden shrink-0">
-                        <img src="{{ asset('images/'.$fname) }}" alt="{{ $cat['label'] }}" loading="lazy" class="w-full h-full object-cover">
-                      </div>
-                    @endforeach
-                  @endfor
-                </div>
-                <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
-              </div>
-            </div>
-          </div>
-        @endforeach
-      </div>
-
-      {{-- CONTROLS --}}
-      <div class="mt-2 flex items-center justify-center gap-6">
-        <button id="tabPrev" class="w-8 h-8 ...">‹</button>
-        <div id="tabDots" class="flex items-center gap-2"></div>
-        <button id="tabNext" class="w-8 h-8 ...">›</button>
-      </div>
-
-      {{-- SCRIPT untuk statics (kategori + auto-scroll) --}}
-      <script>
-        (function(){
-          const tabOrder = ['mtu','reguler','akselerasi'];
-          const panes = document.querySelectorAll('.sorotan-pane');
-          const label = document.querySelector('.sorotan-label');
-          const desc  = document.getElementById('sorotan-desc');
-
-          const meta = {
-            mtu:       { label: 'Mobil Training Unit',   desc: @json($sorotan[0]['desc']) },
-            reguler:   { label: 'Pelatihan Reguler',     desc: @json($sorotan[1]['desc']) },
-            akselerasi:{ label: 'Pelatihan Akselerasi',  desc: @json($sorotan[2]['desc']) },
-          };
-
-          function currentKey(){ const active = Array.from(panes).find(p=>!p.classList.contains('hidden')); return active ? active.dataset.pane : tabOrder[0]; }
-          function currentIndex(){ return tabOrder.indexOf(currentKey()); }
-
-          const prev = document.getElementById('tabPrev');
-          const next = document.getElementById('tabNext');
-          const tabDots = document.getElementById('tabDots');
-
-          prev.addEventListener('click', ()=>showByIndex(currentIndex()-1));
-          next.addEventListener('click', ()=>showByIndex(currentIndex()+1));
-
-          function paintTabDots(){
-            if(!tabDots) return;
-            const idx = currentIndex(); tabDots.innerHTML = '';
-            tabOrder.forEach((k,i)=>{
-              const b=document.createElement('button');
-              b.type='button';
-              b.className='w-2.5 h-2.5 rounded-full transition ' + (i===idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
-              b.setAttribute('aria-label', meta[k].label);
-              b.setAttribute('aria-current', i===idx ? 'true' : 'false');
-              b.addEventListener('click', ()=>showByIndex(i));
-              tabDots.appendChild(b);
-            });
-          }
-
-          function showByIndex(i){ const idx = (i < 0) ? tabOrder.length-1 : (i >= tabOrder.length ? 0 : i); setActive(tabOrder[idx]); }
-          function setActive(key){
-            panes.forEach(p => p.classList.toggle('hidden', p.dataset.pane !== key));
-            if (label && meta[key]) label.textContent = meta[key].label;
-            if (desc  && meta[key]) desc.textContent  = meta[key].desc;
-            paintTabDots();
-          }
-
-          setActive(tabOrder[0]);
-        })();
-
-        // Auto-scroll
-        (function(){
-          const tracks = document.querySelectorAll('.sorotan-track');
-          const SPEED = 0.8;
-          tracks.forEach((track) => {
-            let offset = 0;
-            function animate() {
-              const halfWidth = track.scrollWidth / 2;
-              offset -= SPEED;
-              if (Math.abs(offset) >= halfWidth) offset += halfWidth;
-              track.style.transform = `translateX(${offset}px)`;
-              requestAnimationFrame(animate);
-            }
-            requestAnimationFrame(animate);
-          });
-        })();
-      </script>
-
-    {{-- === CASE 2: DATABASE ADA -> tampilkan versi DINAMIS === --}}
-    @else
-      @php
-        // map DB items to view structure
-        $sorotanData = $collection->map(function($item) use ($normalizeUrl) {
-          $files = collect($item->fotos ?? [])->pluck('path')->map($normalizeUrl)->toArray();
-          if (empty($files)) $files[] = asset('images/placeholder_kunjungan.jpg');
-          return [
-            'key' => 'spotlight-'.$item->id,
-            'label' => $item->title,
-            'desc' => $item->description,
-            'files' => $files,
-          ];
-        })->values();
-      @endphp
-
-      {{-- header nama + desc --}}
-      <div id="sorotan-top" class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:gap-6 text-left">
-        <div class="shrink-0">
-          <button class="sorotan-label bg-[#DBE7F7] text-[#1524AF] font-[Volkhov] font-bold text-[18px] rounded-md px-5 py-2.5">
-            {{ $sorotanData[0]['label'] }}
-          </button>
-        </div>
-
-        <p id="sorotan-desc" class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px] font-[Montserrat] font-medium leading-relaxed">
-          {{ $sorotanData[0]['desc'] }}
-        </p>
-      </div>
-
-      {{-- slider (dynamic) --}}
-      <div class="w-full mb-8 md:mb-10 lg:mb-12">
-        @foreach($sorotanData as $i => $cat)
-          <div class="sorotan-pane {{ $i===0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
-            <div class="relative overflow-hidden">
-              <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6" data-key="{{ $cat['key'] }}">
+    {{-- SLIDER FOTO --}}
+    <div class="w-full mb-8 md:mb-10 lg:mb-12">
+      @foreach($sorotanData as $i => $cat)
+        <div class="sorotan-pane {{ $i === 0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
+          <div class="relative">
+            <div class="overflow-hidden">
+              <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]" data-key="{{ $cat['key'] }}">
                 @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
                   @foreach($cat['files'] as $img)
-                    <div class="h-[130px] md:h-[150px] lg:h-[170px] w-[220px] md:w-[260px] lg:w-[280px] rounded-2xl overflow-hidden shrink-0">
-                      <img src="{{ $img }}" class="w-full h-full object-cover" loading="lazy" alt="{{ $cat['label'] }}">
+                    <div class="relative h-[130px] md:h-[150px] lg:h-[170px]
+                                w-[220px] md:w-[260px] lg:w-[280px]
+                                rounded-2xl overflow-hidden shrink-0">
+                      <img src="{{ $img }}" alt="{{ $cat['label'] }}" loading="lazy"
+                           class="w-full h-full object-cover">
                     </div>
                   @endforeach
                 @endfor
               </div>
-              <div class="absolute inset-0 pointer-events-none [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
+              <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
             </div>
           </div>
-        @endforeach
-      </div>
+        </div>
+      @endforeach
+    </div>
 
-      {{-- controls --}}
-      <div class="mt-2 flex items-center justify-center gap-6">
-        <button id="tabPrev" class="w-8 h-8 ...">‹</button>
-        <div id="tabDots" class="flex items-center gap-2"></div>
-        <button id="tabNext" class="w-8 h-8 ...">›</button>
-      </div>
+    {{-- CONTROLS --}}
+    <div class="mt-2 flex items-center justify-center gap-6">
+      <button id="sorotan-prev"
+              type="button"
+              class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
+                     text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition">
+        ‹
+      </button>
 
-      {{-- script dynamic (uses sorotanData content) --}}
-      <script>
-        (function(){
-          const tabOrder = @json($sorotanData->pluck('key'));
-          const panes = document.querySelectorAll('.sorotan-pane');
-          const label = document.querySelector('.sorotan-label');
-          const desc  = document.getElementById('sorotan-desc');
+      <div id="sorotan-dots" class="flex items-center gap-2"></div>
 
-          const meta = @json($sorotanData->mapWithKeys(function($s){ return [$s['key'] => ['label'=>$s['label'],'desc'=>$s['desc']]]; }));
+      <button id="sorotan-next"
+              type="button"
+              class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
+                     text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition">
+        ›
+      </button>
+    </div>
 
-          function currentKey(){ const active = Array.from(panes).find(p=>!p.classList.contains('hidden')); return active ? active.dataset.pane : tabOrder[0]; }
-          function currentIndex(){ return tabOrder.indexOf(currentKey()); }
-
-          function setActive(key){
-            panes.forEach(p => p.classList.toggle('hidden', p.dataset.pane !== key));
-            if (label && meta[key]) label.textContent = meta[key].label;
-            if (desc && meta[key]) desc.textContent = meta[key].desc;
-            paintDots();
-          }
-
-          function paintDots(){
-            const wrap = document.getElementById('tabDots');
-            wrap.innerHTML = '';
-            tabOrder.forEach((k,i)=>{
-              const b = document.createElement('button');
-              b.className = "w-2.5 h-2.5 rounded-full transition " + (i===currentIndex() ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
-              b.onclick = ()=> setActive(k);
-              wrap.appendChild(b);
-            });
-          }
-
-          document.getElementById('tabPrev').onclick = ()=> setActive(tabOrder[(currentIndex()-1+tabOrder.length)%tabOrder.length]);
-          document.getElementById('tabNext').onclick = ()=> setActive(tabOrder[(currentIndex()+1)%tabOrder.length]);
-
-          setActive(tabOrder[0]);
-        })();
-
-        // Auto-scroll
-        (function(){
-          const tracks = document.querySelectorAll('.sorotan-track');
-          const SPEED = 0.8;
-          tracks.forEach(track=>{
-            let offset=0;
-            function animate(){
-              const half = track.scrollWidth/2;
-              offset -= SPEED;
-              if (Math.abs(offset) >= half) offset += half;
-              track.style.transform = `translateX(${offset}px)`;
-              requestAnimationFrame(animate);
-            }
-            requestAnimationFrame(animate);
-          });
-        })();
-      </script>
-
-    @endif {{-- end database empty / not empty --}}
   </div>
 </section>
 
-{{-- SECTION: Kompetensi Pelatihan (gambar SVG lokal) --}}
-<section class="relative bg-[#F1F9FC] py-4 md:py-6">
-  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-{{-- HEADER --}}
-<div class="text-center mb-6">
- <!-- Badge -->
-<div class="inline-block bg-[#F3E8E9] text-[#861D23]
-            text-[18px] md:text-[20px] lg:text-[22px]
-            px-5 py-1.5 rounded-md
-            font-[Volkhov] font-bold leading-none mb-6">
-  Kompetensi Pelatihan
-</div>
+{{-- SCRIPT: TAB / DOT + AUTO-SCROLL --}}
+<script>
+  (function () {
+    const tabOrder = @json($sorotanData->pluck('key'));
+    const meta = @json(
+        $sorotanData->mapWithKeys(fn($s) => [
+            $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']],
+        ])
+    );
 
-  <!-- Judul utama dengan stroke kuning -->
-  <h2 class="heading-stroke text-[20px] md:text-[24px] lg:text-[26px]
-             font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mb-6">
-    <span class="relative z-10">
-      Belajar dengan didampingi oleh instruktur yang ahli di kompetensinya
-    </span>
-    <span class="absolute inset-0 text-transparent [-webkit-text-stroke:2px_#FFDE59] pointer-events-none">
-      Belajar dengan didampingi oleh instruktur yang ahli di kompetensinya
-    </span>
-  </h2>
-</div>
+    const panes = Array.from(document.querySelectorAll('.sorotan-pane'));
+    const labelEl = document.querySelector('.sorotan-label');
+    const descEl  = document.getElementById('sorotan-desc');
+    const dotsWrap = document.getElementById('sorotan-dots');
+    const prevBtn = document.getElementById('sorotan-prev');
+    const nextBtn = document.getElementById('sorotan-next');
 
+    function currentKey() {
+      const active = panes.find(p => !p.classList.contains('hidden'));
+      return active ? active.dataset.pane : tabOrder[0];
+    }
 
-    {{-- SLIDER --}}
-    <div class="relative">
-      <div id="kompetensi-track"
-    class="flex gap-4 md:gap-5 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-1"
-    style="scrollbar-width:none;-ms-overflow-style:none;">
+    function currentIndex() {
+      return tabOrder.indexOf(currentKey());
+    }
 
-    @forelse ($bidangItems as $item)
-        @php
-            $imgPath = $item->gambar
-                ? asset('storage/' . $item->gambar)
-                : asset('images/profil/default-bidang.svg'); // fallback gambar default
-        @endphp
+    function setActive(key) {
+      panes.forEach(p => p.classList.toggle('hidden', p.dataset.pane !== key));
 
-        <div class="shrink-0 snap-start relative w-[260px] h-[180px] rounded-lg overflow-hidden group transition-all duration-300">
-            <img src="{{ $imgPath }}" alt="{{ $item->nama_bidang }}" class="w-full h-full object-cover">
-
-            <div class="absolute bottom-3 left-0 right-0 z-10 text-center">
-                <h3 class="text-white font-[Montserrat] font-medium text-[16px]">
-                    {{ $item->nama_bidang }}
-                </h3>
-            </div>
-
-            <div class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100 group-hover:opacity-0"
-                style="background: linear-gradient(180deg, rgba(219,231,247,0.5) 0%, rgba(21,36,175,0.8) 100%);">
-            </div>
-        </div>
-    @empty
-        <p class="text-center text-gray-500">Belum ada data kompetensi ditambahkan.</p>
-    @endforelse
-</div>
-
-        {{-- BUTTONS & CTA sejajar di bawah slider --}}
-<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mt-6">
-
-  {{-- Tombol navigasi (kiri) --}}
-  <div class="flex gap-3 justify-center md:justify-start">
-    <button id="prevBtn" type="button"
-            class="w-8 h-8 flex items-center justify-center bg-white rounded-full border border-[#B6BBE6]
-                   text-[#0E2A7B] hover:bg-[#1524AF] hover:text-white transition">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-      </svg>
-    </button>
-    <button id="nextBtn" type="button"
-            class="w-8 h-8 flex items-center justify-center bg-white rounded-full border border-[#B6BBE6]
-                   text-[#0E2A7B] hover:bg-[#1524AF] hover:text-white transition">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-      </svg>
-    </button>
-  </div>
-
-  {{-- CTA (kanan) --}}
- <a href="{{ route('kompetensi') }}"
-    class="inline-flex items-center gap-2 bg-[#1524AF] hover:bg-[#0E1F73]
-            text-white text-sm font-medium px-5 py-2.5 rounded-md transition
-            self-center md:self-auto">
-    Lihat Semua Kompetensi
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
-         viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
-</a>
-
-</div>
-
-
-  {{-- Script: geser 1 kartu per klik (hitung lebar + gap dinamis) --}}
-  <script>
-    (function () {
-      const track  = document.getElementById('kompetensi-track');
-      const prev   = document.getElementById('prevBtn');
-      const next   = document.getElementById('nextBtn');
-
-      function getStep() {
-        const first = track.querySelector(':scope > *');
-        if (!first) return 280;
-        const rect = first.getBoundingClientRect();
-        const gap  = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0');
-        return Math.round(rect.width + gap);
+      if (meta[key]) {
+        if (labelEl) labelEl.textContent = meta[key].label;
+        if (descEl)  descEl.textContent  = meta[key].desc;
       }
 
-      next.addEventListener('click', () => {
-        track.scrollBy({ left: getStep(), behavior: 'smooth' });
+      paintDots();
+    }
+
+    function paintDots() {
+      if (!dotsWrap) return;
+      const idx = currentIndex();
+      dotsWrap.innerHTML = '';
+      tabOrder.forEach((k, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'w-2.5 h-2.5 rounded-full transition ' +
+          (i === idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
+        b.setAttribute('aria-label', meta[k]?.label ?? k);
+        b.setAttribute('aria-current', i === idx ? 'true' : 'false');
+        b.addEventListener('click', () => setActive(k));
+        dotsWrap.appendChild(b);
       });
-      prev.addEventListener('click', () => {
-        track.scrollBy({ left: -getStep(), behavior: 'smooth' });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        const idx = currentIndex();
+        const nextIdx = idx <= 0 ? tabOrder.length - 1 : idx - 1;
+        setActive(tabOrder[nextIdx]);
       });
-    })();
-  </script>
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        const idx = currentIndex();
+        const nextIdx = (idx + 1) % tabOrder.length;
+        setActive(tabOrder[nextIdx]);
+      });
+    }
+
+    // init
+    setActive(tabOrder[0]);
+
+    // AUTO-SCROLL TRACK FOTO
+    const tracks = document.querySelectorAll('.sorotan-track');
+    const SPEED = 0.8;
+
+    tracks.forEach(track => {
+      let offset = 0;
+
+      function animate() {
+        const halfWidth = track.scrollWidth / 2;
+        offset -= SPEED;
+        if (Math.abs(offset) >= halfWidth) {
+          offset += halfWidth;
+        }
+        track.style.transform = `translateX(${offset}px)`;
+        requestAnimationFrame(animate);
+      }
+
+      requestAnimationFrame(animate);
+    });
+  })();
+</script>
+
+
+{{-- SECTION: Kompetensi Pelatihan (gambar dari DB Bidang) --}}
+<section class="relative bg-[#F1F9FC] py-4 md:py-6">
+  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
+
+    {{-- HEADER --}}
+    <div class="text-center mb-6">
+      {{-- Badge --}}
+      <div class="inline-block bg-[#F3E8E9] text-[#861D23]
+                  text-[18px] md:text-[20px] lg:text-[22px]
+                  px-5 py-1.5 rounded-md
+                  font-[Volkhov] font-bold leading-none mb-6">
+        Kompetensi Pelatihan
+      </div>
+
+      {{-- Judul utama --}}
+      <h2 class="heading-stroke text-[20px] md:text-[24px] lg:text-[26px]
+                 font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mb-6">
+        <span class="relative z-10">
+          Belajar dengan didampingi oleh instruktur yang ahli di kompetensinya
+        </span>
+        <span class="absolute inset-0 text-transparent [-webkit-text-stroke:2px_#FFDE59] pointer-events-none">
+          Belajar dengan didampingi oleh instruktur yang ahli di kompetensinya
+        </span>
+      </h2>
+    </div>
+
+    {{-- SLIDER --}}
+    @php
+      // Ambil dari DB:
+      // 1 = Kelas Keterampilan & Teknik
+      // 0 = MJC
+      $bidangKeterampilan = Bidang::where('kelas_keterampilan', 1)
+          ->orderBy('nama_bidang')
+          ->get();
+
+      $bidangMjc = Bidang::where('kelas_keterampilan', 0)
+          ->orderBy('nama_bidang')
+          ->get();
+
+      // Gabungkan: Keterampilan dulu, baru MJC
+      $bidangItems = $bidangKeterampilan->concat($bidangMjc);
+    @endphp
+
+    <div class="relative">
+      <div id="kompetensi-track"
+           class="flex gap-4 md:gap-5 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-1"
+           style="scrollbar-width:none;-ms-overflow-style:none;">
+
+        @forelse($bidangItems as $bidang)
+          @php
+            $nama = $bidang->nama_bidang ?? 'Kompetensi';
+
+            // Ambil URL gambar:
+            if (!empty($bidang->gambar)) {
+                if (Str::startsWith($bidang->gambar, ['http://', 'https://'])) {
+                    $imgUrl = $bidang->gambar; // sudah full URL
+                } else {
+                    // diasumsikan disimpan di storage public (storage/bidang/xxx)
+                    $imgUrl = Storage::url($bidang->gambar);
+                }
+            } else {
+                // fallback ke gambar default
+                $imgUrl = asset('images/profil/default-bidang.svg');
+            }
+          @endphp
+
+          <div class="shrink-0 snap-start relative w-[260px] h-[180px] rounded-lg overflow-hidden group
+                      transition-all duration-300">
+            {{-- Gambar dari DB --}}
+            <img src="{{ $imgUrl }}" alt="{{ $nama }}"
+                 class="w-full h-full object-cover">
+
+            {{-- Overlay gradient (menghilang saat hover) --}}
+            <div class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100 group-hover:opacity-0"
+                 style="background: linear-gradient(180deg,
+                         rgba(219,231,247,0.5) 0%,
+                         rgba(21,36,175,0.8) 100%);">
+            </div>
+
+            {{-- Nama kompetensi di tengah bawah --}}
+            <div class="absolute bottom-3 left-0 right-0 z-10 text-center">
+              <h3 class="text-white font-[Montserrat] font-medium text-[16px]">
+                {{ $nama }}
+              </h3>
+            </div>
+          </div>
+        @empty
+          {{-- Fallback kalau belum ada data bidang sama sekali --}}
+          <div class="shrink-0 w-full text-center py-10 text-slate-600">
+            Belum ada data kompetensi pelatihan yang tersimpan.
+          </div>
+        @endforelse
+
+      </div>
+
+      {{-- BUTTONS & CTA sejajar di bawah slider --}}
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mt-6">
+
+        {{-- Tombol navigasi (kiri) --}}
+        <div class="flex gap-3 justify-center md:justify-start">
+          <button id="prevBtn" type="button"
+                  class="w-8 h-8 flex items-center justify-center bg-white rounded-full border border-[#B6BBE6]
+                         text-[#0E2A7B] hover:bg-[#1524AF] hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          <button id="nextBtn" type="button"
+                  class="w-8 h-8 flex items-center justify-center bg-white rounded-full border border-[#B6BBE6]
+                         text-[#0E2A7B] hover:bg-[#1524AF] hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+
+        {{-- CTA (kanan) --}}
+        <a href="{{ route('kompetensi') }}"
+           class="inline-flex items-center gap-2 bg-[#1524AF] hover:bg-[#0E1F73]
+                  text-white text-sm font-medium px-5 py-2.5 rounded-md transition
+                  self-center md:self-auto">
+          Lihat Semua Kompetensi
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
 </section>
+
+{{-- Script: geser 1 kartu per klik (masih sama) --}}
+<script>
+  (function () {
+    const track  = document.getElementById('kompetensi-track');
+    const prev   = document.getElementById('prevBtn');
+    const next   = document.getElementById('nextBtn');
+
+    function getStep() {
+      const first = track.querySelector(':scope > *');
+      if (!first) return 280;
+      const rect = first.getBoundingClientRect();
+      const gap  = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0');
+      return Math.round(rect.width + gap);
+    }
+
+    next.addEventListener('click', () => {
+      track.scrollBy({ left: getStep(), behavior: 'smooth' });
+    });
+    prev.addEventListener('click', () => {
+      track.scrollBy({ left: -getStep(), behavior: 'smooth' });
+    });
+  })();
+</script>
+
 
 <!-- SECTION: Data Statistik -->
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
@@ -1206,7 +1170,7 @@ $latestBeritas = Berita::query()
 
           <ul id="listPelatihan" class="space-y-2">
             {{-- PERBAIKAN 1: Tambahkan ?? [] untuk mencegah Undefined Variable --}}
-            @forelse($pelatihans ?? [] as $pel) 
+            @forelse($pelatihans ?? [] as $pel)
               @php
                 $idx = $loop->index;
                 // warna aktif/inaktif: gunakan kolom warna jika tersedia, atau fallback
@@ -1250,10 +1214,10 @@ $latestBeritas = Berita::query()
                 $pelatihanIndexUrl = route('pelatihan.index');
             } catch (\Throwable $e) {
                 // Fallback ke URL statis jika route tidak ditemukan
-                $pelatihanIndexUrl = '/pelatihan'; 
+                $pelatihanIndexUrl = '/pelatihan';
             }
         @endphp
-        
+
         <a href="{{ $pelatihanIndexUrl }}" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#1524AF] text-white text-[14px] mt-6 shadow-sm hover:shadow transition-all duration-200 self-start">
           Cari Tahu Lebih
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1261,7 +1225,7 @@ $latestBeritas = Berita::query()
           </svg>
         </a>
       </div>
-      
+
       <div class="lg:col-span-8 mt-6 lg:mt-0">
         <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
           <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
@@ -1529,8 +1493,4 @@ $latestBeritas = Berita::query()
 
   @stack('scripts')
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> bb957f848c51108415c7a5beee75061bfb673daf

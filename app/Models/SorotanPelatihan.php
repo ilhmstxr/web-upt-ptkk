@@ -3,29 +3,36 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SorotanPelatihan extends Model
 {
-    // Nama tabel default: sorotan_pelatihans (sesuaikan jika berbeda)
+    protected $table = 'sorotan_pelatihans';
+
     protected $fillable = [
+        'kelas',        // 'mtu', 'reguler', 'akselerasi'
         'title',
         'description',
         'is_published',
+        'photos',       // json array path foto
     ];
 
     protected $casts = [
         'is_published' => 'boolean',
+        'photos'       => 'array',
     ];
 
-    /**
-     * Relasi: satu SorotanPelatihan punya banyak foto.
-     * Urutkan berdasarkan kolom 'order' jika ada.
-     *
-     * @return HasMany
-     */
-    public function fotos(): HasMany
+    public function getPhotoUrlsAttribute(): array
     {
-        return $this->hasMany(SorotanFoto::class, 'sorotan_pelatihan_id')->orderBy('order');
+        $photos = $this->photos ?? [];
+
+        return collect($photos)->map(function ($path) {
+            if (!$path) {
+                return asset('images/placeholder_kunjungan.jpg');
+            }
+
+            $p = ltrim($path, '/');
+            // asumsi pakai disk public
+            return asset('storage/' . $p);
+        })->all();
     }
 }
