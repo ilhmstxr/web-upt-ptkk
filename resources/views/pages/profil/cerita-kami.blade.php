@@ -803,7 +803,7 @@ section + section {
           UPT Pengembangan Teknis dan Keterampilan Kejuruan mempunyai fungsi:
         </p>
 
-        <ul class="list-disc pl-5 md:pl-6 space-y-2">
+        <ul class="list-disc pl-5 md:pl-6 space-y-2 leading-[1.3]">
           <li>Penyusunan perencanaan program dan kegiatan UPT.</li>
           <li>Penyusunan dan pengembangan materi teknis keterampilan kejuruan.</li>
           <li>Penyelenggaraan pelatihan dan bimbingan teknis keterampilan kejuruan.</li>
@@ -824,8 +824,9 @@ section + section {
         {{-- Judul + nama file --}}
         <div class="space-y-3">
           <div class="flex items-center gap-2">
-            {{-- pakai iconmu sendiri kalau ada, ini contoh emoji --}}
-            <span class="text-xl">📄</span>
+            <img src="{{ asset('images/icons/pdf-file.svg') }}"
+              alt="PDF File Icon"
+              class="w-[22px] h-[22px]" loading="lazy" decoding="async" />
             <h3 class="font-['Volkhov'] font-bold text-[#000000] text-[17px] md:text-[18px]">
               File Peraturan
             </h3>
@@ -841,17 +842,19 @@ section + section {
 
         {{-- Tombol --}}
         <div class="flex flex-col sm:flex-row gap-3">
-          <a href="#"
+          <a href="{{ asset('pdf/peraturan-pergub.pdf') }}"
+            target="_blank"
              class="inline-flex items-center justify-center gap-2
                     w-full sm:w-1/2
-                    px-4 py-3 bg-[#1524AF] text-[#FFFFFF] rounded-lg
+                    px-4 py-1 bg-[#1524AF] text-[#FFFFFF] rounded-lg
                     text-[14px] md:text-[15px] font-semibold
                     hover:bg-[#0F1D8F] transition text-center">
             <img src="{{ asset('images/icons/mata.svg') }}" alt="Lihat" class="w-5 h-5">
             Lihat
           </a>
 
-          <a href="#"
+          <a href="{{ asset('pdf/peraturan-pergub.pdf') }}" 
+             download
              class="inline-flex items-center justify-center gap-2
                     w-full sm:w-1/2
                     px-4 py-3 bg-[#1524AF] text-[#FFFFFF] rounded-lg
