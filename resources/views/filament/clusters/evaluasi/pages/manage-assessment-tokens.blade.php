@@ -19,27 +19,37 @@
             </x-filament::card>
         </div>
 
-        {{-- 2. Aksi Generate & Download (Opsional, karena sudah ada di Header Actions) --}}
-        {{-- Jika Anda ingin tombol tetap muncul di body: --}}
-        {{-- 
+        <hr class="border-gray-200">
+        
+        {{-- 2. Aksi Generate & Download --}}
         <x-filament::card>
-            <h2 class="text-xl font-semibold mb-4">Aksi Generate & Download</h2>
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Aksi Generate & Download</h2>
+            
             <div class="flex flex-col sm:flex-row gap-4 items-start">
-                <x-filament::button wire:click="generateTokens" color="primary">
+                <x-filament::button 
+                    wire:click="generateTokens" 
+                    color="primary"
+                    :disabled="$tokensPending === 0"
+                >
                     Generate {{ $tokensPending }} Token Pending Sekarang
                 </x-filament::button>
-                <x-filament::button tag="a" href="{{ route('admin.download.tokens') }}" color="success" target="_blank">
+                
+                <x-filament::button 
+                    tag="a" 
+                    href="{{ route('admin.download.tokens') }}" 
+                    color="success" 
+                    target="_blank"
+                >
                     Download Semua Daftar Token
                 </x-filament::button>
             </div>
         </x-filament::card>
-        --}}
 
 
-        {{-- 3. Daftar Pendaftaran Tanpa Token (Pending) --}}
+        {{-- 3. Daftar Pendaftaran Tanpa Token --}}
         <x-filament::card>
             <h2 class="text-xl font-bold mb-4 text-gray-800">Daftar Pendaftaran Tanpa Token (Pending)</h2>
-            
+
             @if($pendingPendaftarans->isEmpty())
                 <p class="text-gray-500">Semua pendaftaran yang terverifikasi sudah memiliki Token Assessment.</p>
             @else
@@ -47,19 +57,19 @@
                     <table class="w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Daftar</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Peserta</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pelatihan</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Daftar</th>
+                                <th class="py-3 px-4">ID Daftar</th>
+                                <th class="py-3 px-4">Nama Peserta</th>
+                                <th class="py-3 px-4">Pelatihan</th>
+                                <th class="py-3 px-4">Tanggal Daftar</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($pendingPendaftarans as $p)
                             <tr>
-                                <td class="py-4 px-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->id }}</td>
-                                <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-700">{{ $p->peserta->nama ?? 'N/A' }}</td>
-                                <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-700">{{ $p->pelatihan->nama_pelatihan ?? 'N/A' }}</td>
-                                <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($p->tanggal_pendaftaran)->format('d M Y') }}</td>
+                                <td class="py-4 px-4">{{ $p->id }}</td>
+                                <td class="py-4 px-4">{{ $p->peserta->nama ?? 'N/A' }}</td>
+                                <td class="py-4 px-4">{{ $p->pelatihan->nama_pelatihan ?? 'N/A' }}</td>
+                                <td class="py-4 px-4">{{ \Carbon\Carbon::parse($p->tanggal_pendaftaran)->format('d M Y') }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -67,5 +77,6 @@
                 </div>
             @endif
         </x-filament::card>
+
     </div>
 </x-filament-panels::page>
