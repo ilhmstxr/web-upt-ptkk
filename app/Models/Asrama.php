@@ -13,8 +13,9 @@ class Asrama extends Model
     protected $table = 'asrama';
 
     protected $fillable = [
-        'name',
+        'nama',
         'gender',
+        'alamat',
     ];
 
     public function kamars()

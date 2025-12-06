@@ -12,6 +12,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 class PerformaBidangTableWidget extends BaseWidget
 {
     protected static ?string $heading = 'Analisis Detail Per Bidang Pelatihan';
+    protected static ?int $sort = 6;
 
     protected int | string | array $columnSpan = 'full';
 
@@ -28,8 +29,18 @@ class PerformaBidangTableWidget extends BaseWidget
                     // ->withMax('bidangPelatihan.pendaftaranPelatihan', 'nilai_pre_test')  // Menghitung 'PRE-TEST (MAX)'
                     // ->withAvg('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (RATA²)'
                     // ->withMin('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
+                    // ->withMin('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MIN)'
                     // ->withMax('bidangPelatihan.pendaftaranPelatihan', 'nilai_post_test') // Menghitung 'POST-TEST (MAX)'
+                    ->limit(5)
             )
+            ->headerActions([
+                Tables\Actions\Action::make('Lihat Semua')
+                    ->url('#') // Ganti dengan URL resource yang sesuai, misal: BidangResource::getUrl('index')
+                    ->button()
+                    ->color('gray')
+                    ->size('xs'),
+            ])
+            ->paginated(false)
             ->columns([
                 TextColumn::make('nama_bidang')
                     ->label('BIDANG PELATIHAN'),
@@ -39,28 +50,14 @@ class PerformaBidangTableWidget extends BaseWidget
                     ->numeric()
                     ->badge(), // Tampilkan sebagai badge biru
 
-                // --- KOLOM PRE-TEST ---
-                TextColumn::make('pendaftaran_pelatihan_min_nilai_pre_test')
-                    ->label('PRE-TEST (MIN)')
-                    ->numeric()->alignRight()->color('warning'),
 
-                TextColumn::make('pendaftaran_pelatihan_max_nilai_pre_test')
-                    ->label('PRE-TEST (MAX)')
-                    ->numeric()->alignRight()->color('warning'),
 
                 TextColumn::make('pendaftaran_pelatihan_avg_nilai_pre_test')
                     ->label('PRE-TEST (RATA²)')
                     ->numeric()->alignRight()->color('warning')
                     ->formatStateUsing(fn(float $state): string => number_format($state, 1)), // Format 1 angka desimal
 
-                // --- KOLOM POST-TEST ---
-                TextColumn::make('pendaftaran_pelatihan_min_nilai_post_test')
-                    ->label('POST-TEST (MIN)')
-                    ->numeric()->alignRight()->color('success'),
 
-                TextColumn::make('pendaftaran_pelatihan_max_nilai_post_test')
-                    ->label('POST-TEST (MAX)')
-                    ->numeric()->alignRight()->color('success'),
 
                 TextColumn::make('pendaftaran_pelatihan_avg_nilai_post_test')
                     ->label('POST-TEST (RATA²)')
@@ -96,14 +93,14 @@ class PerformaBidangTableWidget extends BaseWidget
                             $peningkatan = (($avgPost - $avgPre) / $avgPre) * 100;
                         }
 
-                        if ($peningkatan > 20) return 'Sangat Baik';
-                        if ($peningkatan > 15) return 'Baik';
-                        return 'Cukup';
+                        if ($peningkatan > 30) return 'Sangat Efektif';
+                        if ($peningkatan >= 0) return 'Efektif';
+                        return 'Perlu Evaluasi';
                     })
                     ->colors([
-                        'success' => 'Sangat Baik',
-                        'primary' => 'Baik',
-                        'warning' => 'Cukup',
+                        'success' => 'Sangat Efektif',
+                        'primary' => 'Efektif',
+                        'danger' => 'Perlu Evaluasi',
                     ])->badge(),
             ]);
     }

@@ -175,16 +175,7 @@ Route::resource('pertanyaan', PertanyaanController::class);
 | Detail Pelatihan (public)
 |--------------------------------------------------------------------------
 */
-Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
-    $kompetensiList = [
-        'tata-boga',
-        'tata-busana',
-        'tata-kecantikan',
-        'teknik-pendingin-dan-tata-udara',
-    ];
-    abort_unless(in_array($kompetensi, $kompetensiList), 404);
-    return view('detail-pelatihan', compact('kompetensi'));
-})->name('detail-pelatihan');
+Route::get('/pelatihan/{slug}', [\App\Http\Controllers\PelatihanDetailController::class, 'show'])->name('detail-pelatihan');
 
 /*
 |--------------------------------------------------------------------------

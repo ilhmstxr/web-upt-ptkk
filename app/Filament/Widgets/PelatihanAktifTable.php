@@ -23,7 +23,16 @@ class PelatihanAktifTable extends BaseWidget
                 // Query untuk mengambil data
                 Pelatihan::query()->orderBy('status', 'asc')
                     ->orderBy('tanggal_selesai', 'desc')
+                    ->limit(5)
             )
+            ->headerActions([
+                Tables\Actions\Action::make('Lihat Semua')
+                    ->url(PelatihanResource::getUrl('index'))
+                    ->button()
+                    ->color('gray')
+                    ->size('xs'),
+            ])
+            ->paginated(false)
             ->columns([
                 Tables\Columns\TextColumn::make('nama_pelatihan')
                     ->label('Nama Pelatihan')

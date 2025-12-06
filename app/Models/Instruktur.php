@@ -13,9 +13,9 @@ class Instruktur extends Model
     protected $table = 'instruktur';
 
     protected $fillable = [
+        'user_id',
         'bidang_id',
-        'pelatihan_id',
-        'nama_gelar',
+        'nama',
         'tempat_lahir',
         'tgl_lahir',
         'jenis_kelamin',
@@ -37,6 +37,11 @@ class Instruktur extends Model
 
     public function pelatihan()
     {
-        return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
+        return $this->belongsToMany(Pelatihan::class, 'instruktur_pelatihan')->withPivot('kamar_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

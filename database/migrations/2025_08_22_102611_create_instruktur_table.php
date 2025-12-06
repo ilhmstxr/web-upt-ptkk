@@ -17,16 +17,15 @@ return new class extends Migration
             // $table->date('tanggal_mulai'); // pelatihan
             // $table->date('tanggal_akhir'); // pelatihan
             $table->foreignId('bidang_id')->constrained('bidang')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('pelatihan')->constrained('pelatihan')->onUpdate('cascade')->onDelete('cascade');
 
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
 
-            $table->foreignId('kamar_id')
-                ->constrained('kamar')
-                ->cascadeOnDelete()->nullable();
-            $table->string('nama_gelar');
+            // $table->foreignId('kamar_id')
+            //     ->constrained('kamar')
+            //     ->cascadeOnDelete()->nullable();
+            $table->string('nama');
             $table->string('tempat_lahir');
             $table->date('tgl_lahir');
             $table->string('jenis_kelamin');
