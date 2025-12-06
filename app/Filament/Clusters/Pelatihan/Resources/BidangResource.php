@@ -10,8 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BidangResource extends Resource
 {
@@ -30,9 +28,9 @@ class BidangResource extends Resource
             ->schema([
                 Forms\Components\FileUpload::make('gambar')
                     ->label('Gambar/Icon Bidang')
-                    ->disk('public')                 // 🔹 simpan di disk public
-                    ->directory('bidang-images')     // 🔹 folder: storage/app/public/bidang-images
-                    ->visibility('public')           // 🔹 bisa diakses via /storage/...
+                    ->disk('public')                 // simpan di disk public
+                    ->directory('bidang-images')     // folder: storage/app/public/bidang-images
+                    ->visibility('public')           // bisa diakses via /storage/...
                     ->image()
                     ->imageEditor()
                     ->imageEditorAspectRatios([
@@ -81,7 +79,7 @@ class BidangResource extends Resource
                 Tables\Columns\Layout\Stack::make([
                     // Gambar di atas
                     Tables\Columns\ImageColumn::make('gambar')
-                        ->disk('public') // 🔹 ambil dari disk public
+                        ->disk('public') // ambil dari disk public
                         ->height(150)
                         ->defaultImageUrl(fn ($record) =>
                             'https://ui-avatars.com/api/?name=' .

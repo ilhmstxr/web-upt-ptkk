@@ -19,6 +19,10 @@
 
   </style>
 </head>
+@php
+    $activeTab    = $activeTab    ?? 'kompetensi';
+    $keterampilan = $keterampilan ?? [];
+@endphp
 
 <body class="bg-[#F1F9FC] antialiased">
 

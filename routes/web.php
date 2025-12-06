@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Http\Request;
 use Livewire\Volt\Volt;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Browsershot\Browsershot;
@@ -34,7 +35,7 @@ use App\Mail\TestMail;
 use App\Exports\PesertaExport;
 use App\Exports\PesertaSheet;
 use App\Exports\LampiranSheet;
-
+use App\Models\Bidang;
 /*
 |--------------------------------------------------------------------------
 | Web Routes (Final Fix)
@@ -66,8 +67,21 @@ Route::get('/', fn () => view('pages.landing'))->name('landing');
 Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
 Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
 // route kompetensi pelatihan
-Route::get('/kompetensi-pelatihan', [LandingController::class, 'bidangPelatihan'])
-    ->name('kompetensi');
+Route::get('/kompetensi-pelatihan', function (Request $request) {
+    // tab aktif dari query ?tab=..., default: 'keterampilan'
+    $activeTab = $request->query('tab', 'keterampilan');
+
+    // 1 = Kelas Keterampilan & Teknik, 0 = MJC  (lihat keterangan di phpMyAdmin)
+    $keterampilan = Bidang::where('kelas_keterampilan', 1)->get();
+    $mjc          = Bidang::where('kelas_keterampilan', 0)->get();
+
+    return view('pages.profil.kompetensi-pelatihan', compact(
+        'activeTab',
+        'keterampilan',
+        'mjc',
+    ));
+})->name('kompetensi');
+
 
 // Legacy redirect
 Route::get('/home', function () {
@@ -78,14 +92,6 @@ Route::get('/home', function () {
     }
     return redirect()->route('landing');
 })->name('home');
-
-Route::view('/masuk', 'pages.masuk')->name('masuk');
-Route::view('/cerita-kami', 'pages.profil.cerita-kami')->name('story');
-Route::view('/program-pelatihan', 'pages.profil.program-pelatihan')->name('programs');
-Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
-Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
-Route::view('/panduan', 'pages.panduan')->name('panduan');
-Route::view('/kontak-kami', 'pages.kontak')->name('kontak');
 
 
 // Halaman Masuk
