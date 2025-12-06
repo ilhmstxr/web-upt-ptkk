@@ -103,6 +103,22 @@ class PelatihanResource extends Resource
                                         ->itemLabel(fn (array $state): ?string => $state['bidang_id'] ?? null),
                                 ]),
                         ]),
+                         // ======================== STEP 3: KONTEN HALAMAN PENDAFTARAN ========================
+                Forms\Components\Wizard\Step::make('Konten Halaman Pendaftaran')
+                    ->description('Teks yang akan tampil di accordion halaman daftar pelatihan')
+                    ->schema([
+                        Forms\Components\RichEditor::make('syarat_ketentuan')
+                            ->label('Syarat & Ketentuan Peserta')
+                            ->columnSpanFull(),
+
+                        Forms\Components\RichEditor::make('jadwal_text')
+                            ->label('Informasi Jadwal (untuk accordion)')
+                            ->columnSpanFull(),
+
+                        Forms\Components\RichEditor::make('lokasi_text')
+                            ->label('Lokasi Pelaksanaan (untuk accordion)')
+                            ->columnSpanFull(),
+                    ]),
                 ])->columnSpanFull(),
             ]);
     }
