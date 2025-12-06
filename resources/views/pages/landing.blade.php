@@ -31,7 +31,6 @@
 use Illuminate\Support\Facades\Storage;
 use App\Models\Banner;
 use App\Models\Berita;
-use App\Models\ProfilUPT;
 use Illuminate\Support\Str;
 
 /* Ambil banners */
@@ -42,14 +41,6 @@ $banners = Banner::query()
 $realCount = $banners->count() > 0 ? $banners->count() : 3;
 $cloneCount = min(2, $realCount);
 
-// Ambil Profil UPT 
-$profil = ProfilUPT::first();
-// Teks Default jika database kosong
-$defaultSejarah = "Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis.";
-
-// Definisikan variabel $teksCerita
-$teksCerita = $profil && !empty($profil->sejarah) ? $profil->sejarah : $defaultSejarah;
-
 /* Ambil 3 berita terbaru */
 $latestBeritas = Berita::query()
     ->where('is_published', true)
@@ -59,95 +50,242 @@ $latestBeritas = Berita::query()
     ->get();
 @endphp
 
-
 {{-- TOPBAR --}}
 @include('components.layouts.app.topbar')
 
 {{-- NAVBAR --}}
 @include('components.layouts.app.navbarlanding')
 
-{{-- HERO (UKURAN DIPERBAIKI) --}}
+{{-- ================== HERO: Slider Dinamis (tabel banners) ================== --}}
+@php
+  /**
+   * Variabel dari controller:
+   *  - $banners : koleksi Banner (id, image, title, description, is_active, sort_order)
+   */
+
+  $slides = ($banners ?? collect())->values();
+
+  // minimal harus ada 1 banner aktif
+  $slide0 = $slides[0] ?? null;
+
+  if ($slide0) {
+      // kalau cuma ada 1–2 banner, tetap dipaksa jadi 3 slot
+      $slide1 = $slides[1] ?? $slide0;
+      $slide2 = $slides[2] ?? $slide1 ?? $slide0;
+
+      $img = function ($item) {
+          // biasanya field image berisi path relatif seperti "banners/xxx.jpg"
+          return asset('storage/' . $item->image);
+      };
+  }
+@endphp
+
+@if ($slide0)
 <header class="w-full bg-[#F1F9FC]">
-  {{-- Padding disesuaikan agar banner terlihat penuh namun tetap rapi --}}
-  <div class="w-full px-4 md:px-8 lg:px-[80px] py-6 md:py-8">
-    <div id="hero" class="relative group">
-      
-      {{-- Track Slider: Menggunakan w-full untuk container dan child --}}
-      <div id="hero-track" class="flex items-center overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none rounded-[20px] shadow-lg border border-white/50" style="scrollbar-width:none;-ms-overflow-style:none;">
-        
-        {{-- Clones Kiri --}}
-        @if($banners->isNotEmpty())
-          @for($i = $cloneCount; $i > 0; $i--)
-            @php
-                $idx = ($realCount - $i) % $realCount;
-                $b = $banners->values()[$idx];
-                $bannerSrc = $b->image ? Storage::url($b->image) : asset('images/beranda/slide1.jpg');
-            @endphp
-            {{-- Slide Item: w-full (100%) --}}
-            <div class="hero-slide clone shrink-0 snap-center w-full relative" data-real="{{ $idx }}">
-              {{-- Tinggi Banner Responsif: HP(220px) -> Tablet(400px) -> Desktop(550px) --}}
-              <div class="w-full h-[220px] sm:h-[350px] md:h-[450px] lg:h-[550px] overflow-hidden bg-gray-200">
-                <img src="{{ $bannerSrc }}" alt="{{ $b->title ?? 'Banner' }}" class="w-full h-full object-cover select-none" draggable="false">
-              </div>
-            </div>
-          @endfor
+  <div class="w-full px-6 md:px-12 lg:px-[80px] py-4 md:py-6">
+    {{-- -mx-* supaya track bisa keluar dari padding container --}}
+    <div id="hero" class="relative -mx-6 md:-mx-12 lg:-mx-[80px]">
 
-          {{-- Slides Asli --}}
-          @foreach($banners as $i => $b)
-            @php
-              $bannerSrc = $b->image ? Storage::url($b->image) : asset('images/beranda/slide1.jpg');
-            @endphp
-            <div class="hero-slide shrink-0 snap-center w-full relative" data-real="{{ $i }}">
-              <div class="w-full h-[220px] sm:h-[350px] md:h-[450px] lg:h-[550px] overflow-hidden bg-gray-200">
-                <img src="{{ $bannerSrc }}" alt="{{ $b->title ?? 'Banner' }}" class="w-full h-full object-cover select-none" draggable="false">
-              </div>
-            </div>
-          @endforeach
+      {{-- TRACK: slide dengan peek kiri/kanan --}}
+      <div
+        id="hero-track"
+        class="flex items-center gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none py-8"
+        style="scrollbar-width:none;-ms-overflow-style:none;"
+      >
+        {{-- LEFT GUTTER (ruang kosong buat centering) --}}
+        <div
+          aria-hidden="true"
+          class="shrink-0 snap-none pointer-events-none
+                 w-[10%] md:w-[9%] lg:w-[72px] xl:w-[72px]"
+        ></div>
 
-          {{-- Clones Kanan --}}
-          @for($i = 0; $i < $cloneCount; $i++)
-            @php
-              $idx = $i % $realCount;
-              $b = $banners->values()[$idx];
-              $bannerSrc = $b->image ? Storage::url($b->image) : asset('images/beranda/slide1.jpg');
-            @endphp
-            <div class="hero-slide clone shrink-0 snap-center w-full relative" data-real="{{ $idx }}">
-              <div class="w-full h-[220px] sm:h-[350px] md:h-[450px] lg:h-[550px] overflow-hidden bg-gray-200">
-                <img src="{{ $bannerSrc }}" alt="{{ $b->title ?? 'Banner' }}" class="w-full h-full object-cover select-none" draggable="false">
-              </div>
-            </div>
-          @endfor
-        @else
-          {{-- Fallback: 3 static slides --}}
-          @for($i=1;$i<=3;$i++)
-            <div class="hero-slide shrink-0 snap-center w-full relative" data-real="{{ $i-1 }}">
-              <div class="w-full h-[220px] sm:h-[350px] md:h-[450px] lg:h-[550px] overflow-hidden bg-gray-200">
-                <img src="{{ asset('images/beranda/slide'.$i.'.jpg') }}" alt="Slide {{ $i }}" class="w-full h-full object-cover select-none">
-              </div>
-            </div>
-          @endfor
-        @endif
+        {{-- ========== CLONES KIRI ========== --}}
+        {{-- index 0: clone(real1) --}}
+        <div
+          class="hero-slide hero-slide-inner clone shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
+          data-real="1"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ $img($slide1) }}"
+              alt="{{ $slide1->title ?? 'Slide 2' }}"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
+          </div>
+        </div>
 
+        {{-- index 1: clone(real2) --}}
+        <div
+          class="hero-slide hero-slide-inner clone shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
+          data-real="2"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ $img($slide2) }}"
+              alt="{{ $slide2->title ?? 'Slide 3' }}"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
+          </div>
+        </div>
+
+        {{-- ========== SLIDE ASLI (real 0,1,2) ========== --}}
+        {{-- index 2: real0 --}}
+        <div
+          class="hero-slide hero-slide-inner shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
+          data-real="0"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ $img($slide0) }}"
+              alt="{{ $slide0->title ?? 'Slide 1' }}"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
+          </div>
+        </div>
+
+        {{-- index 3: real1 --}}
+        <div
+          class="hero-slide hero-slide-inner shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
+          data-real="1"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ $img($slide1) }}"
+              alt="{{ $slide1->title ?? 'Slide 2' }}"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
+          </div>
+        </div>
+
+        {{-- index 4: real2 --}}
+        <div
+          class="hero-slide hero-slide-inner shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
+          data-real="2"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ $img($slide2) }}"
+              alt="{{ $slide2->title ?? 'Slide 3' }}"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
+          </div>
+        </div>
+
+        {{-- ========== CLONES KANAN ========== --}}
+        {{-- index 5: clone(real0) --}}
+        <div
+          class="hero-slide hero-slide-inner clone shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
+          data-real="0"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ $img($slide0) }}"
+              alt="{{ $slide0->title ?? 'Slide 1' }}"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
+          </div>
+        </div>
+
+        {{-- index 6: clone(real1) --}}
+        <div
+          class="hero-slide hero-slide-inner clone shrink-0 snap-center
+                 w-[88%] md:w-[88%] lg:w-auto
+                 transition-transform duration-300"
+          data-real="1"
+        >
+          <div
+            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
+                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+          >
+            <img
+              src="{{ $img($slide1) }}"
+              alt="{{ $slide1->title ?? 'Slide 2' }}"
+              class="w-full h-full object-cover select-none"
+              draggable="false"
+            >
+          </div>
+        </div>
+
+        {{-- RIGHT GUTTER --}}
+        <div
+          aria-hidden="true"
+          class="shrink-0 snap-none pointer-events-none
+                 w-[10%] md:w-[9%] lg:w-[72px] xl:w-[72px]"
+        ></div>
       </div>
 
       {{-- Controls + dots --}}
-      <div class="absolute bottom-4 md:bottom-6 left-0 right-0 flex items-center justify-center gap-4 z-10 pointer-events-none">
-        <div class="pointer-events-auto flex items-center gap-4">
-            <button id="hero-prev" class="w-9 h-9 md:w-10 md:h-10 grid place-items-center rounded-full bg-white/40 backdrop-blur-md text-white hover:bg-white/70 hover:text-[#1524AF] transition-all border border-white/30 shadow-md" aria-label="Sebelumnya">
-            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" /></svg>
-            </button>
+      <div class="mt-4 flex items-center justify-center gap-4">
+        <button
+          id="hero-prev"
+          class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors"
+          aria-label="Sebelumnya"
+        >
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor">
+            <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+          </svg>
+        </button>
 
-            <div id="hero-dots" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/30 backdrop-blur-md border border-white/10">
-            @php $dotsToShow = $realCount; @endphp
-            @for($i=0;$i<$dotsToShow;$i++)
-                <button class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full transition-all duration-300 {{ $i === 0 ? 'bg-[#1524AF] w-6 md:w-8' : 'bg-white/80 hover:bg-white' }}" aria-label="Slide {{ $i+1 }}"></button>
-            @endfor
-            </div>
-
-            <button id="hero-next" class="w-9 h-9 md:w-10 md:h-10 grid place-items-center rounded-full bg-white/40 backdrop-blur-md text-white hover:bg-white/70 hover:text-[#1524AF] transition-all border border-white/30 shadow-md" aria-label="Berikutnya">
-            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="m8.59 16.59 1.41 1.41 6-6-6-6L8.59 6.41 13.17 11z" /></svg>
-            </button>
+        <div id="hero-dots" class="flex items-center gap-3">
+          <button
+            class="w-2.5 h-2.5 rounded-full bg-[#1524AF] transition-colors"
+            aria-label="Slide 1"
+          ></button>
+          <button
+            class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors"
+            aria-label="Slide 2"
+          ></button>
+          <button
+            class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors"
+            aria-label="Slide 3"
+          ></button>
         </div>
+
+        <button
+          id="hero-next"
+          class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors"
+          aria-label="Berikutnya"
+        >
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor">
+            <path d="m8.59 16.59 1.41 1.41 6-6-6-6L8.59 6.41 13.17 11z" />
+          </svg>
+        </button>
       </div>
 
     </div>
@@ -155,203 +293,268 @@ $latestBeritas = Berita::query()
 </header>
 
 <style>
-  /* Menghilangkan efek scale/kecil agar banner terlihat solid dan penuh */
-  .hero-slide { opacity: 1; transition: opacity 0.3s ease; }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero-slide {
+    transform: scale(0.85);
+    opacity: 0.5;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .hero-slide.active {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  /* ✅ Di desktop:
+       - lebar slide utama = min(1200px, 100% - 144px)
+       - 144px = 2 * 72px gutter kiri/kanan
+       -> jarak ke cuplikan selalu konstan meski window dibesarkan / dikecilkan */
+ @media (min-width: 1024px) {
+  .hero-slide-inner {
+    /* max 1120px, dan sisakan ±48px peek di kanan–kiri */
+    width: min(1120px, calc(100% - 240px));
+  }
+}
+
 </style>
 
 <script>
-(function () {
-  const track = document.getElementById('hero-track');
-  if (!track) return;
-  const slides = Array.from(track.querySelectorAll('.hero-slide'));
-  const dotsEl = document.getElementById('hero-dots');
-  const dots = dotsEl ? Array.from(dotsEl.children) : [];
-  const prev = document.getElementById('hero-prev');
-  const next = document.getElementById('hero-next');
+  (function () {
+    const track = document.getElementById('hero-track');
+    const slides = Array.from(track.querySelectorAll('.hero-slide'));
+    const dots = Array.from(document.getElementById('hero-dots').children);
+    const prev = document.getElementById('hero-prev');
+    const next = document.getElementById('hero-next');
 
-  if (slides.length === 0) return;
+    const FIRST_REAL = 2; // real0
+    const LAST_REAL = 4;  // real2
+    const LEFT_CLONE_BEFORE_FIRST = 1; // clone real2
+    const RIGHT_CLONE_AFTER_LAST = 5;  // clone real0
+    const REAL_COUNT = 3;
+    const ANIM = 300, BUF = 40;
 
-  const realIndices = slides.map(s => parseInt(s.dataset.real, 10));
-  const uniqueReals = Array.from(new Set(realIndices));
-  const realCount = uniqueReals.length;
+    let currentIndex = FIRST_REAL;
+    let isTransitioning = false;
 
-  let FIRST_REAL = 0;
-  function findFirstReal() {
-    for (let start = 0; start < slides.length; start++) {
-      let ok = true;
-      for (let k = 1; k < realCount; k++) {
-        const prev = parseInt(slides[(start + k - 1) % slides.length].dataset.real, 10);
-        const cur = parseInt(slides[(start + k) % slides.length].dataset.real, 10);
-        if (cur !== (prev + 1) % realCount && !(realCount === 1)) { ok = false; break; }
+    const realOf = (idx) =>
+      idx >= FIRST_REAL && idx <= LAST_REAL
+        ? idx - FIRST_REAL
+        : parseInt(slides[idx].dataset.real, 10);
+
+    const setDots = (r) =>
+      dots.forEach((d, i) => {
+        d.className =
+          'w-2.5 h-2.5 rounded-full transition-colors ' +
+          (i === r ? 'bg-[#1524AF]' : 'bg-gray-300');
+      });
+
+    const setActive = (idx) =>
+      slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+
+    const centerOffset = (idx) =>
+      slides[idx].offsetLeft -
+      (track.clientWidth - slides[idx].clientWidth) / 2;
+
+    const scrollToIndex = (idx, smooth = true) =>
+      track.scrollTo({
+        left: centerOffset(idx),
+        behavior: smooth ? 'smooth' : 'auto',
+      });
+
+    function smoothScrollToIndex(idx, cb) {
+      const prevSnap = track.style.scrollSnapType;
+      track.style.scrollSnapType = 'none';
+
+      const target = centerOffset(idx);
+
+      track.scrollTo({ left: target, behavior: 'smooth' });
+
+      const t0 = performance.now(), MAX = ANIM + 300, EPS = 1;
+
+      function tick() {
+        const atTarget = Math.abs(track.scrollLeft - target) <= EPS;
+        const overtime = performance.now() - t0 > MAX;
+
+        if (atTarget || overtime) {
+          track.style.scrollSnapType = prevSnap;
+          cb && cb();
+          return;
+        }
+
+        requestAnimationFrame(tick);
       }
-      if (ok) return start;
-    }
-    return 0;
-  }
-  FIRST_REAL = findFirstReal();
-  const LAST_REAL = FIRST_REAL + realCount - 1;
 
-  if (dots.length !== realCount && dotsEl) {
-    dotsEl.innerHTML = '';
-    for (let i = 0; i < realCount; i++) {
-      const btn = document.createElement('button');
-      // Update styling dots untuk transisi lebar
-      btn.className = 'w-2 h-2 md:w-2.5 md:h-2.5 rounded-full transition-all duration-300 ' + (i === 0 ? 'bg-[#1524AF] w-6 md:w-8' : 'bg-white/80 hover:bg-white');
-      btn.setAttribute('aria-label', 'Slide ' + (i+1));
-      dotsEl.appendChild(btn);
-    }
-  }
-
-  const updatedDots = dotsEl ? Array.from(dotsEl.children) : [];
-  const ANIM = 500, BUF = 40;
-  let currentIndex = FIRST_REAL;
-  let isTransitioning = false;
-
-  const realOf = (idx) => parseInt(slides[idx].dataset.real, 10);
-
-  const setDots = (r) => {
-    if (!updatedDots) return;
-    updatedDots.forEach((d, i) => {
-      d.className = 'w-2 h-2 md:w-2.5 md:h-2.5 rounded-full transition-all duration-300 ' + (i === r ? 'bg-[#1524AF] w-6 md:w-8' : 'bg-white/80 hover:bg-white');
-    });
-  };
-
-  const centerOffset = (idx) => {
-    return slides[idx].offsetLeft;
-  };
-
-  const scrollToIndex = (idx, smooth = true) =>
-    track.scrollTo({ left: centerOffset(idx), behavior: smooth ? 'smooth' : 'auto' });
-
-  function smoothScrollToIndex(idx, cb) {
-    const prevSnap = track.style.scrollSnapType;
-    track.style.scrollSnapType = 'none';
-    const target = centerOffset(idx);
-    track.scrollTo({ left: target, behavior: 'smooth' });
-    
-    const t0 = performance.now(), MAX = ANIM + 300, EPS = 2;
-    function tick() {
-      const atTarget = Math.abs(track.scrollLeft - target) <= EPS;
-      const overtime = performance.now() - t0 > MAX;
-      if (atTarget || overtime) {
-        track.style.scrollSnapType = prevSnap;
-        cb && cb();
-        return;
-      }
       requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
-  }
 
-  function rafSwap(fn) { requestAnimationFrame(() => requestAnimationFrame(fn)); }
-
-  function seamlessSwapByDelta(fromCloneIdx, toRealIdx) {
-    const prevBehavior = track.style.scrollBehavior;
-    const prevSnap = track.style.scrollSnapType;
-    track.style.scrollBehavior = 'auto';
-    track.style.scrollSnapType = 'none';
-    const delta = centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
-    track.scrollLeft += delta;
-    
-    // Force layout update fix untuk browser tertentu
-    track.scrollTop; 
-
-    track.style.scrollBehavior = prevBehavior || '';
-    track.style.scrollSnapType = prevSnap || '';
-    currentIndex = toRealIdx;
-    setDots(realOf(currentIndex));
-  }
-
-  function goNext() {
-    if (isTransitioning) return;
-    isTransitioning = true;
-    if (currentIndex === LAST_REAL) {
-      setDots(realOf(FIRST_REAL)); // update dots duluan biar responsif
-      const cloneIdx = LAST_REAL + 1;
-      smoothScrollToIndex(cloneIdx, () => {
-        rafSwap(() => {
-          seamlessSwapByDelta(cloneIdx, FIRST_REAL);
-          isTransitioning = false;
-        });
-      });
-    } else {
-      const target = currentIndex + 1;
-      setDots(realOf(target));
-      smoothScrollToIndex(target, () => {
-        currentIndex = target;
-        isTransitioning = false;
-      });
+    function rafSwap(fn) {
+      requestAnimationFrame(() => requestAnimationFrame(fn));
     }
-  }
 
-  function goPrev() {
-    if (isTransitioning) return;
-    isTransitioning = true;
-    if (currentIndex === FIRST_REAL) {
-      setDots(realOf(LAST_REAL));
-      const cloneIdx = FIRST_REAL - 1;
-      smoothScrollToIndex(cloneIdx, () => {
-        rafSwap(() => {
-          seamlessSwapByDelta(cloneIdx, LAST_REAL);
-          isTransitioning = false;
-        });
-      });
-    } else {
-      const target = currentIndex - 1;
-      setDots(realOf(target));
-      smoothScrollToIndex(target, () => {
-        currentIndex = target;
-        isTransitioning = false;
-      });
+    function seamlessSwapByDelta(fromCloneIdx, toRealIdx) {
+      const prevBehavior = track.style.scrollBehavior;
+      const prevSnap = track.style.scrollSnapType;
+
+      track.style.scrollBehavior = 'auto';
+      track.style.scrollSnapType = 'none';
+
+      const delta = centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
+      track.scrollLeft += delta;
+
+      track.style.scrollBehavior = prevBehavior || '';
+      track.style.scrollSnapType = prevSnap || '';
+
+      currentIndex = toRealIdx;
+      setActive(currentIndex);
+      setDots(realOf(currentIndex));
     }
-  }
 
-  function step(dir, times) {
-    if (times <= 0) return;
-    const tick = () => {
-      dir > 0 ? goNext() : goPrev();
-      times--;
-      if (times > 0) setTimeout(tick, ANIM + BUF + 10);
-    };
-    tick();
-  }
-
-  updatedDots.forEach((d, targetReal) => {
-    d.addEventListener('click', () => {
+    function goNext() {
       if (isTransitioning) return;
-      const curReal = realOf(currentIndex);
-      if (targetReal === curReal) return;
-      const r = (targetReal - curReal + realCount) % realCount;
-      const l = (curReal - targetReal + realCount) % realCount;
-      if (r <= l) step(1, r);
-      else step(-1, l);
+      isTransitioning = true;
+
+      if (currentIndex === LAST_REAL) {
+        setActive(FIRST_REAL);
+        setDots(0);
+
+        const cloneIdx = RIGHT_CLONE_AFTER_LAST;
+
+        smoothScrollToIndex(cloneIdx, () => {
+          rafSwap(() => {
+            seamlessSwapByDelta(cloneIdx, FIRST_REAL);
+            isTransitioning = false;
+          });
+        });
+      } else {
+        const target = currentIndex + 1;
+        setActive(target);
+        setDots(realOf(target));
+
+        smoothScrollToIndex(target, () => {
+          currentIndex = target;
+          isTransitioning = false;
+        });
+      }
+    }
+
+    function goPrev() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      if (currentIndex === FIRST_REAL) {
+        setActive(LAST_REAL);
+        setDots(2);
+
+        const cloneIdx = LEFT_CLONE_BEFORE_FIRST;
+
+        smoothScrollToIndex(cloneIdx, () => {
+          rafSwap(() => {
+            seamlessSwapByDelta(cloneIdx, LAST_REAL);
+            isTransitioning = false;
+          });
+        });
+      } else {
+        const target = currentIndex - 1;
+        setActive(target);
+        setDots(realOf(target));
+
+        smoothScrollToIndex(target, () => {
+          currentIndex = target;
+          isTransitioning = false;
+        });
+      }
+    }
+
+    function step(dir, times) {
+      if (times <= 0) return;
+
+      const tick = () => {
+        dir > 0 ? goNext() : goPrev();
+        times--;
+
+        if (times > 0) setTimeout(tick, ANIM + BUF + 10);
+      };
+
+      tick();
+    }
+
+    dots.forEach((d, targetReal) => {
+      d.addEventListener('click', () => {
+        if (isTransitioning) return;
+
+        const curReal = realOf(currentIndex);
+        if (targetReal === curReal) return;
+
+        const r = (targetReal - curReal + REAL_COUNT) % REAL_COUNT;
+        const l = (curReal - targetReal + REAL_COUNT) % REAL_COUNT;
+
+        if (r <= l) step(1, r);
+        else step(-1, l);
+      });
     });
-  });
 
-  // Autoplay
-  let autoplay = setInterval(goNext, 5000);
-  track.addEventListener('mouseenter', () => clearInterval(autoplay));
-  track.addEventListener('mouseleave', () => autoplay = setInterval(goNext, 5000));
+    let debounce = null;
 
-  // Init
-  scrollToIndex(FIRST_REAL, false);
-  setDots(realOf(FIRST_REAL));
+    track.addEventListener(
+      'scroll',
+      () => {
+        if (isTransitioning) return;
 
-  if (next) next.addEventListener('click', goNext);
-  if (prev) prev.addEventListener('click', goPrev);
-})();
+        clearTimeout(debounce);
+
+        debounce = setTimeout(() => {
+          const mid = track.scrollLeft + track.clientWidth / 2;
+          let nearest = currentIndex, best = Infinity;
+
+          for (let i = 0; i < slides.length; i++) {
+            const center =
+              slides[i].offsetLeft + slides[i].clientWidth / 2;
+            const d = Math.abs(center - mid);
+
+            if (d < best) {
+              best = d;
+              nearest = i;
+            }
+          }
+
+          if (nearest < FIRST_REAL) {
+            rafSwap(() => seamlessSwapByDelta(nearest, LAST_REAL));
+          } else if (nearest > LAST_REAL) {
+            rafSwap(() => seamlessSwapByDelta(nearest, FIRST_REAL));
+          } else {
+            currentIndex = nearest;
+            setActive(currentIndex);
+            setDots(realOf(currentIndex));
+          }
+        }, 80);
+      },
+      { passive: true }
+    );
+
+    scrollToIndex(FIRST_REAL, false);
+    setActive(FIRST_REAL);
+    setDots(0);
+
+    next.addEventListener('click', goNext);
+    prev.addEventListener('click', goPrev);
+  })();
 </script>
+@endif
 
 {{-- SECTION: Cerita Kami --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start md:items-center">
-      
       {{-- Kolom Kiri: Foto --}}
       <div class="w-full flex justify-center md:justify-start md:pl-2 lg:pl-4">
         <div class="rounded-2xl overflow-hidden shadow-xl ring-2 ring-[#1524AF] max-w-[420px] md:max-w-[480px] lg:max-w-[520px]">
           @php
+            // Logika Sederhana (Storage URL)
             $ceritaFilename = 'profil/cerita-kami.svg';
+            // Cek simple exists atau langsung URL
             $ceritaSrc = Storage::disk('public')->exists($ceritaFilename) 
                          ? Storage::url($ceritaFilename) 
                          : asset('images/cerita-kami.svg');
@@ -372,9 +575,9 @@ $latestBeritas = Berita::query()
           UPT Pengembangan Teknis <br class="hidden lg:block" /> Dan Keterampilan Kejuruan
         </h2>
 
-        {{-- Paragraf DINAMIS (Dari Model ProfilUPT) --}}
+        {{-- Paragraf --}}
         <p class="mb-[24px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
-          {!! nl2br(e($teksCerita)) !!}
+          Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi, UPT PTKK terus memperkuat posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata. Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada kemajuan pendidikan di Jawa Timur.
         </p>
 
         {{-- Button --}}
@@ -391,55 +594,34 @@ $latestBeritas = Berita::query()
 {{-- SECTION: Jatim Bangkit --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <style>
-    @keyframes jatim-scroll-x {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
+    @keyframes jatim-scroll-x { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   </style>
-
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="relative">
-
       <div class="relative bg-[#DBE7F7] rounded-full overflow-hidden h-[54px] md:h-[58px] lg:h-[62px] flex items-center">
-
         <div class="relative w-full overflow-hidden">
-
           <div class="jatim-marquee flex w-[200%] items-center animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
-            
-            {{-- Loop Pertama --}}
-            <div class="flex w-1/2 items-center justify-between px-6 md:px-10 lg:px-16 gap-4 md:gap-6 lg:gap-8">
-              @foreach(['cetar', 'dindik', 'jatim', 'berakhlak', 'optimis'] as $iconName)
-                @php
-                    $path = 'icons/' . $iconName . '.svg';
-                    $src = Illuminate\Support\Facades\Storage::disk('public')->exists($path) 
-                            ? Illuminate\Support\Facades\Storage::url($path) 
-                            : asset('images/icons/' . $iconName . '.svg');
+             {{-- icons sederhana --}}
+             @foreach(['cetar','dindik','jatim','berakhlak','optimis'] as $icon)
+                @php 
+                    $iconPath = 'icons/'.$icon.'.svg';
+                    $iconSrc = Storage::disk('public')->exists($iconPath) ? Storage::url($iconPath) : asset('images/icons/'.$icon.'.svg');
                 @endphp
-                <img src="{{ $src }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="{{ ucfirst($iconName) }}">
-              @endforeach
-            </div>
-
-            {{-- Loop Kedua (Duplikat) --}}
-            <div class="flex w-1/2 items-center justify-between px-6 md:px-10 lg:px-16 gap-4 md:gap-6 lg:gap-8" aria-hidden="true">
-              @foreach(['cetar', 'dindik', 'jatim', 'berakhlak', 'optimis'] as $iconName)
-                @php
-                    $path = 'icons/' . $iconName . '.svg';
-                    $src = Illuminate\Support\Facades\Storage::disk('public')->exists($path) 
-                            ? Illuminate\Support\Facades\Storage::url($path) 
-                            : asset('images/icons/' . $iconName . '.svg');
+                <img src="{{ $iconSrc }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0 mx-4" alt="{{ ucfirst($icon) }}">
+             @endforeach
+             
+             {{-- duplikat untuk marquee --}}
+             @foreach(['cetar','dindik','jatim','berakhlak','optimis'] as $icon)
+                @php 
+                    $iconPath = 'icons/'.$icon.'.svg';
+                    $iconSrc = Storage::disk('public')->exists($iconPath) ? Storage::url($iconPath) : asset('images/icons/'.$icon.'.svg');
                 @endphp
-                <img src="{{ $src }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
-              @endforeach
-            </div>
-
+                <img src="{{ $iconSrc }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0 mx-4" alt="">
+             @endforeach
           </div>
-
           <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]"></div>
-
         </div>
-
       </div>
-
     </div>
   </div>
 </section>
@@ -447,6 +629,7 @@ $latestBeritas = Berita::query()
 {{-- SECTION: Berita Terbaru (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
+    
     <div class="grid gap-y-2 mb-6">
       <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23] font-[Volkhov] font-bold text-[15px] md:text-[16px] rounded-md leading-none px-3 py-1 shadow-sm w-fit">Berita Terbaru</span>
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
@@ -457,8 +640,10 @@ $latestBeritas = Berita::query()
         </a>
       </div>
     </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       @if($latestBeritas->isEmpty())
+        {{-- fallback ketika belum ada berita --}}
         @for($i=1;$i<=3;$i++)
           <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
             <div class="w-full h-[160px] bg-[#E7ECF3] rounded-lg mb-4 flex items-center justify-center text-sm text-[#727272]">Belum ada berita</div>
@@ -474,21 +659,39 @@ $latestBeritas = Berita::query()
       @else
         @foreach($latestBeritas as $b)
           @php
+            // --- LOGIKA COPY PASTE DARI BERITA SHOW ---
+            // Cukup gunakan Storage::url jika ada image, fallback ke asset jika tidak
             $imgUrl = $b->image ? Storage::url($b->image) : asset('images/berita/placeholder.jpg');
+
             $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
+            
+            // Format tanggal meniru berita_show (menggunakan optional)
             $pubDate = optional($b->published_at ?? $b->created_at)->format('d F Y');
           @endphp
+
           <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
+            
+            {{-- MARKUP GAMBAR --}}
             <div class="w-full h-[160px] rounded-lg mb-4 overflow-hidden">
                <img src="{{ $imgUrl }}" alt="{{ $b->title }}" class="w-full h-full object-cover rounded-lg shadow-md" loading="lazy">
             </div>
+
             <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
               <span>{{ $pubDate }}</span>
             </div>
-            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">{{ $b->title }}</h3>
-            <p class="text-sm text-[#081526] mb-3 leading-relaxed">{!! e($excerpt) !!}</p>
-            <a href="{{ route('berita.show', $b->slug ?? $b->id) ?? '#' }}" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">Baca Selengkapnya →</a>
+
+            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">
+              {{ $b->title }}
+            </h3>
+
+            <p class="text-sm text-[#081526] mb-3 leading-relaxed">
+              {!! e($excerpt) !!}
+            </p>
+
+            <a href="{{ route('berita.show', $b->slug ?? $b->id) ?? '#' }}" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">
+              Baca Selengkapnya →
+            </a>
           </article>
         @endforeach
       @endif
