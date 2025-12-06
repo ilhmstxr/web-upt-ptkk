@@ -670,17 +670,12 @@ DONE - SYARAT INFORMAI JADWAL LOKASI GA KEUBAH NK DATABASE duh
 DONE - tambah peserta malah error tambah pelatihan
 
 
-
-
 - nav beranda e jek dashboard peserta
 - asrama blom di cek gaoonk data e
 - hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
 -  hasil tes survey lain e blom di cek gaonk data e
 - status e uda tak buka pendaftaran tapi nk user ga metu form pendaftaran e
 - export e kabeh grg isok
-
-
-
 
 
 
@@ -693,3 +688,7 @@ CHECK - instruktur iku gausa digae dropdown isok ga gae format text ae (gak)
 - status e uda tak buka pendaftaran tapi nk user ga metu form pendaftaran e
 - export e kabeh grg isok
 - asrama blom di cek gaoonk data e
+
+
+nambah data pretest, posttest, monev
+
