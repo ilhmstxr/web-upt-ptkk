@@ -145,17 +145,6 @@ Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 */
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
 
-<<<<<<< HEAD
-    // --- Rute Materi (Menggunakan MateriController) ---
-    // FIX: Menggunakan Route::resource untuk menghindari konflik dengan rute dashboard di bawah
-    Route::resource('materi', MateriController::class)->only(['index', 'show'])->names('materi');
-    Route::post('materi/{materi}/complete', [MateriController::class, 'complete'])->name('materi.complete');
-
-    // --- Rute Dashboard Lainnya (Menggunakan DashboardController) ---
-    // Note: Rute untuk '/materi' dan '/materi/{materi}' di DashboardController dihapus
-
-    Route::get('/', [DashboardController::class, 'home'])->name('home');
-=======
     // [PENTING] Arahkan home ke AssessmentAuthController agar logic overlay jalan
     // Atau jika Anda pakai DashboardController, pastikan logic overlay ada di sana.
     // Di sini saya arahkan ke AssessmentAuthController sesuai flow terakhir.
@@ -168,7 +157,6 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::post('materi/{materi}/complete', [MateriController::class, 'complete'])->name('materi.complete');
 
     // Profil & Progress
->>>>>>> bb957f848c51108415c7a5beee75061bfb673daf
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 
@@ -257,13 +245,7 @@ Route::get('/pelatihan/{kompetensi}', function ($kompetensi) {
 | Survey / Monev Public
 |--------------------------------------------------------------------------
 */
-<<<<<<< HEAD
-// Rute Resource Survey (Kecuali index, create, store, karena sudah ditangani secara manual)
 Route::resource('/survey', SurveyController::class)->except(['index', 'create', 'store']);
-
-=======
-Route::resource('/survey', SurveyController::class)->except(['index', 'create', 'store']);
->>>>>>> bb957f848c51108415c7a5beee75061bfb673daf
 Route::get('/survey', [SurveyController::class, 'index'])->name('survey.index');
 Route::get('/survey/create', [SurveyController::class, 'create'])->name('survey.create');
 Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
