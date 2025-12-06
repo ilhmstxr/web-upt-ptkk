@@ -107,16 +107,18 @@
                      text-[24px]
                      text-[#1524AF] yellow-stroke
                      mb-1 text-center">
-            Mobil Training Unit
+            {{ $mtu->judul }}
           </h2>
         </div>
 
         {{-- FOTO UTAMA --}}
         <div class="flex justify-center">
-          <img src="{{ asset('images/profil/MTU1.svg') }}"
-               alt="Mobil Training Unit Jawa Timur"
-               class="w-full max-w-[360px] h-auto"
+          @if($mtu->hero_image)
+          <img src="{{ asset('storage/' . $mtu->hero_image) }}"
+               alt="{{ $mtu->judul }}"
+               class="w-full h-[340px] object-cover border-2 border-[#1524AF] rounded-xl"
                loading="lazy">
+          @endif
         </div>
 
         {{-- TEKS --}}
@@ -125,10 +127,7 @@
                     text-[16px]
                     text-[#081526]
                     leading-relaxed text-justify">
-            Mobil Keliling UPT. PTKK Dinas Pendidikan Jawa Timur adalah sebuah program unggulan yang dirancang khusus
-            untuk menjangkau sekolah di pelosok-pelosok Jawa Timur. Mobil ini bukan sekadar kendaraan biasa, melainkan
-            sebuah bengkel pendidikan dan ruang kelas berjalan yang dilengkapi dengan peralatan modern. Di dalamnya,
-            para instruktur profesional siap memberikan pelatihan keterampilan di seluruh Jawa Timur.
+            {{ $mtu->deskripsi }}
           </p>
         </div>
 
@@ -136,18 +135,12 @@
 
       {{-- 3 FOTO BAWAH (HP) --}}
       <div class="grid grid-cols-1 gap-6">
-        <img src="{{ asset('images/profil/MTU2.svg') }}"
-             alt="Kegiatan Pelatihan Lapangan"
-             class="w-full h-auto"
+        @foreach(json_decode($mtu->galeri ?? '[]') as $foto)
+        <img src="{{ asset('storage/' . $foto) }}"
+             alt="Foto {{ $mtu->judul }}"
+             class="w-full h-64 object-cover border-2 border-[#1524AF] rounded-xl"
              loading="lazy">
-        <img src="{{ asset('images/profil/MTU3.svg') }}"
-             alt="Peserta Pelatihan di Sekolah"
-             class="w-full h-auto"
-             loading="lazy">
-        <img src="{{ asset('images/profil/MTU4.svg') }}"
-             alt="Instruktur dan Peserta Pelatihan"
-             class="w-full h-auto"
-             loading="lazy">
+        @endforeach
       </div>
     </div>
 
@@ -163,46 +156,37 @@
                      text-[22px] md:text-[22px] lg:text-[26px]
                      text-[#1524AF] yellow-stroke
                      mb-3 text-left">
-            Mobil Training Unit
+            {{ $mtu->judul }}
           </h2>
 
           <p class="font-[Montserrat]
                     text-[15px] md:text-[15px] lg:text-[17px]
                     text-[#081526]
                     leading-relaxed text-justify">
-            Mobil Keliling UPT. PTKK Dinas Pendidikan Jawa Timur adalah sebuah program unggulan yang dirancang khusus
-            untuk menjangkau sekolah di pelosok-pelosok Jawa Timur. Mobil ini bukan sekadar kendaraan biasa, melainkan
-            sebuah bengkel pendidikan dan ruang kelas berjalan yang dilengkapi dengan peralatan modern. Di dalamnya,
-            para instruktur profesional siap memberikan pelatihan keterampilan di seluruh Jawa Timur.
+            {{ $mtu->deskripsi }}
           </p>
         </div>
 
         {{-- KANAN: Foto Utama --}}
         <div class="flex justify-center md:justify-end">
-          <img src="{{ asset('images/profil/MTU1.svg') }}"
-               alt="Mobil Training Unit Jawa Timur"
-               class="w-full max-w-[400px] lg:max-w-[520px] h-auto"
+          @if($mtu->hero_image)
+          <img src="{{ asset('storage/' . $mtu->hero_image) }}"
+               alt="{{ $mtu->judul }}"
+               class="w-full h-[340px] object-cover border-2 border-[#1524AF] rounded-xl"
                loading="lazy">
+          @endif
         </div>
 
       </div>
 
       {{-- 3 FOTO BAWAH (MD+) --}}
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-6 lg:gap-8">
-        <img src="{{ asset('images/profil/MTU2.svg') }}"
-             alt="Kegiatan Pelatihan Lapangan"
-             class="w-full h-auto"
+        @foreach(json_decode($mtu->galeri ?? '[]') as $foto)
+        <img src="{{ asset('storage/' . $foto) }}"
+             alt="Foto {{ $mtu->judul }}"
+             class="w-full h-64 object-cover border-2 border-[#1524AF] rounded-xl"
              loading="lazy">
-
-        <img src="{{ asset('images/profil/MTU3.svg') }}"
-             alt="Peserta Pelatihan di Sekolah"
-             class="w-full h-auto"
-             loading="lazy">
-
-        <img src="{{ asset('images/profil/MTU4.svg') }}"
-             alt="Instruktur dan Peserta Pelatihan"
-             class="w-full h-auto"
-             loading="lazy">
+        @endforeach
       </div>
     </div>
 
@@ -226,7 +210,7 @@
       <div class="flex justify-center mb-3">
         <img src="{{ asset('storage/' . $program->hero_image) }}"
                alt="{{ $program->judul }} - UPT PTKK"
-               class="w-full max-w-[360px] h-auto"
+               class="w-full h-[340px] object-cover border-2 border-[#1524AF] rounded-xl"
                loading="lazy">
       @endif
       </div>
@@ -246,7 +230,7 @@
         @if($program->hero_image)
           <img src="{{ asset('storage/' . $program->hero_image) }}"
                alt="{{ $program->judul }} - UPT PTKK"
-               class="w-full max-w-[440px] lg:max-w-[720px] h-auto"
+               class="w-full h-[340px] object-cover border-2 border-[#1524AF] rounded-xl"
                loading="lazy">
         @endif
       </div>
@@ -273,7 +257,7 @@
       @foreach(json_decode($program->galeri ?? '[]') as $foto)
         <img src="{{ asset('storage/' . $foto) }}"
              alt="Foto {{ $program->judul }}"
-             class="w-full h-auto"
+             class="w-full h-64 object-cover border-2 border-[#1524AF] rounded-xl"
              loading="lazy">
       @endforeach
     </div>
@@ -297,7 +281,7 @@
         @if($sertifikasi->hero_image)
           <img src="{{ asset('storage/' . $sertifikasi->hero_image) }}"
                alt="{{ $sertifikasi->judul }}"
-               class="w-full max-w-[340px] h-auto object-contain"
+               class="w-full h-[340px] object-cover border-2 border-[#1524AF] rounded-xl"
                loading="lazy">
         @endif
       </div>
@@ -350,7 +334,7 @@
         @if($sertifikasi->hero_image)
           <img src="{{ asset('storage/' . $sertifikasi->hero_image) }}"
                alt="{{ $sertifikasi->judul }}"
-               class="w-full max-w-[520px] md:max-w-[640px] md:h-[340px] lg:max-w-[520px] lg:h-auto object-contain"
+               class="w-full h-[340px] object-cover border-2 border-[#1524AF] rounded-xl"
                loading="lazy">
         @endif
       </div>
@@ -360,7 +344,7 @@
       @foreach(json_decode($sertifikasi->galeri ?? '[]') as $foto)
         <img src="{{ asset('storage/' . $foto) }}"
              alt="Foto {{ $sertifikasi->judul }}"
-             class="w-full h-auto"
+             class="w-full h-64 object-cover border-2 border-[#1524AF] rounded-xl"
              loading="lazy">
       @endforeach
     </div>
