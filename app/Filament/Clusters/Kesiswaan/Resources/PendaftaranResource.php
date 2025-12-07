@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PendaftaranResource extends Resource
 {
+    
     protected static ?string $model = PendaftaranPelatihan::class;
     protected static ?string $cluster = Kesiswaan::class;
 
