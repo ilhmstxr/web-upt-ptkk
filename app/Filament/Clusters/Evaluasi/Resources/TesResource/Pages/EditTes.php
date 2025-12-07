@@ -23,6 +23,23 @@ class EditTes extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('save')
+                ->label('Save changes')
+                ->action('save'),
+            Actions\ReplicateAction::make()
+                ->label('Duplicate')
+                ->beforeReplicaSaved(function (\Illuminate\Database\Eloquent\Model $replica) {
+                    $replica->judul = $replica->judul . ' - Copy';
+                })
+                ->after(function (\Illuminate\Database\Eloquent\Model $replica, \Illuminate\Database\Eloquent\Model $record) {
+                    // Deep copy relationships (Pertanyaan)
+                    foreach ($record->pertanyaan as $pertanyaan) {
+                        $newPertanyaan = $pertanyaan->replicate();
+                        $newPertanyaan->tes_id = $replica->id;
+                        $newPertanyaan->save();
+                    }
+                })
+                ->successNotificationTitle('Tes berhasil diduplikasi'),
             Actions\DeleteAction::make(),
         ];
     }

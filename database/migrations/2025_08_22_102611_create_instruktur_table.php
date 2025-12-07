@@ -30,15 +30,7 @@ return new class extends Migration
             $table->date('tgl_lahir');
             $table->string('jenis_kelamin');
             $table->string('agama');
-            $table->text('alamat_rumah');
             $table->string('no_hp');
-            $table->string('instansi');
-            $table->string('npwp');
-            $table->string('nik');
-            $table->string('nama_bank');
-            $table->string('no_rekening');
-            $table->string('pendidikan_terakhir');
-            $table->text('pengalaman_kerja')->nullable();
             $table->timestamps();
         });
     }

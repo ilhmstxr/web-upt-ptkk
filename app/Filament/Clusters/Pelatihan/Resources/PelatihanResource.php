@@ -29,107 +29,116 @@ class PelatihanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Wizard::make([
-                    Forms\Components\Wizard\Step::make('Informasi Dasar')
-                        ->schema([
-                            Forms\Components\Section::make('Detail Pelatihan')
-                                ->description('Informasi utama mengenai pelatihan')
-                                ->schema([
-                                    Forms\Components\Grid::make(2)
-                                        ->schema([
-                                            Forms\Components\TextInput::make('nama_pelatihan')
-                                                ->required()
-                                                ->maxLength(255)
-                                                ->columnSpanFull(),
-                                            
-                                            Forms\Components\Select::make('jenis_program')
-                                                ->options([
-                                                    'reguler' => 'Reguler',
-                                                    'mtu' => 'MTU',
-                                                    'akselerasi' => 'Akselerasi',
-                                                ])
-                                                ->required(),
+                Forms\Components\Wizard::make(self::getWizardSteps())
+                    ->columnSpanFull(),
+            ]);
+    }
 
-                                            Forms\Components\Select::make('status')
-                                                ->options([
-                                                    'belum dimulai' => 'Belum Dimulai',
-                                                    'aktif' => 'Aktif',
-                                                    'selesai' => 'Selesai',
-                                                ])
-                                                ->required()
-                                                ->default('belum dimulai'),
-                                            
-                                            Forms\Components\TextInput::make('angkatan')
-                                                ->label('Angkatan')
-                                                ->numeric()
-                                                ->default(1)
-                                                ->required(),
-                                            
-                                            Forms\Components\DatePicker::make('tanggal_mulai')
-                                                ->required(),
-                                            
-                                            Forms\Components\DatePicker::make('tanggal_selesai')
-                                                ->required(),
-                                        ]),
+    public static function getWizardSteps(): array
+    {
+        return [
+            Forms\Components\Wizard\Step::make('Informasi Dasar')
+                ->schema([
+                    Forms\Components\Section::make('Detail Pelatihan')
+                        ->description('Informasi utama mengenai pelatihan')
+                        ->schema([
+                            Forms\Components\Grid::make(2)
+                                ->schema([
+                                    Forms\Components\TextInput::make('nama_pelatihan')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->columnSpanFull(),
+                                    
+                                    Forms\Components\Select::make('jenis_program')
+                                        ->options([
+                                            'reguler' => 'Reguler',
+                                            'mtu' => 'MTU',
+                                            'akselerasi' => 'Akselerasi',
+                                        ])
+                                        ->required(),
+
+                                    Forms\Components\Select::make('status')
+                                        ->options([
+                                            'belum dimulai' => 'Belum Dimulai',
+                                            'aktif' => 'Aktif',
+                                            'selesai' => 'Selesai',
+                                        ])
+                                        ->required()
+                                        ->default('belum dimulai'),
+                                    
+                                    Forms\Components\TextInput::make('angkatan')
+                                        ->label('Angkatan')
+                                        ->numeric()
+                                        ->default(1)
+                                        ->required(),
+                                    
+                                    Forms\Components\DatePicker::make('tanggal_mulai')
+                                        ->required(),
+                                    
+                                    Forms\Components\DatePicker::make('tanggal_selesai')
+                                        ->required(),
                                 ]),
                         ]),
-                    Forms\Components\Wizard\Step::make('Kurikulum & Jadwal')
+                ]),
+            Forms\Components\Wizard\Step::make('Kurikulum & Jadwal')
+                ->schema([
+                    Forms\Components\Section::make('Materi & Jadwal')
+                        ->description('Atur kurikulum dan jadwal pelatihan')
                         ->schema([
-                            Forms\Components\Section::make('Materi & Jadwal')
-                                ->description('Atur kurikulum dan jadwal pelatihan')
+                            Forms\Components\Repeater::make('kompetensi_items')
+                                ->label('Jadwal Kompetensi')
                                 ->schema([
-                                    Forms\Components\Repeater::make('kompetensiPelatihan')
-                                        ->relationship()
-                                        ->schema([
+                                    Forms\Components\Select::make('kompetensi_id')
+                                        ->relationship('kompetensi', 'nama_kompetensi') // This works for options, but we manage saving manually
+                                        ->required()
+                                        ->label('Materi / Kompetensi')
+                                        ->columnSpan(2),
+                                    
+                                    Forms\Components\Select::make('instruktur_id')
+                                        ->label('Nama Instruktur')
+                                        ->options(\App\Models\Instruktur::pluck('nama', 'id'))
+                                        ->searchable()
+                                        ->preload()
+                                        ->multiple() // Allow multiple selection
+                                        ->required()
+                                        ->createOptionForm([
+                                            Forms\Components\TextInput::make('nama')
+                                                ->required()
+                                                ->maxLength(255),
                                             Forms\Components\Select::make('kompetensi_id')
                                                 ->relationship('kompetensi', 'nama_kompetensi')
-                                                ->required()
-                                                ->label('Materi / Kompetensi')
-                                                ->columnSpan(2),
-                                            
-                                            Forms\Components\Select::make('instruktur_id')
-                                                ->label('Nama Instruktur')
-                                                ->relationship('instruktur', 'nama')
-                                                ->searchable()
-                                                ->preload()
-                                                ->required()
-                                                ->createOptionForm([
-                                                    Forms\Components\TextInput::make('nama')
-                                                        ->required()
-                                                        ->maxLength(255),
-                                                    Forms\Components\Select::make('kompetensi_id')
-                                                        ->relationship('kompetensi', 'nama_kompetensi')
-                                                        ->required(),
-                                                ]),
-                                            
-                                            Forms\Components\TextInput::make('lokasi')
-                                                ->label('Lokasi / Ruangan')
-                                                ->default('UPT-PTKK'),
+                                                ->required(),
                                         ])
-                                        ->columns(2)
-                                        ->defaultItems(1)
-                                        ->addActionLabel('Tambah Sesi')
-                                        ->itemLabel(fn (array $state): ?string => $state['kompetensi_id'] ?? null),
-                                ]),
+                                        ->createOptionUsing(function (array $data) {
+                                            return \App\Models\Instruktur::create($data)->id;
+                                        }),
+                                    
+                                    Forms\Components\TextInput::make('lokasi')
+                                        ->label('Lokasi / Ruangan')
+                                        ->default('UPT-PTKK'),
+                                ])
+                                ->columns(2)
+                                ->defaultItems(1)
+                                ->addActionLabel('Tambah Sesi')
+                                ->itemLabel(fn (array $state): ?string => \App\Models\Kompetensi::find($state['kompetensi_id'] ?? null)?->nama_kompetensi),
                         ]),
-                         // ======================== STEP 3: KONTEN HALAMAN PENDAFTARAN ========================
-                Forms\Components\Wizard\Step::make('Konten Halaman Pendaftaran')
-                    ->description('Teks yang akan tampil di accordion halaman daftar pelatihan')
-                    ->schema([
-                        Forms\Components\RichEditor::make('syarat_ketentuan')
-                            ->label('Syarat & Ketentuan Peserta')
-                            ->columnSpanFull(),
+                ]),
+            Forms\Components\Wizard\Step::make('Konten Halaman Pendaftaran')
+                ->description('Teks yang akan tampil di accordion halaman daftar pelatihan')
+                ->schema([
+                    Forms\Components\RichEditor::make('syarat_ketentuan')
+                        ->label('Syarat & Ketentuan Peserta')
+                        ->columnSpanFull(),
 
-                        Forms\Components\RichEditor::make('jadwal_text')
-                            ->label('Informasi Jadwal (untuk accordion)')
-                            ->columnSpanFull(),
+                    Forms\Components\RichEditor::make('jadwal_text')
+                        ->label('Informasi Jadwal (untuk accordion)')
+                        ->columnSpanFull(),
 
-                        Forms\Components\RichEditor::make('lokasi_text')
-                            ->label('Lokasi Pelaksanaan (untuk accordion)')
-                            ->columnSpanFull(),
-                    ]),
-                ])->columnSpanFull(),
-            ]);
+                    Forms\Components\RichEditor::make('lokasi_text')
+                        ->label('Lokasi Pelaksanaan (untuk accordion)')
+                        ->columnSpanFull(),
+                ]),
+        ];
     }
 
     public static function table(Table $table): Table

@@ -21,6 +21,8 @@ return new class extends Migration
             $table->foreignId('kompetensi_id')->nullable()->constrained('kompetensi')->onDelete('cascade');
             $table->foreignId('pelatihan_id')->constrained('pelatihan')->onDelete('cascade');
             $table->integer('durasi_menit')->nullable();
+            $table->timestamp('tanggal_mulai')->nullable();
+            $table->timestamp('tanggal_selesai')->nullable();
             $table->timestamps();
         });
     }

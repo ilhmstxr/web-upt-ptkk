@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
-class Lampiran extends Model
+class LampiranPeserta extends Model
 {
     use HasFactory;
     
-    protected $table = 'lampiran';
+    protected $table = 'lampiran_peserta';
 
     protected $fillable = [
         'peserta_id',

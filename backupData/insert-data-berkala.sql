@@ -9948,10 +9948,10 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (10167, NULL, 203, 480, NULL, 'sehat selalu kakak kakak', '2025-09-26 01:25:19', '2025-09-26 01:25:19');
 
 --
--- Dumping data for table `lampiran`
+-- Dumping data for table `lampiran_peserta`
 --
 
-INSERT INTO `lampiran` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijazah`, `fc_surat_tugas`, `fc_surat_sehat`, `pas_foto`, `created_at`, `updated_at`) VALUES
+INSERT INTO `lampiran_peserta` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijazah`, `fc_surat_tugas`, `fc_surat_sehat`, `pas_foto`, `created_at`, `updated_at`) VALUES
 (1, 1, NULL, 'berkas_pendaftaran/DLiOhW7qkRRVbZwHfETKUC8bKKnlmBF633kBuOgW.jpg', 'berkas_pendaftaran/Uqav8U7DdXePLsRivxC2IgTNb0nj5KmOh9lVUbSg.jpg', NULL, 'berkas_pendaftaran/LBXViL1dZLM0TsWPJuqWW8ZJLTvrNGk4IPwxAoPM.jpg', 'berkas_pendaftaran/ip61RuFJWUBjEKh7uaL8dm4eutKk1NcJrylpYEYn.jpg', '2025-08-20 02:28:17', '2025-08-20 02:28:17'),
 (2, 2, NULL, 'berkas_pendaftaran/R24rYR0U23bEm6bGsHpa35B7ZbKg8HqT8LJd3oZa.jpg', 'berkas_pendaftaran/4az0mbQTUVIKdi9BhXR1LBuzQsoz36USW7Xlyktq.jpg', 'berkas_pendaftaran/88ToPmJkkpgTDlKMXDMSJdah1xKKP52ig3Gqr0wd.jpg', 'berkas_pendaftaran/m0YRJC5rgeAeCLnvvgWh1sFu9a80AqNWdHYfixFJ.jpg', 'berkas_pendaftaran/oN7XlcbWUsW9t7QffHcQRXB2I4PsSqwKmNqlLOs2.jpg', '2025-08-20 03:06:36', '2025-08-20 03:06:36'),
 (3, 3, NULL, 'berkas_pendaftaran/DsiVteYESVXEpTSifNDDB4hhum5UAvxqe9A4ctWm.jpg', 'berkas_pendaftaran/wQ2I4soU1zhT4Hq9lipydpWacwwGLwQMYOf2fwXp.jpg', 'berkas_pendaftaran/gSgFkVkXx33Bms4aTsgASBxrEVpjMWbTcDjbaywA.jpg', 'berkas_pendaftaran/uRCGhWQfZ8XxDSnUZi84nGj4tM6BcCjJkuUdC3cA.jpg', 'berkas_pendaftaran/udpmuXJdXckaDa2AbBFauTAi81PpwGjCp4eIsmDa.jpg', '2025-08-20 04:23:32', '2025-08-20 04:23:32'),
@@ -10122,7 +10122,7 @@ INSERT INTO `lampiran` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijaz
 (172, 184, NULL, 'berkas_pendaftaran/184_4_137_fc_ktp.jpg', 'berkas_pendaftaran/184_4_137_fc_ijazah.jpg', 'berkas_pendaftaran/184_4_137_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/184_4_137_pas_foto.jpg', '2025-09-15 06:57:42', '2025-09-15 06:57:42'),
 (173, 185, NULL, 'berkas_pendaftaran/185_8_138_fc_ktp.jpg', 'berkas_pendaftaran/185_8_138_fc_ijazah.jpg', 'berkas_pendaftaran/185_8_138_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/185_8_138_pas_foto.jpg', '2025-09-15 07:09:26', '2025-09-15 07:09:26'),
 (174, 186, NULL, 'berkas_pendaftaran/186_4_139_fc_ktp.jpg', 'berkas_pendaftaran/186_4_139_fc_ijazah.jpg', 'berkas_pendaftaran/186_4_139_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/186_4_139_pas_foto.jpg', '2025-09-15 15:51:53', '2025-09-15 15:51:53');
-INSERT INTO `lampiran` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijazah`, `fc_surat_tugas`, `fc_surat_sehat`, `pas_foto`, `created_at`, `updated_at`) VALUES
+INSERT INTO `lampiran_peserta` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijazah`, `fc_surat_tugas`, `fc_surat_sehat`, `pas_foto`, `created_at`, `updated_at`) VALUES
 (175, 187, NULL, 'berkas_pendaftaran/187_9_140_fc_ktp.jpg', 'berkas_pendaftaran/187_9_140_fc_ijazah.jpg', 'berkas_pendaftaran/187_9_140_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/187_9_140_pas_foto.jpg', '2025-09-15 17:18:52', '2025-09-15 17:18:52'),
 (176, 188, NULL, 'berkas_pendaftaran/188_4_70_fc_ktp.jpg', 'berkas_pendaftaran/188_4_70_fc_ijazah.jpg', NULL, NULL, 'berkas_pendaftaran/188_4_70_pas_foto.jpg', '2025-09-15 18:11:09', '2025-09-15 18:11:09'),
 (177, 189, NULL, 'berkas_pendaftaran/189_9_141_fc_ktp.jpg', 'berkas_pendaftaran/189_9_141_fc_ijazah.jpg', 'berkas_pendaftaran/189_9_141_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/189_9_141_pas_foto.jpg', '2025-09-15 19:04:46', '2025-09-15 19:04:46'),
@@ -12592,32 +12592,32 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 (1027, 'Fajar Alfian', 'fajar.alfian@uptptkk.com', NULL, '$2y$12$NNPg0AvTL1q1eAqMFZxfseAb5RNH4VMYt4wjngx4RgOgIhEyS/kdm', NULL, '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
 (1028, 'Rian Ardianto', 'rian.ardianto@uptptkk.com', NULL, '$2y$12$NNPg0AvTL1q1eAqMFZxfseAb5RNH4VMYt4wjngx4RgOgIhEyS/kdm', NULL, '2025-09-24 00:00:00', '2025-09-24 00:00:00');
 
-INSERT INTO `instruktur` (`kompetensi_id`, `user_id`, `nama`, `tempat_lahir`, `tgl_lahir`, `jenis_kelamin`, `agama`, `alamat_rumah`, `no_hp`, `instansi`, `npwp`, `nik`, `nama_bank`, `no_rekening`, `pendidikan_terakhir`, `pengalaman_kerja`, `created_at`, `updated_at`) VALUES
-(1, 1001, 'Budi Santoso, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 1', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(1, 1002, 'Siti Aminah, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 2', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(2, 1003, 'Rudi Hartono, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 3', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(2, 1004, 'Dewi Sartika, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 4', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(3, 1005, 'Agus Salim, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 5', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(3, 1006, 'Rina Wati, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 6', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(4, 1007, 'Eko Prasetyo, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 7', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(4, 1008, 'Sri Wahyuni, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 8', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(5, 1009, 'Joko Widodo, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 9', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(5, 1010, 'Megawati Putri, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 10', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(6, 1011, 'Susilo Bambang, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 11', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(6, 1012, 'Ani Yudhoyono, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 12', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(7, 1013, 'Bambang Pamungkas, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 13', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(7, 1014, 'Taufik Hidayat, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 14', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(8, 1015, 'Susi Susanti, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 15', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(8, 1016, 'Alan Budikusuma, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 16', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(9, 1017, 'Liliyana Natsir, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 17', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(9, 1018, 'Tontowi Ahmad, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 18', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(10, 1019, 'Greysia Polii, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 19', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(10, 1020, 'Apriyani Rahayu, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 20', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(11, 1021, 'Kevin Sanjaya, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 21', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(11, 1022, 'Marcus Gideon, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 22', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(12, 1023, 'Hendra Setiawan, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 23', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(12, 1024, 'Mohammad Ahsan, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 24', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(13, 1025, 'Anthony Ginting, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 25', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(13, 1026, 'Jonatan Christie, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 26', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(14, 1027, 'Fajar Alfian, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 27', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(14, 1028, 'Rian Ardianto, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 28', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00');
+INSERT INTO `instruktur` (`kompetensi_id`, `user_id`, `nama`, `tempat_lahir`, `tgl_lahir`, `jenis_kelamin`, `agama`, `no_hp`, `created_at`, `updated_at`) VALUES
+(1, 1001, 'Budi Santoso, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(1, 1002, 'Siti Aminah, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(2, 1003, 'Rudi Hartono, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(2, 1004, 'Dewi Sartika, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(3, 1005, 'Agus Salim, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(3, 1006, 'Rina Wati, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(4, 1007, 'Eko Prasetyo, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(4, 1008, 'Sri Wahyuni, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(5, 1009, 'Joko Widodo, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(5, 1010, 'Megawati Putri, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(6, 1011, 'Susilo Bambang, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(6, 1012, 'Ani Yudhoyono, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(7, 1013, 'Bambang Pamungkas, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(7, 1014, 'Taufik Hidayat, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(8, 1015, 'Susi Susanti, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(8, 1016, 'Alan Budikusuma, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(9, 1017, 'Liliyana Natsir, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(9, 1018, 'Tontowi Ahmad, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(10, 1019, 'Greysia Polii, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(10, 1020, 'Apriyani Rahayu, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(11, 1021, 'Kevin Sanjaya, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(11, 1022, 'Marcus Gideon, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(12, 1023, 'Hendra Setiawan, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(12, 1024, 'Mohammad Ahsan, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(13, 1025, 'Anthony Ginting, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(13, 1026, 'Jonatan Christie, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(14, 1027, 'Fajar Alfian, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(14, 1028, 'Rian Ardianto, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00');

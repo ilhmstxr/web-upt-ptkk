@@ -44,18 +44,15 @@ class PesertaPelatihanTable extends BaseWidget
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Pending' => 'gray',
-                        'Verifikasi' => 'warning',
+                        'Pending' => 'warning',
                         'Diterima' => 'success',
                         'Ditolak' => 'danger',
-                        'Menunggu Seleksi' => 'warning',
-                        default => 'gray',
+                        default => 'warning',
                     }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'Menunggu' => 'Menunggu',
                         'Diterima' => 'Diterima',
                         'Ditolak' => 'Ditolak',
                         'Cadangan' => 'Cadangan',
@@ -77,7 +74,31 @@ class PesertaPelatihanTable extends BaseWidget
             ])
             ->headerActions([])
             ->actions([
-                Tables\Actions\EditAction::make()->slideOver(),
+                Tables\Actions\EditAction::make()
+                    ->slideOver()
+                    ->form([
+                        Forms\Components\Select::make('status_pendaftaran')
+                            ->label('Status Pendaftaran')
+                            ->options([
+                                'Pending' => 'Pending',
+                                'Diterima' => 'Diterima',
+                                'Ditolak' => 'Ditolak',
+                                'Cadangan' => 'Cadangan',
+                            ])
+                            ->required()
+                            ->native(false),
+                        Forms\Components\Select::make('kompetensi_pelatihan_id')
+                            ->label('Kompetensi')
+                            ->options(function () {
+                                return \App\Models\KompetensiPelatihan::with('kompetensi')
+                                    ->where('pelatihan_id', $this->record->id)
+                                    ->get()
+                                    ->mapWithKeys(fn ($item) => [$item->id => $item->kompetensi->nama_kompetensi ?? 'Unknown']);
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                    ]),
                 Tables\Actions\DeleteAction::make(),
             ]);
     }

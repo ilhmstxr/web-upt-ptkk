@@ -19,6 +19,8 @@ class Tes extends Model
         'kompetensi_id',
         'pelatihan_id',
         'durasi_menit',
+        'tanggal_mulai',
+        'tanggal_selesai',
     ];
 
     // Relasi ke Kompetensi

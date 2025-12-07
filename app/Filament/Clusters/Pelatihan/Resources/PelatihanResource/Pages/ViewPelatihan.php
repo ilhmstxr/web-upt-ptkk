@@ -20,7 +20,7 @@ class ViewPelatihan extends ViewRecord
     {
         return [
             \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('index') => 'Manajemen Pelatihan',
-            '#' => $this->record->nama_pelatihan,
+            '#' => \Illuminate\Support\Str::limit($this->record->nama_pelatihan, 40),
         ];
     }
 
@@ -76,7 +76,7 @@ class ViewPelatihan extends ViewRecord
     public function addInstructorAction(): \Filament\Actions\Action
     {
         return \Filament\Actions\Action::make('addInstructor')
-            ->label('Tambah Bidang')
+            ->label('Tambah Instruktur')
             ->icon('heroicon-o-plus')
             ->color('primary')
             ->form([

@@ -45,7 +45,7 @@ class Peserta extends Model
 
     public function lampiran(): HasOne
     {
-        return $this->hasOne(Lampiran::class);
+        return $this->hasOne(LampiranPeserta::class);
     }
 
     // 🔗 Relasi ke Instansi

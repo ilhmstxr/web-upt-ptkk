@@ -55,6 +55,13 @@ class TesResource extends Resource
                                             ->numeric()
                                             ->label('Durasi (Menit)')
                                             ->required(),
+                                        Forms\Components\DateTimePicker::make('tanggal_mulai')
+                                            ->label('Tanggal Mulai')
+                                            ->required(),
+                                        Forms\Components\DateTimePicker::make('tanggal_selesai')
+                                            ->label('Tanggal Selesai')
+                                            ->required()
+                                            ->after('tanggal_mulai'),
                                     ]),
                                 
                                 Forms\Components\View::make('filament.clusters.evaluasi.resources.tes-resource.partials.tips-card'),
