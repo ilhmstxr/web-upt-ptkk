@@ -6,89 +6,157 @@ use App\Filament\Clusters\Fasilitas;
 use App\Filament\Clusters\Fasilitas\Resources\AsramaResource\Pages;
 use App\Filament\Clusters\Fasilitas\Resources\AsramaResource\RelationManagers;
 use App\Models\Asrama;
+
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-// App\Filament\Clusters\Fasilitas\Resources\AsramaResource.php
+// Layout columns (buat card)
+use Filament\Tables\Columns\Layout\Grid as ColumnGrid;
+use Filament\Tables\Columns\Layout\Stack;
+
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BadgeColumn;
 
 class AsramaResource extends Resource
 {
     protected static ?string $model = Asrama::class;
-
     protected static ?string $cluster = Fasilitas::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-home-modern';
+    protected static ?string $navigationIcon  = 'heroicon-o-home-modern';
+    protected static ?string $navigationLabel = 'Asrama';
+    protected static ?string $modelLabel      = 'Asrama';
+    protected static ?string $pluralModelLabel = 'Asrama';
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Informasi Asrama')
-                    ->schema([
-                        Forms\Components\Grid::make(2)
-                            ->schema([
-                                Forms\Components\TextInput::make('nama') // <-- ganti name -> nama
-                                    ->label('Nama Asrama')
-                                    ->required()
-                                    ->maxLength(255),
+        return $form->schema([
+            Forms\Components\Section::make('Informasi Asrama')
+                ->schema([
+                    Forms\Components\Grid::make(2)->schema([
+                        Forms\Components\TextInput::make('nama')
+                            ->label('Nama Asrama')
+                            ->required()
+                            ->maxLength(255),
 
-                                Forms\Components\Select::make('gender')
-                                    ->label('Khusus')
-                                    ->options([
-                                        'Laki-laki' => 'Laki-laki',
-                                        'Perempuan' => 'Perempuan',
-                                        'Campur'    => 'Campur',
-                                    ])
-                                    ->required(),
-                            ]),
-                        Forms\Components\Textarea::make('alamat')
-                            ->label('Alamat / Keterangan Tambahan')
-                            ->rows(3)
-                            ->columnSpanFull(),
+                        Forms\Components\Select::make('gender')
+                            ->label('Khusus')
+                            ->options([
+                                'Laki-laki' => 'Laki-laki',
+                                'Perempuan' => 'Perempuan',
+                                'Campur'    => 'Campur',
+                            ])
+                            ->required(),
                     ]),
-            ]);
+
+                    Forms\Components\Textarea::make('alamat')
+                        ->label('Alamat / Keterangan Tambahan')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->heading('Fasilitas Asrama')
-            ->description('Ringkasan kapasitas dan status fasilitas setiap asrama berdasarkan jumlah kamar dan bed.')
+            ->description('Ringkasan kapasitas, kondisi kamar, dan informasi bed tiap asrama berdasarkan config kamar.php.')
+            
+            // 🟦 Card grid biar lega
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
+            ])
+
             ->columns([
-                Tables\Columns\TextColumn::make('nama')
-                    ->label('Nama Asrama')
-                    ->searchable()
-                    ->sortable(),
+                Stack::make([
+                    // atas: nama + badge gender
+                    ColumnGrid::make(12)->schema([
+                        TextColumn::make('nama')
+                            ->label('')
+                            ->size(TextColumn\TextColumnSize::Large)
+                            ->weight('bold')
+                            ->searchable()
+                            ->sortable()
+                            ->columnSpan(8),
 
-                Tables\Columns\TextColumn::make('gender')
-                    ->label('Khusus')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Laki-laki' => 'info',
-                        'Perempuan' => 'danger',
-                        'Campur'    => 'warning',
-                        default     => 'gray',
-                    }),
+                        BadgeColumn::make('gender')
+                            ->label('')
+                            ->columnSpan(4)
+                            ->colors([
+                                'info'    => 'Laki-laki',
+                                'danger'  => 'Perempuan',
+                                'warning' => 'Campur',
+                            ])
+                            ->alignEnd(),
+                    ]),
 
-                Tables\Columns\TextColumn::make('kamars_count')
-                    ->counts('kamars')
-                    ->label('Jumlah Kamar')
-                    ->alignCenter(),
+                    // tengah: ringkasan angka
+                    ColumnGrid::make(3)->schema([
+                        BadgeColumn::make('kamars_count')
+                            ->counts('kamars')
+                            ->label('Jumlah Kamar (DB)')
+                            ->color('gray')
+                            ->icon('heroicon-o-building-office-2')
+                            ->alignCenter(),
 
-                Tables\Columns\TextColumn::make('deskripsi_fasilitas')
-                    ->label('Deskripsi Fasilitas')
-                    ->wrap()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                        BadgeColumn::make('total_bed_config')
+                            ->label('Total Bed (Config)')
+                            ->color('success')
+                            ->icon('heroicon-o-user-group')
+                            ->alignCenter(),
+
+                        BadgeColumn::make('kamar_rusak_config')
+                            ->label('Kamar Rusak (Config)')
+                            ->color(fn ($state) => (int) $state > 0 ? 'danger' : 'gray')
+                            ->icon('heroicon-o-exclamation-triangle')
+                            ->alignCenter(),
+                    ]),
+
+                    // bawah: deskripsi panjang
+                    TextColumn::make('deskripsi_fasilitas')
+                        ->label('')
+                        ->wrap()
+                        ->color('gray')
+                        ->extraAttributes([
+                            'class' => 'text-sm leading-relaxed mt-1',
+                        ]),
+
+                    // keterangan tambahan
+                    TextColumn::make('alamat')
+                        ->label('')
+                        ->wrap()
+                        ->toggleable(isToggledHiddenByDefault: true)
+                        ->color('gray')
+                        ->extraAttributes([
+                            'class' => 'text-xs mt-1',
+                        ]),
+                ])
+                ->space(2)
+                ->extraAttributes([
+                    // style card
+                    'class' => 'p-5 bg-white rounded-2xl shadow-sm ring-1 ring-gray-200',
+                ]),
             ])
+
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary')
+                    ->button(),
+
+                Tables\Actions\DeleteAction::make()
+                    ->label('Hapus')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->button(),
             ])
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -106,10 +174,9 @@ class AsramaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => Pages\ListAsramas::route('/'),
-            'create'  => Pages\CreateAsrama::route('/create'),
-            'edit'    => Pages\EditAsrama::route('/{record}/edit'),
-            // NANTI: halaman otomasi & riwayat bisa ditaruh di cluster Fasilitas, bukan di resource ini.
+            'index'  => Pages\ListAsramas::route('/'),
+            'create' => Pages\CreateAsrama::route('/create'),
+            'edit'   => Pages\EditAsrama::route('/{record}/edit'),
         ];
     }
 }
