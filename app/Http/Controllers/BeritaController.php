@@ -83,28 +83,50 @@ class BeritaController extends Controller
      * show: detail berdasarkan slug
      */
     public function show(Request $request, $slug)
-    {
-        $isPreview = (bool) $request->query('preview') && Auth::check();
+{
+    $isPreview = (bool) $request->query('preview') && Auth::check();
 
-        $query = Berita::where('slug', $slug)
-                       ->where('is_published', true);
+    // --- Ambil berita utama ---
+    $query = Berita::where('slug', $slug)
+                   ->where('is_published', true);
 
-        // Jika kamu menggunakan published_at filter, kamu bisa uncomment block berikut
-        // dan/atau aktifkan dengan ?use_published_at=1 di request.
-        if ($request->query('use_published_at') && $this->hasColumn('beritas', 'published_at')) {
-            $now = Carbon::now(config('app.timezone') ?: config('app.locale'));
-            if (! $isPreview) {
-                $query->where(function ($q) use ($now) {
-                    $q->whereNull('published_at')
-                      ->orWhere('published_at', '<=', $now);
-                });
-            }
+    if ($request->query('use_published_at') && $this->hasColumn('beritas', 'published_at')) {
+        $now = Carbon::now(config('app.timezone') ?: config('app.locale'));
+        if (! $isPreview) {
+            $query->where(function ($q) use ($now) {
+                $q->whereNull('published_at')
+                  ->orWhere('published_at', '<=', $now);
+            });
         }
-
-        $post = $query->firstOrFail();
-
-        return view('pages.berita_show', compact('post'));
     }
+
+    $post = $query->firstOrFail();
+
+    // --- Ambil 3 berita lain (sidebar) ---
+    $relatedQuery = Berita::where('is_published', true)
+        ->where('id', '!=', $post->id);
+
+    if ($request->query('use_published_at') && $this->hasColumn('beritas', 'published_at')) {
+        $now = Carbon::now(config('app.timezone') ?: config('app.locale'));
+        if (! $isPreview) {
+            $relatedQuery->where(function ($q) use ($now) {
+                $q->whereNull('published_at')
+                  ->orWhere('published_at', '<=', $now);
+            });
+        }
+    }
+
+    $relatedPosts = $relatedQuery
+        ->orderByDesc('published_at')
+        ->orderByDesc('id')
+        ->take(3)
+        ->get();
+
+    return view('pages.berita_show', [
+        'post'         => $post,
+        'relatedPosts' => $relatedPosts,
+    ]);
+}
 
     /**
      * Utility: periksa apakah table punya kolom tertentu (aman di berbagai env)

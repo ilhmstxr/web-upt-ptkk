@@ -1430,7 +1430,7 @@ $latestBeritas = Berita::query()
               guna memastikan kelancaran proses.
             </p>
 
-         <a href="#panduan"
+        <a href="{{ route('panduan') }}"
    class="flex items-center justify-start gap-1.5
           bg-[#1524AF] text-white
           px-3 sm:px-4 md:px-6 lg:px-10

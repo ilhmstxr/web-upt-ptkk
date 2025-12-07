@@ -460,20 +460,22 @@ section + section {
       <div class="flex flex-col gap-6">
 
         {{-- VISI --}}
-        <div class="rounded-2xl ring-1 ring-black/5 bg-white overflow-hidden">
-          <div class="p-6 bg-white/85"
-               style="background-image: url('{{ asset('images/profil/visi.svg') }}');
-                      background-size: cover;
-                      background-position: center;">
-            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-3">
-              Visi
-            </h3>
-            <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
-              Profesional dalam pelayanan guna meningkatkan kualitas SDM dalam pelatihan yang berintegritas
-              dan berkompeten sesuai kebutuhan perkembangan pasar global.
-            </p>
-          </div>
-        </div>
+<div class="rounded-2xl ring-1 ring-black/5 overflow-hidden"
+     style="background-image: url('{{ asset('images/profil/visi.svg') }}');
+            background-size: cover;
+            background-position: center;">
+  <div class="p-6 bg-[#DBE7F7]/75 rounded-2xl">
+    <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-3">
+      Visi
+    </h3>
+
+    <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
+      Profesional dalam pelayanan guna meningkatkan kualitas SDM dalam pelatihan yang berintegritas
+      dan berkompeten sesuai kebutuhan perkembangan pasar global.
+    </p>
+  </div>
+</div>
+
 
         {{-- MISI --}}
         <div class="rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7] p-6 flex-1">

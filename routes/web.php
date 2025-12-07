@@ -30,6 +30,7 @@ use App\Http\Controllers\Public\CeritaKamiController;
 use App\Http\Controllers\Public\PelatihanController as PublicPelatihanController; // Controller Index Pelatihan (NEW)
 use App\Http\Controllers\PelatihanDetailController; // Controller Detail Pelatihan (EXISTING)
 use App\Http\Controllers\KompetensiController;
+use App\Http\Controllers\KontenProgramPelatihanController;
 
 // --- MODELS & OTHERS ---
 use App\Models\Peserta;
@@ -57,7 +58,7 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/cerita-kami', [LandingController::class, 'ceritaKami'])->name('cerita-kami');
 
 Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'index'])
-    ->name('program-pelatihan.index');
+    ->name('programs');
 
 Route::get('/kompetensi', [KompetensiController::class, 'index'])
     ->name('kompetensi');
@@ -83,9 +84,7 @@ Route::view('/masuk', 'pages.masuk')->name('masuk');
 Route::get('/cerita-kami', [CeritaKamiController::class, 'index'])->name('cerita-kami');
 Route::get('/story', fn() => redirect()->route('cerita-kami'))->name('story'); // compatibility alias
 
-Route::view('/program-pelatihan', 'pages.profil.program-pelatihan')->name('programs');
-Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
-Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
+
 
 Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
 Route::get('/berita/{slug}', [BeritaController::class, 'show'])->name('berita.show');
