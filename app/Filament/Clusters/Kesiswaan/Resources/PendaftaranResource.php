@@ -4,21 +4,24 @@ namespace App\Filament\Clusters\Kesiswaan\Resources;
 
 use App\Filament\Clusters\Kesiswaan;
 use App\Filament\Clusters\Kesiswaan\Resources\PendaftaranResource\Pages;
-use App\Filament\Clusters\Kesiswaan\Resources\PendaftaranResource\RelationManagers;
-use App\Models\Pendaftaran; // Check if model is Pendaftaran or Registration
+use App\Models\PendaftaranPelatihan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PendaftaranResource extends Resource
 {
-    protected static ?string $model = \App\Models\PendaftaranPelatihan::class;
-    
+    protected static ?string $model = PendaftaranPelatihan::class;
     protected static ?string $cluster = Kesiswaan::class;
+
+    // ✅ Hero icon + label biar rapih di sidebar
+    protected static ?string $navigationIcon  = 'heroicon-o-clipboard-document-check';
+    protected static ?string $navigationLabel = 'Pendaftaran Pelatihan';
+    protected static ?string $modelLabel      = 'Pendaftaran';
+    protected static ?string $pluralModelLabel = 'Pendaftaran Pelatihan';
 
     public static function form(Form $form): Form
     {
@@ -33,13 +36,23 @@ class PendaftaranResource extends Resource
                                     ->label('Nama Peserta')
                                     ->formatStateUsing(fn ($record) => $record->peserta->nama ?? '-')
                                     ->disabled(),
+
                                 Forms\Components\TextInput::make('nomor_registrasi')
+                                    ->label('Nomor Registrasi')
                                     ->disabled(),
+
                                 Forms\Components\TextInput::make('pelatihan_name')
                                     ->label('Pelatihan')
                                     ->formatStateUsing(fn ($record) => $record->pelatihan->nama_pelatihan ?? '-')
                                     ->disabled(),
+
+                                // ✅ tambah kelas di form
+                                Forms\Components\TextInput::make('kelas')
+                                    ->label('Kelas')
+                                    ->disabled(),
+
                                 Forms\Components\TextInput::make('tanggal_pendaftaran')
+                                    ->label('Tanggal Pendaftaran')
                                     ->disabled(),
                             ])->columns(2),
 
@@ -69,6 +82,7 @@ class PendaftaranResource extends Resource
                         Forms\Components\Section::make('Status Pendaftaran')
                             ->schema([
                                 Forms\Components\Select::make('status_pendaftaran')
+                                    ->label('Status Pendaftaran')
                                     ->options([
                                         'Pending' => 'Pending',
                                         'Verifikasi' => 'Verifikasi',
@@ -87,14 +101,20 @@ class PendaftaranResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_registrasi')
+                    ->label('No. Registrasi')
+                    ->icon('heroicon-o-identification')
                     ->searchable()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('peserta.nama')
                     ->label('Nama Peserta')
+                    ->icon('heroicon-o-user')
                     ->searchable()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
                     ->label('Pelatihan')
+                    ->icon('heroicon-o-academic-cap')
                     ->formatStateUsing(function ($state) {
                         if (empty($state)) return '-';
                         $words = explode(' ', $state);
@@ -104,58 +124,72 @@ class PendaftaranResource extends Resource
                     ->html()
                     ->searchable()
                     ->sortable(),
+
+                // ✅ kolom KELAS di tabel
+                Tables\Columns\TextColumn::make('kelas')
+                    ->label('Kelas')
+                    ->icon('heroicon-o-building-office-2')
+                    ->badge()
+                    ->color('gray')
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('status_pendaftaran')
+                    ->label('Status')
+                    ->icon('heroicon-o-shield-check')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'warning',
+                        'Verifikasi' => 'info',
                         'Diterima' => 'success',
                         'Ditolak' => 'danger',
                         default => 'warning',
                     }),
+
                 Tables\Columns\TextColumn::make('tanggal_pendaftaran')
+                    ->label('Tanggal Daftar')
+                    ->icon('heroicon-o-calendar-days')
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status_pendaftaran')
+                    ->label('Filter Status')
                     ->options([
                         'Pending' => 'Pending',
                         'Verifikasi' => 'Verifikasi',
                         'Diterima' => 'Diterima',
                         'Ditolak' => 'Ditolak',
                     ]),
+
                 Tables\Filters\SelectFilter::make('pelatihan')
+                    ->label('Filter Pelatihan')
                     ->relationship('pelatihan', 'nama_pelatihan'),
+
                 Tables\Filters\SelectFilter::make('kompetensi')
                     ->label('Kompetensi')
-                    ->options(function () {
-                        return \App\Models\Kompetensi::pluck('nama_kompetensi', 'id');
-                    })
+                    ->options(fn () => \App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
                     ->query(function (Builder $query, array $data) {
-                        if (empty($data['value'])) {
-                            return $query;
-                        }
+                        if (empty($data['value'])) return $query;
+
                         return $query->whereHas('kompetensiPelatihan', function ($q) use ($data) {
                             $q->where('kompetensi_id', $data['value']);
                         });
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil-square'),
+
+                Tables\Actions\DeleteAction::make()
+                    ->label('Hapus')
+                    ->icon('heroicon-o-trash'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

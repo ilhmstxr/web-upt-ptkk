@@ -20,12 +20,7 @@ class PenempatanAsrama extends Model
         'periode',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONS
-    |--------------------------------------------------------------------------
-    */
-
+    // RELATIONS
     public function pelatihan()
     {
         return $this->belongsTo(Pelatihan::class);
@@ -46,28 +41,14 @@ class PenempatanAsrama extends Model
         return $this->belongsTo(Kamar::class);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SCOPES
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * Hanya penempatan yang masih AKTIF menginap.
-     * Logika: hari ini di antara tanggal_mulai & tanggal_selesai pelatihan.
-     */
+    // SCOPES
     public function scopePenghuniAktif(Builder $query): void
     {
         $query->whereHas('pelatihan', function ($q) {
-            // asumsi kolom di tabel pelatihan: tanggal_mulai, tanggal_selesai (DATE)
             $q->whereRaw('CURDATE() BETWEEN tanggal_mulai AND tanggal_selesai');
         });
     }
 
-    /**
-     * Hanya penempatan yang SUDAH BERLALU (riwayat).
-     * Logika: hari ini > tanggal_selesai pelatihan.
-     */
     public function scopeLogHistory(Builder $query): void
     {
         $query->whereHas('pelatihan', function ($q) {

@@ -14,12 +14,12 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-// Layout columns (buat card)
 use Filament\Tables\Columns\Layout\Grid as ColumnGrid;
 use Filament\Tables\Columns\Layout\Stack;
-
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
+
+use Illuminate\Database\Eloquent\Builder;
 
 class AsramaResource extends Resource
 {
@@ -30,6 +30,17 @@ class AsramaResource extends Resource
     protected static ?string $navigationLabel = 'Asrama';
     protected static ?string $modelLabel      = 'Asrama';
     protected static ?string $pluralModelLabel = 'Asrama';
+
+    /**
+     * ✅ Ini kunci: sebelum list tampil, sync dulu dari config kamar.php
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        Asrama::syncFromConfig();
+
+        return parent::getEloquentQuery()
+            ->withCount('kamars'); // supaya kamars_count jalan
+    }
 
     public static function form(Form $form): Form
     {
@@ -65,8 +76,7 @@ class AsramaResource extends Resource
         return $table
             ->heading('Fasilitas Asrama')
             ->description('Ringkasan kapasitas, kondisi kamar, dan informasi bed tiap asrama berdasarkan config kamar.php.')
-            
-            // 🟦 Card grid biar lega
+
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,
@@ -74,7 +84,6 @@ class AsramaResource extends Resource
 
             ->columns([
                 Stack::make([
-                    // atas: nama + badge gender
                     ColumnGrid::make(12)->schema([
                         TextColumn::make('nama')
                             ->label('')
@@ -95,10 +104,8 @@ class AsramaResource extends Resource
                             ->alignEnd(),
                     ]),
 
-                    // tengah: ringkasan angka
                     ColumnGrid::make(3)->schema([
                         BadgeColumn::make('kamars_count')
-                            ->counts('kamars')
                             ->label('Jumlah Kamar (DB)')
                             ->color('gray')
                             ->icon('heroicon-o-building-office-2')
@@ -117,7 +124,6 @@ class AsramaResource extends Resource
                             ->alignCenter(),
                     ]),
 
-                    // bawah: deskripsi panjang
                     TextColumn::make('deskripsi_fasilitas')
                         ->label('')
                         ->wrap()
@@ -126,7 +132,6 @@ class AsramaResource extends Resource
                             'class' => 'text-sm leading-relaxed mt-1',
                         ]),
 
-                    // keterangan tambahan
                     TextColumn::make('alamat')
                         ->label('')
                         ->wrap()
@@ -138,7 +143,6 @@ class AsramaResource extends Resource
                 ])
                 ->space(2)
                 ->extraAttributes([
-                    // style card
                     'class' => 'p-5 bg-white rounded-2xl shadow-sm ring-1 ring-gray-200',
                 ]),
             ])

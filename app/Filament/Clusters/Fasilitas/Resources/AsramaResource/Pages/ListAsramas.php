@@ -1,54 +1,33 @@
 <?php
 
-namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Pages;
+namespace App\Filament\Clusters\Fasilitas\Resources\AsramaResource\Pages;
 
-use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource;
+use App\Filament\Clusters\Fasilitas\Resources\AsramaResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
-use App\Services\AsramaAllocator;
-use App\Models\Pelatihan;
-use App\Models\Peserta;
+use Filament\Resources\Pages\ListRecords;
 
-class EditPelatihan extends EditRecord
+class ListAsramas extends ListRecords
 {
-    protected static string $resource = PelatihanResource::class;
+    protected static string $resource = AsramaResource::class;
+
+    // ✅ Heading muncul di atas list
+    public function getHeading(): string
+    {
+        return 'Fasilitas Asrama';
+    }
+
+    // ✅ Deskripsi/subheading muncul walau tabel kosong
+    public function getSubheading(): ?string
+    {
+        return 'Ringkasan kapasitas, jumlah kamar, total bed, serta kondisi kamar tiap asrama. '
+            . 'Deskripsi dihitung otomatis dari config kamar.php dan data kamar di database.';
+    }
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
-
-            // 🔋 Tombol Otomasi Penempatan Asrama
-            Actions\Action::make('otomasiAsrama')
-                ->label('Otomasi Penempatan Asrama')
-                ->icon('heroicon-o-bolt')
-                ->color('success')
-                ->requiresConfirmation()
-                ->modalHeading('Jalankan Otomasi Penempatan Asrama')
-                ->modalSubheading('Sistem akan membagi peserta ke kamar asrama sesuai aturan kapasitas & gender.')
-                ->modalButton('Jalankan Otomasi')
-                ->action(function (AsramaAllocator $allocator) {
-                    $this->jalankanOtomasi($this->record->id, $allocator);
-                }),
+            Actions\CreateAction::make()
+                ->label('Tambah Asrama'),
         ];
-    }
-
-    /**
-     * Jalankan otomasi penempatan asrama untuk pelatihan ini.
-     */
-    public function jalankanOtomasi(int $pelatihanId, AsramaAllocator $allocator): void
-    {
-        $pelatihan = Pelatihan::findOrFail($pelatihanId);
-
-        // Ambil peserta yang TERDAFTAR di pelatihan ini & BELUM punya penempatan asrama
-        $peserta = Peserta::where('pelatihan_id', $pelatihan->id)
-            ->whereDoesntHave('penempatanAsrama')
-            ->get();
-
-        // Jalankan service allocator (logika pengisian kamar)
-        $allocator->allocate($pelatihan, $peserta);
-
-        // Notifikasi ke user Filament
-        $this->notify('success', 'Otomasi penempatan kamar asrama berhasil dijalankan.');
     }
 }

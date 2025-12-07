@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('kelas')->nullable();
 
             // IMPROVE: menambahkan kompetensi id 
-            // $table->foreignId('kompetensi_id')->constrained('kompetensi')->cascadeOnDelete();
+            $table->foreignId('kompetensi_id')->constrained('kompetensi')->cascadeOnDelete();
             $table->Integer('nilai_pre_test')->default(0);
             $table->Integer('nilai_post_test')->default(0);
             $table->Integer('nilai_praktek')->default(0);

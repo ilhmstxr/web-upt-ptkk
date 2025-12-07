@@ -8,7 +8,7 @@
                 class="{{ $activeTab === 'kompetensi' ? 'border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600' }} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2"
             >
                 <x-heroicon-o-rectangle-stack class="w-5 h-5" />
-                Bidangs
+                Kompetensi
             </a>
             
             {{-- Pelatihan Tab --}}

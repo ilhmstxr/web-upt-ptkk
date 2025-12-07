@@ -3,12 +3,13 @@
 namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Pages;
 
 use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource;
-use App\Services\AsramaAllocator;
-use App\Models\Pelatihan;
-use App\Models\Peserta;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Str;
+
+use App\Services\AsramaAllocator;
+use App\Models\Pelatihan;
+use App\Models\Peserta;
 
 class EditPelatihan extends EditRecord
 {
@@ -22,8 +23,7 @@ class EditPelatihan extends EditRecord
     /**
      * Saat form edit dibuka:
      * - ambil relasi kompetensiPelatihan
-     * - group by kompetensi + lokasi
-     * - jadikan array kompetensi_items untuk repeater form
+     * - grupkan jadi kompetensi_items untuk repeater
      */
     protected function mutateFormDataBeforeFill(array $data): array
     {
@@ -34,7 +34,7 @@ class EditPelatihan extends EditRecord
         });
 
         $items = [];
-        foreach ($grouped as $key => $group) {
+        foreach ($grouped as $group) {
             $first = $group->first();
             $instructorIds = $group->pluck('instruktur_id')->filter()->values()->toArray();
 
@@ -51,7 +51,7 @@ class EditPelatihan extends EditRecord
     }
 
     /**
-     * Header action di halaman Edit
+     * Header Action:
      * - Delete
      * - Otomasi Asrama
      */
@@ -75,48 +75,52 @@ class EditPelatihan extends EditRecord
     }
 
     /**
-     * Setelah form disimpan:
-     * - hapus semua kompetensiPelatihan lama
-     * - buat ulang berdasarkan repeater kompetensi_items
+     * Setelah disimpan:
+     * - hapus jadwal kompetensi lama
+     * - buat ulang dari repeater kompetensi_items
      */
     protected function afterSave(): void
     {
-        // Hapus seluruh jadwal kompetensi lama
         $this->record->kompetensiPelatihan()->delete();
 
         $data = $this->data;
 
-        if (isset($data['kompetensi_items']) && is_array($data['kompetensi_items'])) {
-            foreach ($data['kompetensi_items'] as $item) {
-                $instructorIds = $item['instruktur_id'] ?? [];
+        if (!isset($data['kompetensi_items']) || !is_array($data['kompetensi_items'])) {
+            return;
+        }
 
-                $commonData = [
-                    'kompetensi_id' => $item['kompetensi_id'],
-                    'lokasi'        => $item['lokasi'] ?? 'UPT-PTKK',
-                ];
+        foreach ($data['kompetensi_items'] as $item) {
+            $instructorIds = $item['instruktur_id'] ?? [];
 
-                // jika banyak instruktur
-                if (!empty($instructorIds) && is_array($instructorIds)) {
-                    foreach ($instructorIds as $instructorId) {
-                        $this->record->kompetensiPelatihan()->create(array_merge($commonData, [
+            $commonData = [
+                'kompetensi_id' => $item['kompetensi_id'],
+                'lokasi'        => $item['lokasi'] ?? 'UPT-PTKK',
+            ];
+
+            // multi instruktur
+            if (!empty($instructorIds) && is_array($instructorIds)) {
+                foreach ($instructorIds as $instructorId) {
+                    $this->record->kompetensiPelatihan()->create(
+                        array_merge($commonData, [
                             'instruktur_id' => $instructorId,
-                        ]));
-                    }
+                        ])
+                    );
                 }
-                // jika hanya 1 instruktur (string / int)
-                else {
-                    if (!empty($item['instruktur_id']) && !is_array($item['instruktur_id'])) {
-                        $this->record->kompetensiPelatihan()->create(array_merge($commonData, [
-                            'instruktur_id' => $item['instruktur_id'],
-                        ]));
-                    }
-                }
+            }
+
+            // single instruktur
+            if (!is_array($instructorIds) && !empty($instructorIds)) {
+                $this->record->kompetensiPelatihan()->create(
+                    array_merge($commonData, [
+                        'instruktur_id' => $instructorIds,
+                    ])
+                );
             }
         }
     }
 
     /**
-     * Jalankan otomasi penempatan asrama untuk pelatihan ini
+     * Jalankan otomasi penempatan asrama.
      */
     public function jalankanOtomasi(int $pelatihanId, AsramaAllocator $allocator): void
     {
