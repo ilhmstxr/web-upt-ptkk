@@ -1,28 +1,28 @@
 --
--- Dumping data for table `kompetensi`
+-- Dumping data for table `bidang`
 --
 
-INSERT INTO `kompetensi` (`id`, `nama_kompetensi`, `deskripsi`, `kode`, `kelas_keterampilan`, `gambar`, `created_at`, `updated_at`) VALUES
-(1, 'Tata Boga', 'kompetensi keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.', 'TTBG', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(2, 'Tata Busana', 'kompetensi keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.', 'TTBS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(3, 'Kecantikan', 'kompetensi keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.', 'KCAN', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(4, 'Teknik Pendingin dan Tata Udara', 'kompetensi keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.', 'TPTU', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(5, 'Web Desain', 'kompetensi keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.', 'WBDS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(6, 'Desain Grafis', 'kompetensi keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.', 'DSGF', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(7, 'Motion Animasi', 'kompetensi keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.', 'ANMS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(8, 'Fotografi', 'kompetensi keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.', 'FTGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(9, 'Videografi', 'kompetensi keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.', 'VDGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(10, 'PLC', 'kompetensi keahlian yang mengajarkan programming logic controller', 'PLC', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+INSERT INTO `bidang` (`id`, `nama_bidang`, `deskripsi`, `kode`, `kelas_keterampilan`, `gambar`, `created_at`, `updated_at`) VALUES
+(1, 'Tata Boga', 'bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.', 'TTBG', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(2, 'Tata Busana', 'bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.', 'TTBS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(3, 'Kecantikan', 'bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.', 'KCAN', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(4, 'Teknik Pendingin dan Tata Udara', 'bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.', 'TPTU', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(5, 'Web Desain', 'bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.', 'WBDS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(6, 'Desain Grafis', 'bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.', 'DSGF', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(7, 'Motion Animasi', 'bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.', 'ANMS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(8, 'Fotografi', 'bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.', 'FTGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(9, 'Videografi', 'bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.', 'VDGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(10, 'PLC', 'bidang keahlian yang mengajarkan programming logic controller', 'PLC', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
 (11, 'Foto Produk', 'Foto Produk', 'FTPD', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(12, 'Teknik Pemesinan', 'kompetensi keahlian teknik pemesinan', 'TPM', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(13, 'Teknik Otomotif', 'kompetensi keahlian teknik otomotif', 'TOTO', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(14, 'Teknik Pengelasan', 'kompetensi keahlian teknik pengelasan', 'TLAS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL);
+(12, 'Teknik Pemesinan', 'bidang keahlian teknik pemesinan', 'TPM', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(13, 'Teknik Otomotif', 'bidang keahlian teknik otomotif', 'TOTO', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(14, 'Teknik Pengelasan', 'bidang keahlian teknik pengelasan', 'TLAS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL);
 
 --
--- Dumping data for table `kompetensi_pelatihan`
+-- Dumping data for table `bidang_pelatihan`
 --
 
-INSERT INTO `kompetensi_pelatihan` (`id`, `pelatihan_id`, `kompetensi_id`, `lokasi`, `kota`, `kode_kompetensi_pelatihan`, `created_at`, `updated_at`) VALUES
+INSERT INTO `bidang_pelatihan` (`id`, `pelatihan_id`, `bidang_id`, `lokasi`, `kota`, `kode_bidang_pelatihan`, `created_at`, `updated_at`) VALUES
 (1, 1, 4, 'upt-ptkk', 'Surabaya', 'REG-TPTU-25-2-SBY', NULL, NULL),
 (2, 1, 3, 'upt-ptkk', 'Surabaya', 'REG-TTKC-25-2-SBY', NULL, NULL),
 (3, 1, 1, 'upt-ptkk', 'Surabaya', 'REG-TTBG-25-2-SBY', NULL, NULL),
@@ -37,7 +37,7 @@ INSERT INTO `kompetensi_pelatihan` (`id`, `pelatihan_id`, `kompetensi_id`, `loka
 (12, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
 (13, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
 (14, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
--- perubahan kompetensi
+-- perubahan bidang
 (15, 4, 10, 'smk negeri 3 Boyolangu Tulungagung', 'Tulungagung', 'MTU-TPTU-25-2-TBN', NULL, NULL),
 (16, 4, 4, 'smk negeri 1 bendo Magetan', 'Magetan', 'MTU-TPTU-25-2-TBN', NULL, NULL),
 (17, 4, 4, 'smk negeri 1 Lamongan', 'Lamongan', 'MTU-TPTU-25-2-TBN', NULL, NULL),
@@ -127,7 +127,7 @@ INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
 -- Dumping data for table `instansi`
 --
 
-INSERT INTO `instansi` (`id`, `asal_instansi`, `alamat_instansi`, `kota_id`, `kota`, `kompetensi_keahlian`, `cabangDinas_id`, `user_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `instansi` (`id`, `asal_instansi`, `alamat_instansi`, `kota_id`, `kota`, `bidang_keahlian`, `cabangDinas_id`, `user_id`, `created_at`, `updated_at`) VALUES
     (2, 'SMKN 2 BOJONEGORO', 'JL.patimura NO.3', '3522', 'KABUPATEN BOJONEGORO', '4', 15, NULL, '2025-08-20 01:29:27', '2025-08-20 01:29:27'),
     (3, 'SMKN 2 KOTA PROBOLINGGO', 'Jl. Mastrip No. 153 Kota Probolinggo', '3574', 'KOTA PROBOLINGGO', '4', 2, NULL, '2025-08-20 02:28:17', '2025-08-20 02:28:17'),
     (4, 'SMKN 3 Probolinggo', 'Jl. Pahlawan No. 26A, Kota Probolinggo.', '3574', 'KOTA PROBOLINGGO', '3', 2, NULL, '2025-08-20 03:06:36', '2025-08-20 03:06:36'),
@@ -693,7 +693,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (419, 355, 104, 12, NULL, NULL, '2025-08-29 01:25:46', '2025-08-29 01:25:46'),
 (420, 708, 105, 12, NULL, NULL, '2025-08-29 01:25:46', '2025-08-29 01:25:46'),
 (421, 360, 106, 12, NULL, NULL, '2025-08-29 01:25:46', '2025-08-29 01:25:46'),
-(422, NULL, 107, 12, NULL, 'saya sangat senang dan puas dengan diadakannya pelatihan kompetensi ini, karena saya meningkatkan kemampuan saya, saya mendapatkan ilmu baru dan teman baru.', '2025-08-29 01:25:46', '2025-08-29 01:25:46'),
+(422, NULL, 107, 12, NULL, 'saya sangat senang dan puas dengan diadakannya pelatihan bidang ini, karena saya meningkatkan kemampuan saya, saya mendapatkan ilmu baru dan teman baru.', '2025-08-29 01:25:46', '2025-08-29 01:25:46'),
 (423, 344, 108, 12, NULL, NULL, '2025-08-29 01:25:46', '2025-08-29 01:25:46'),
 (424, 364, 109, 12, NULL, NULL, '2025-08-29 01:25:46', '2025-08-29 01:25:46'),
 (425, 344, 110, 12, NULL, NULL, '2025-08-29 01:25:46', '2025-08-29 01:25:46'),
@@ -2419,7 +2419,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (2286, 356, 104, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2287, 705, 105, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2288, 360, 106, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
-(2289, NULL, 107, 64, NULL, 'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di kompetensinya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.', '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
+(2289, NULL, 107, 64, NULL, 'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di bidangnya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.', '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2290, 344, 108, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2291, 364, 109, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2292, 344, 110, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
@@ -3351,7 +3351,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (3441, 676, 179, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3442, 676, 180, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3443, 676, 181, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
-(3444, NULL, 182, 183, NULL, 'saya jadi banyak menambah ilmu di kompetensi refrigeran ,saya sangat suka pelatihan MTU', '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
+(3444, NULL, 182, 183, NULL, 'saya jadi banyak menambah ilmu di bidang refrigeran ,saya sangat suka pelatihan MTU', '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3445, 675, 183, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3446, 680, 184, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3447, 675, 185, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
@@ -3609,7 +3609,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (3699, 676, 179, 198, '0', NULL, '2025-09-25 18:14:41', '2025-09-25 18:14:41'),
 (3700, 676, 180, 198, '0', NULL, '2025-09-25 18:14:41', '2025-09-25 18:14:41'),
 (3701, 676, 181, 198, '0', NULL, '2025-09-25 18:14:41', '2025-09-25 18:14:41'),
-(3702, NULL, 182, 198, NULL, 'Saya sangat senang bisa mengikuti pelatihan kompetensi vokasi ini', '2025-09-25 18:14:41', '2025-09-25 18:14:41'),
+(3702, NULL, 182, 198, NULL, 'Saya sangat senang bisa mengikuti pelatihan bidang vokasi ini', '2025-09-25 18:14:41', '2025-09-25 18:14:41'),
 (3703, 676, 183, 198, '0', NULL, '2025-09-25 18:14:41', '2025-09-25 18:14:41'),
 (3704, 680, 184, 198, '0', NULL, '2025-09-25 18:14:41', '2025-09-25 18:14:41'),
 (3705, 676, 185, 198, '0', NULL, '2025-09-25 18:14:41', '2025-09-25 18:14:41'),
@@ -4294,7 +4294,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (4383, 675, 179, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4384, 675, 180, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4385, 675, 181, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
-(4386, NULL, 182, 215, NULL, 'PESAN: pelatihan kompetensi vokasi sangat penting dan berguna bagi saya dan masa depan petugas UPT.PTKK sangat tegas dan disiplin dalam melaksanakan pelatihan kompetensi vokasi ini \r\nKESAN: saya merasa sangat senang dan paham dalam beberapa hari ini dengan materi dan praktek secara singkat padat dan jelas dan dihari pertama kali saya tegang dan canggung dalam melihat petugas UPT.PTKK', '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
+(4386, NULL, 182, 215, NULL, 'PESAN: pelatihan bidang vokasi sangat penting dan berguna bagi saya dan masa depan petugas UPT.PTKK sangat tegas dan disiplin dalam melaksanakan pelatihan bidang vokasi ini \r\nKESAN: saya merasa sangat senang dan paham dalam beberapa hari ini dengan materi dan praktek secara singkat padat dan jelas dan dihari pertama kali saya tegang dan canggung dalam melihat petugas UPT.PTKK', '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4387, 675, 183, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4388, 680, 184, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4389, 676, 185, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
@@ -4305,7 +4305,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (4394, 688, 190, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4395, 711, 191, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4396, 691, 192, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
-(4397, NULL, 193, 215, NULL, 'PESAN: pelatihan kompetensi vokasi sangat penting dan berguna bagi saya dan masa depan petugas UPT.PTKK sangat tegas dan disiplin dalam sikap maupun perbuatan dan percakapan \r\nKESAN: saya merasa sangat senang dan paham dalam beberapa hari ini dengan materi dan praktek secara singkat padat dan jelas dan dihari pertama kali saya tegang dan canggung dalam melihat petugas UPT.PTKK tetapi ini sangat berguna dan bisa dilakukan secara singkat padat dan jelass', '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
+(4397, NULL, 193, 215, NULL, 'PESAN: pelatihan bidang vokasi sangat penting dan berguna bagi saya dan masa depan petugas UPT.PTKK sangat tegas dan disiplin dalam sikap maupun perbuatan dan percakapan \r\nKESAN: saya merasa sangat senang dan paham dalam beberapa hari ini dengan materi dan praktek secara singkat padat dan jelas dan dihari pertama kali saya tegang dan canggung dalam melihat petugas UPT.PTKK tetapi ini sangat berguna dan bisa dilakukan secara singkat padat dan jelass', '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4398, 676, 194, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4399, 695, 195, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4400, 676, 196, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
@@ -4315,7 +4315,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (4404, 675, 200, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4405, 675, 201, 215, '0', NULL, '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4406, NULL, 202, 215, NULL, 'PAK BASUKI', '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
-(4407, NULL, 203, 215, NULL, 'PESAN: pelatihan kompetensi vokasi sangat penting dan berguna bagi saya dan masa depan petugas UPT.PTKK sangat tegas dan disiplin dalam melaksanakan pelatihan kompetensi vokasi ini baik dalam menerangkan materi dan melakukannya secara singkat padat dan jelas dan awalnya dihari pertama MTU petugasnya gagah tegas dan perkasa terutama pak bas yang terlihat menakutkan dan menyeramkan \r\nKESAN: saya merasa sangat senang dan paham dalam beberapa hari ini dengan materi dan praktek secara singkat padat dan jelas dan dihari pertama kali saya tegang dan canggung dalam melihat petugas UPT.PTKK', '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
+(4407, NULL, 203, 215, NULL, 'PESAN: pelatihan bidang vokasi sangat penting dan berguna bagi saya dan masa depan petugas UPT.PTKK sangat tegas dan disiplin dalam melaksanakan pelatihan bidang vokasi ini baik dalam menerangkan materi dan melakukannya secara singkat padat dan jelas dan awalnya dihari pertama MTU petugasnya gagah tegas dan perkasa terutama pak bas yang terlihat menakutkan dan menyeramkan \r\nKESAN: saya merasa sangat senang dan paham dalam beberapa hari ini dengan materi dan praktek secara singkat padat dan jelas dan dihari pertama kali saya tegang dan canggung dalam melihat petugas UPT.PTKK', '2025-09-25 18:28:15', '2025-09-25 18:28:15'),
 (4408, 90, 18, 179, NULL, NULL, '2025-09-25 18:28:19', '2025-09-25 18:28:19'),
 (4409, 59, 12, 175, NULL, NULL, '2025-09-25 18:28:23', '2025-09-25 18:28:23'),
 (4410, 55, 11, 188, NULL, NULL, '2025-09-25 18:28:23', '2025-09-25 18:28:23'),
@@ -6902,7 +6902,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (7010, 676, 200, 377, '0', NULL, '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
 (7011, 676, 201, 377, '0', NULL, '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
 (7012, NULL, 202, 377, NULL, 'Pak Kiky dan Pak Fredy', '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
-(7013, NULL, 203, 377, NULL, 'Program yang sangat berguna bagi kami supaya dapat mengembangkan bakat dikompetensi TPTUP dan dapat membuka peluang pekerjaan yang lebih besar.', '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
+(7013, NULL, 203, 377, NULL, 'Program yang sangat berguna bagi kami supaya dapat mengembangkan bakat dibidang TPTUP dan dapat membuka peluang pekerjaan yang lebih besar.', '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
 (7014, 568, 156, 298, NULL, NULL, '2025-09-26 00:40:41', '2025-09-26 00:40:41'),
 (7015, 560, 154, 319, NULL, NULL, '2025-09-26 00:40:42', '2025-09-26 00:40:42'),
 (7016, 676, 177, 379, '0', NULL, '2025-09-26 00:40:43', '2025-09-26 00:40:43'),
@@ -7129,7 +7129,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (7237, 676, 200, 387, '0', NULL, '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
 (7238, 676, 201, 387, '0', NULL, '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
 (7239, NULL, 202, 387, NULL, 'Pak KIKI dan Pak fredy', '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
-(7240, NULL, 203, 387, NULL, 'terima kasih untuk semua penyelenggara pelatian MTU di kompetensi teknik pendinginan dan tata udara,\r\nsetelah mengikuti pelatian ini saya telah mendapatkan tambahan ilmu dan pengalaman.mungkin itu dari saya \r\nwassalamu\'alaikum wr.wb', '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
+(7240, NULL, 203, 387, NULL, 'terima kasih untuk semua penyelenggara pelatian MTU di bidang teknik pendinginan dan tata udara,\r\nsetelah mengikuti pelatian ini saya telah mendapatkan tambahan ilmu dan pengalaman.mungkin itu dari saya \r\nwassalamu\'alaikum wr.wb', '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
 (7241, 519, 146, 321, NULL, NULL, '2025-09-26 00:41:14', '2025-09-26 00:41:14'),
 (7242, 547, 151, 322, NULL, NULL, '2025-09-26 00:41:16', '2025-09-26 00:41:16'),
 (7243, 547, 151, 328, NULL, NULL, '2025-09-26 00:41:16', '2025-09-26 00:41:16'),
@@ -8175,7 +8175,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (8297, 687, 190, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8298, 712, 191, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8299, 692, 192, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
-(8300, NULL, 193, 410, NULL, 'materinya sangat mendukung dalam kompetensi keahlian khususnya dkv', '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
+(8300, NULL, 193, 410, NULL, 'materinya sangat mendukung dalam bidang keahlian khususnya dkv', '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8301, 675, 194, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8302, 696, 195, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8303, 676, 196, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
@@ -8883,7 +8883,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (9104, 688, 190, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9105, 712, 191, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9106, 692, 192, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
-(9107, NULL, 193, 440, NULL, 'Saya sangat senang dengan adanya pelatihan ini dan sangat bermanfaat bagi masa depan saya dikompetensi kelistrikan', '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
+(9107, NULL, 193, 440, NULL, 'Saya sangat senang dengan adanya pelatihan ini dan sangat bermanfaat bagi masa depan saya dibidang kelistrikan', '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9108, 675, 194, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9109, 696, 195, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9110, 676, 196, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
@@ -8937,7 +8937,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (9158, 687, 190, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9159, 712, 191, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9160, 692, 192, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
-(9161, NULL, 193, 442, NULL, 'Program yang sangat di butuhkan oleh siswa smk karena dengan melatih kompetensi kejuruan siswa seperti ini di harapkan siswa lebih bersiap untuk masuk ke industri yang sesuai dengan kompetensi nya seperti fotografi, kesan saya dari program pelatihan ini adalah sangat seru karena bisa sharing sharing dengan temen temen dari SMKN lain.', '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
+(9161, NULL, 193, 442, NULL, 'Program yang sangat di butuhkan oleh siswa smk karena dengan melatih bidang kejuruan siswa seperti ini di harapkan siswa lebih bersiap untuk masuk ke industri yang sesuai dengan bidang nya seperti fotografi, kesan saya dari program pelatihan ini adalah sangat seru karena bisa sharing sharing dengan temen temen dari SMKN lain.', '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9162, 676, 194, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9163, 696, 195, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9164, 676, 196, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
@@ -9464,7 +9464,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (9684, 687, 190, 463, '0', NULL, '2025-09-26 01:09:43', '2025-09-26 01:09:43'),
 (9685, 712, 191, 463, '0', NULL, '2025-09-26 01:09:43', '2025-09-26 01:09:43'),
 (9686, 692, 192, 463, '0', NULL, '2025-09-26 01:09:43', '2025-09-26 01:09:43'),
-(9687, NULL, 193, 463, NULL, 'sangat baguss, kedepannya saya akan meningkatkan belajar dalam kompetensi saya', '2025-09-26 01:09:43', '2025-09-26 01:09:43'),
+(9687, NULL, 193, 463, NULL, 'sangat baguss, kedepannya saya akan meningkatkan belajar dalam bidang saya', '2025-09-26 01:09:43', '2025-09-26 01:09:43'),
 (9688, 675, 194, 463, '0', NULL, '2025-09-26 01:09:43', '2025-09-26 01:09:43'),
 (9689, 696, 195, 463, '0', NULL, '2025-09-26 01:09:43', '2025-09-26 01:09:43'),
 (9690, 676, 196, 463, '0', NULL, '2025-09-26 01:09:43', '2025-09-26 01:09:43'),
@@ -10174,7 +10174,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (3, '0001_01_01_000002_create_jobs_table', 1),
 (4, '2025_08_10_121502_create_cabang_dinas_table', 1),
 (5, '2025_08_11_034126_create_instansi_table', 1),
-(6, '2025_08_11_075813_create_kompetensi_table', 1),
+(6, '2025_08_11_075813_create_bidang_table', 1),
 (7, '2025_08_11_082738_create_asrama_table', 1),
 (8, '2025_08_11_082833_create_kamar_table', 1),
 (9, '2025_08_12_035432_create_pelatihan_table', 1),
@@ -10201,7 +10201,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (30, '2025_09_04_014937_create_penempatan_asrama_table', 1),
 (31, '2025_09_04_021821_create_instruktur_pelatihan_table', 1),
 (32, '2025_09_08_094559_create_pivot_jawaban_table', 1),
-(33, '2025_10_13_084746_create_kompetensi_pelatihan_table', 1);
+(33, '2025_10_13_084746_create_bidang_pelatihan_table', 1);
 
 --
 -- Dumping data for table `opsi_jawaban`
@@ -10926,23 +10926,23 @@ INSERT INTO `opsi_jawaban` (`id`, `pertanyaan_id`, `teks_opsi`, `gambar`, `apaka
 --
 
 INSERT INTO `pelatihan` (`id`, `instansi_id`, `angkatan`, `jenis_program`,`nama_pelatihan`,  `slug`, `gambar`, `status`, `tanggal_mulai`, `tanggal_selesai`, `deskripsi`, `jumlah_peserta`, `sasaran`, `created_at`, `updated_at`) VALUES
-(1, NULL, 2, 'reguler','Kegiatan Pengembangan dan Pelatihan Kompetensi Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. II(Teknik & Keterampilan)  Tahun 2025', NULL, NULL, 'selesai', '2025-08-25', '2025-08-30', NULL, NULL, NULL, NULL, NULL),
-(2, NULL, 2, 'mtu','Kegiatan Pelatihan Kompetensi Vokasi bagi Siswa SMK / SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan II  Tahun 2025', NULL, NULL, 'aktif', '2025-09-22', '2025-09-27', NULL, NULL, NULL, NULL, NULL),
-(3, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Guru SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-02-19', '2025-02-25', NULL, NULL, 'guru', NULL, NULL),
-(4, NULL, 1,'mtu', 'Pengembangan Kompetensi Vokasi bagi Siswa SMK/SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan I Tahun 2025', NULL, NULL, 'selesai', '2025-03-10', '2025-03-15', NULL, NULL, 'siswa', NULL, NULL),
-(5, NULL, 1,'reguler', 'Pengembangan dan peningkatan Kompetensi Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. I (Teknik & Keterampilan) Th. 2025', NULL, NULL, 'selesai', '2025-04-21', '2025-04-26', NULL, NULL, 'siswa', NULL, NULL),
-(6, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Siswa SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI (Teknik & Keterampilan) bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-05-05', '2025-05-11', NULL, NULL, 'siswa', NULL, NULL),
-(7, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Siswa SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI (MJC) bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-05-19', '2025-05-25', NULL, NULL, 'siswa', NULL, NULL),
-(8, NULL, 1,'akselerasi', 'Pengembangan Kompetensi bagi Guru SMK/SMA dan Sertifikasi Uji Kompetensi berbasis KKNI bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-06-18', '2025-06-24', NULL, NULL, 'guru', NULL, NULL),
-(9, NULL, 1,'reguler', 'Pengembangan dan peningkatan Kompetensi Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. I (MJC) Th. 2025', NULL, NULL, 'selesai', '2025-07-21', '2025-07-26', NULL, NULL, 'siswa', NULL, NULL),
-(10, NULL, 2,'reguler', 'Pengembangan dan peningkatan Kompetensi Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. II (MJC) Th. 2025', NULL, NULL, 'selesai', '2025-07-31', '2025-08-05', NULL, NULL, 'siswa', NULL, NULL);
+(1, NULL, 2, 'reguler','Kegiatan Pengembangan dan Pelatihan bidang Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. II(Teknik & Keterampilan)  Tahun 2025', NULL, NULL, 'selesai', '2025-08-25', '2025-08-30', NULL, NULL, NULL, NULL, NULL),
+(2, NULL, 2, 'mtu','Kegiatan Pelatihan bidang Vokasi bagi Siswa SMK / SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan II  Tahun 2025', NULL, NULL, 'aktif', '2025-09-22', '2025-09-27', NULL, NULL, NULL, NULL, NULL),
+(3, NULL, 1,'akselerasi', 'Pengembangan bidang bagi Guru SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-02-19', '2025-02-25', NULL, NULL, 'guru', NULL, NULL),
+(4, NULL, 1,'mtu', 'Pengembangan bidang Vokasi bagi Siswa SMK/SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan I Tahun 2025', NULL, NULL, 'selesai', '2025-03-10', '2025-03-15', NULL, NULL, 'siswa', NULL, NULL),
+(5, NULL, 1,'reguler', 'Pengembangan dan peningkatan bidang Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. I (Teknik & Keterampilan) Th. 2025', NULL, NULL, 'selesai', '2025-04-21', '2025-04-26', NULL, NULL, 'siswa', NULL, NULL),
+(6, NULL, 1,'akselerasi', 'Pengembangan bidang bagi Siswa SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI (Teknik & Keterampilan) bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-05-05', '2025-05-11', NULL, NULL, 'siswa', NULL, NULL),
+(7, NULL, 1,'akselerasi', 'Pengembangan bidang bagi Siswa SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI (MJC) bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-05-19', '2025-05-25', NULL, NULL, 'siswa', NULL, NULL),
+(8, NULL, 1,'akselerasi', 'Pengembangan bidang bagi Guru SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-06-18', '2025-06-24', NULL, NULL, 'guru', NULL, NULL),
+(9, NULL, 1,'reguler', 'Pengembangan dan peningkatan bidang Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. I (MJC) Th. 2025', NULL, NULL, 'selesai', '2025-07-21', '2025-07-26', NULL, NULL, 'siswa', NULL, NULL),
+(10, NULL, 2,'reguler', 'Pengembangan dan peningkatan bidang Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. II (MJC) Th. 2025', NULL, NULL, 'selesai', '2025-07-31', '2025-08-05', NULL, NULL, 'siswa', NULL, NULL);
 
 --
 -- Dumping data for table `pendaftaran_pelatihan`
 --
 
 
-INSERT INTO `pendaftaran_pelatihan` (`id`, `peserta_id`, `pelatihan_id`, `kompetensi_pelatihan_id`, `kelas`, `nilai_pre_test`, `nilai_post_test`, `nilai_praktek`, `rata_rata`, `nilai_survey`, `status`, `nomor_registrasi`, `tanggal_pendaftaran`, `created_at`, `updated_at`) VALUES
+INSERT INTO `pendaftaran_pelatihan` (`id`, `peserta_id`, `pelatihan_id`, `bidang_pelatihan_id`, `kelas`, `nilai_pre_test`, `nilai_post_test`, `nilai_praktek`, `rata_rata`, `nilai_survey`, `status`, `nomor_registrasi`, `tanggal_pendaftaran`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, 1, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '1-TPTU-001', '2025-08-19 12:28:17', '2025-08-19 12:28:17', '2025-08-19 12:28:17'),
 (2, 2, 1, 2, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '1-TTKC-001', '2025-08-19 13:06:36', '2025-08-19 13:06:36', '2025-08-19 13:06:36'),
 (3, 3, 1, 1, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '1-TPTU-002', '2025-08-19 14:23:32', '2025-08-19 14:23:32', '2025-08-19 14:23:32'),
@@ -11708,9 +11708,9 @@ INSERT INTO `pertanyaan` (`id`, `tes_id`, `nomor`, `teks_pertanyaan`, `gambar`, 
 (103, 5, 103, 'Berapa persen materi yang anda serap', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
 (104, 5, 104, 'Bagaimana menurut anda apakah perlu penambahan materi pelatihan', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
 (105, 5, 105, 'Bagaimana menurut anda apakah perlu pengurangan materi pelatihan', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
-(106, 5, 106, 'Apakah materi-materi pelatihan sangat mendukung kompetensi anda', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
+(106, 5, 106, 'Apakah materi-materi pelatihan sangat mendukung bidang anda', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
 (107, 5, 107, 'Pesan Dan Kesan :', NULL, 'teks_bebas', NULL, NULL, NULL),
-(108, 5, 108, 'Bagaimana pendapat saudara tentang penguasaan materi/ kompetensi pada proses pembelajaran', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
+(108, 5, 108, 'Bagaimana pendapat saudara tentang penguasaan materi/ bidang pada proses pembelajaran', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
 (109, 5, 109, 'Bagaimana pendapat saudara tentang kedisiplinan/ketepatan waktu Instruktur pada saat pelatihan', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
 (110, 5, 110, 'Bagaimana pendapat saudara tentang metode mengajar Instruktur', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
 (111, 5, 111, 'bagaimana pendapat saudara tentang sikap dan prilaku instruktur pada saat memberikan pengajaran', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
@@ -11794,9 +11794,9 @@ INSERT INTO `pertanyaan` (`id`, `tes_id`, `nomor`, `teks_pertanyaan`, `gambar`, 
 (189, 9, 189, 'Berapa persen materi yang anda serap', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
 (190, 9, 190, 'Bagaimana menurut anda apakah perlu penambahan materi pelatihan', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
 (191, 9, 191, 'Bagaimana menurut anda apakah perlu pengurangan materi pelatihan', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
-(192, 9, 192, 'Apakah materi-materi pelatihan sangat mendukung kompetensi anda', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
+(192, 9, 192, 'Apakah materi-materi pelatihan sangat mendukung bidang anda', NULL, 'skala_likert', 'Materi & Kurikulum', NULL, NULL),
 (193, 9, 193, 'Pesan Dan Kesan :', NULL, 'teks_bebas', NULL, NULL, NULL),
-(194, 9, 194, 'Bagaimana pendapat saudara tentang penguasaan materi/ kompetensi pada proses pembelajaran', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
+(194, 9, 194, 'Bagaimana pendapat saudara tentang penguasaan materi/ bidang pada proses pembelajaran', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
 (195, 9, 195, 'Bagaimana pendapat saudara tentang kedisiplinan/ketepatan waktu Instruktur pada saat pelatihan', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
 (196, 9, 196, 'Bagaimana pendapat saudara tentang metode mengajar Instruktur', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
 (197, 9, 197, 'bagaimana pendapat saudara tentang sikap dan prilaku instruktur pada saat memberikan pengajaran', NULL, 'skala_likert', 'Kinerja Instruktur', NULL, NULL),
@@ -12033,7 +12033,7 @@ INSERT INTO `peserta` (`id`, `instansi_id`, `user_id`, `nama`, `nik`, `tempat_la
 -- Dumping data for table `peserta_survei`
 --
 
-INSERT INTO `peserta_survei` (`id`, `nama`, `email`, `angkatan`, `kompetensi_id`, `pelatihan_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `peserta_survei` (`id`, `nama`, `email`, `angkatan`, `bidang_id`, `pelatihan_id`, `created_at`, `updated_at`) VALUES
 (3, 'Ryndi Mega Herawati', 'rindi121299@gmail.com', 'Angkatan ll', 2, 1, '2025-08-29 00:40:28', '2025-08-29 00:40:28'),
 (4, 'SABRINA WAFA AQILLAH', 's6951820@gmail.com', 'Angkatan ll', 2, 1, '2025-08-29 00:41:11', '2025-08-29 00:41:11'),
 (5, 'AMELTA AULIA SUDARKO', 'meltacialia@gmail.com', 'Angkatan 2', 2, 1, '2025-08-29 00:42:33', '2025-08-29 00:42:33'),
@@ -12148,7 +12148,7 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 -- Dumping data for table `tes`
 --
 
-INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `kompetensi_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
+INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
 
 -- asli
 -- TEKNIK ANG. 2
@@ -12592,7 +12592,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 (1027, 'Fajar Alfian', 'fajar.alfian@uptptkk.com', NULL, '$2y$12$NNPg0AvTL1q1eAqMFZxfseAb5RNH4VMYt4wjngx4RgOgIhEyS/kdm', NULL, '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
 (1028, 'Rian Ardianto', 'rian.ardianto@uptptkk.com', NULL, '$2y$12$NNPg0AvTL1q1eAqMFZxfseAb5RNH4VMYt4wjngx4RgOgIhEyS/kdm', NULL, '2025-09-24 00:00:00', '2025-09-24 00:00:00');
 
-INSERT INTO `instruktur` (`kompetensi_id`, `user_id`, `nama`, `tempat_lahir`, `tgl_lahir`, `jenis_kelamin`, `agama`, `alamat_rumah`, `no_hp`, `instansi`, `npwp`, `nik`, `nama_bank`, `no_rekening`, `pendidikan_terakhir`, `pengalaman_kerja`, `created_at`, `updated_at`) VALUES
+INSERT INTO `instruktur` (`bidang_id`, `user_id`, `nama`, `tempat_lahir`, `tgl_lahir`, `jenis_kelamin`, `agama`, `alamat_rumah`, `no_hp`, `instansi`, `npwp`, `nik`, `nama_bank`, `no_rekening`, `pendidikan_terakhir`, `pengalaman_kerja`, `created_at`, `updated_at`) VALUES
 (1, 1001, 'Budi Santoso, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 1', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
 (1, 1002, 'Siti Aminah, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 2', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
 (2, 1003, 'Rudi Hartono, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 3', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
