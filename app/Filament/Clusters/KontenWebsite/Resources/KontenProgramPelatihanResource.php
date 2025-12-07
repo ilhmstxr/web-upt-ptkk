@@ -56,7 +56,7 @@ class KontenProgramPelatihanResource extends Resource
         ]);
     }
 
-  public static function table(Table $table): Table
+ public static function table(Table $table): Table
 {
     return $table
         ->columns([
@@ -72,12 +72,15 @@ class KontenProgramPelatihanResource extends Resource
         ])
         ->actions([
             Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),   // <= TAMBAHKAN INI
         ])
         ->headerActions([
-            // kosongkan, jangan define CreateAction di sini
+            // tetap kosong gapapa
         ])
         ->bulkActions([
-            // kosongkan juga kalau tidak perlu bulk delete
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),   // kalau mau bulk delete juga
+            ]),
         ]);
 }
 
@@ -102,8 +105,8 @@ class KontenProgramPelatihanResource extends Resource
         return true;
     }
 
-    public static function canDelete(Model $record): bool
-    {
-        return false;
-    }
+   public static function canDelete(Model $record): bool
+{
+    return true; // atau hapus method ini sekalian
+}
 }

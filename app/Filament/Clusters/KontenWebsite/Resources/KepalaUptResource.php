@@ -56,34 +56,37 @@ class KepalaUptResource extends Resource
     }
 
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\ImageColumn::make('foto')
-                    ->label('Foto')
-                    ->square(),
+   public static function table(Table $table): Table
+{
+    return $table
+        ->columns([
+            Tables\Columns\ImageColumn::make('foto')
+                ->label('Foto')
+                ->square(),
 
-                Tables\Columns\TextColumn::make('nama_kepala_upt')
-                    ->label('Nama Kepala UPT')
-                    ->searchable()
-                    ->sortable(),
+            Tables\Columns\TextColumn::make('nama_kepala_upt')
+                ->label('Nama Kepala UPT')
+                ->searchable()
+                ->sortable(),
 
-                Tables\Columns\TextColumn::make('sambutan')
-                    ->label('Sambutan')
-                    ->limit(50),
+            Tables\Columns\TextColumn::make('sambutan')
+                ->label('Sambutan')
+                ->limit(50),
+        ])
+        ->filters([
+            //
+        ])
+        ->actions([
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),   // ✅ tombol Delete per baris
+        ])
+        ->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(), // ✅ bulk delete (opsional)
+            ]),
+        ]);
+}
 
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-
-            ]);
-    }
 
     public static function getRelations(): array
     {
