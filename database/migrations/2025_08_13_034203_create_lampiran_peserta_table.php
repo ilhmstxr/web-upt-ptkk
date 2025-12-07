@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lampiran', function (Blueprint $table) {
+        Schema::create('lampiran_peserta', function (Blueprint $table) {
             $table->id();
             // --- Berkas & Dokumen ---
             $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
@@ -28,6 +28,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('lampiran');
+        Schema::dropIfExists('lampiran_peserta');
     }
 };

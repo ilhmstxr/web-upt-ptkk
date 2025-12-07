@@ -20,15 +20,7 @@ class Instruktur extends Model
         'tgl_lahir',
         'jenis_kelamin',
         'agama',
-        'alamat_rumah',
         'no_hp',
-        'instansi',
-        'npwp',
-        'nik',
-        'nama_bank',
-        'no_rekening',
-        'pendidikan_terakhir',
-        'pengalaman_kerja'
     ];
     public function kompetensi()
     {
@@ -43,5 +35,10 @@ class Instruktur extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function lampiran()
+    {
+        return $this->hasOne(LampiranInstruktur::class);
     }
 }

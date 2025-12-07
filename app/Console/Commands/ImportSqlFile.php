@@ -50,7 +50,7 @@ class ImportSqlFile extends Command
             'peserta_survei',
             'users',
             'peserta',
-            'lampiran',
+            'lampiran_peserta',
             'percobaan',
             'jawaban_user',
             'kompetensi_pelatihan',
