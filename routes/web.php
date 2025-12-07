@@ -29,6 +29,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Public\CeritaKamiController;
 use App\Http\Controllers\Public\PelatihanController as PublicPelatihanController; // Controller Index Pelatihan (NEW)
 use App\Http\Controllers\PelatihanDetailController; // Controller Detail Pelatihan (EXISTING)
+use App\Http\Controllers\KompetensiController;
 
 // --- MODELS & OTHERS ---
 use App\Models\Peserta;
@@ -58,7 +59,8 @@ Route::get('/cerita-kami', [CeritaKamiController::class, 'index'])->name('cerita
 Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'index'])
     ->name('program-pelatihan.index');
 
-Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
+Route::get('/kompetensi', [KompetensiController::class, 'index'])
+    ->name('kompetensi');
 
 Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
 
@@ -73,7 +75,6 @@ Route::get('/home', function () {
     }
     return redirect()->route('landing');
 })->name('home');
-
 
 // Halaman Masuk
 Route::view('/masuk', 'pages.masuk')->name('masuk');
