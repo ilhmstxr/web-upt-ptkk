@@ -120,6 +120,19 @@ class PendaftaranResource extends Resource
                     ]),
                 Tables\Filters\SelectFilter::make('pelatihan')
                     ->relationship('pelatihan', 'nama_pelatihan'),
+                Tables\Filters\SelectFilter::make('kompetensi')
+                    ->label('Kompetensi')
+                    ->options(function () {
+                        return \App\Models\Kompetensi::pluck('nama_kompetensi', 'id');
+                    })
+                    ->query(function (Builder $query, array $data) {
+                        if (empty($data['value'])) {
+                            return $query;
+                        }
+                        return $query->whereHas('kompetensiPelatihan', function ($q) use ($data) {
+                            $q->where('kompetensi_id', $data['value']);
+                        });
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

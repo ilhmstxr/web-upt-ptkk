@@ -1,74 +1,21 @@
 <x-filament-panels::page>
-    <!-- 1. BREADCRUMBS -->
-    <nav class="flex mb-6 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm w-fit overflow-hidden">
-        <a href="{{ \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('index') }}" class="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 border-r border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 transition-colors">
-            <x-heroicon-o-home class="w-4 h-4 text-gray-400 dark:text-gray-500" />
-        </a>
-        <a href="{{ \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('index') }}" class="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400 border-r border-gray-100 dark:border-gray-700 transition-colors">
-            Manajemen Pelatihan
-        </a>
-        <a href="{{ \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('view', ['record' => $record]) }}" class="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400 border-r border-gray-100 dark:border-gray-700 transition-colors">
-            {{ $record->nama_pelatihan }}
-        </a>
-        <span class="px-4 py-2 bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 flex items-center gap-2 border-t-2 border-primary-600 dark:border-primary-400 -mt-[2px]">
-            <x-heroicon-o-rectangle-stack class="w-4 h-4" />
-            {{ $kompetensiPelatihan->kompetensi->nama_kompetensi ?? 'Detail Kompetensi' }}
-        </span>
-    </nav>
+    <!-- Custom Header Replaced by Native Filament Header -->
 
-    <!-- 2. HEADER KELAS & INSTRUKTUR -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-        <div class="flex flex-col lg:flex-row justify-between gap-6">
-            <!-- Info Kiri -->
-            <div class="flex gap-5 flex-1">
-                <div class="w-20 h-20 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 text-3xl font-bold shrink-0 shadow-sm border border-blue-200 dark:border-blue-800">
-                    {{ substr($kompetensiPelatihan->kompetensi->nama_kompetensi ?? 'KP', 0, 2) }}
-                </div>
+    <!-- INSTRUCTOR LIST SECTION -->
+    <div class="mb-6">
+         <h3 class="font-bold text-gray-800 dark:text-white mb-3">Daftar Instruktur</h3>
+         <div class="flex flex-wrap gap-4">
+            @foreach($this->instructors as $inst)
+            <div class="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode($inst->instruktur->nama_instruktur ?? 'Instruktur') }}&background=random"
+                    class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-600 shadow-sm">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">{{ $kompetensiPelatihan->kompetensi->nama_kompetensi ?? 'Nama Kompetensi' }}</h1>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm mb-3 flex items-center gap-2">
-                        <x-heroicon-o-clock class="w-4 h-4" /> {{ \Carbon\Carbon::parse($kompetensiPelatihan->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($kompetensiPelatihan->jam_selesai)->format('H:i') }} WIB • {{ $kompetensiPelatihan->lokasi ?? 'Ruang Kelas' }}
-                    </p>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2.5 py-1 rounded-full font-semibold border border-green-200 dark:border-green-800 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Sedang Berlangsung
-                        </span>
-                        <span class="text-gray-300 dark:text-gray-600">|</span>
-                        <a href="#" class="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline flex items-center gap-1">
-                            <x-heroicon-o-video-camera class="w-4 h-4" /> Link Zoom Kelas
-                        </a>
-                    </div>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Instruktur / Asisten</p>
+                    <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $inst->instruktur->nama_instruktur ?? 'Belum ditentukan' }}</p>
                 </div>
             </div>
-
-            <!-- Info Kanan (Instruktur Management) -->
-            <div class="flex flex-col gap-3 min-w-[320px]">
-                <!-- Instruktur Utama -->
-                <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($kompetensiPelatihan->instruktur->nama_instruktur ?? 'Instruktur') }}&background=random"
-                        class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-600 shadow-sm">
-                    <div class="flex-1">
-                        <p class="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Instruktur Utama</p>
-                        <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $kompetensiPelatihan->instruktur->nama_instruktur ?? 'Belum ditentukan' }}</p>
-                    </div>
-                    <div class="flex gap-1">
-                        <button class="w-7 h-7 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 text-xs">
-                            <x-heroicon-o-envelope class="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Add Instructor Action -->
-                <div class="flex gap-2">
-                    <button class="flex-1 py-2 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400 hover:border-primary-600 dark:hover:border-primary-400 transition-colors flex items-center justify-center gap-1">
-                        <x-heroicon-o-plus class="w-4 h-4" /> Tambah Asisten
-                    </button>
-                    <button class="py-2 px-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" title="Kelola Pengajar">
-                        <x-heroicon-o-cog-6-tooth class="w-4 h-4" />
-                    </button>
-                </div>
-            </div>
-        </div>
+            @endforeach
+         </div>
     </div>
 
     <!-- 3. TABS NAVIGATION -->
@@ -93,7 +40,6 @@
             <div class="flex justify-between items-center mb-6">
                 <h3 class="font-bold text-gray-800 dark:text-white text-lg">Statistik Evaluasi Pembelajaran</h3>
                 <div class="flex gap-2">
-                    <span class="text-xs text-gray-500 dark:text-gray-400 self-center mr-2">Terakhir diupdate: Hari ini, 10:00</span>
                     <button class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center">
                         <x-heroicon-o-printer class="w-4 h-4 mr-1" /> Cetak Laporan
                     </button>
@@ -132,7 +78,7 @@
                             </div>
                             <div class="flex justify-between items-center text-xs border-t border-dashed border-gray-200 dark:border-gray-700 pt-1">
                                 <span class="text-gray-500 dark:text-gray-400">Partisipasi</span>
-                                <span class="font-bold text-gray-800 dark:text-white">{{ $this->statistik['pretest']['count'] }} Peserta</span>
+                                <span class="font-bold text-gray-800 dark:text-white">{{ $this->statistik['pretest']['count'] }}/{{ $this->statistik['monev']['total_peserta'] }}</span>
                             </div>
                         </div>
                     </div>
@@ -165,12 +111,10 @@
                                 <span class="text-gray-500 dark:text-gray-400">Remedial</span>
                                 <span class="font-bold text-orange-600 dark:text-orange-400">{{ $this->statistik['posttest']['remedial'] }} Org</span>
                             </div>
-                            <div class="flex justify-between items-center text-xs border-t border-dashed border-gray-200 dark:border-gray-700 pt-1">
-                                <span class="text-gray-500 dark:text-gray-400">Kenaikan</span>
-                                <span class="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">
-                                    <x-heroicon-o-arrow-trending-up class="w-3 h-3" /> 
-                                    {{ $this->statistik['posttest']['kenaikan'] > 0 ? '+' : '' }}{{ $this->statistik['posttest']['kenaikan'] }}
-                                </span>
+                          
+                             <div class="flex justify-between items-center text-xs border-t border-dashed border-gray-200 dark:border-gray-700 pt-1">
+                                <span class="text-gray-500 dark:text-gray-400">Partisipasi</span>
+                                <span class="font-bold text-gray-800 dark:text-white">{{ $this->statistik['posttest']['count'] ?? 0 }}/{{ $this->statistik['monev']['total_peserta'] }}</span>
                             </div>
                         </div>
                     </div>
@@ -198,7 +142,7 @@
                         </div>
                         <div>
                             <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-500 dark:text-gray-400">Respon Survey</span>
+                                <span class="text-gray-500 dark:text-gray-400">Partisipasi</span>
                                 <span class="font-bold text-purple-600 dark:text-purple-400">{{ $this->statistik['monev']['responden'] }}/{{ $this->statistik['monev']['total_peserta'] }}</span>
                             </div>
                             <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">

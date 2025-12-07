@@ -1,35 +1,4 @@
 <x-filament-panels::page>
-    <!-- HERO SECTION (Info Only) -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-        <div>
-            <div class="flex items-center gap-3 mb-2">
-                <!-- Status Badge -->
-                @php
-                    $statusColor = match($record->status) {
-                        'aktif' => 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
-                        'belum dimulai' => 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
-                        'selesai' => 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600',
-                        default => 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
-                    };
-                    $dotColor = match($record->status) {
-                        'aktif' => 'bg-green-500',
-                        'belum dimulai' => 'bg-blue-500',
-                        'selesai' => 'bg-gray-500',
-                        default => 'bg-gray-500'
-                    };
-                @endphp
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }} border">
-                    <span class="w-1.5 h-1.5 {{ $dotColor }} rounded-full mr-1.5 animate-pulse"></span>
-                    {{ ucfirst($record->status) }}
-                </span>
-            </div>
-            <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-gray-500 dark:text-gray-400">
-                <span class="flex items-center gap-2"><x-heroicon-o-calendar class="w-4 h-4 text-gray-400 dark:text-gray-500" /> {{ \Carbon\Carbon::parse($record->tanggal_mulai)->format('d M') }} - {{ \Carbon\Carbon::parse($record->tanggal_selesai)->format('d M Y') }}</span>
-                <span class="hidden md:inline text-gray-300 dark:text-gray-600">|</span>
-                <span class="flex items-center gap-2"><x-heroicon-o-users class="w-4 h-4 text-gray-400 dark:text-gray-500" /> Total Peserta: {{ $record->pendaftaranPelatihan()->count() }}</span>
-            </div>
-        </div>
-    </div>
 
     <!-- 4. TABS & MAIN CONTENT AREA -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden min-h-[500px]" x-data="{ activeTab: 'kompetensi' }">
@@ -57,17 +26,7 @@
 
         <!-- CONTENT 1: DAFTAR KOMPETENSI -->
         <div x-show="activeTab === 'kompetensi'" class="p-6 bg-gray-50/30 dark:bg-gray-900/30 min-h-[400px]">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white">Kelas yang tersedia</h3>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <div class="relative w-full md:w-64">
-                            <input type="text" placeholder="Cari kompetensi..." class="w-full pl-9 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 shadow-sm bg-white dark:bg-gray-700 dark:text-white dark:placeholder-gray-400">
-                            <x-heroicon-o-magnifying-glass class="w-4 h-4 absolute left-3 top-2.5 text-gray-400 dark:text-gray-500" />
-                        </div>
-                         {{ $this->addInstructorAction }}
-                    </div>
-            </div>
-
+           
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($record->kompetensiPelatihan as $kompetensi)
                 {{-- Pastikan route 'view-kompetensi' ada atau sesuaikan --}}

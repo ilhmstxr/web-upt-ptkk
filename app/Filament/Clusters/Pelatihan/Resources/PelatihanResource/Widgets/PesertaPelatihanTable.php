@@ -24,24 +24,32 @@ class PesertaPelatihanTable extends BaseWidget
                     ->where('pelatihan_id', $this->record->id)
             )
             ->columns([
-                Tables\Columns\TextColumn::make('peserta.nama')
-                    ->label('Nama Peserta')
+                Tables\Columns\TextColumn::make('nomor_registrasi')
+                    ->label('No. Registrasi')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('peserta.instansi.asal_instansi')
-                    ->label('Instansi')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('peserta.nama')
+                    ->label('Info Peserta')
+                    ->description(fn (PendaftaranPelatihan $record): string => $record->peserta?->user?->email . ' | ' . $record->peserta?->no_hp)
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('kompetensiPelatihan.kompetensi.nama_kompetensi')
                     ->label('Kompetensi')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('tanggal_pendaftaran')
+                    ->label('Tanggal Daftar')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status_pendaftaran')
+                    ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
+                        'Pending' => 'gray',
+                        'Verifikasi' => 'warning',
                         'Diterima' => 'success',
                         'Ditolak' => 'danger',
-                        'Cadangan' => 'warning',
-                        'Menunggu' => 'gray',
-                        default => 'info',
+                        'Menunggu Seleksi' => 'warning',
+                        default => 'gray',
                     }),
             ])
             ->filters([
@@ -52,62 +60,22 @@ class PesertaPelatihanTable extends BaseWidget
                         'Ditolak' => 'Ditolak',
                         'Cadangan' => 'Cadangan',
                     ]),
-                Tables\Filters\SelectFilter::make('kompetensi_id')
+                Tables\Filters\SelectFilter::make('kompetensi_pelatihan_id')
                     ->label('Kompetensi')
-                    ->relationship('kompetensi', 'nama_kompetensi', function ($query) {
-                        // Filter kompetensi that are part of this pelatihan?
-                        // Complex, but standard relationship filter works.
-                        $query->whereHas('kompetensiPelatihan', function ($q) {
-                            $q->where('pelatihan_id', $this->record->id);
-                        });
+                    ->options(function () {
+                        return \App\Models\KompetensiPelatihan::with('kompetensi')
+                            ->where('pelatihan_id', $this->record->id)
+                            ->get()
+                            ->pluck('kompetensi.nama_kompetensi', 'id');
+                    })
+                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
+                        if (empty($data['value'])) {
+                            return $query;
+                        }
+                        return $query->where('kompetensi_pelatihan_id', $data['value']);
                     }),
             ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make()
-                    ->label('Tambah Peserta')
-                    ->model(PendaftaranPelatihan::class)
-                    ->form([
-                        Forms\Components\Select::make('peserta_id')
-                            ->label('Peserta')
-                            ->relationship('peserta', 'nama')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-                         Forms\Components\Select::make('kompetensi_pelatihan_id')
-                            ->label('Kompetensi')
-                            ->options(function () {
-                                return \App\Models\KompetensiPelatihan::with('kompetensi')
-                                    ->where('pelatihan_id', $this->record->id)
-                                    ->get()
-                                    ->pluck('kompetensi.nama_kompetensi', 'id');
-                            })
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                // Auto fill kompetensi_id hidden field if needed
-                                $kp = \App\Models\KompetensiPelatihan::find($state);
-                                if ($kp) {
-                                    $set('kompetensi_id', $kp->kompetensi_id);
-                                }
-                            }),
-                        Forms\Components\Hidden::make('kompetensi_id'),
-                        Forms\Components\Hidden::make('pelatihan_id')
-                            ->default($this->record->id),
-                        Forms\Components\Select::make('status')
-                            ->options([
-                                'Menunggu' => 'Menunggu',
-                                'Diterima' => 'Diterima',
-                                'Ditolak' => 'Ditolak',
-                            ])
-                            ->default('Diterima')
-                            ->required(),
-                    ])
-                    ->mutateFormDataUsing(function (array $data) {
-                        $data['pelatihan_id'] = $this->record->id;
-                        return $data;
-                    })
-                    ->slideOver(),
-            ])
+            ->headerActions([])
             ->actions([
                 Tables\Actions\EditAction::make()->slideOver(),
                 Tables\Actions\DeleteAction::make(),

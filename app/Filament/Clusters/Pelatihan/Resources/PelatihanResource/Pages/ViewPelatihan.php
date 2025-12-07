@@ -39,6 +39,40 @@ class ViewPelatihan extends ViewRecord
         ];
     }
 
+    public function getSubheading(): string | \Illuminate\Contracts\Support\Htmlable | null
+    {
+        return new \Illuminate\Support\HtmlString(\Illuminate\Support\Facades\Blade::render(<<<'BLADE'
+            <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mt-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ match($record->status) {
+                    'aktif' => 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
+                    'belum dimulai' => 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+                    'selesai' => 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600',
+                    default => 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                } }} border">
+                    <span class="w-1.5 h-1.5 {{ match($record->status) {
+                        'aktif' => 'bg-green-500',
+                        'belum dimulai' => 'bg-blue-500',
+                        'selesai' => 'bg-gray-500',
+                        default => 'bg-gray-500'
+                    } }} rounded-full mr-1.5 animate-pulse"></span>
+                    {{ ucfirst($record->status) }}
+                </span>
+                
+                <div class="flex items-center gap-1">
+                    <x-heroicon-o-calendar class="w-4 h-4" /> 
+                    {{ \Carbon\Carbon::parse($record->tanggal_mulai)->format('d M') }} - {{ \Carbon\Carbon::parse($record->tanggal_selesai)->format('d M Y') }}
+                </div>
+                
+                <span class="text-gray-300 dark:text-gray-600">|</span>
+                
+                <div class="flex items-center gap-1">
+                    <x-heroicon-o-users class="w-4 h-4" /> 
+                    Total Peserta: {{ $record->pendaftaranPelatihan()->count() }}
+                </div>
+            </div>
+        BLADE, ['record' => $this->record]));
+    }
+
     public function addInstructorAction(): \Filament\Actions\Action
     {
         return \Filament\Actions\Action::make('addInstructor')
@@ -48,25 +82,37 @@ class ViewPelatihan extends ViewRecord
             ->form([
                 \Filament\Forms\Components\Select::make('kompetensi_id')
                     ->label('Kompetensi')
-                    ->options(function () {
-                        $existingIds = $this->record->kompetensiPelatihan->pluck('kompetensi_id');
-                        return \App\Models\Kompetensi::whereNotIn('id', $existingIds)->pluck('nama_kompetensi', 'id');
-                    })
+                    ->options(\App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
                     ->searchable()
                     ->required(),
                 \Filament\Forms\Components\Select::make('instruktur_id')
                     ->label('Pilih Instruktur (Opsional)')
                     ->options(\App\Models\Instruktur::query()->pluck('nama', 'id'))
                     ->searchable()
-                    ->reactive()
-                    ->afterStateUpdated(fn ($state, callable $set) => 
-                        $set('nama_instruktur', \App\Models\Instruktur::find($state)?->nama)
-                    ),
+                    ->multiple(),
              ])
             ->action(function (array $data) {
-                $this->record->kompetensiPelatihan()->create($data);
+                $instructors = $data['instruktur_id'] ?? [];
+                
+                // If no instructor selected, create one record with null instructor? 
+                // However, logic implies we want to add instructors.
+                // If optional, and empty array?
+                
+                if (empty($instructors)) {
+                    // Create single record without instructor
+                    $createData = $data;
+                    unset($createData['instruktur_id']);
+                    $this->record->kompetensiPelatihan()->create($createData);
+                } else {
+                    foreach ($instructors as $instructorId) {
+                        $createData = $data;
+                        $createData['instruktur_id'] = $instructorId;
+                        $this->record->kompetensiPelatihan()->create($createData);
+                    }
+                }
+
                 \Filament\Notifications\Notification::make()
-                    ->title('Instruktur berhasil ditambahkan')
+                    ->title('Bidang berhasil ditambahkan')
                     ->success()
                     ->send();
             });

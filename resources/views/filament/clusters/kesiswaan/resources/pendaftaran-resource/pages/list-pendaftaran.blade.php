@@ -200,9 +200,9 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900 dark:text-white font-medium">{{ $p->pelatihan->nama_pelatihan ?? '-' }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $p->pelatihan->jenis_pelatihan ?? '-' }}</div>
+                                <td class="px-6 py-4 whitespace-normal max-w-xs">
+                                    <div class="text-sm text-gray-900 dark:text-white font-medium leading-snug">{{ $p->pelatihan->nama_pelatihan ?? '-' }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $p->pelatihan->jenis_pelatihan ?? '-' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @php

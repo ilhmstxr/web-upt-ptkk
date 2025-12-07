@@ -169,8 +169,6 @@ class PelatihanResource extends Resource
                     ->description(fn ($record) => $record->tanggal_selesai ? 'S/d ' . $record->tanggal_selesai->format('d M Y') : null),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('instansi')
-                    ->relationship('instansi', 'asal_instansi'),
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'belum dimulai' => 'Belum Dimulai',
