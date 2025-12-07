@@ -13,38 +13,64 @@ class PenempatanAsrama extends Model
     protected $table = 'penempatan_asrama';
 
     protected $fillable = [
-        'pendaftaran_id',
+        'pelatihan_id',
+        'peserta_id',
+        'asrama_id',
         'kamar_id',
+        'periode',
     ];
 
-    public function pendaftaranPelatihan()
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
+
+    public function pelatihan()
     {
-        return $this->belongsTo(PendaftaranPelatihan::class, 'pendaftaran_id');
+        return $this->belongsTo(Pelatihan::class);
+    }
+
+    public function peserta()
+    {
+        return $this->belongsTo(Peserta::class);
+    }
+
+    public function asrama()
+    {
+        return $this->belongsTo(Asrama::class);
     }
 
     public function kamar()
     {
-        return $this->belongsTo(Kamar::class, 'kamar_id');
+        return $this->belongsTo(Kamar::class);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
+
     /**
-     * Scope a query to only include active residents.
-     * Logic: Current date is between training start and end date.
+     * Hanya penempatan yang masih AKTIF menginap.
+     * Logika: hari ini di antara tanggal_mulai & tanggal_selesai pelatihan.
      */
     public function scopePenghuniAktif(Builder $query): void
     {
-        $query->whereHas('pendaftaranPelatihan.pelatihan', function ($q) {
+        $query->whereHas('pelatihan', function ($q) {
+            // asumsi kolom di tabel pelatihan: tanggal_mulai, tanggal_selesai (DATE)
             $q->whereRaw('CURDATE() BETWEEN tanggal_mulai AND tanggal_selesai');
         });
     }
 
     /**
-     * Scope a query to only include history logs (checked out).
-     * Logic: Current date is past the training end date.
+     * Hanya penempatan yang SUDAH BERLALU (riwayat).
+     * Logika: hari ini > tanggal_selesai pelatihan.
      */
     public function scopeLogHistory(Builder $query): void
     {
-        $query->whereHas('pendaftaranPelatihan.pelatihan', function ($q) {
+        $query->whereHas('pelatihan', function ($q) {
             $q->whereRaw('CURDATE() > tanggal_selesai');
         });
     }

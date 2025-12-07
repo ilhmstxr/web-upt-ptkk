@@ -25,5 +25,12 @@ class Kamar extends Model
     {
         return $this->belongsTo(Asrama::class, 'asrama_id');
     }
+
+
+    public function penempatanAsrama()
+    {
+        return $this->hasMany(PenempatanAsrama::class, 'kamar_id');
+    }
+
     
 }

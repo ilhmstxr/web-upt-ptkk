@@ -2,8 +2,6 @@
 
 namespace App\Filament\Clusters\Fasilitas\Resources\AsramaResource\Widgets;
 
-use App\Models\Asrama;
-use App\Models\Kamar;
 use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,16 +15,21 @@ class AsramaDenahWidget extends Widget
 
     public function getViewData(): array
     {
-        // Jika record (Asrama) ada, ambil kamarnya. Jika tidak, kosong.
-        // Widget ini idealnya dipasang di ViewPage atau EditPage dari AsramaResource
-        
-        $kamars = [];
+        $kamarsByLantai = collect();
+
         if ($this->record) {
-            $kamars = $this->record->kamars()->orderBy('lantai')->orderBy('nomor_kamar')->get()->groupBy('lantai');
+            // asumsikan $this->record adalah instance Asrama
+            $kamarsByLantai = $this->record->kamars()
+                ->withCount('penempatanAsrama') // ->penempatan_asrama_count
+                ->orderBy('lantai')
+                ->orderBy('nomor_kamar')
+                ->get()
+                ->groupBy('lantai');
         }
 
         return [
-            'kamars_by_lantai' => $kamars,
+            'kamars_by_lantai' => $kamarsByLantai,
+            'asrama'           => $this->record,
         ];
     }
 }

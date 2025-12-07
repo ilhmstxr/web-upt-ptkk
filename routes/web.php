@@ -290,6 +290,9 @@ Route::get('testing-export-pdf/{pelatihanId}', function ($pelatihanId) {
     ]);
 });
 */
+//kamar
+Route::post('/otomasi-asrama/{pelatihan}', [AsramaOtomasiController::class, 'jalankanOtomasi'])
+    ->name('otomasi.asrama');
 
 /*
 |--------------------------------------------------------------------------

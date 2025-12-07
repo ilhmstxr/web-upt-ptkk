@@ -98,6 +98,12 @@ class Peserta extends Model
         return $this->hasMany(PendaftaranPelatihan::class, 'peserta_id');
     }
 
+        public function penempatanAsrama()
+    {
+        return $this->hasMany(PenempatanAsrama::class, 'peserta_id');
+    }
+
+
     /**
      * Mendapatkan semua sesi/jadwal (kompetensi_pelatihan) yang pernah diikuti peserta
      * (melalui tabel pendaftaran_pelatihan).
