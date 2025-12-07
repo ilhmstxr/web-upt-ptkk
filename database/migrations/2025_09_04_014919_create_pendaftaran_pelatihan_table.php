@@ -6,41 +6,60 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('pendaftaran_pelatihan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
-            $table->foreignId('pelatihan_id')->constrained('pelatihan')->cascadeOnDelete();
-            // $table->foreignId('kompetensi_id')
-            //     ->constrained('kompetensi')
-            //     ->cascadeOnDelete();
-            $table->foreignId('kompetensi_pelatihan_id')->nullable()
-                ->constrained('kompetensi_pelatihan')
+
+            $table->foreignId('peserta_id')
+                ->constrained('peserta')
                 ->cascadeOnDelete();
+
+            $table->foreignId('pelatihan_id')
+                ->constrained('pelatihan')
+                ->cascadeOnDelete();
+
+            $table->foreignId('kompetensi_pelatihan_id')
+                ->nullable()
+                ->constrained('kompetensi_pelatihan')
+                ->nullOnDelete();
+
+            // ✅ dipakai di controller
+            $table->foreignId('kompetensi_id')
+                ->nullable()
+                ->constrained('kompetensi')
+                ->nullOnDelete();
+
             $table->string('kelas')->nullable();
 
-            // IMPROVE: menambahkan kompetensi id 
-            $table->foreignId('kompetensi_id')->constrained('kompetensi')->cascadeOnDelete();
-            $table->Integer('nilai_pre_test')->default(0);
-            $table->Integer('nilai_post_test')->default(0);
-            $table->Integer('nilai_praktek')->default(0);
-            $table->Integer('rata_rata')->default(0);
-            $table->Integer('nilai_survey')->default(0);
-            $table->Enum('status', ['Lulus', 'Tidak Lulus', 'Belum Lulus'])->default('Belum Lulus');
-            $table->Enum('status_pendaftaran', ['Pending', 'Diterima', 'Ditolak'])->default('Pending');
-            $table->String('nomor_registrasi')->unique();
-            $table->timestamp('tanggal_pendaftaran');
+            $table->integer('nilai_pre_test')->default(0);
+            $table->integer('nilai_post_test')->default(0);
+            $table->integer('nilai_praktek')->default(0);
+            $table->integer('rata_rata')->default(0);
+            $table->integer('nilai_survey')->default(0);
+
+            $table->enum('status', ['Lulus', 'Tidak Lulus', 'Belum Lulus'])
+                ->default('Belum Lulus');
+
+            // ✅ pakai huruf kecil biar match controller & Filament
+            $table->enum('status_pendaftaran', ['pending', 'diterima', 'ditolak'])
+                ->default('pending');
+
+            // nomor registrasi hasil generateToken()
+            $table->string('nomor_registrasi')->unique();
+
+            $table->timestamp('tanggal_pendaftaran')->nullable();
+
+            // ✅ token assessment (diisi nanti = nomor_registrasi saat diterima admin)
+            $table->string('assessment_token', 64)->nullable()->unique();
+            $table->timestamp('assessment_token_sent_at')->nullable();
+
             $table->timestamps();
+
+            $table->unique(['pelatihan_id', 'peserta_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('pendaftaran_pelatihan');

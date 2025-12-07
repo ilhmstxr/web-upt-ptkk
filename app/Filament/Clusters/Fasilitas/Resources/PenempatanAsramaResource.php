@@ -15,9 +15,8 @@ use Filament\Resources\Resource;
 
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\Action as TableAction; // ✅ ini yang dipakai untuk headerActions
-
-use Filament\Notifications\Notification; // ✅ buat notify dari closure
+use Filament\Tables\Actions\Action as TableAction;
+use Filament\Notifications\Notification;
 
 use Illuminate\Database\Eloquent\Builder;
 
@@ -33,23 +32,65 @@ class PenempatanAsramaResource extends Resource
 
     public static function form(Form $form): Form
     {
-        // Arsip / read-only → form bisa kosong
-        return $form->schema([]);
+        return $form->schema([]); // read-only
+    }
+
+    /**
+     * ✅ eager load biar kenceng + siap ambil data kesiswaan
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with([
+                'peserta.user',
+                'peserta.instansi',
+                'pelatihan',
+                'asrama',
+                'kamar',
+                // kalau kamu punya relasi langsung dari peserta ke pendaftaran, ini membantu eager load:
+                'peserta.pendaftaranPelatihans', // <-- kalau nama relasi beda, ganti di sini juga
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+
+                // =========================
+                // DATA KESISWAAN
+                // =========================
+
                 Tables\Columns\TextColumn::make('peserta.nama')
                     ->label('Nama Peserta')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('peserta.jenis_kelamin')
-                    ->label('Gender')
-                    ->badge()
-                    ->color(fn (?string $state) => $state === 'Perempuan' ? 'danger' : 'info'),
+                Tables\Columns\TextColumn::make('asal_sekolah')
+                    ->label('Asal Sekolah')
+                    ->getStateUsing(function (PenempatanAsrama $record) {
+                        return $record->peserta?->instansi?->asal_instansi ?? '-';
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('peserta.instansi', fn($q) =>
+                            $q->where('asal_instansi', 'like', "%{$search}%")
+                        );
+                    })
+                    ->wrap(),
+
+                Tables\Columns\TextColumn::make('kelas')
+                    ->label('Kelas')
+                    ->getStateUsing(function (PenempatanAsrama $record) {
+                        $peserta = $record->peserta;
+                        $pelatihanId = $record->pelatihan_id;
+
+                        // ⚠️ kalau relasi peserta kamu bukan pendaftaranPelatihans, ganti di sini
+                        $pendaftaran = $peserta?->pendaftaranPelatihans
+                            ?->firstWhere('pelatihan_id', $pelatihanId);
+
+                        return $pendaftaran?->kelas ?? '-';
+                    })
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
                     ->label('Pelatihan')
@@ -60,16 +101,23 @@ class PenempatanAsramaResource extends Resource
                     ->label('Periode')
                     ->toggleable(),
 
+                // =========================
+                // DATA PENEMPATAN (boleh kosong)
+                // =========================
+
                 Tables\Columns\TextColumn::make('asrama.nama')
                     ->label('Asrama')
+                    ->getStateUsing(fn (PenempatanAsrama $r) => $r->asrama?->nama ?? '-') // ✅ kosong jika null
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('kamar.nomor_kamar')
                     ->label('Kamar')
+                    ->getStateUsing(fn (PenempatanAsrama $r) => $r->kamar?->nomor_kamar ?? '-') // ✅ kosong jika null
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('kamar.lantai')
                     ->label('Lantai')
+                    ->getStateUsing(fn (PenempatanAsrama $r) => $r->kamar?->lantai ?? '-') // ✅ kosong jika null
                     ->alignCenter()
                     ->sortable(),
 
@@ -78,6 +126,7 @@ class PenempatanAsramaResource extends Resource
                     ->dateTime('d M Y H:i')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+
             ->filters([
                 Tables\Filters\Filter::make('selesai')
                     ->label('Pelatihan Selesai')
@@ -91,6 +140,7 @@ class PenempatanAsramaResource extends Resource
                     ->relationship('pelatihan', 'nama_pelatihan')
                     ->label('Filter Pelatihan'),
             ])
+
             ->headerActions([
                 TableAction::make('otomasi')
                     ->label('Jalankan Otomasi Penempatan')
@@ -125,16 +175,16 @@ class PenempatanAsramaResource extends Resource
 
                         Notification::make()
                             ->title('Otomasi berhasil dijalankan')
-                            ->body('Penempatan kamar dibuat untuk pelatihan: '.$pelatihan->nama_pelatihan)
+                            ->body('Penempatan kamar dibuat untuk pelatihan: ' . $pelatihan->nama_pelatihan)
                             ->success()
                             ->send();
                     }),
             ])
+
             ->actions([
-                // arsip read-only, kalau mau edit/hapus tinggal aktifkan:
-                // Tables\Actions\EditAction::make(),
-                // Tables\Actions\DeleteAction::make(),
+                // read-only
             ])
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

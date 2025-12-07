@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\PendaftaranPelatihan;
 
 class PenempatanAsrama extends Model
 {
@@ -20,7 +21,7 @@ class PenempatanAsrama extends Model
         'periode',
     ];
 
-    // RELATIONS
+    // ✅ RELATIONS
     public function pelatihan()
     {
         return $this->belongsTo(Pelatihan::class);
@@ -41,17 +42,30 @@ class PenempatanAsrama extends Model
         return $this->belongsTo(Kamar::class);
     }
 
-    // SCOPES
-    public function scopePenghuniAktif(Builder $query): void
+    /**
+     * ✅ RELASI YANG DIBUTUHKAN FILAMENT
+     * Cari pendaftaran_pelatihan yang match peserta_id + pelatihan_id
+     */
+    public function pendaftaranPelatihan()
     {
-        $query->whereHas('pelatihan', function ($q) {
+        return $this->hasOne(PendaftaranPelatihan::class, 'peserta_id', 'peserta_id')
+            ->whereColumn(
+                'pendaftaran_pelatihan.pelatihan_id',
+                'penempatan_asrama.pelatihan_id'
+            );
+    }
+
+    // ✅ SCOPES (return Builder biar chainable)
+    public function scopePenghuniAktif(Builder $query): Builder
+    {
+        return $query->whereHas('pelatihan', function ($q) {
             $q->whereRaw('CURDATE() BETWEEN tanggal_mulai AND tanggal_selesai');
         });
     }
 
-    public function scopeLogHistory(Builder $query): void
+    public function scopeLogHistory(Builder $query): Builder
     {
-        $query->whereHas('pelatihan', function ($q) {
+        return $query->whereHas('pelatihan', function ($q) {
             $q->whereRaw('CURDATE() > tanggal_selesai');
         });
     }

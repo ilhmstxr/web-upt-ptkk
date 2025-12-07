@@ -14,8 +14,6 @@ class Kesiswaan extends Cluster
 
     // jadi tampil sebagai 1 menu parent lalu children di dalamnya
     protected static ?string $navigationLabel = 'Kesiswaan';
-    protected static ?string $navigationGroup = 'Kesiswaan';
-
 
      // sub-navigation cluster jadi TAB di atas,
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;

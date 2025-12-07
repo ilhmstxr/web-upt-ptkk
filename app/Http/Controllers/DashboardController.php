@@ -5,97 +5,106 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use App\Models\Tes;
 use App\Models\Peserta;
 use App\Models\Percobaan;
 use App\Models\JawabanUser;
+use App\Models\PendaftaranPelatihan;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     /**
-     * default fallback tes IDs (jika perlu fallback ke id statis)
-     * sesuaikan bila DB Anda punya id berbeda untuk pre/post/monev
+     * fallback tes IDs (kalau db belum lengkap)
      */
     protected array $defaultTesIds = [
         'pre'  => 1,
         'post' => 2,
-        'monev'=> 3,
+        'monev' => 3,
     ];
 
     /**
-     * helper: kembalikan key & id participant yang aktif.
-     * returns ['key'=>'peserta_id'|'pesertaSurvei_id', 'id'=>int|null]
+     * helper ambil peserta aktif dari session:
+     * return ['key'=>'peserta_id'|'pesertaSurvei_id', 'id'=>int|null]
      */
     protected function getParticipantKeyAndId(): array
     {
         $pesertaId = session('peserta_id') ?? null;
-        if ($pesertaId) {
-            return ['key' => 'peserta_id', 'id' => $pesertaId];
-        }
+        if ($pesertaId) return ['key' => 'peserta_id', 'id' => $pesertaId];
 
         $psId = session('pesertaSurvei_id') ?? null;
-        if ($psId) {
-            return ['key' => 'pesertaSurvei_id', 'id' => $psId];
-        }
+        if ($psId) return ['key' => 'pesertaSurvei_id', 'id' => $psId];
 
         return ['key' => null, 'id' => null];
     }
 
     /**
-     * Cari Tes berdasarkan tipe logis: 'pre','post','monev'
-     * 1) Cari berdasarkan judul (like)
-     * 2) Jika ada kolom sub_tipe, cari berdasarkan sub_tipe
-     * 3) Fallback ke id default (konfigurasi di $defaultTesIds)
+     * basis query Tes yang selalu terikat pelatihan / kompetensi aktif session
+     */
+    protected function baseTesQuery()
+    {
+        $pelatihanId  = session('pelatihan_id');
+        $kompetensiId = session('kompetensi_id');
+
+        return Tes::query()
+            ->when($pelatihanId && Schema::hasColumn('tes','pelatihan_id'),
+                fn($q) => $q->where('pelatihan_id', $pelatihanId)
+            )
+            ->when($kompetensiId && Schema::hasColumn('tes','kompetensi_id'),
+                fn($q) => $q->where('kompetensi_id', $kompetensiId)
+            );
+    }
+
+    /**
+     * Cari Tes berdasarkan tipe logis pre/post/monev tapi tetap scope ke pelatihan aktif
      */
     protected function getTesByType(string $type): ?Tes
     {
         $type = strtolower($type);
+        $base = $this->baseTesQuery();
 
         if ($type === 'pre') {
-            $tes = Tes::whereRaw('LOWER(judul) LIKE ?', ['%pre test%'])->first();
+            $tes = (clone $base)->whereRaw('LOWER(judul) LIKE ?', ['%pre test%'])->first();
             if ($tes) return $tes;
 
             if (Schema::hasColumn('tes', 'sub_tipe')) {
-                $tes = Tes::where('sub_tipe', 'pre-test')->first();
+                $tes = (clone $base)->where('sub_tipe', 'pre-test')->first();
                 if ($tes) return $tes;
             }
 
-            return Tes::find($this->defaultTesIds['pre']);
+            return (clone $base)->find($this->defaultTesIds['pre']);
         }
 
         if ($type === 'post') {
-            $tes = Tes::whereRaw('LOWER(judul) LIKE ?', ['%post test%'])->first();
+            $tes = (clone $base)->whereRaw('LOWER(judul) LIKE ?', ['%post test%'])->first();
             if ($tes) return $tes;
 
             if (Schema::hasColumn('tes', 'sub_tipe')) {
-                $tes = Tes::where('sub_tipe', 'post-test')->first();
+                $tes = (clone $base)->where('sub_tipe', 'post-test')->first();
                 if ($tes) return $tes;
             }
 
-            return Tes::find($this->defaultTesIds['post']);
+            return (clone $base)->find($this->defaultTesIds['post']);
         }
 
         if ($type === 'monev') {
             if (Schema::hasColumn('tes', 'sub_tipe')) {
-                $tes = Tes::where('sub_tipe', 'monev')->first();
+                $tes = (clone $base)->where('sub_tipe', 'monev')->first();
                 if ($tes) return $tes;
             }
 
-            $tes = Tes::whereRaw('LOWER(judul) LIKE ?', ['%monev%'])->first();
+            $tes = (clone $base)->whereRaw('LOWER(judul) LIKE ?', ['%monev%'])->first();
             if ($tes) return $tes;
 
-            return Tes::find($this->defaultTesIds['monev']);
+            return (clone $base)->find($this->defaultTesIds['monev']);
         }
 
         return null;
     }
 
     /**
-     * Hitung statistik singkat pre/post/monev untuk peserta aktif.
-     * Menggunakan getTesByType sehingga fleksibel terhadap isi tabel tes.
+     * Statistik ringkas pre/post/monev untuk peserta aktif (session-aware)
      */
     private function getTestStats(): array
     {
@@ -113,31 +122,34 @@ class DashboardController extends Controller
             'monevDone'        => false,
         ];
 
-        if (! $key || ! $id) return $stats;
+        if (!$key || !$id) return $stats;
 
-        $preTes = $this->getTesByType('pre');
+        $preTes  = $this->getTesByType('pre');
         $postTes = $this->getTesByType('post');
-        $monevTes = $this->getTesByType('monev');
+        $monevTes= $this->getTesByType('monev');
 
         if ($preTes) {
             $stats['preTestAttempts'] = Percobaan::where('tes_id', $preTes->id)->where($key, $id)->count();
-            $pre = Percobaan::where('tes_id', $preTes->id)->where($key, $id)->whereNotNull('waktu_selesai')->latest('waktu_selesai')->first();
+            $pre = Percobaan::where('tes_id', $preTes->id)->where($key, $id)
+                ->whereNotNull('waktu_selesai')->latest('waktu_selesai')->first();
             $stats['preTestScore'] = $pre->skor ?? null;
-            $stats['preTestDone'] = (bool)$pre;
+            $stats['preTestDone'] = (bool) $pre;
         }
 
         if ($postTes) {
             $stats['postTestAttempts'] = Percobaan::where('tes_id', $postTes->id)->where($key, $id)->count();
-            $post = Percobaan::where('tes_id', $postTes->id)->where($key, $id)->whereNotNull('waktu_selesai')->latest('waktu_selesai')->first();
+            $post = Percobaan::where('tes_id', $postTes->id)->where($key, $id)
+                ->whereNotNull('waktu_selesai')->latest('waktu_selesai')->first();
             $stats['postTestScore'] = $post->skor ?? null;
-            $stats['postTestDone'] = (bool)$post;
+            $stats['postTestDone'] = (bool) $post;
         }
 
         if ($monevTes) {
             $stats['monevAttempts'] = Percobaan::where('tes_id', $monevTes->id)->where($key, $id)->count();
-            $mon = Percobaan::where('tes_id', $monevTes->id)->where($key, $id)->whereNotNull('waktu_selesai')->latest('waktu_selesai')->first();
+            $mon = Percobaan::where('tes_id', $monevTes->id)->where($key, $id)
+                ->whereNotNull('waktu_selesai')->latest('waktu_selesai')->first();
             $stats['monevScore'] = $mon->skor ?? null;
-            $stats['monevDone'] = (bool)$mon;
+            $stats['monevDone'] = (bool) $mon;
         }
 
         return $stats;
@@ -150,18 +162,36 @@ class DashboardController extends Controller
     {
         $stats = $this->getTestStats();
         $surveyStatus = 'pending';
+
         return view('dashboard.index', array_merge(['surveyStatus' => $surveyStatus], $stats));
     }
 
     // ======================
-    // HOME & PROFILE
+    // HOME
     // ======================
     public function home(): View
     {
-        $peserta = Peserta::all();
         $participant = $this->getParticipantKeyAndId();
-        $pesertaAktif = ($participant['key'] === 'peserta_id') ? Peserta::find($participant['id']) : null;
+        $pesertaAktif = ($participant['key'] === 'peserta_id')
+            ? Peserta::with('instansi')->find($participant['id'])
+            : null;
+
+        $pelatihanId = session('pelatihan_id');
+
+        // ✅ peserta yang tampil hanya yang terdaftar di pelatihan aktif
+        $peserta = Peserta::query()
+            ->when($pelatihanId, function($q) use ($pelatihanId) {
+                $q->whereHas('pendaftaranPelatihan', function($qq) use ($pelatihanId){
+                    $qq->where('pelatihan_id', $pelatihanId)
+                       ->where('status_pendaftaran', 'diterima');
+                });
+            })
+            ->with('instansi:id,asal_instansi,kota')
+            ->orderBy('nama')
+            ->get();
+
         $stats = $this->getTestStats();
+
         return view('dashboard.pages.home', array_merge(
             ['peserta' => $peserta, 'pesertaAktif' => $pesertaAktif],
             $stats
@@ -184,7 +214,7 @@ class DashboardController extends Controller
     }
 
     // ======================
-    // SET / STORE PESERTA dari MODAL HOME
+    // SET PESERTA dari modal HOME
     // ======================
     public function setPeserta(Request $request)
     {
@@ -193,9 +223,19 @@ class DashboardController extends Controller
             'peserta_id' => 'nullable|exists:peserta,id',
         ]);
 
+        // kalau pilih dari dropdown
         if ($request->filled('peserta_id')) {
-            $peserta = Peserta::findOrFail($request->peserta_id);
+            $peserta = Peserta::with('instansi')->findOrFail($request->peserta_id);
+
+            // ✅ jangan reset pelatihan/kompetensi session
             session(['peserta_id' => $peserta->id]);
+
+            session([
+                'instansi_id'   => optional($peserta->instansi)->id,
+                'instansi_nama' => optional($peserta->instansi)->asal_instansi,
+                'instansi_kota' => optional($peserta->instansi)->kota,
+            ]);
+
             return redirect()->route('dashboard.home')->with('success','Peserta dipilih: '.$peserta->nama);
         }
 
@@ -219,8 +259,8 @@ class DashboardController extends Controller
 
         $peserta = $matches->first();
 
+        // ✅ jangan hapus pelatihan_id / kompetensi_id (hasil login token)
         $request->session()->forget(['peserta_id','instansi_id','instansi_nama','instansi_kota']);
-        $request->session()->regenerate();
 
         session([
             'peserta_id'    => $peserta->id,
@@ -269,11 +309,15 @@ class DashboardController extends Controller
     }
 
     // ======================
-    // Logout - hapus session
+    // LOGOUT
     // ======================
     public function logout(Request $request)
     {
-        $request->session()->forget(['peserta_id','pesertaSurvei_id']);
+        $request->session()->forget([
+            'peserta_id','pesertaSurvei_id',
+            'pendaftaran_pelatihan_id','pelatihan_id','kompetensi_id',
+            'instansi_id','instansi_nama','instansi_kota'
+        ]);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -282,15 +326,8 @@ class DashboardController extends Controller
     }
 
     // ======================
-    // GENERIC START TEST HELPER
+    // GENERIC START TEST
     // ======================
-    /**
-     * Membuat/meresume percobaan untuk jenis tes tertentu.
-     * $typeLabel: 'Pre-Test' | 'Post-Test' | 'Monev'
-     * $typeKey: 'pre'|'post'|'monev' (dipakai untuk mencari Tes)
-     * $showRoute: route name untuk menampilkan (contoh 'dashboard.pretest.show')
-     * $resultRoute: route name untuk result (contoh 'dashboard.pretest.result')
-     */
     protected function startTest(string $typeKey, string $typeLabel, string $showRoute, string $resultRoute)
     {
         $participant = $this->getParticipantKeyAndId();
@@ -334,12 +371,11 @@ class DashboardController extends Controller
 
         // buat percobaan baru
         $data = [
-            'tes_id' => $tes->id,
-            'waktu_mulai' => now(),
+            'tes_id'       => $tes->id,
+            'waktu_mulai'  => now(),
         ];
         $data[$key] = $id;
 
-        // jika tabel percobaan punya kolom 'tipe', simpan juga (opsional)
         if (Schema::hasColumn('percobaan', 'tipe')) {
             $data['tipe'] = $typeKey;
         }
@@ -351,12 +387,8 @@ class DashboardController extends Controller
     }
 
     // ======================
-    // NEW: SUBMIT ATTEMPT (gabungan & penyesuaian)
+    // SUBMIT ATTEMPT (API)
     // ======================
-    /**
-     * Endpoint untuk menyimpan jawaban / menyelesaikan percobaan peserta.
-     * (dipakai kalau kamu kirim dari front-end lain)
-     */
     public function submitAttempt(Request $request)
     {
         $participant = $this->getParticipantKeyAndId();
@@ -373,8 +405,7 @@ class DashboardController extends Controller
         $tes = Tes::findOrFail($request->tes_id);
 
         $attemptCount = Percobaan::where('tes_id', $tes->id)
-            ->where($key, $id)
-            ->count();
+            ->where($key, $id)->count();
 
         $maxAttempts = \App\Filament\Resources\TesPercobaanResource::MAX_ATTEMPTS_PER_TES ?? 1;
         if ($attemptCount >= $maxAttempts) {
@@ -385,18 +416,25 @@ class DashboardController extends Controller
         if ($pel) {
             $now = now();
             $jenis = strtolower($tes->jenis ?? $tes->tipe ?? '');
+
             if ($jenis === 'pretest' || str_contains($jenis, 'pre')) {
-                $from = Carbon::parse($pel->tanggal_mulai)->addDays(\App\Filament\Resources\TesPercobaanResource::PRETEST_AVAILABLE_FROM_OFFSET_DAYS);
-                $to   = Carbon::parse($pel->tanggal_mulai)->addDays(\App\Filament\Resources\TesPercobaanResource::PRETEST_AVAILABLE_TO_OFFSET_DAYS)->endOfDay();
+                $from = Carbon::parse($pel->tanggal_mulai)
+                    ->addDays(\App\Filament\Resources\TesPercobaanResource::PRETEST_AVAILABLE_FROM_OFFSET_DAYS);
+                $to   = Carbon::parse($pel->tanggal_mulai)
+                    ->addDays(\App\Filament\Resources\TesPercobaanResource::PRETEST_AVAILABLE_TO_OFFSET_DAYS)
+                    ->endOfDay();
             } elseif ($jenis === 'posttest' || str_contains($jenis, 'post')) {
-                $from = Carbon::parse($pel->tanggal_selesai)->addDays(\App\Filament\Resources\TesPercobaanResource::POSTTEST_AVAILABLE_FROM_OFFSET_DAYS);
-                $to   = Carbon::parse($pel->tanggal_selesai)->addDays(\App\Filament\Resources\TesPercobaanResource::POSTTEST_AVAILABLE_TO_OFFSET_DAYS)->endOfDay();
+                $from = Carbon::parse($pel->tanggal_selesai)
+                    ->addDays(\App\Filament\Resources\TesPercobaanResource::POSTTEST_AVAILABLE_FROM_OFFSET_DAYS);
+                $to   = Carbon::parse($pel->tanggal_selesai)
+                    ->addDays(\App\Filament\Resources\TesPercobaanResource::POSTTEST_AVAILABLE_TO_OFFSET_DAYS)
+                    ->endOfDay();
             } else {
                 $from = now()->subYear();
                 $to   = now()->addYear();
             }
 
-            if (! ($now->between($from, $to)) ) {
+            if (! $now->between($from, $to)) {
                 return response()->json(['ok'=>false, 'message'=>'Tes belum tersedia pada jadwal saat ini'], 422);
             }
         }
@@ -414,23 +452,18 @@ class DashboardController extends Controller
 
             if (Carbon::now()->greaterThan($allowedFinish)) {
                 $running->waktu_selesai = $running->waktu_selesai ?? now();
-                $running->skor = $this->hitungSkor($running);
+                $running->skor  = $this->hitungSkor($running);
                 $running->lulus = $running->skor >= ($running->tes->passing_score ?? 70);
                 $running->save();
 
                 return response()->json(['ok' => false, 'message' => 'Waktu pengerjaan telah habis', 'data' => $running], 422);
             }
         } else {
-            $data = [
-                'tes_id' => $tes->id,
-                'waktu_mulai' => now(),
-            ];
+            $data = ['tes_id' => $tes->id, 'waktu_mulai' => now()];
             $data[$key] = $id;
-
             if (Schema::hasColumn('percobaan', 'tipe')) {
                 $data['tipe'] = strtolower($tes->jenis ?? $tes->tipe ?? '');
             }
-
             $running = Percobaan::create($data);
         }
 
@@ -449,11 +482,9 @@ class DashboardController extends Controller
             }
         }
 
-        if ($request->filled('skor')) {
-            $running->skor = (float) $request->input('skor');
-        } else {
-            $running->skor = $this->hitungSkor($running);
-        }
+        $running->skor = $request->filled('skor')
+            ? (float) $request->input('skor')
+            : $this->hitungSkor($running);
 
         $running->waktu_selesai = now();
         $running->lulus = $running->skor >= ($running->tes->passing_score ?? 70);
@@ -463,18 +494,22 @@ class DashboardController extends Controller
     }
 
     // ======================
-    // PRE-TEST endpoints
+    // PRETEST
     // ======================
     public function pretest(Request $request)
     {
         $participant = $this->getParticipantKeyAndId();
         $key = $participant['key']; $id = $participant['id'];
-        if (!$key || !$id) return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
+
+        if (!$key || !$id)
+            return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
 
         $peserta = ($key === 'peserta_id') ? Peserta::find($id) : null;
-        if (!$peserta) return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
+        if (!$peserta)
+            return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
 
-        $tes = Tes::where('kompetensi_id', $peserta->kompetensi_id)->get();
+        $tes = $this->baseTesQuery()->get();
+
         return view('dashboard.pages.pre-test.pretest', compact('tes','peserta'));
     }
 
@@ -488,16 +523,11 @@ class DashboardController extends Controller
         return $this->startTest('pre', 'Pre-Test', 'dashboard.pretest.show', 'dashboard.pretest.result');
     }
 
-    /**
-     * Helper generik untuk tampilan soal (pre/post) -> view tes.do
-     */
     protected function handleTesShow(Tes $tes, Request $request, string $mode, string $resultRouteName)
     {
         $percobaanId = (int) $request->query('percobaan');
         if (!$percobaanId) {
-            // route start-nya tergantung mode
             $startRoute = $mode === 'post-test' ? 'dashboard.posttest.start' : 'dashboard.pretest.start';
-
             return redirect()->route($startRoute, $tes->id)
                 ->with('error', 'Pilih peserta terlebih dahulu untuk memulai tes.');
         }
@@ -509,7 +539,6 @@ class DashboardController extends Controller
             return redirect()->route($resultRouteName, ['percobaan' => $percobaan->id]);
         }
 
-        // durasi hanya relevan untuk pre/post, bukan monev
         $duration = ($tes->durasi_menit ?? 0) * 60;
         $elapsed  = $percobaan->waktu_mulai ? now()->diffInSeconds($percobaan->waktu_mulai) : 0;
         $remaining = max($duration - $elapsed, 0);
@@ -556,25 +585,13 @@ class DashboardController extends Controller
         return $this->handleTesShow($tes, $request, 'post-test', 'dashboard.posttest.result');
     }
 
-    /**
-     * Helper generik untuk submit soal (pre/post), termasuk cheat_flag.
-     */
-    protected function processTesSubmit(
-        Request $request,
-        Percobaan $percobaan,
-        string $showRouteName,
-        string $resultRouteName
-    ) {
+    protected function processTesSubmit(Request $request, Percobaan $percobaan, string $showRouteName, string $resultRouteName)
+    {
         $data = $request->input('jawaban', []);
         foreach ($data as $pertanyaanId => $opsiId) {
             JawabanUser::updateOrCreate(
-                [
-                    'percobaan_id'   => $percobaan->id,
-                    'pertanyaan_id'  => $pertanyaanId,
-                ],
-                [
-                    'opsi_jawaban_id' => $opsiId,
-                ]
+                ['percobaan_id' => $percobaan->id, 'pertanyaan_id' => $pertanyaanId],
+                ['opsi_jawaban_id' => $opsiId]
             );
         }
 
@@ -589,7 +606,6 @@ class DashboardController extends Controller
             ]);
         }
 
-        // selesai
         $percobaan->waktu_selesai = $percobaan->waktu_selesai ?? now();
 
         $jawaban = $percobaan->jawabanUser;
@@ -599,7 +615,6 @@ class DashboardController extends Controller
         $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
         $percobaan->save();
 
-        // ---- flag kecurangan dari JS ----
         if ($request->boolean('cheat_flag')) {
             session()->put('cheat_'.$percobaan->id, true);
         }
@@ -609,27 +624,25 @@ class DashboardController extends Controller
 
     public function pretestSubmit(Request $request, Percobaan $percobaan)
     {
-        return $this->processTesSubmit(
-            $request,
-            $percobaan,
-            'dashboard.pretest.show',
-            'dashboard.pretest.result'
-        );
+        return $this->processTesSubmit($request, $percobaan, 'dashboard.pretest.show', 'dashboard.pretest.result');
     }
 
     // ======================
-    // POST-TEST endpoints
+    // POSTTEST
     // ======================
     public function posttest(Request $request)
     {
         $participant = $this->getParticipantKeyAndId();
         $key = $participant['key']; $id = $participant['id'];
-        if (!$key || !$id) return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
+
+        if (!$key || !$id)
+            return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
 
         $peserta = ($key === 'peserta_id') ? Peserta::find($id) : null;
-        if (!$peserta) return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
+        if (!$peserta)
+            return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
 
-        $tes = Tes::where('kompetensi_id', $peserta->kompetensi_id)->get();
+        $tes = $this->baseTesQuery()->get();
 
         $tesWithStatus = $tes->map(function($t) use ($key, $id) {
             $done = Percobaan::where('tes_id',$t->id)->where($key,$id)->whereNotNull('waktu_selesai')->exists();
@@ -654,12 +667,7 @@ class DashboardController extends Controller
 
     public function posttestSubmit(Request $request, Percobaan $percobaan)
     {
-        return $this->processTesSubmit(
-            $request,
-            $percobaan,
-            'dashboard.posttest.show',
-            'dashboard.posttest.result'
-        );
+        return $this->processTesSubmit($request, $percobaan, 'dashboard.posttest.show', 'dashboard.posttest.result');
     }
 
     public function pretestResult(Percobaan $percobaan)
@@ -673,68 +681,62 @@ class DashboardController extends Controller
     }
 
     public function posttestResult(Percobaan $percobaan)
-{
-    // pastikan relasi ke tes dan peserta ke-load
-    $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'peserta', 'pesertaSurvei']);
+    {
+        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'peserta', 'pesertaSurvei']);
 
-    // ambil info peserta aktif (key: peserta_id / pesertaSurvei_id)
-    $participant = $this->getParticipantKeyAndId();
-    $key = $participant['key'];
-    $id  = $participant['id'];
+        $participant = $this->getParticipantKeyAndId();
+        $key = $participant['key'];
+        $id  = $participant['id'];
 
-    // nilai pre-test default
-    $preScore            = null;
-    $improvementPoints   = null; // selisih langsung (post - pre)
-    $improvementPercent  = null; // kenaikan relatif dalam %
+        $preScore = null;
+        $improvementPoints = null;
+        $improvementPercent = null;
 
-    if ($key && $id) {
-        // cari percobaan PRE untuk tes yang sama & peserta yang sama
-        $preAttempt = Percobaan::where($key, $id)
-            ->where('tes_id', $percobaan->tes_id)
-            ->where(function ($q) {
-                // kalau kamu simpan tipe di kolom 'tipe'
-                $q->where('tipe', 'pre')
-                  ->orWhere('tipe', 'pre-test')
-                  ->orWhereNull('tipe'); // fallback
-            })
-            ->whereNotNull('waktu_selesai')
-            ->orderByDesc('waktu_selesai')
-            ->first();
+        if ($key && $id) {
+            $preAttempt = Percobaan::where($key, $id)
+                ->where('tes_id', $percobaan->tes_id)
+                ->where(function ($q) {
+                    $q->where('tipe', 'pre')
+                      ->orWhere('tipe', 'pre-test')
+                      ->orWhereNull('tipe');
+                })
+                ->whereNotNull('waktu_selesai')
+                ->orderByDesc('waktu_selesai')
+                ->first();
 
-        if ($preAttempt && $preAttempt->skor !== null && $percobaan->skor !== null) {
-            $preScore          = (float) $preAttempt->skor;
-            $postScore         = (float) $percobaan->skor;
-            $improvementPoints = $postScore - $preScore;
+            if ($preAttempt && $preAttempt->skor !== null && $percobaan->skor !== null) {
+                $preScore = (float) $preAttempt->skor;
+                $postScore = (float) $percobaan->skor;
+                $improvementPoints = $postScore - $preScore;
 
-            // hindari bagi 0
-            if ($preScore > 0) {
-                $improvementPercent = round((($postScore - $preScore) / $preScore) * 100, 2);
-            } else {
-                $improvementPercent = null; // nanti di view kita jelaskan khusus
+                $improvementPercent = $preScore > 0
+                    ? round((($postScore - $preScore) / $preScore) * 100, 2)
+                    : null;
             }
         }
+
+        return view('dashboard.pages.tes.result', [
+            'percobaan'          => $percobaan,
+            'mode'               => 'post-test',
+            'preScore'           => $preScore,
+            'improvementPoints'  => $improvementPoints,
+            'improvementPercent' => $improvementPercent,
+        ]);
     }
-
-    return view('dashboard.pages.tes.result', [
-        'percobaan'          => $percobaan,
-        'mode'               => 'post-test',
-        'preScore'           => $preScore,
-        'improvementPoints'  => $improvementPoints,
-        'improvementPercent' => $improvementPercent,
-    ]);
-}
-
 
     // ======================
     // MONEV
     // ======================
     public function monev()
     {
+        $base = $this->baseTesQuery();
+
         if (Schema::hasColumn('tes','sub_tipe')) {
-            $tes = Tes::where('sub_tipe', 'monev')->get();
+            $tes = (clone $base)->where('sub_tipe', 'monev')->get();
         } else {
-            $tes = Tes::whereRaw('LOWER(judul) LIKE ?', ['%monev%'])->get();
+            $tes = (clone $base)->whereRaw('LOWER(judul) LIKE ?', ['%monev%'])->get();
         }
+
         return view('dashboard.pages.monev.monev', compact('tes'));
     }
 
@@ -742,9 +744,11 @@ class DashboardController extends Controller
     {
         $participant = $this->getParticipantKeyAndId();
         $key = $participant['key']; $id = $participant['id'];
+
         if (!$key || !$id) {
             return redirect()->route('dashboard.home')->with('error', 'Silakan isi nama & sekolah terlebih dahulu.');
         }
+
         return redirect()->route('dashboard.monev.begin', ['tes' => $tes->id]);
     }
 
@@ -752,6 +756,7 @@ class DashboardController extends Controller
     {
         $participant = $this->getParticipantKeyAndId();
         $key = $participant['key']; $id = $participant['id'];
+
         if (!$key || !$id) {
             return redirect()->route('dashboard.home')->with('error', 'Silakan isi nama & sekolah terlebih dahulu.');
         }
@@ -778,12 +783,19 @@ class DashboardController extends Controller
     {
         $participant = $this->getParticipantKeyAndId();
         $key = $participant['key']; $id = $participant['id'];
-        if (!$key || !$id) return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
+
+        if (!$key || !$id)
+            return redirect()->route('dashboard.home')->with('error','Silakan pilih peserta terlebih dahulu.');
 
         $pid = ($key === 'peserta_id') ? Peserta::findOrFail($id) : null;
 
-        $tes = Tes::where('tipe', 'survei')->where('id', 9)->first();
-        if (!$tes) return redirect()->route('dashboard.home')->with('error','Survey tidak ditemukan.');
+        // ✅ survey juga scope pelatihan aktif
+        $tes = $this->baseTesQuery()
+            ->where('tipe', 'survei')
+            ->first();
+
+        if (!$tes)
+            return redirect()->route('dashboard.home')->with('error','Survey tidak ditemukan.');
 
         return redirect()->route('survey.step', [
             'peserta' => $pid ? $pid->id : $id,
@@ -793,11 +805,12 @@ class DashboardController extends Controller
 
     public function surveySubmit(Request $request)
     {
-        return redirect()->route('dashboard.survey')->with('success', 'Survey berhasil dikerjakan!');
+        return redirect()->route('dashboard.survey')
+            ->with('success', 'Survey berhasil dikerjakan!');
     }
 
     // ======================
-    // Helper: hitung skor
+    // Helper skor
     // ======================
     protected function hitungSkor(Percobaan $percobaan): int
     {
@@ -805,11 +818,12 @@ class DashboardController extends Controller
         $jawabanCollection = $percobaan->jawabanUser ?? collect();
 
         $total = $jawabanCollection->count();
-        if ($total === 0) {
-            return 0;
-        }
+        if ($total === 0) return 0;
 
-        $benar = $jawabanCollection->filter(fn($j) => ($j->opsiJawaban->apakah_benar ?? false))->count();
+        $benar = $jawabanCollection
+            ->filter(fn($j) => ($j->opsiJawaban->apakah_benar ?? false))
+            ->count();
+
         return (int) round(($benar / $total) * 100);
     }
 }

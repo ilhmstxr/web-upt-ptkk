@@ -32,14 +32,14 @@ class AsramaResource extends Resource
     protected static ?string $pluralModelLabel = 'Asrama';
 
     /**
-     * ✅ Ini kunci: sebelum list tampil, sync dulu dari config kamar.php
+     * ✅ sebelum list tampil, sync dulu dari config kamar.php
      */
     public static function getEloquentQuery(): Builder
     {
         Asrama::syncFromConfig();
 
         return parent::getEloquentQuery()
-            ->withCount('kamars'); // supaya kamars_count jalan
+            ->withCount('kamars'); // hasilkan kamars_count
     }
 
     public static function form(Form $form): Form
@@ -75,8 +75,9 @@ class AsramaResource extends Resource
     {
         return $table
             ->heading('Fasilitas Asrama')
-            ->description('Ringkasan kapasitas, kondisi kamar, dan informasi bed tiap asrama berdasarkan config kamar.php.')
+            ->description('Menampilkan nama asrama, jumlah kamar, dan jumlah bed.')
 
+            // ✅ grid card
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,
@@ -84,66 +85,45 @@ class AsramaResource extends Resource
 
             ->columns([
                 Stack::make([
-                    ColumnGrid::make(12)->schema([
-                        TextColumn::make('nama')
-                            ->label('')
-                            ->size(TextColumn\TextColumnSize::Large)
-                            ->weight('bold')
-                            ->searchable()
-                            ->sortable()
-                            ->columnSpan(8),
+                    // ===== Nama Asrama =====
+                    TextColumn::make('nama')
+                        ->label('')
+                        ->size(TextColumn\TextColumnSize::Large)
+                        ->weight('bold')
+                        ->searchable()
+                        ->sortable()
+                        ->extraAttributes([
+                            'class' => 'text-indigo-800 text-xl font-extrabold tracking-wide',
+                        ]),
 
-                        BadgeColumn::make('gender')
-                            ->label('')
-                            ->columnSpan(4)
-                            ->colors([
-                                'info'    => 'Laki-laki',
-                                'danger'  => 'Perempuan',
-                                'warning' => 'Campur',
-                            ])
-                            ->alignEnd(),
-                    ]),
-
-                    ColumnGrid::make(3)->schema([
+                    // ===== Stats kamar & bed =====
+                    ColumnGrid::make(2)->schema([
                         BadgeColumn::make('kamars_count')
-                            ->label('Jumlah Kamar (DB)')
-                            ->color('gray')
+                            ->label('Jumlah Kamar')
+                            ->color('primary') // ✅ bukan gray
                             ->icon('heroicon-o-building-office-2')
-                            ->alignCenter(),
+                            ->alignCenter()
+                            ->extraAttributes([
+                                'class' => 'text-white font-bold',
+                            ]),
 
                         BadgeColumn::make('total_bed_config')
-                            ->label('Total Bed (Config)')
-                            ->color('success')
+                            ->label('Jumlah Bed')
+                            ->color('success') // ✅ bukan gray
                             ->icon('heroicon-o-user-group')
-                            ->alignCenter(),
-
-                        BadgeColumn::make('kamar_rusak_config')
-                            ->label('Kamar Rusak (Config)')
-                            ->color(fn ($state) => (int) $state > 0 ? 'danger' : 'gray')
-                            ->icon('heroicon-o-exclamation-triangle')
-                            ->alignCenter(),
+                            ->alignCenter()
+                            ->extraAttributes([
+                                'class' => 'text-white font-bold',
+                            ]),
                     ]),
-
-                    TextColumn::make('deskripsi_fasilitas')
-                        ->label('')
-                        ->wrap()
-                        ->color('gray')
-                        ->extraAttributes([
-                            'class' => 'text-sm leading-relaxed mt-1',
-                        ]),
-
-                    TextColumn::make('alamat')
-                        ->label('')
-                        ->wrap()
-                        ->toggleable(isToggledHiddenByDefault: true)
-                        ->color('gray')
-                        ->extraAttributes([
-                            'class' => 'text-xs mt-1',
-                        ]),
                 ])
-                ->space(2)
+                ->space(3)
                 ->extraAttributes([
-                    'class' => 'p-5 bg-white rounded-2xl shadow-sm ring-1 ring-gray-200',
+                    // ✅ full warna-warni, tanpa white/gray
+                    'class' => '
+                        p-6 rounded-3xl shadow-lg border-2 border-indigo-300
+                        bg-gradient-to-br from-indigo-100 via-pink-100 to-yellow-100
+                    ',
                 ]),
             ])
 
@@ -151,7 +131,7 @@ class AsramaResource extends Resource
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')
-                    ->color('primary')
+                    ->color('warning')  // ✅ warna-warni
                     ->button(),
 
                 Tables\Actions\DeleteAction::make()

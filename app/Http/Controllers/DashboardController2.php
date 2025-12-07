@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
-class DashboardController extends Controller
+class DashboardController2 extends Controller
 {
     // ... (Semua fungsi dari index() sampai testSubmit() tetap sama persis) ...
 

@@ -2,76 +2,116 @@
 
 namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets;
 
+use App\Models\PendaftaranPelatihan;
 use App\Models\PenempatanAsrama;
-use Filament\Forms;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class AsramaPelatihanTable extends BaseWidget
 {
     public ?Model $record = null;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
+    protected static ?string $heading = 'Rekap Penempatan Asrama Peserta';
 
     public function table(Table $table): Table
     {
         return $table
             ->query(
-                PenempatanAsrama::query()
-                    ->whereHas('pendaftaranPelatihan', function ($q) {
-                        $q->where('pelatihan_id', $this->record->id);
-                    })
+                PendaftaranPelatihan::query()
+                    ->with([
+                        'peserta.instansi',
+                        'penempatanAsrama.kamar.asrama',
+                    ])
+                    ->where('pelatihan_id', $this->record->id)
             )
             ->columns([
-                Tables\Columns\TextColumn::make('pendaftaranPelatihan.peserta.nama')
+
+                Tables\Columns\TextColumn::make('nomor_registrasi')
+                    ->label('Kode Registrasi')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable()
+                    ->badge()
+                    ->color('primary'),
+
+                Tables\Columns\TextColumn::make('peserta.nama')
                     ->label('Nama Peserta')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('kamar.nama_kamar')
+
+                Tables\Columns\TextColumn::make('peserta.jenis_kelamin')
+                    ->label('Gender')
+                    ->badge()
+                    ->colors([
+                        'info' => 'Laki-laki',
+                        'warning' => 'Perempuan',
+                    ]),
+
+                Tables\Columns\TextColumn::make('peserta.instansi.asal_instansi')
+                    ->label('Asal Sekolah / Instansi')
+                    ->searchable()
+                    ->wrap(),
+
+                Tables\Columns\TextColumn::make('penempatanAsrama.kamar.nama_kamar')
                     ->label('Kamar')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('kamar.asrama.nama_asrama')
+                    ->formatStateUsing(fn ($state) => $state ?: 'Belum dibagi')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray'),
+
+                Tables\Columns\TextColumn::make('penempatanAsrama.kamar.asrama.nama_asrama')
                     ->label('Asrama')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Tanggal Check-in')
-                    ->date(),
+                    ->formatStateUsing(fn ($state) => $state ?: 'Belum dibagi')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray'),
+
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Tempatkan Peserta')
+                    ->icon('heroicon-o-plus')
                     ->form([
-                        Forms\Components\Select::make('pendaftaran_id')
-                            ->label('Peserta (yang terdaftar di pelatihan ini)')
-                            ->options(function () {
-                                return \App\Models\PendaftaranPelatihan::with('peserta')
+                        \Filament\Forms\Components\Select::make('pendaftaran_pelatihan_id')
+                            ->label('Peserta (terdaftar di pelatihan ini)')
+                            ->options(fn () =>
+                                PendaftaranPelatihan::with('peserta.instansi')
                                     ->where('pelatihan_id', $this->record->id)
-                                    // Filter out those already placed? Optional.
-                                    ->whereDoesntHave('penempatanAsrama') // Assuming One-to-One placement per pendaftaran?
                                     ->get()
-                                    ->mapWithKeys(function ($item) {
-                                        return [$item->id => $item->peserta->nama . ' - ' . ($item->peserta->instansi->asal_instansi ?? '')];
-                                    });
-                            })
-                            ->required()
-                            ->searchable(),
-                        Forms\Components\Select::make('kamar_id')
-                            ->label('Kamar')
-                            ->relationship('kamar', 'nama_kamar') // You might want to filter available rooms
-                            ->required()
+                                    ->mapWithKeys(fn ($pp) => [
+                                        $pp->id => $pp->nomor_registrasi.' - '.$pp->peserta->nama.' ('.($pp->peserta->instansi->asal_instansi ?? '-').')'
+                                    ])
+                            )
                             ->searchable()
-                            ->preload(),
+                            ->required(),
+
+                        \Filament\Forms\Components\Select::make('kamar_id')
+                            ->label('Kamar')
+                            ->relationship('kamar', 'nama_kamar')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
                     ])
                     ->mutateFormDataUsing(function (array $data) {
-                        // Logic to assign
-                        return $data;
+                        // ambil info pendaftaran
+                        $pp = PendaftaranPelatihan::findOrFail($data['pendaftaran_pelatihan_id']);
+
+                        return [
+                            'pelatihan_id' => $pp->pelatihan_id,
+                            'peserta_id'   => $pp->peserta_id,
+                            'kamar_id'     => $data['kamar_id'],
+                            'periode'      => now()->year, // opsional
+                        ];
                     })
+                    ->using(fn (array $data) => PenempatanAsrama::create($data))
                     ->slideOver(),
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make()->label('Check-out/Hapus'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Check-out / Hapus')
+                    ->icon('heroicon-o-trash'),
             ]);
     }
 }
