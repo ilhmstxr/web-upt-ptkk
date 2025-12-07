@@ -95,16 +95,22 @@ class PendaftaranResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
                     ->label('Pelatihan')
+                    ->formatStateUsing(function ($state) {
+                        if (empty($state)) return '-';
+                        $words = explode(' ', $state);
+                        $chunks = array_chunk($words, 4);
+                        return implode('<br>', array_map(fn($chunk) => implode(' ', $chunk), $chunks));
+                    })
+                    ->html()
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_pendaftaran')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Pending' => 'gray',
-                        'Verifikasi' => 'warning',
+                        'Pending' => 'warning',
                         'Diterima' => 'success',
                         'Ditolak' => 'danger',
-                        default => 'gray',
+                        default => 'warning',
                     }),
                 Tables\Columns\TextColumn::make('tanggal_pendaftaran')
                     ->dateTime()

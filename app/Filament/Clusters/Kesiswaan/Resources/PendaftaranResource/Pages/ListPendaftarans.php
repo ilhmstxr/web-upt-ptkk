@@ -22,6 +22,13 @@ class ListPendaftarans extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('export_excel')
+                ->label('Export Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->action(function () {
+                    return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SemuaPelatihanExport, 'semua_pelatihan.xlsx');
+                }),
             Actions\CreateAction::make(),
         ];
     }

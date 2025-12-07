@@ -85,20 +85,21 @@ class PelatihanResource extends Resource
                     Forms\Components\Section::make('Materi & Jadwal')
                         ->description('Atur kurikulum dan jadwal pelatihan')
                         ->schema([
-                            Forms\Components\Repeater::make('kompetensiPelatihan')
-                                ->relationship()
+                            Forms\Components\Repeater::make('kompetensi_items')
+                                ->label('Jadwal Kompetensi')
                                 ->schema([
                                     Forms\Components\Select::make('kompetensi_id')
-                                        ->relationship('kompetensi', 'nama_kompetensi')
+                                        ->relationship('kompetensi', 'nama_kompetensi') // This works for options, but we manage saving manually
                                         ->required()
                                         ->label('Materi / Kompetensi')
                                         ->columnSpan(2),
                                     
                                     Forms\Components\Select::make('instruktur_id')
                                         ->label('Nama Instruktur')
-                                        ->relationship('instruktur', 'nama')
+                                        ->options(\App\Models\Instruktur::pluck('nama', 'id'))
                                         ->searchable()
                                         ->preload()
+                                        ->multiple() // Allow multiple selection
                                         ->required()
                                         ->createOptionForm([
                                             Forms\Components\TextInput::make('nama')
@@ -107,7 +108,10 @@ class PelatihanResource extends Resource
                                             Forms\Components\Select::make('kompetensi_id')
                                                 ->relationship('kompetensi', 'nama_kompetensi')
                                                 ->required(),
-                                        ]),
+                                        ])
+                                        ->createOptionUsing(function (array $data) {
+                                            return \App\Models\Instruktur::create($data)->id;
+                                        }),
                                     
                                     Forms\Components\TextInput::make('lokasi')
                                         ->label('Lokasi / Ruangan')
@@ -116,7 +120,7 @@ class PelatihanResource extends Resource
                                 ->columns(2)
                                 ->defaultItems(1)
                                 ->addActionLabel('Tambah Sesi')
-                                ->itemLabel(fn (array $state): ?string => $state['kompetensi_id'] ?? null),
+                                ->itemLabel(fn (array $state): ?string => \App\Models\Kompetensi::find($state['kompetensi_id'] ?? null)?->nama_kompetensi),
                         ]),
                 ]),
             Forms\Components\Wizard\Step::make('Konten Halaman Pendaftaran')
