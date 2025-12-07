@@ -7,141 +7,198 @@
 
     <title>@yield('title', 'Dashboard') - UPT PTKK Jatim</title>
 
-    <!-- Tailwind CSS (CDN, gunakan build lokal untuk production) -->
+    {{-- Tailwind CDN (untuk production nanti idealnya pakai build Vite) --}}
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Google Fonts -->
+    {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    />
 
     @stack('styles')
 
     <style>
         body { font-family: 'Inter', sans-serif; }
 
-        /* Animasi fade in */
         .fade-in {
-            animation: fadeIn 0.8s ease forwards;
+            animation: fadeIn 0.4s ease-out forwards;
             opacity: 0;
             will-change: opacity, transform;
         }
-        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
-        /* Hover cards */
-        .card-hover:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .card-hover {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+        }
 
-        /* Sidebar active link */
-        .active-link { background-color: #2563eb; color: white; }
-
-        /* Pendaftaran Stepper / Error popup */
-        .error-popup { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); z-index: 10; }
-        .error-popup.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+        .error-popup {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+            z-index: 50;
+        }
+        .error-popup.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
     </style>
 </head>
-<body class="bg-blue-100 min-h-screen flex">
+<body class="bg-gradient-to-br from-blue-50 via-sky-50 to-slate-50 min-h-screen flex">
 
     @isset($isPendaftaran)
-        <!-- Konten Pendaftaran (tidak ikut diganti di sini) -->
+        {{-- Mode khusus pendaftaran, konten langsung --}}
         @yield('content')
     @else
         <div class="flex flex-1 relative">
-            <!-- Overlay untuk mobile sidebar -->
-            <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+            {{-- Overlay mobile --}}
+            <div id="sidebar-overlay"
+                 class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden"></div>
 
-            <!-- Sidebar -->
-            <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 flex flex-col border-r" aria-label="Sidebar">
-                <div class="flex items-center justify-center p-4 border-b">
-                    <img src="{{ asset('images/logo-upt-ptkk.jpg') }}"
-                         onerror="this.onerror=null;this.src='https://placehold.co/60x60/3B82F6/FFFFFF?text=LOGO';"
-                         alt="Logo UPT"
-                         class="rounded-full w-14 h-14 object-cover">
+            {{-- Sidebar --}}
+            <aside id="sidebar"
+                   class="fixed inset-y-0 left-0 w-64 bg-white/95 backdrop-blur border-r border-slate-200 shadow-lg
+                          transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 flex flex-col"
+                   aria-label="Sidebar">
+                <div class="flex items-center justify-center p-4 border-b border-slate-200">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ asset('images/logo-upt-ptkk.jpg') }}"
+                             onerror="this.onerror=null;this.src='https://placehold.co/60x60/3B82F6/FFFFFF?text=LOGO';"
+                             alt="Logo UPT"
+                             class="rounded-full w-12 h-12 object-cover border border-blue-100">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-800">
+                                Dashboard Peserta
+                            </p>
+                            <p class="text-xs text-slate-500">
+                                UPT PTKK Jatim
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <nav class="flex-1 p-4" aria-label="Sidebar Navigation">
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Peserta Dashboard</p>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="{{ route('dashboard.home') }}"
-                               class="flex items-center p-3 rounded-lg font-medium {{ request()->routeIs('dashboard.home') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}"
-                               aria-current="{{ request()->routeIs('dashboard.home') ? 'page' : 'false' }}">
-                                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                </svg>
-                                Home
-                            </a>
-                        </li>
+                <nav class="flex-1 p-4 space-y-4" aria-label="Sidebar Navigation">
+                    <div>
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                            Navigasi Utama
+                        </p>
+                        <ul class="space-y-1 text-sm">
+                            {{-- Home --}}
+                            <li>
+                                <a href="{{ route('dashboard.home') }}"
+                                   class="flex items-center p-2.5 rounded-lg font-medium
+                                        {{ request()->routeIs('dashboard.home') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:bg-slate-100' }}"
+                                   aria-current="{{ request()->routeIs('dashboard.home') ? 'page' : 'false' }}">
+                                    <x-icon-home class="w-5 h-5 mr-3" />
+                                    <span>Home</span>
+                                </a>
+                            </li>
 
-                        <li>
-                            <a href="{{ route('dashboard.profile') }}"
-                               class="flex items-center p-3 rounded-lg font-medium {{ request()->routeIs('dashboard.profile') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}"
-                               aria-current="{{ request()->routeIs('dashboard.profile') ? 'page' : 'false' }}">
-                                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
-                                Profile
-                            </a>
-                        </li>
+                            {{-- Profil --}}
+                            <li>
+                                <a href="{{ route('dashboard.profile') }}"
+                                   class="flex items-center p-2.5 rounded-lg font-medium
+                                        {{ request()->routeIs('dashboard.profile') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:bg-slate-100' }}"
+                                   aria-current="{{ request()->routeIs('dashboard.profile') ? 'page' : 'false' }}">
+                                    <x-icon-user class="w-5 h-5 mr-3" />
+                                    <span>Profil</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-                        <li>
-                            <a href="{{ route('dashboard.pretest.index') }}"
-                               class="flex items-center p-3 rounded-lg font-medium {{ request()->routeIs('dashboard.pretest.*') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}"
-                               aria-current="{{ request()->routeIs('dashboard.pretest.*') ? 'page' : 'false' }}">
-                                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                                </svg>
-                                Pre-Test
-                            </a>
-                        </li>
+                    <div>
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                            Evaluasi & Monev
+                        </p>
+                        <ul class="space-y-1 text-sm">
+                            {{-- Pre-Test --}}
+                            <li>
+                                <a href="{{ route('dashboard.pretest.index') }}"
+                                   class="flex items-center p-2.5 rounded-lg font-medium
+                                        {{ request()->routeIs('dashboard.pretest.*') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:bg-slate-100' }}">
+                                    <x-icon-clipboard class="w-5 h-5 mr-3" />
+                                    <span>Pre-Test</span>
+                                </a>
+                            </li>
 
-                        <li>
-                            <a href="{{ route('dashboard.posttest.index') }}"
-                               class="flex items-center p-3 rounded-lg font-medium {{ request()->routeIs('dashboard.posttest.*') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}"
-                               aria-current="{{ request()->routeIs('dashboard.posttest.*') ? 'page' : 'false' }}">
-                                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Post-Test
-                            </a>
-                        </li>
+                            {{-- Post-Test --}}
+                            <li>
+                                <a href="{{ route('dashboard.posttest.index') }}"
+                                   class="flex items-center p-2.5 rounded-lg font-medium
+                                        {{ request()->routeIs('dashboard.posttest.*') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:bg-slate-100' }}">
+                                    <x-icon-check-circle class="w-5 h-5 mr-3" />
+                                    <span>Post-Test</span>
+                                </a>
+                            </li>
 
-                        <li>
-                            <a href="{{ route('dashboard.survey') }}"
-                               class="flex items-center p-3 rounded-lg font-medium {{ request()->routeIs('dashboard.survey') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100' }}"
-                               aria-current="{{ request()->routeIs('dashboard.survey') ? 'page' : 'false' }}">
-                                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                Monev
-                            </a>
-                        </li>
-                    </ul>
+                            {{-- Monev / Survey (pakai emot) --}}
+                            <li>
+                                <a href="{{ route('dashboard.survey') }}"
+                                   class="flex items-center p-2.5 rounded-lg font-medium
+                                        {{ request()->routeIs('dashboard.survey*') ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-700 hover:bg-slate-100' }}">
+                                    <span class="w-5 h-5 mr-3 flex items-center justify-center text-lg leading-none">
+                                        📊
+                                    </span>
+                                    <span>Monev / Survey</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </nav>
             </aside>
 
-            <!-- Main content -->
-            <main class="flex-1 lg:ml-64 p-6 overflow-auto">
-                <header class="flex justify-between items-center mb-6 bg-blue-200 p-4 rounded-lg">
-                    <div class="flex items-center gap-4">
-                        <!-- Toggle Sidebar on Mobile -->
+            {{-- Main content --}}
+            <main class="flex-1 lg:ml-64 p-4 md:p-6 overflow-auto">
+                <header class="flex justify-between items-center mb-6 bg-blue-100/80 border border-blue-200 rounded-xl px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        {{-- Toggle Sidebar on Mobile --}}
                         <button id="menu-toggle"
                                 aria-label="Toggle Sidebar"
                                 aria-controls="sidebar"
                                 aria-expanded="false"
-                                class="lg:hidden p-2 rounded-md border border-blue-400 hover:bg-blue-200 text-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                class="lg:hidden p-2 rounded-md border border-blue-300 hover:bg-blue-200/60 text-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400">
                             ☰
                         </button>
 
-                        <h1 class="text-2xl font-bold text-blue-900">@yield('page-title', 'Dashboard Home')</h1>
+                        <div>
+                            <h1 class="text-xl md:text-2xl font-bold text-blue-900 leading-tight">
+                                @yield('page-title', 'Dashboard Home')
+                            </h1>
+                            @hasSection('page-subtitle')
+                                <p class="text-xs text-slate-500 mt-0.5">
+                                    @yield('page-subtitle')
+                                </p>
+                            @endif
+                        </div>
                     </div>
 
-                    <div>
-                        {{-- Tampilkan tombol logout jika peserta sudah dipilih/tersimpan di session --}}
+                    <div class="flex items-center gap-3">
+                        @if(isset($pesertaAktif) || session()->has('pesertaAktif'))
+                            <div class="hidden md:block text-right">
+                                <p class="text-xs text-slate-500">Peserta aktif</p>
+                                <p class="text-sm font-semibold text-slate-800 truncate max-w-[140px]">
+                                    {{ $pesertaAktif->nama ?? session('pesertaAktif.nama') ?? 'Peserta' }}
+                                </p>
+                            </div>
+                        @endif
+
                         @if(session()->has('pesertaAktif') || !empty($pesertaAktif))
                             <form method="POST" action="{{ route('dashboard.logout') }}">
                                 @csrf
                                 <button type="submit"
-                                        class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-600">
+                                        class="px-3 py-1.5 bg-red-500 text-white text-xs md:text-sm rounded-lg hover:bg-red-600 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-600">
                                     Logout
                                 </button>
                             </form>
@@ -149,25 +206,27 @@
                     </div>
                 </header>
 
-                <!-- Flash messages -->
+                {{-- Flash messages --}}
                 @if(session('success'))
-                    <div class="mb-4 p-4 bg-green-100 text-green-800 rounded shadow-sm">{{ session('success') }}</div>
+                    <div class="mb-4 p-3 bg-emerald-100 text-emerald-800 rounded-lg border border-emerald-200 text-sm">
+                        {{ session('success') }}
+                    </div>
                 @endif
                 @if(session('error'))
-                    <div class="mb-4 p-4 bg-red-100 text-red-800 rounded shadow-sm">{{ session('error') }}</div>
+                    <div class="mb-4 p-3 bg-red-100 text-red-800 rounded-lg border border-red-200 text-sm">
+                        {{ session('error') }}
+                    </div>
                 @endif
 
-                <!-- Page content -->
-                <div class="space-y-6 fade-in">
+                {{-- Page content --}}
+                <div class="space-y-6 fade-in max-w-7xl mx-auto">
                     @yield('content')
                 </div>
             </main>
         </div>
     @endisset
 
-    <!-- Tempat untuk menaruh modal/overlay dari view lain (pada level body root) -->
     @stack('modals')
-
     @stack('scripts')
 
     <script>
@@ -196,13 +255,9 @@
                 }
             });
         }
-
-        // Klik di overlay untuk menutup sidebar
         if (overlay) {
             overlay.addEventListener('click', closeSidebar);
         }
-
-        // Optional: close sidebar when pressing Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeSidebar();
         });

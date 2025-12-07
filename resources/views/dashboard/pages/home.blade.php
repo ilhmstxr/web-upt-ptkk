@@ -6,13 +6,13 @@
 
     @php
         // Pastikan semua variabel punya nilai default biar nggak undefined
-        $pesertaAktif   = $pesertaAktif   ?? null;
-        $preTestDone    = $preTestDone    ?? false;
-        $postTestDone   = $postTestDone   ?? false;
-        $monevDone      = $monevDone      ?? false;
-        $preTestScore   = $preTestScore   ?? null;
-        $postTestScore  = $postTestScore  ?? null;
-        $monevScore     = $monevScore     ?? null;
+        $pesertaAktif     = $pesertaAktif     ?? null;
+        $preTestDone      = $preTestDone      ?? false;
+        $postTestDone     = $postTestDone     ?? false;
+        $monevDone        = $monevDone        ?? false;
+        $preTestScore     = $preTestScore     ?? null;
+        $postTestScore    = $postTestScore    ?? null;
+        $monevScore       = $monevScore       ?? null;
         $preTestAttempts  = $preTestAttempts  ?? 0;
         $postTestAttempts = $postTestAttempts ?? 0;
         $monevAttempts    = $monevAttempts    ?? 0;
@@ -51,13 +51,14 @@
                     </p>
                 </div>
                 <div class="flex gap-2">
-                    {{-- opsi action (disabled by default) --}}
+                    {{-- (opsional) tombol aksi lain --}}
                 </div>
             </div>
         @endif
 
-        {{-- Cards --}}
+        {{-- ====== CARD UTAMA TES (aksi) ====== --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
             {{-- Pre-Test --}}
             <div class="bg-white p-6 rounded-2xl shadow-sm flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
                 <div>
@@ -65,16 +66,21 @@
                         <h3 class="text-lg font-bold text-gray-800">Pre-Test</h3>
                         <span class="bg-yellow-100 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-full">Wajib</span>
                     </div>
-                    <p class="text-gray-500 mt-2 mb-4">Cek kesiapanmu sebelum mengikuti materi.</p>
+                    <p class="text-gray-500 mt-2 mb-4">
+                        Mengukur kemampuan awalmu sebelum mengikuti materi pelatihan.
+                    </p>
                 </div>
 
-                @if(!empty($preTestDone))
+                @if($preTestDone)
                     <div class="mt-4 text-center">
-                        <button disabled class="inline-block px-3 py-2 bg-gray-100 text-gray-700 rounded cursor-not-allowed">
-                            Sudah dikerjakan
+                        <button disabled
+                            class="inline-block px-3 py-2 bg-gray-100 text-gray-700 rounded cursor-not-allowed">
+                            ✅ Sudah dikerjakan
                         </button>
-                        @if(!empty($preTestScore) || $preTestScore === 0)
-                            <p class="mt-2 text-sm text-gray-600">Nilai: <strong>{{ $preTestScore }}</strong></p>
+                        @if(!is_null($preTestScore))
+                            <p class="mt-2 text-sm text-gray-600">
+                                Nilai: <strong>{{ $preTestScore }}</strong>
+                            </p>
                         @endif
                     </div>
                 @else
@@ -92,17 +98,22 @@
                         <h3 class="text-lg font-bold text-gray-800">Post-Test</h3>
                         <span class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Wajib</span>
                     </div>
-                    <p class="text-gray-500 mt-2 mb-4">Evaluasi hasil belajarmu untuk peningkatan.</p>
+                    <p class="text-gray-500 mt-2 mb-4">
+                        Mengevaluasi peningkatan hasil belajar setelah mengikuti pelatihan.
+                    </p>
                 </div>
 
-                @if(!empty($postTestDone))
+                @if($postTestDone)
                     <div class="mt-4 text-center">
-                        <button disabled class="inline-block px-3 py-2 bg-gray-100 text-gray-700 rounded cursor-not-allowed">
-                            Sudah dikerjakan
+                        <button disabled
+                            class="inline-block px-3 py-2 bg-gray-100 text-gray-700 rounded cursor-not-allowed">
+                            ✅ Sudah dikerjakan
                         </button>
 
                         @if(!is_null($postTestScore))
-                            <p class="mt-2 text-sm text-gray-600">Nilai: <strong>{{ $postTestScore }}</strong></p>
+                            <p class="mt-2 text-sm text-gray-600">
+                                Nilai: <strong>{{ $postTestScore }}</strong>
+                            </p>
                         @endif
                     </div>
                 @else
@@ -120,38 +131,166 @@
                         <h3 class="text-xl font-bold text-gray-800">MONEV</h3>
                         <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">Wajib</span>
                     </div>
-                    <p class="text-gray-500 mt-2">Akses Monitoring dan Evaluasi Selama Mengikuti Pelatihan.</p>
+                    <p class="text-gray-500 mt-2">
+                        Monitoring dan Evaluasi untuk mengetahui pengalamanmu selama pelatihan.
+                    </p>
                 </div>
 
-                @if(!empty($monevDone))
+                @if($monevDone)
                     <div class="mt-4 text-center">
-                        <button disabled class="inline-block px-3 py-2 bg-gray-100 text-gray-700 rounded cursor-not-allowed">
-                            Sudah dikerjakan
+                        <button disabled
+                            class="inline-block px-3 py-2 bg-gray-100 text-gray-700 rounded cursor-not-allowed">
+                            ✅ Sudah mengisi
                         </button>
+                        {{-- biasanya monev tidak pakai nilai, tapi kalau ada: --}}
                         @if(!is_null($monevScore))
-                            <p class="mt-2 text-sm text-gray-600">Nilai: <strong>{{ $monevScore }}</strong></p>
+                            <p class="mt-2 text-sm text-gray-600">
+                                Nilai / skor: <strong>{{ $monevScore }}</strong>
+                            </p>
                         @endif
                     </div>
                 @else
                     <a href="{{ route('dashboard.survey') }}"
-                       class="mt-6 block text-center w-full lg:w-auto bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                       class="mt-6 block text-center w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
                         Mulai Survey
                     </a>
                 @endif
             </div>
         </div>
 
-        {{-- Progress --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-            {{-- Pre-Test --}}
+        {{-- ====== RINGKASAN STATUS (sudah / belum + skor) ====== --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 mb-6">
+
+            {{-- Card ringkasan Pre-Test --}}
+            <div class="bg-white rounded-xl shadow-md p-4 flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">
+                        Pre-Test
+                    </p>
+                    @if($preTestDone)
+                        <p class="text-sm text-gray-800 font-semibold flex items-center gap-1">
+                            ✅ Sudah dikerjakan
+                        </p>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Skor terakhir:
+                            <span class="font-bold text-gray-900">
+                                {{ $preTestScore !== null ? $preTestScore : '-' }}
+                            </span>
+                        </p>
+                    @else
+                        <p class="text-sm text-gray-800 font-semibold flex items-center gap-1">
+                            ⏳ Belum dikerjakan
+                        </p>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Segera kerjakan pre-test untuk mengukur kemampuan awalmu.
+                        </p>
+                    @endif
+                </div>
+
+                <div class="mt-3 flex justify-end">
+                    @if(!$preTestDone)
+                        <a href="{{ route('dashboard.pretest.index') }}"
+                           class="text-xs px-3 py-1 rounded-full border border-blue-500 text-blue-600 hover:bg-blue-50 transition">
+                            Buka Pre-Test
+                        </a>
+                    @else
+                        <span class="text-[11px] text-gray-400 italic">
+                            Pre-test sudah selesai.
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Card ringkasan Post-Test --}}
+            <div class="bg-white rounded-xl shadow-md p-4 flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-1">
+                        Post-Test
+                    </p>
+                    @if($postTestDone)
+                        <p class="text-sm text-gray-800 font-semibold flex items-center gap-1">
+                            ✅ Sudah dikerjakan
+                        </p>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Skor terakhir:
+                            <span class="font-bold text-gray-900">
+                                {{ $postTestScore !== null ? $postTestScore : '-' }}
+                            </span>
+                        </p>
+                    @else
+                        <p class="text-sm text-gray-800 font-semibold flex items-center gap-1">
+                            ⏳ Belum dikerjakan
+                        </p>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Post-test akan mengukur peningkatanmu setelah pelatihan.
+                        </p>
+                    @endif
+                </div>
+
+                <div class="mt-3 flex justify-end">
+                    @if(!$postTestDone)
+                        <a href="{{ route('dashboard.posttest.index') }}"
+                           class="text-xs px-3 py-1 rounded-full border border-emerald-500 text-emerald-600 hover:bg-emerald-50 transition">
+                            Buka Post-Test
+                        </a>
+                    @else
+                        <span class="text-[11px] text-gray-400 italic">
+                            Post-test sudah selesai.
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Card ringkasan Monev --}}
+            <div class="bg-white rounded-xl shadow-md p-4 flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-1">
+                        Monev / Survey
+                    </p>
+                    @if($monevDone)
+                        <p class="text-sm text-gray-800 font-semibold flex items-center gap-1">
+                            ✅ Sudah mengisi
+                        </p>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Terima kasih, responmu membantu peningkatan program kami 🙌
+                        </p>
+                    @else
+                        <p class="text-sm text-gray-800 font-semibold flex items-center gap-1">
+                            ⏳ Belum diisi
+                        </p>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Mohon luangkan waktu sebentar untuk mengisi monev.
+                        </p>
+                    @endif
+                </div>
+
+                <div class="mt-3 flex justify-end">
+                    @if(!$monevDone)
+                        <a href="{{ route('dashboard.survey') }}"
+                           class="text-xs px-3 py-1 rounded-full border border-purple-500 text-purple-600 hover:bg-purple-50 transition">
+                            Isi Monev
+                        </a>
+                    @else
+                        <span class="text-[11px] text-gray-400 italic">
+                            Monev sudah diisi.
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+        </div>
+
+        {{-- ====== PROGRESS BAR ====== --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
+            {{-- Progress Pre-Test --}}
             <div class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
                 <h3 class="text-lg font-bold text-gray-800">Progress Pre-Test</h3>
                 @php
-                    $preAttempts = $preTestAttempts ?? (($preTestDone ?? false) ? 1 : 0);
-                    $preBar = $preAttempts >= 1 ? 100 : 0;
+                    $preAttemptsReal = $preTestAttempts ?? ($preTestDone ? 1 : 0);
+                    $preBar = $preAttemptsReal >= 1 ? 100 : 0;
                 @endphp
                 <div class="flex items-baseline mt-2">
-                    <span class="text-3xl font-bold text-yellow-600">{{ $preAttempts }}</span>
+                    <span class="text-3xl font-bold text-yellow-600">{{ $preAttemptsReal }}</span>
                     <span class="text-lg text-gray-500 ml-1">/ 1 dikerjakan</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
@@ -162,15 +301,15 @@
                 @endif
             </div>
 
-            {{-- Post-Test --}}
+            {{-- Progress Post-Test --}}
             <div class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
                 <h3 class="text-lg font-bold text-gray-800">Progress Post-Test</h3>
                 @php
-                    $postAttempts = $postTestAttempts ?? (($postTestDone ?? false) ? 1 : 0);
-                    $postBar = $postAttempts >= 1 ? 100 : 0;
+                    $postAttemptsReal = $postTestAttempts ?? ($postTestDone ? 1 : 0);
+                    $postBar = $postAttemptsReal >= 1 ? 100 : 0;
                 @endphp
                 <div class="flex items-baseline mt-2">
-                    <span class="text-3xl font-bold text-green-600">{{ $postAttempts }}</span>
+                    <span class="text-3xl font-bold text-green-600">{{ $postAttemptsReal }}</span>
                     <span class="text-lg text-gray-500 ml-1">/ 1 dikerjakan</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
@@ -181,22 +320,22 @@
                 @endif
             </div>
 
-            {{-- MONEV --}}
+            {{-- Progress MONEV --}}
             <div class="bg-white p-6 rounded-2xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
                 <h3 class="text-lg font-bold text-gray-800">Progress MONEV</h3>
                 @php
-                    $monevAttempts = $monevAttempts ?? (($monevDone ?? false) ? 1 : 0);
-                    $monevBar = $monevAttempts >= 1 ? 100 : 0;
+                    $monevAttemptsReal = $monevAttempts ?? ($monevDone ? 1 : 0);
+                    $monevBar = $monevAttemptsReal >= 1 ? 100 : 0;
                 @endphp
                 <div class="flex items-baseline mt-2">
-                    <span class="text-3xl font-bold text-blue-600">{{ $monevAttempts }}</span>
+                    <span class="text-3xl font-bold text-blue-600">{{ $monevAttemptsReal }}</span>
                     <span class="text-lg text-gray-500 ml-1">/ 1 dikerjakan</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
                     <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $monevBar }}%"></div>
                 </div>
                 @if(!is_null($monevScore))
-                    <p class="mt-2 text-sm text-gray-600">Nilai terakhir: <strong>{{ $monevScore }}</strong></p>
+                    <p class="mt-2 text-sm text-gray-600">Nilai terakhir / skor: <strong>{{ $monevScore }}</strong></p>
                 @endif
             </div>
         </div>
@@ -288,7 +427,7 @@
         if (btn) { btn.disabled = true; btn.innerText = 'Menyimpan...'; }
     });
 
-    // === Instansi auto-assign via AJAX + auto-submit cepat & praktis ===
+    // === Instansi auto-assign via AJAX + auto-submit cepat ===
     (function(){
         const $form = document.getElementById('setPesertaForm');
         const $nama = document.getElementById('nama_input');
@@ -300,7 +439,6 @@
         let t; let lastQuery = ''; let submitting = false;
 
         async function lookup(nama){
-            // PERBAIKAN: Bungkus route() dalam kutip dan gunakan template literal
             const url = `{{ route('dashboard.ajax.peserta.instansiByNama') }}?nama=${encodeURIComponent(nama)}`;
             const res = await fetch(url, { headers: { 'X-Requested-With':'XMLHttpRequest' } });
             const data = await res.json().catch(()=>null);
@@ -312,13 +450,13 @@
             const sekolah = data?.data?.instansi || '';
             const kota    = data?.data?.kota || '';
             const pid     = data?.data?.peserta_id || '';
-            // PERBAIKAN: Gunakan template literal (backticks) dengan benar
+
             $inst.value   = sekolah ? (kota ? `${sekolah} (${kota})` : sekolah) : '';
             $pid.value    = pid;
             $btn.disabled = !(data?.ok && pid);
             if (data?.ok) $help.classList.add('hidden');
 
-            // === AUTO-SUBMIT ketika sudah valid ===
+            // Auto-submit ketika valid
             if (data?.ok && pid && !submitting) {
                 submitting = true;
                 $btn.disabled = true;
@@ -348,7 +486,7 @@
             }, 250);
         });
 
-        // Enter di HP/Laptop → submit juga (fallback)
+        // Enter → submit juga
         $nama?.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !$btn.disabled && !submitting) {
                 e.preventDefault();
@@ -359,7 +497,7 @@
             }
         });
 
-        // Auto-lookup kalau old('nama') sudah ada saat render ulang
+        // Auto-lookup kalau old('nama') sudah ada
         document.addEventListener('DOMContentLoaded', () => {
             const q = ($nama?.value || '').trim();
             if (q) {

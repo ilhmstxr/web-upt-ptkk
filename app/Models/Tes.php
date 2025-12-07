@@ -24,7 +24,7 @@ class Tes extends Model
     // Relasi ke Kompetensi
     public function kompetensi()
     {
-        return  $this->belongsTo(Kompetensi::class, 'kompetensi_id');
+        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 
     // Relasi ke Pelatihan
@@ -34,22 +34,19 @@ class Tes extends Model
     }
 
     // Relasi ke Pertanyaan
-    // Kalau tiap pertanyaan punya kolom tes_id, pakai hasMany
     public function pertanyaan()
     {
         return $this->hasMany(Pertanyaan::class, 'tes_id');
+    }
+
+    // (Opsional) Relasi ke Percobaan / hasil tes peserta
+    public function percobaan()
+    {
+        return $this->hasMany(Percobaan::class, 'tes_id');
     }
 
     public function tipeTes()
     {
         return $this->hasMany(TipeTes::class, 'tes_id');
     }
-
-    // Jika kamu memang pakai pivot table tes_pertanyaan, gunakan ini:
-    /*
-    public function pertanyaan()
-    {
-        return $this->belongsToMany(Pertanyaan::class, 'tes_pertanyaan', 'tes_id', 'pertanyaan_id');
-    }
-    */
 }

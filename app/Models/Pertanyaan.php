@@ -4,23 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pertanyaan extends Model
 {
     use HasFactory;
 
     protected $table = 'pertanyaan';
-
-    protected static function booted()
-    {
-        static::creating(function ($pertanyaan) {
-            if (is_null($pertanyaan->nomor)) {
-                $maxNomor = static::where('tes_id', $pertanyaan->tes_id)->max('nomor') ?? 0;
-                $pertanyaan->nomor = $maxNomor + 1;
-            }
-        });
-    }
 
     protected $fillable = [
         'tes_id',
@@ -31,16 +20,28 @@ class Pertanyaan extends Model
         'tipe_jawaban',
     ];
 
-
     protected $casts = [
         'nomor' => 'integer',
     ];
 
     protected $hidden = ['templates'];
 
-    // -------------------------
+    // ---------------------------------
+    // BOOT: AUTO NOMOR PERTANYAAN
+    // ---------------------------------
+    protected static function booted()
+    {
+        static::creating(function ($pertanyaan) {
+            if (is_null($pertanyaan->nomor)) {
+                $maxNomor = static::where('tes_id', $pertanyaan->tes_id)->max('nomor') ?? 0;
+                $pertanyaan->nomor = $maxNomor + 1;
+            }
+        });
+    }
+
+    // ---------------------------------
     // RELATIONS
-    // -------------------------
+    // ---------------------------------
 
     // Relasi ke Tes
     public function tes()
@@ -48,17 +49,20 @@ class Pertanyaan extends Model
         return $this->belongsTo(Tes::class, 'tes_id');
     }
 
-    // Alias singular supaya kode lama tetap jalan
+    // Opsi jawaban milik pertanyaan ini
     public function opsiJawabans()
     {
-        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id')->orderBy('id');
+        return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id')
+            ->orderBy('id');
     }
 
+    // Relasi pivot ke template (kalau pertanyaan ini adalah "turunan" dari template)
     public function pivotTemplate()
     {
         return $this->hasOne(PivotJawaban::class, 'pertanyaan_id');
     }
 
+    // Pertanyaan template (parent) dari pertanyaan ini (self-referencing via pivot)
     public function templatePertanyaan()
     {
         return $this->hasOneThrough(
@@ -71,76 +75,123 @@ class Pertanyaan extends Model
         );
     }
 
-    // Relasi ke Jawaban User
+    // Jawaban user untuk pertanyaan ini
     public function jawabanUsers()
     {
         return $this->hasMany(JawabanUser::class, 'pertanyaan_id');
     }
 
-    // Relasi ke template pertanyaan (self-referencing many-to-many)
+    // Relasi many-to-many ke template pertanyaan lain (self referencing)
     public function templates()
     {
-        return $this->belongsToMany(self::class, 'pivot_jawaban', 'pertanyaan_id', 'template_pertanyaan_id');
+        return $this->belongsToMany(
+            self::class,
+            'pivot_jawaban',
+            'pertanyaan_id',
+            'template_pertanyaan_id'
+        );
     }
 
-    // -------------------------
-    // ACCESSORS
-    // -------------------------
+    // ---------------------------------
+    // ACCESSORS / ATTRIBUTE HELPERS
+    // ---------------------------------
 
     // URL gambar
-    public function getGambarUrlAttribute()
+    public function getGambarUrlAttribute(): ?string
     {
         return $this->gambar ? asset('storage/' . $this->gambar) : null;
     }
 
     /**
-     * Ambil opsi jawaban final
-     * - Pakai opsi sendiri kalau ada
-     * - Kalau kosong, fallback ke template pertama
+     * Ambil opsi jawaban final:
+     * - Kalau pertanyaan ini punya opsi sendiri → pakai itu
+     * - Kalau kosong → fallback ke opsi dari pertanyaan template pertama
      */
-    // Di dalam file: app/Models/Pertanyaan.php
-
-
     public function getOpsiJawabansAttribute()
     {
-        // Mengambil data relasi 'opsiJawabans' yang sudah di-load oleh with()
+        // Ambil opsi milik sendiri (relasi sudah di-load oleh with())
         $opsiMilikSendiri = $this->getRelationValue('opsiJawabans');
 
-        // Jika ada dan tidak kosong, langsung kembalikan
         if ($opsiMilikSendiri && $opsiMilikSendiri->isNotEmpty()) {
             return $opsiMilikSendiri;
         }
 
-        // Jika tidak ada, ambil data 'templates' yang sudah di-load oleh with()
-        $template = $this->getRelationValue('templates')->first();
+        // Kalau kosong, ambil template pertama (kalau ada)
+        $templatesRelation = $this->getRelationValue('templates');
 
-        // Kembalikan opsi jawaban dari template
+        $template = $templatesRelation && $templatesRelation->isNotEmpty()
+            ? $templatesRelation->first()
+            : null;
+
         return optional($template)->getRelationValue('opsiJawabans') ?? collect();
     }
 
     /**
-     * Helper: ambil jawaban yang benar dari collection jawaban user
+     * Hitung skor (persentase benar) dari jumlah benar & total.
+     * Dipakai kalau kamu mau hitung manual di luar model percobaan.
      */
     public function hitungSkor(?int $jumlahBenar, ?int $jumlahTotal): int
     {
         $benar = max(0, (int) ($jumlahBenar ?? 0));
         $total = max(0, (int) ($jumlahTotal ?? 0));
+
         if ($total === 0) {
             return 0;
         }
+
         return (int) round(($benar / $total) * 100);
     }
-    // public function hitungSkor(Percobaan $percobaan): int
-    // {
-    //     $percobaan->loadMissing(['jawabanUser.opsiJawaban']);
-    //     $jawabanCollection = $percobaan->jawabanUser ?? collect();
 
-    //     $total = $jawabanCollection->count();
-    //     if ($total === 0) {
-    //         return 0;
-    //     }
+    // ---------------------------------
+    // ANALISIS KESUKARAN SOAL
+    // ---------------------------------
 
-    //     $benar = $jawabanCollection->filter(fn($j) => $j->opsiJawaban && $j->opsiJawaban->apakah_benar)->count();
-    //     return (int) round(($benar / $total) * 100);
-    // }
+    /**
+     * Indeks kesukaran (P) 0–1
+     * P = jumlah jawaban benar / total jawaban
+     * null kalau belum ada data jawaban.
+     */
+    public function getIndeksKesukaranAttribute(): ?float
+    {
+        $total = $this->jawabanUsers()->count();
+
+        if ($total === 0) {
+            return null; // belum ada data siswa
+        }
+
+        // hitung berapa jawaban user yang benar
+        $benar = $this->jawabanUsers()
+            ->whereHas('opsiJawaban', function ($q) {
+                $q->where('apakah_benar', true);
+            })
+            ->count();
+
+        return round($benar / $total, 2);
+    }
+
+    /**
+     * Kategori kesukaran: Mudah / Sedang / Sulit / Belum Ada Data
+     * Berdasarkan indeks kesukaran:
+     * - P <= 0.30 → Sulit
+     * - 0.30 < P <= 0.70 → Sedang
+     * - P > 0.70 → Mudah
+     */
+    public function getKategoriKesukaranAttribute(): string
+    {
+        $p = $this->indeks_kesukaran;
+
+        if ($p === null) {
+            return 'Belum Ada Data';
+        }
+
+        if ($p <= 0.30) {
+            return 'Sulit';
+        }
+
+        if ($p <= 0.70) {
+            return 'Sedang';
+        }
+
+        return 'Mudah';
+    }
 }
