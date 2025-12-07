@@ -360,6 +360,26 @@ section + section {
       {{-- KOLOM KIRI: FOTO + NAMA --}}
       <div class="relative flex flex-col items-center lg:items-start h-full w-fit">
 
+        @php
+          $defaultFoto = asset('images/profil/Kepala-UPT.svg');
+          $fotoUrl = $defaultFoto;
+
+          if (!empty($kepala->foto)) {
+              $raw = ltrim($kepala->foto, '/');
+
+              if (\Illuminate\Support\Str::startsWith($raw, ['http://', 'https://'])) {
+                  // kalau yang disimpan sudah full URL
+                  $fotoUrl = $raw;
+              } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($raw)) {
+                  // kalau file ada di storage/public
+                  $fotoUrl = \Illuminate\Support\Facades\Storage::url($raw);
+              } elseif (file_exists(public_path($raw))) {
+                  // kalau file ada di public langsung
+                  $fotoUrl = asset($raw);
+              }
+          }
+        @endphp
+
         {{-- WRAPPER FOTO --}}
         <div class="relative mx-auto lg:mx-0
             w-full
@@ -369,9 +389,11 @@ section + section {
             flex justify-center md:justify-center
             md:mt-16 lg:mt-0">
 
+          {{-- background gradient --}}
           <div class="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#B5CDEE] to-[#1524AF]"></div>
 
-          <img src="{{ asset('images/profil/Kepala-UPT.svg') }}"
+          {{-- FOTO DINAMIS --}}
+          <img src="{{ $fotoUrl }}"
                alt="Kepala UPT PTKK"
                class="absolute bottom-0 left-1/2 -translate-x-1/2
                       h-[260px]
@@ -387,7 +409,7 @@ section + section {
         <div class="block lg:hidden text-center mt-4">
           <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1524AF]
                      text-[19px] md:text-[20px] tracking-tight stroke-yellow">
-            ENDANG WINARSIH, S. Sos, M. Si
+            {{ $kepala->nama_kepala_upt ?? 'Kepala UPT PTKK' }}
           </h3>
           <p class="mt-1 font-[Volkhov] text-[#861D23]
                     text-[13px] md:text-[14px]">
@@ -400,18 +422,20 @@ section + section {
       {{-- KOLOM KANAN: TEKS SAMBUTAN --}}
       <div class="w-full h-full flex flex-col lg:pt-[8px] lg:-mt-[6px]">
 
-        <p class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
-          Puji syukur ke hadirat Tuhan Yang Maha Esa atas limpahan rahmat-Nya sehingga UPT PTKK dapat melaksanakan setiap program pelatihan dengan baik. Program pelatihan kami disusun sebagai wujud nyata komitmen UPT PTKK dalam mendukung kebijakan Merdeka Belajar dan perubahan paradigma pendidikan vokasi agar selaras dengan kebutuhan industri, khususnya dalam meningkatkan kompetensi guru dan siswa di pendidikan kejuruan Jawa Timur.
-        </p>
-
-        <p class="mt-4 font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
-          Kami menyadari bahwa pencapaian tujuan besar ini tidak dapat terwujud tanpa kerja sama dan dukungan dari berbagai pihak, baik internal Dinas Pendidikan maupun eksternal. Untuk itu, kami mengucapkan terima kasih atas segala bentuk dukungan dan kontribusi yang telah diberikan. Semoga program pelatihan kami dapat menjadi landasan kuat dalam menciptakan SDM vokasi yang unggul, adaptif, kompetitif serta mampu membawa pendidikan kejuruan Jawa Timur semakin maju.
-        </p>
+        @if(!empty($kepala->sambutan))
+          <p class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
+            {!! nl2br(e($kepala->sambutan)) !!}
+          </p>
+        @else
+          <p class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
+            Sambutan Kepala UPT akan diperbarui melalui sistem.
+          </p>
+        @endif
 
         {{-- NAMA (DESKTOP) --}}
         <div class="hidden lg:block">
           <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1E3A8A] text-[22px] tracking-tight stroke-yellow">
-            ENDANG WINARSIH, S. Sos, M. Si
+            {{ $kepala->nama_kepala_upt ?? 'Kepala UPT PTKK' }}
           </h3>
           <p class="mt-1 font-[Volkhov] text-[#861D23] text-[20px]">
             Kepala UPT. PTKK
@@ -426,22 +450,22 @@ section + section {
 @endif
 
 
-  {{-- SECTION: Visi, Misi, Motto, Sasaran (Misi ditinggikan & warna DBE7F7) --}}
-  <section class="section-compact relative bg-[#F1F9FC]">
-    <div class="section-container">
+ {{-- SECTION: Visi, Misi, Motto, Sasaran --}}
+<section class="section-compact relative bg-[#F1F9FC]">
+  <div class="section-container">
 
-      {{-- Grid 2 kolom, tinggi otomatis --}}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[30px] gap-y-[20px] items-start">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
 
       {{-- KOLOM KIRI: VISI + MISI --}}
-      <div class="flex flex-col gap-[20px] w-full">
+      <div class="flex flex-col gap-6">
+
         {{-- VISI --}}
-        <div class="w-full rounded-2xl ring-1 ring-black/5 bg-white"
-             style="background-image: url('{{ asset('images/profil/visi.svg') }}');
-                    background-size: cover;
-                    background-position: center;">
-          <div class="p-6 flex flex-col bg-white/80 rounded-2xl">
-            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">
+        <div class="rounded-2xl ring-1 ring-black/5 bg-white overflow-hidden">
+          <div class="p-6 bg-white/85"
+               style="background-image: url('{{ asset('images/profil/visi.svg') }}');
+                      background-size: cover;
+                      background-position: center;">
+            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-3">
               Visi
             </h3>
             <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
@@ -451,60 +475,59 @@ section + section {
           </div>
         </div>
 
-        {{-- MISI (ditambah tinggi khusus tablet agar selaras dengan Sasaran) --}}
-        <div class="w-full rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7]
-                    h-[325px] md:h-[380px] lg:h-[325px] flex flex-col">
-          <div class="p-6 flex flex-col h-full">
-            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">
-              Misi
+        {{-- MISI --}}
+        <div class="rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7] p-6 flex-1">
+          <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-3">
+            Misi
+          </h3>
+          <ul class="list-disc pl-5 space-y-2 font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
+            <li>Memberikan pelayanan prima guna mendukung program pemerintah.</li>
+            <li>Mengembangkan sistem pelatihan yang cerdas, berwawasan, terampil, adaptif, dan berkompeten.</li>
+            <li>Meningkatkan keterampilan SDM berbasis vokasi siap kerja, berwirausaha, atau melanjutkan ke jenjang lebih tinggi.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      {{-- KOLOM KANAN: MOTTO + SASARAN --}}
+      <div class="flex flex-col gap-6">
+
+        {{-- MOTTO --}}
+        <div class="rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7] p-6">
+          <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-3">
+            Motto
+          </h3>
+          <p class="font-[Montserrat] italic font-medium text-[16px] md:text-[17px] leading-relaxed text-justify text-[#081526]">
+            “Mencetak Generasi Unggul Indonesia Maju”
+          </p>
+        </div>
+
+        {{-- SASARAN --}}
+        <div class="rounded-2xl ring-1 ring-black/5 overflow-hidden"
+             style="background-image: url('{{ asset('images/profil/sasaran.svg') }}');
+                    background-size: cover;
+                    background-position: center;">
+          <div class="p-6 bg-[#DBE7F7]/75 rounded-2xl">
+            <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-3">
+              Sasaran
             </h3>
-            <ul class="list-disc pl-5 space-y-2 font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-relaxed text-justify">
-              <li>Memberikan pelayanan prima guna mendukung program pemerintah.</li>
-              <li>Mengembangkan sistem pelatihan yang cerdas, berwawasan, terampil, adaptif, dan berkompeten.</li>
-              <li>Meningkatkan keterampilan SDM berbasis vokasi siap kerja, berwirausaha, atau melanjutkan ke jenjang lebih tinggi.</li>
+            <ul class="list-disc pl-5 space-y-1 font-[Montserrat] font-medium text-[16px] md:text-[17px] leading-relaxed text-justify text-[#081526]">
+              <li>Meningkatkan kompetensi siswa dan guru SMK/SMA di wilayah Jawa Timur.</li>
+              <li>Mengembangkan kurikulum pembelajaran.</li>
+              <li>Meningkatkan jejaring kerja UPT. PTKK.</li>
+              <li>Meningkatkan kualitas program pendidikan dan pelatihan.</li>
+              <li>Meningkatkan koordinasi dengan cabdin dan lembaga sekolah di Jawa Timur.</li>
+              <li>Mengetahui tingkat penyerapan alumni di masyarakat atau DU/DI.</li>
             </ul>
           </div>
         </div>
-      </div>
-
-        {{-- KOLOM KANAN: MOTTO + SASARAN --}}
-        <div class="flex flex-col gap-[20px] w-full">
-          {{-- MOTTO (warna DBE7F7) --}}
-          <div class="w-full rounded-2xl ring-1 ring-black/5 bg-[#DBE7F7]">
-            <div class="py-4 px-6 flex flex-col justify-center">
-              <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[8px]">
-                Motto
-              </h3>
-              <p class="font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-[1.5] text-justify italic">
-                “Mencetak Generasi Unggul Indonesia Maju”
-              </p>
-            </div>
-          </div>
-
-          {{-- SASARAN --}}
-          <div class="w-full rounded-2xl ring-1 ring-black/5 bg-white flex flex-col"
-              style="background-image: url('{{ asset('images/profil/sasaran.svg') }}');
-                      background-size: cover;
-                      background-position: center;">
-            <div class="py-4 px-6 flex flex-col bg-[#DBE7F7]/70 rounded-2xl">
-              <h3 class="font-[Volkhov] font-bold text-[22px] md:text-[24px] text-[#081526] mb-[10px]">
-                Sasaran
-              </h3>
-              <ul class="list-disc pl-5 space-y-[1px] font-[Montserrat] font-medium text-[16px] md:text-[17px] text-[#081526] leading-[1.5] text-justify">
-                <li>Meningkatkan kompetensi siswa dan guru SMK/SMA di wilayah Jawa Timur.</li>
-                <li>Mengembangkan kurikulum pembelajaran.</li>
-                <li>Meningkatkan jejaring kerja UPT. PTKK.</li>
-                <li>Meningkatkan kualitas program pendidikan dan pelatihan.</li>
-                <li>Meningkatkan koordinasi dengan cabdin dan lembaga sekolah di Jawa Timur.</li>
-                <li>Mengetahui tingkat penyerapan alumni di masyarakat atau DU/DI.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
 
       </div>
+
     </div>
-  </section>
+  </div>
+</section>
+
 
 {{-- SECTION: Sejarah (garis tengah + 5 titik sejajar, subjudul stroke kuning) --}}
 <section class="relative bg-[#F1F9FC] pt-6 pb-[300px]">
@@ -858,7 +881,7 @@ section + section {
             Lihat
           </a>
 
-          <a href="{{ asset('pdf/peraturan-pergub.pdf') }}" 
+          <a href="{{ asset('pdf/peraturan-pergub.pdf') }}"
              download
              class="inline-flex items-center justify-center gap-2
                     w-full sm:w-1/2

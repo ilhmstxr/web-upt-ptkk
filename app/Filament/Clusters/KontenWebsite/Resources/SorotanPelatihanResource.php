@@ -33,15 +33,17 @@ class SorotanPelatihanResource extends Resource
   public static function form(Form $form): Form
 {
     return $form->schema([
-        Forms\Components\Select::make('kelas')
-            ->label('Jenis Sorotan')
-            ->options([
-                'mtu'        => 'Mobil Training Unit',
-                'reguler'    => 'Pelatihan Reguler',
-                'akselerasi' => 'Pelatihan Akselerasi',
-            ])
-            ->required()
-            ->unique(ignoreRecord: true),
+      Forms\Components\Select::make('kelas')
+    ->label('Kelas')
+    ->required()
+    ->options([
+        'mtu' => 'Mobil Training Unit',
+        'reguler' => 'Program Reguler',
+        'akselerasi' => 'Program Akselerasi',
+    ])
+    ->native(false)
+    ->placeholder('Pilih kelas'),
+
 
         Forms\Components\TextInput::make('title')
             ->label('Judul (opsional, bisa override default)')
@@ -57,15 +59,15 @@ class SorotanPelatihanResource extends Resource
             ->default(true),
 
         // 🔥 Upload foto maksimal 6
-        Forms\Components\FileUpload::make('photos')
-            ->label('Foto Sorotan (maksimal 6)')
-            ->image()
-            ->multiple(6)
-            ->maxFiles(6)          // ⬅️ BATAS MAKS 6
-            ->directory('sorotan_pelatihan')
-            ->reorderable()        // bisa atur urutan
-            ->required()
-            ->columnSpanFull(),
+       Forms\Components\FileUpload::make('photos')
+    ->label('Foto Slider (6 gambar)')
+    ->directory('sorotan')
+    ->multiple()
+    ->minFiles(6)
+    ->maxFiles(6)
+    ->reorderable()
+    ->image()
+    ->required(),
     ]);
 }
 

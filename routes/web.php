@@ -50,11 +50,11 @@ use App\Models\Bidang;
 /* =========================
    Public: Landing & Static
    ========================= */
-Route::get('/', fn() => view('pages.landing'))->name('landing');
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 // PROFIL
 //Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
-Route::get('/cerita-kami', [CeritaKamiController::class, 'index'])->name('cerita-kami');
+Route::get('/cerita-kami', [LandingController::class, 'ceritaKami'])->name('cerita-kami');
 
 Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'index'])
     ->name('program-pelatihan.index');

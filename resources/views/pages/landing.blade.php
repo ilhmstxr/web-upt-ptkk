@@ -568,22 +568,23 @@ $latestBeritas = Berita::query()
           <span class="font-['Volkhov'] font-bold text-[#861D23] text-[22px] md:text-[24px] leading-none">Cerita Kami</span>
         </div>
 
-        {{-- Heading (dinamis: kalau ada title gunakan itu, jika tidak pakai default) --}}
-        <h2 class="mb-[20px] md:mb-[24px] font-['Volkhov'] font-bold text-[24px] md:text-[30px] lg:text-[34px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch]">
-          {{ $cerita->title ?? 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan' }}
-        </h2>
+       {{-- Heading (tetap / statis) --}}
+<h2 class="mb-[20px] md:mb-[24px] font-['Volkhov'] font-bold text-[24px] md:text-[30px] lg:text-[34px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch]">
+  UPT Pengembangan Teknis Dan Keterampilan Kejuruan
+</h2>
+
 
         {{-- Excerpt / Content ringkas --}}
-        <p class="mb-[24px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
-          @if(!empty($cerita) && !empty($cerita->excerpt))
-            {{ $cerita->excerpt }}
-          @elseif(!empty($cerita) && !empty($cerita->content))
-            {{-- strip_tags lalu limit jika hanya content panjang --}}
-            {{ \Illuminate\Support\Str::limit(strip_tags($cerita->content), 320) }}
-          @else
-            Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi...
-          @endif
-        </p>
+      <p class="mb-[24px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
+  @if(!empty($cerita) && !empty($cerita->excerpt))
+    {{ $cerita->excerpt }}
+  @elseif(!empty($cerita) && !empty($cerita->content))
+    {{ \Illuminate\Support\Str::limit(strip_tags($cerita->content), 320) }}
+  @else
+    Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi...
+  @endif
+</p>
+
 
         {{-- Tombol: ke halaman cerita lengkap (jika ada slug / route) --}}
         @php
@@ -722,82 +723,38 @@ $latestBeritas = Berita::query()
 </section>
 {{-- /SECTION: Berita Terbaru --}}
 
-{{-- SECTION: Sorotan Pelatihan --}}
+{{-- SECTION: Sorotan Pelatihan (FULL DINAMIS DARI DB) --}}
 @php
 
-    // koleksi dari controller (bisa kosong)
-    $collection = ($sorotans ?? collect());
+    // Ambil data dari controller (bisa kosong)
+    $collection = ($sorotans ?? collect())
+        ->where('is_published', true);
 
-    // META DEFAULT UNTUK 3 KELAS (statis di Blade)
-    $defaultMeta = [
-        'mtu' => [
-            'key'   => 'mtu',
-            'label' => 'Mobil Training Unit',
-            'desc'  => 'Mobil Keliling UPT. PTKK Dindik Jatim adalah sebuah program unggulan yang dirancang khusus untuk menjangkau sekolah di pelosok-pelosok Jawa Timur.',
-        ],
-        'reguler' => [
-            'key'   => 'reguler',
-            'label' => 'Pelatihan Reguler',
-            'desc'  => 'Proses peningkatan kompetensi di UPT. PTKK dipandu oleh para asesor kompetensi profesional yang tersertifikasi.',
-        ],
-        'akselerasi' => [
-            'key'   => 'akselerasi',
-            'label' => 'Pelatihan Akselerasi',
-            'desc'  => 'UPT. PTKK memiliki 6 kompetensi yang tersertifikasi sebagai tempat uji kompetensi dengan fasilitas mumpuni.',
-        ],
-    ];
-
-    // urutan tab
+    // Urutan kelas yang diizinkan
     $order = ['mtu', 'reguler', 'akselerasi'];
 
-    // BANGUN ARRAY sorotanData: 3 item pasti (mtu, reguler, akselerasi)
-    $sorotanData = collect($order)->map(function ($kelas) use ($collection, $defaultMeta) {
-        $base = $defaultMeta[$kelas];
+    // Bangun array hanya dari data yang BENAR-BENAR ada di DB
+    $sorotanData = collect($order)
+        ->map(function ($kelas) use ($collection) {
+            $row = $collection->firstWhere('kelas', $kelas);
+            if (!$row) {
+                return null; // kalau belum ada row kelas itu, skip
+            }
 
-        /** @var \App\Models\SorotanPelatihan|null $row */
-        $row = $collection->firstWhere('kelas', $kelas);
+            $files = $row->photo_urls ?: [];   // dari accessor model
 
-        // judul & deskripsi:
-        // kalau DB diisi -> override; kalau kosong -> pakai default
-        $label = $row?->title       ?: $base['label'];
-        $desc  = $row?->description ?: $base['desc'];
-
-        // foto:
-        if ($row && !empty($row->photo_urls)) {
-            // accessor di model SorotanPelatihan
-            $files = $row->photo_urls;
-        } else {
-            // fallback static per kelas (boleh kamu ubah sesuai aset lokal)
-            $files = match ($kelas) {
-                'mtu' => [
-                    asset('images/profil/MTU1.svg'),
-                    asset('images/profil/MTU2.svg'),
-                    asset('images/profil/MTU3.svg'),
-                    asset('images/profil/MTU4.svg'),
-                ],
-                'reguler' => [
-                    asset('images/sorotan/reguler/reg-1.jpg'),
-                    asset('images/sorotan/reguler/reg-2.jpg'),
-                    asset('images/sorotan/reguler/reg-3.jpg'),
-                ],
-                'akselerasi' => [
-                    asset('images/sorotan/akselerasi/acc-1.jpg'),
-                    asset('images/sorotan/akselerasi/acc-2.jpg'),
-                    asset('images/sorotan/akselerasi/acc-3.jpg'),
-                ],
-                default => [asset('images/placeholder_kunjungan.jpg')],
-            };
-        }
-
-        return [
-            'key'   => $base['key'],
-            'label' => $label,
-            'desc'  => $desc,
-            'files' => $files,
-        ];
-    })->values();
+            return [
+                'key'   => $kelas,
+                'label' => $row->title ?? Str::headline($kelas),
+                'desc'  => $row->description ?? '',
+                'files' => $files,
+            ];
+        })
+        ->filter()   // buang yang null (kelas yang belum ada di DB)
+        ->values();
 @endphp
 
+@if($sorotanData->isNotEmpty())
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <style>
     @keyframes sorotan-scroll-x {
@@ -850,15 +807,19 @@ $latestBeritas = Berita::query()
       </p>
     </div>
 
-    {{-- SLIDER FOTO --}}
+    {{-- SLIDER FOTO PER KATEGORI --}}
     <div class="w-full mb-8 md:mb-10 lg:mb-12">
       @foreach($sorotanData as $i => $cat)
+        @php
+          // pastikan files array
+          $files = is_array($cat['files']) ? $cat['files'] : (array) $cat['files'];
+        @endphp
         <div class="sorotan-pane {{ $i === 0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
           <div class="relative">
             <div class="overflow-hidden">
               <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]" data-key="{{ $cat['key'] }}">
                 @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
-                  @foreach($cat['files'] as $img)
+                  @foreach($files as $img)
                     <div class="relative h-[130px] md:h-[150px] lg:h-[170px]
                                 w-[220px] md:w-[260px] lg:w-[280px]
                                 rounded-2xl overflow-hidden shrink-0">
@@ -901,18 +862,20 @@ $latestBeritas = Berita::query()
 <script>
   (function () {
     const tabOrder = @json($sorotanData->pluck('key'));
+    if (!tabOrder.length) return;
+
     const meta = @json(
         $sorotanData->mapWithKeys(fn($s) => [
             $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']],
         ])
     );
 
-    const panes = Array.from(document.querySelectorAll('.sorotan-pane'));
+    const panes   = Array.from(document.querySelectorAll('.sorotan-pane'));
     const labelEl = document.querySelector('.sorotan-label');
     const descEl  = document.getElementById('sorotan-desc');
     const dotsWrap = document.getElementById('sorotan-dots');
-    const prevBtn = document.getElementById('sorotan-prev');
-    const nextBtn = document.getElementById('sorotan-next');
+    const prevBtn  = document.getElementById('sorotan-prev');
+    const nextBtn  = document.getElementById('sorotan-next');
 
     function currentKey() {
       const active = panes.find(p => !p.classList.contains('hidden'));
@@ -990,6 +953,9 @@ $latestBeritas = Berita::query()
     });
   })();
 </script>
+@endif
+{{-- /SECTION: Sorotan Pelatihan --}}
+
 
 
 {{-- SECTION: Kompetensi Pelatihan (gambar dari DB Bidang) --}}

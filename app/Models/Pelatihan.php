@@ -36,7 +36,7 @@ class Pelatihan extends Model
     ];
 
     protected $casts = [
-        'tanggal_mulai' => 'date',
+        'tanggal_mulai'   => 'date',
         'tanggal_selesai' => 'date',
     ];
 
@@ -95,24 +95,6 @@ class Pelatihan extends Model
     /**
      * Mendapatkan semua pendaftaran (PendaftaranPelatihan) yang terkait dengan pelatihan ini
      * melalui tabel 'bidang_pelatihan'.
-     * Catatan: Relasi ini sebelumnya dinonaktifkan, sekarang diaktifkan kembali.
-     */
-    public function semuaPendaftaran(): HasManyThrough
-    {
-        return $this->hasManyThrough(
-            PendaftaranPelatihan::class,      // Model Akhir
-            BidangPelatihan::class,         // Model Perantara
-            'pelatihan_id',                 // Foreign key di BidangPelatihan
-            'bidang_pelatihan_id',          // Foreign key di PendaftaranPelatihan
-            'id',                           // Local key di Pelatihan (model ini)
-            'id'                            // Local key di BidangPelatihan
-        );
-    }
-
-        /**
-     * Mendapatkan semua pendaftaran (PendaftaranPelatihan) yang terkait dengan pelatihan ini
-     * melalui tabel 'bidang_pelatihan'.
-     * Catatan: Relasi ini sebelumnya dinonaktifkan, sekarang diaktifkan kembali.
      */
     public function semuaPendaftaran(): HasManyThrough
     {
@@ -129,7 +111,6 @@ class Pelatihan extends Model
     /**
      * Mendapatkan semua Bidang (materi) yang diajarkan dalam pelatihan ini
      * melalui tabel perantara 'bidang_pelatihan'.
-     * Catatan: Relasi ini sebelumnya dinonaktifkan, sekarang diaktifkan kembali.
      */
     public function bidangMateri(): HasManyThrough
     {
@@ -143,7 +124,7 @@ class Pelatihan extends Model
         );
     }
 
-    // --- ACCESOR (Dulu dinonaktifkan, sekarang diaktifkan sebagai contoh) ---
+    // --- ACCESSOR ---
 
     /**
      * Mendefinisikan status pelatihan secara dinamis berdasarkan tanggal.
@@ -153,7 +134,7 @@ class Pelatihan extends Model
         return Attribute::make(
             get: function (): string {
                 // Gunakan kolom tanggal_mulai dan tanggal_selesai yang sudah di-cast ke 'date'
-                if (!$this->tanggal_mulai || !$this->tanggal_selesai) {
+                if (! $this->tanggal_mulai || ! $this->tanggal_selesai) {
                     return $this->status ?? 'Tidak Terjadwal';
                 }
 
@@ -162,9 +143,11 @@ class Pelatihan extends Model
                 if ($now->isBefore($this->tanggal_mulai)) {
                     return 'Mendatang';
                 }
+
                 if ($now->between($this->tanggal_mulai, $this->tanggal_selesai)) {
                     return 'Aktif';
                 }
+
                 return 'Selesai';
             },
         );
