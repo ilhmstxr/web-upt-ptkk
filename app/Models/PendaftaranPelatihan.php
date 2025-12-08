@@ -32,7 +32,7 @@ class PendaftaranPelatihan extends Model
     ];
 
     protected $casts = [
-        'tanggal_pendaftaran'     => 'datetime',
+        'tanggal_pendaftaran'     => 'date',
         'assessment_token_sent_at'=> 'datetime',
     ];
 
@@ -59,18 +59,11 @@ class PendaftaranPelatihan extends Model
         return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 
-    /**
-     * ✅ Relasi penempatan asrama TANPA filter.
-     * Karena filter pelatihan harus di-query saat dipakai.
-     */
     public function penempatanAsrama()
     {
         return $this->hasOne(PenempatanAsrama::class, 'peserta_id', 'peserta_id');
     }
 
-    /**
-     * ✅ Helper ambil penempatan asrama sesuai pelatihan pendaftaran ini.
-     */
     public function penempatanAsramaAktif()
     {
         return PenempatanAsrama::query()

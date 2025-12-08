@@ -5,82 +5,81 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PendaftaranPelatihan;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class AssessmentLoginController extends Controller
 {
     public function show()
     {
-        // view overlay login assessment
         return view('assessment.login');
     }
 
     public function submit(Request $request)
     {
         $request->validate([
-            'token'    => ['required', 'string'], // nomor_registrasi / assessment_token
+            'token'    => ['required', 'string'],
             'password' => ['required', 'string'], // ddmmyyyy
         ]);
 
         $token = trim($request->token);
-        $pass  = trim($request->password);
+        $pass  = preg_replace('/\D/', '', trim($request->password)); // buang selain angka
 
-        // ✅ Cari pendaftaran pelatihan berdasarkan nomor_registrasi atau assessment_token
-        $reg = PendaftaranPelatihan::with(['peserta.instansi', 'pelatihan', 'kompetensi'])
+        // 1) ambil pendaftaran by nomor_registrasi / assessment_token
+        $reg = PendaftaranPelatihan::with('peserta.instansi')
             ->where(function ($q) use ($token) {
                 $q->where('nomor_registrasi', $token)
                   ->orWhere('assessment_token', $token);
             })
-            ->orderByDesc('id')
+            ->latest('id')
             ->first();
 
         if (!$reg) {
+            Log::warning('LOGIN FAIL: token tidak ketemu', ['token'=>$token]);
             return back()->with('error', 'Nomor registrasi tidak ditemukan.');
         }
 
-        $peserta = $reg->peserta;
-        if (!$peserta) {
-            return back()->with('error', 'Data peserta tidak ditemukan.');
+        if (!$reg->peserta) {
+            Log::warning('LOGIN FAIL: peserta relasi null', ['reg_id'=>$reg->id]);
+            return back()->with('error', 'Data peserta tidak ditemukan (relasi kosong).');
         }
 
-        // ✅ validasi tanggal lahir peserta
-        $tgl = $peserta->tanggal_lahir;
-        if (!$tgl) {
+        $peserta = $reg->peserta;
+
+        // 2) cek tanggal lahir peserta
+        if (!$peserta->tanggal_lahir) {
+            Log::warning('LOGIN FAIL: tanggal lahir kosong', ['peserta_id'=>$peserta->id]);
             return back()->with('error', 'Tanggal lahir peserta belum diisi admin.');
         }
 
-        // DB -> date => Carbon safe
-        $expected = Carbon::parse($tgl)->format('dmY');
+        // expected password
+        $expected = Carbon::parse($peserta->tanggal_lahir)->format('dmY');
 
         if ($pass !== $expected) {
+            Log::warning('LOGIN FAIL: password mismatch', [
+                'peserta_id' => $peserta->id,
+                'input'      => $pass,
+                'expected'   => $expected,
+            ]);
             return back()->with('error', 'Password salah. Gunakan format ddmmyyyy.');
         }
 
-        /**
-         * ✅ Bersihkan session lama TANPA menghapus hasil login baru.
-         * Caranya: forget dulu, lalu regenerate token/session id,
-         * baru set session login.
-         */
-        $request->session()->forget([
-            'peserta_id','pesertaSurvei_id',
-            'instansi_id','instansi_nama','instansi_kota',
-            'pendaftaran_pelatihan_id','pelatihan_id','kompetensi_id',
-        ]);
-        $request->session()->regenerate(); // oke untuk ganti session id
+        // 3) bersihkan session lama
+        $request->session()->flush();
+        $request->session()->regenerate();
 
+        // 4) set session baru (dashboard pakai peserta_id)
         session([
-            // peserta aktif untuk dashboard & tes
             'peserta_id'               => $peserta->id,
-
-            // konteks pelatihan/kompetensi aktif
             'pendaftaran_pelatihan_id' => $reg->id,
             'pelatihan_id'             => $reg->pelatihan_id,
             'kompetensi_id'            => $reg->kompetensi_id,
 
-            // instansi untuk header dashboard
             'instansi_id'   => optional($peserta->instansi)->id,
             'instansi_nama' => optional($peserta->instansi)->asal_instansi,
             'instansi_kota' => optional($peserta->instansi)->kota,
         ]);
+
+        Log::info('LOGIN OK', ['peserta_id'=>$peserta->id, 'reg_id'=>$reg->id]);
 
         return redirect()->route('dashboard.home')
             ->with('success', 'Login berhasil. Selamat mengerjakan!');
@@ -88,12 +87,7 @@ class AssessmentLoginController extends Controller
 
     public function logout(Request $request)
     {
-        $request->session()->forget([
-            'peserta_id','pesertaSurvei_id',
-            'instansi_id','instansi_nama','instansi_kota',
-            'pendaftaran_pelatihan_id','pelatihan_id','kompetensi_id',
-        ]);
-
+        $request->session()->flush();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
