@@ -27,13 +27,32 @@ class ViewPelatihan extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('export_excel')
-                ->label('Export Peserta')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->color('gray')
-                ->action(function () {
-                    return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\PerPelatihanExport($this->record->id), 'peserta_' . \Illuminate\Support\Str::slug($this->record->nama_pelatihan) . '.xlsx');
-                }),
+            \Filament\Actions\ActionGroup::make([
+                \Filament\Actions\Action::make('export_rekap')
+                    ->label('Rekap Peserta (PDF)')
+                    ->icon('heroicon-o-document-text')
+                    ->url(fn () => route('export.template.rekap-pelatihan', ['pelatihanId' => $this->record->id]))
+                    ->openUrlInNewTab(),
+                \Filament\Actions\Action::make('export_excel')
+                    ->label('Peserta (Excel)')
+                    ->icon('heroicon-o-table-cells')
+                    ->url(fn () => route('export.template.peserta-excel', ['pelatihanId' => $this->record->id]))
+                    ->openUrlInNewTab(),
+                \Filament\Actions\Action::make('export_instruktur')
+                    ->label('Daftar Instruktur (PDF)')
+                    ->icon('heroicon-o-users')
+                    ->url(fn () => route('export.template.daftar-instruktur', ['pelatihanId' => $this->record->id]))
+                    ->openUrlInNewTab(),
+                \Filament\Actions\Action::make('export_biodata')
+                    ->label('Biodata Peserta (PDF)')
+                    ->icon('heroicon-o-identification')
+                    ->url(fn () => route('export.template.biodata-peserta', ['pelatihanId' => $this->record->id]))
+                    ->openUrlInNewTab(),
+            ])
+            ->label('Export Data')
+            ->icon('heroicon-o-arrow-down-tray')
+            ->color('gray'),
+            
             \Filament\Actions\EditAction::make()
                 ->label('Edit Pelatihan'),
         ];
@@ -94,25 +113,27 @@ class ViewPelatihan extends ViewRecord
             ->action(function (array $data) {
                 $instructors = $data['instruktur_id'] ?? [];
                 
-                // If no instructor selected, create one record with null instructor? 
-                // However, logic implies we want to add instructors.
-                // If optional, and empty array?
-                
-                if (empty($instructors)) {
-                    // Create single record without instructor
-                    $createData = $data;
-                    unset($createData['instruktur_id']);
-                    $this->record->kompetensiPelatihan()->create($createData);
-                } else {
-                    foreach ($instructors as $instructorId) {
-                        $createData = $data;
-                        $createData['instruktur_id'] = $instructorId;
-                        $this->record->kompetensiPelatihan()->create($createData);
-                    }
+                // Cek apakah sudah ada data KompetensiPelatihan untuk kompetensi ini di pelatihan ini
+                $kompetensiPelatihan = $this->record->kompetensiPelatihan()
+                    ->where('kompetensi_id', $data['kompetensi_id'])
+                    ->first();
+
+                if (!$kompetensiPelatihan) {
+                    // Jika belum ada, buat baru
+                    $createData = [
+                        'kompetensi_id' => $data['kompetensi_id'],
+                        // 'lokasi' => ... (jika ada input lokasi di form, tambahkan di sini)
+                    ];
+                    $kompetensiPelatihan = $this->record->kompetensiPelatihan()->create($createData);
+                }
+
+                if (!empty($instructors)) {
+                    // Gunakan syncWithoutDetaching agar instruktur lama tidak hilang jika record sudah ada
+                    $kompetensiPelatihan->instrukturs()->syncWithoutDetaching($instructors);
                 }
 
                 \Filament\Notifications\Notification::make()
-                    ->title('Bidang berhasil ditambahkan')
+                    ->title('Instruktur berhasil ditambahkan')
                     ->success()
                     ->send();
             });

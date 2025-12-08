@@ -17,14 +17,10 @@ class EditPelatihan extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Load existing KompetensiPelatihan records
-        // record is available via $this->record
+        // Load existing KompetensiPelatihan records with instructors
+        $this->record->load('kompetensiPelatihan.instrukturs');
         
         $relatedRecords = $this->record->kompetensiPelatihan;
-        
-        // Group by kompetensi_id and location (assuming these define a "session" unique set with instructors being the variable)
-        // If 'tanggal', 'jam_mulai' are also part of uniqueness, include them. 
-        // For now, grouping by kompetensi_id mostly.
         
         $grouped = $relatedRecords->groupBy(function ($item) {
             return $item->kompetensi_id . '-' . ($item->lokasi ?? 'default');
@@ -33,13 +29,19 @@ class EditPelatihan extends EditRecord
         $items = [];
         foreach ($grouped as $key => $group) {
             $first = $group->first();
-            $instructorIds = $group->pluck('instruktur_id')->filter()->values()->toArray();
+            
+            // Collect all instructor IDs from all records in this group
+            $instructorIds = [];
+            foreach ($group as $recordItem) {
+                // Merge IDs from the pivot relation
+                $instructorIds = array_merge($instructorIds, $recordItem->instrukturs->pluck('id')->toArray());
+            }
+            // If the old column existed (legacy data not yet migrated properly? - no, we rely on relation now)
             
             $items[] = [
                 'kompetensi_id' => $first->kompetensi_id,
                 'lokasi' => $first->lokasi,
-                'instruktur_id' => $instructorIds, // Array of IDs
-                // Add other fields if necessary
+                'instruktur_id' => array_values(array_unique($instructorIds)), 
             ];
         }
 
@@ -57,23 +59,7 @@ class EditPelatihan extends EditRecord
 
     protected function afterSave(): void
     {
-        // Handle saving on Edit as well.
-        // This is trickier because we need to sync: delete old, create new?
-        // Or just deleteAll and recreate for simplicity?
-        // Creating new is safer to avoid orphans, but deleting all might lose other data like 'nilai', 'file_modul' if they exist.
-        // If creation is the main goal, maybe I should strictly limit this logic to Create?
-        // But if I show the form in Edit, I MUST save it.
-        
-        // Strategy: Delete all competency schedules for this training and recreate based on form data.
-        // WARNING: This assumes no other important data (like grades/attendance) is attached to these specific IDs yet.
-        // If grades exist, this is destructive!
-        // Given "Create Pelatihan" context, maybe this is fine. 
-        // But for Edit, if grades exist...
-        // The user only asked "ketika create pelatihan".
-        // Maybe I should NOT change Edit logic drastically?
-        // But if I change the Resource form, Edit is affected.
-        
-        // Let's assume for now we re-create.
+        // Delete all old records to consolidate/update
         $this->record->kompetensiPelatihan()->delete();
         
         $data = $this->data;
@@ -85,18 +71,12 @@ class EditPelatihan extends EditRecord
                     'lokasi' => $item['lokasi'] ?? 'UPT-PTKK',
                 ];
 
+                // Create ONE record per item
+                $kompetensiPelatihan = $this->record->kompetensiPelatihan()->create($commonData);
+
+                // Attach instructors via Pivot
                 if (!empty($instructorIds) && is_array($instructorIds)) {
-                     foreach ($instructorIds as $instructorId) {
-                        $this->record->kompetensiPelatihan()->create(array_merge($commonData, [
-                            'instruktur_id' => $instructorId,
-                        ]));
-                     }
-                } else {
-                     if (!empty($item['instruktur_id']) && !is_array($item['instruktur_id'])) {
-                         $this->record->kompetensiPelatihan()->create(array_merge($commonData, [
-                            'instruktur_id' => $item['instruktur_id'],
-                        ]));
-                     }
+                     $kompetensiPelatihan->instrukturs()->attach($instructorIds);
                 }
             }
         }

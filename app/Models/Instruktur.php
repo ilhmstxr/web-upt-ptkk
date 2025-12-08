@@ -41,4 +41,14 @@ class Instruktur extends Model
     {
         return $this->hasOne(LampiranInstruktur::class);
     }
+    public function kompetensiPelatihan()
+    {
+        return $this->belongsToMany(KompetensiPelatihan::class, 'kompetensi_pelatihan_instruktur');
+    }
+
+    public function getNamaGelarAttribute()
+    {
+        return $this->nama;
+    }
+
 }

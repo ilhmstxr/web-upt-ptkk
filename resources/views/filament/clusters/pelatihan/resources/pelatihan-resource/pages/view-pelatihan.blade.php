@@ -38,7 +38,13 @@
                             <div>
                                 <h4 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ $kompetensi->kompetensi->nama_kompetensi ?? 'Nama Kompetensi' }}</h4>
                                 <div class="flex items-center gap-2 mt-1">
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Mentor: {{ !empty($kompetensi->nama_instruktur) ? $kompetensi->nama_instruktur : ($kompetensi->instruktur->nama ?? 'Belum ditentukan') }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Mentor: 
+                                        @if($kompetensi->instrukturs->count() > 0)
+                                            {{ $kompetensi->instrukturs->pluck('nama')->join(', ') }}
+                                        @else
+                                            Belum ditentukan
+                                        @endif
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -69,24 +75,24 @@
             </div>
              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($record->kompetensiPelatihan as $kompetensi)
-                    @if($kompetensi->nama_instruktur || $kompetensi->instruktur)
+                    @foreach($kompetensi->instrukturs as $instruktur)
                     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:shadow-md transition-shadow relative group">
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-14 h-14 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-500 dark:text-gray-400">
-                                {{ substr($kompetensi->nama_instruktur ?? $kompetensi->instruktur->nama ?? 'IN', 0, 2) }}
+                                {{ substr($instruktur->nama ?? 'IN', 0, 2) }}
                             </div>
                             <div>
-                                <h4 class="font-bold text-gray-900 dark:text-white">{{ $kompetensi->nama_instruktur ?? $kompetensi->instruktur->nama ?? '-' }}</h4>
+                                <h4 class="font-bold text-gray-900 dark:text-white">{{ $instruktur->nama ?? '-' }}</h4>
                                 <p class="text-xs text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full w-fit mt-1">{{ $kompetensi->kompetensi->nama_kompetensi ?? 'Kompetensi' }}</p>
                             </div>
                         </div>
                         <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
-                             @if($kompetensi->instruktur && $kompetensi->instruktur->user)
-                                <div class="flex items-center gap-2"><x-heroicon-o-envelope class="w-4 h-4 text-gray-400" /> {{ $kompetensi->instruktur->user->email ?? '-' }}</div>
+                             @if($instruktur->user)
+                                <div class="flex items-center gap-2"><x-heroicon-o-envelope class="w-4 h-4 text-gray-400" /> {{ $instruktur->user->email ?? '-' }}</div>
                              @endif
                         </div>
                     </div>
-                    @endif
+                    @endforeach
                 @endforeach
             </div>
         </div>

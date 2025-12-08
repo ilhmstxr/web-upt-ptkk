@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExportController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Volt\Volt;
@@ -103,6 +104,15 @@ Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::
 Route::middleware(['auth'])
     ->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
     ->name('export.report.pelatihan');
+
+// Export Template Surat Routes
+Route::middleware(['auth'])->prefix('export/template')->name('export.template.')->group(function () {
+    Route::get('rekap-pelatihan/{pelatihanId}', [ExportController::class, 'rekapPelatihan'])->name('rekap-pelatihan');
+    Route::get('peserta-excel/{pelatihanId}', [ExportController::class, 'pesertaExcel'])->name('peserta-excel');
+    Route::get('daftar-instruktur/{pelatihanId}', [ExportController::class, 'daftarInstruktur'])->name('daftar-instruktur');
+    Route::get('biodata-peserta/{pelatihanId}', [ExportController::class, 'biodataPeserta'])->name('biodata-peserta');
+});
+
 // routes/web.php
 Route::middleware(['auth']) // opsional
     ->get('/reports/jawaban-survei/pdf/{pelatihanId}', [ExportController::class, 'pdfView'])

@@ -14,6 +14,12 @@ use Knp\Snappy\Pdf;
 use ReflectionObject;
 use Spatie\Browsershot\Browsershot;
 use Spatie\Browsershot\Exceptions\CouldNotTakeBrowsershot;
+use App\Models\PendaftaranPelatihan;
+use App\Models\Instruktur;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\GenericExport; // We might need a generic export class or anonymous export
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 
 class ExportController extends Controller
 {
@@ -218,4 +224,160 @@ class ExportController extends Controller
     // }
 
 
+
+    // --- Export Template Surat Methods ---
+
+    public function rekapPelatihan($pelatihanId)
+    {
+        $pelatihan = Pelatihan::findOrFail($pelatihanId);
+        $pendaftaran = PendaftaranPelatihan::with(['peserta.instansi.cabangDinas', 'peserta.lampiran', 'kompetensi'])
+            ->where('pelatihan_id', $pelatihanId)
+            ->get();
+
+        $html = view('template_surat.export_per_pelatihan', compact('pelatihan', 'pendaftaran'))->render();
+
+        try {
+            $pdf = Browsershot::html($html)
+                ->timeout(120)
+                ->waitUntil('networkidle0')
+                ->showBackground()
+                ->format('A4')
+                ->landscape() // Usually tables need landscape
+                ->pdf();
+
+            return Response::make($pdf, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="Rekap_Peserta_' . $pelatihan->nama_pelatihan . '.pdf"',
+            ]);
+        } catch (CouldNotTakeBrowsershot $e) {
+            return response("Gagal export PDF: " . $e->getMessage(), 500);
+        }
+    }
+
+    public function pesertaExcel($pelatihanId)
+    {
+        $pelatihan = Pelatihan::findOrFail($pelatihanId);
+        $pendaftaran = PendaftaranPelatihan::with(['peserta.instansi.cabangDinas', 'peserta.lampiran', 'kompetensi'])
+            ->where('pelatihan_id', $pelatihanId)
+            ->get();
+
+        // Anonymous export class for simplicity
+        return Excel::download(new class($pendaftaran, $pelatihan) implements FromView {
+            private $pendaftaran;
+            private $pelatihan;
+
+            public function __construct($pendaftaran, $pelatihan)
+            {
+                $this->pendaftaran = $pendaftaran;
+                $this->pelatihan = $pelatihan;
+            }
+
+            public function view(): View
+            {
+                return view('template_surat.export_peserta_excel', [
+                    'pendaftaran' => $this->pendaftaran,
+                    'pelatihan' => $this->pelatihan
+                ]);
+            }
+        }, 'Data_Peserta_' . $pelatihan->nama_pelatihan . '.xlsx');
+    }
+
+    public function daftarInstruktur($pelatihanId)
+    {
+        $pelatihan = Pelatihan::findOrFail($pelatihanId);
+        
+        // Fetch instructors via KompetensiPelatihan relation
+        // Pelatihan -> hasMany KompetensiPelatihan -> belongsToMany Instruktur
+        // We need to get unique instructors
+        $instruktur = Instruktur::whereHas('kompetensiPelatihan', function ($query) use ($pelatihanId) {
+            $query->where('pelatihan_id', $pelatihanId);
+        })->with(['kompetensiPelatihan' => function($q) use ($pelatihanId) {
+             $q->where('pelatihan_id', $pelatihanId);
+        }, 'kompetensiPelatihan.kompetensi'])->get();
+
+        // Inject pelatihan object into each instruktur for the view to use "$instruktur->pelatihan"
+        // Note: The template uses $instruktur->pelatihan->nama_pelatihan. 
+        // Since Instruktur model likely has a 'pelatihan' relation (Many-to-Many), this access is ambiguous in the template.
+        // However, we can trick it by manually setting the relation on the object for this request if needed,
+        // OR we just hope the view uses the passed $pelatihan if I passed strictly what it wants.
+        // But the view loop uses $instruktur properties.
+        // Let's iterate and enforce the single pelatihan instance for this context.
+        
+        foreach ($instruktur as $inst) {
+            $inst->setRelation('pelatihan', $pelatihan); // Standard Laravel way to hydrate a specific relation manually
+            // Also logic for "kompetensi" might need specific handling if they teach multiple in same pelatihan.
+            // The view uses $instruktur->kompetensi->nama_kompetensi. 
+            // We'll try to pick the first one from the pivot or related.
+            $firstKompetensi = $inst->kompetensiPelatihan->first()?->kompetensi;
+            if ($firstKompetensi) {
+                $inst->setRelation('kompetensi', $firstKompetensi);
+            }
+        }
+
+        $html = view('template_surat.instruktur', compact('instruktur', 'pelatihan'))->render();
+
+        try {
+            $pdf = Browsershot::html($html)
+                ->timeout(120)
+                ->waitUntil('networkidle0')
+                ->showBackground()
+                ->format('A4')
+                ->pdf();
+
+            return Response::make($pdf, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="Biodata_Instruktur_' . $pelatihan->nama_pelatihan . '.pdf"',
+            ]);
+        } catch (CouldNotTakeBrowsershot $e) {
+            return response("Gagal export PDF: " . $e->getMessage(), 500);
+        }
+    }
+
+    public function biodataPeserta($pelatihanId)
+    {
+        $pelatihan = Pelatihan::findOrFail($pelatihanId);
+        $pesertaList = PendaftaranPelatihan::with(['peserta.instansi', 'pelatihan', 'peserta'])
+            ->where('pelatihan_id', $pelatihanId)
+            ->get()
+            ->map(function ($pendaftaran) {
+                // The view expects $p to behave like a model with direct access to 'nama', 'pelatihan', etc.
+                // It likely expects a Peserta model that has a Pelatihan relation injected, OR
+                // if we look at the view: {{ $p->pelatihan->nama_pelatihan }}.
+                // If $p is Pendaftaran, it has 'pelatihan' relation.
+                // But $p->nama is on $p->peserta->nama.
+                // However, line 107 {{ $p->nama }} implies $p IS the Peserta model or has attribute forwarding.
+                // Let's try to map it to a structure the view likes.
+                // Actually, looking at PendaftaranController::exportBulk, it passes Pendaftaran object to the DOCX.
+                // But here we use a Blade view. 
+                // Let's assume the view handles Pendaftaran object if we ensure attributes are available.
+                // Wait, view line 107: $p->nama. Pendaftaran does NOT have 'nama'. Peserta does.
+                // So the view likely expects a list of PESERTA objects, but with 'pelatihan' loaded on them.
+                
+                $peserta = $pendaftaran->peserta;
+                // Add the specific pelatihan context to this peserta instance
+                $peserta->setRelation('pelatihan', $pendaftaran->pelatihan); 
+                // Determine 'asal_instansi' fallback if needed, view logic: {{ $p->instansi->asal_instansi ?? ($p->asal_sekolah ?? '-') }}
+                return $peserta;
+            });
+
+        $html = view('template_surat.biodata_peserta', ['peserta' => $pesertaList])->render();
+
+        try {
+            $pdf = Browsershot::html($html)
+                ->timeout(120)
+                ->waitUntil('networkidle0')
+                ->showBackground()
+                ->format('A4')
+                ->pdf();
+
+            return Response::make($pdf, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="Biodata_Peserta_' . $pelatihan->nama_pelatihan . '.pdf"',
+            ]);
+        } catch (CouldNotTakeBrowsershot $e) {
+            return response("Gagal export PDF: " . $e->getMessage(), 500);
+        }
+    }
+
 }
+
