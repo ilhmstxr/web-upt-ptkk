@@ -33,7 +33,13 @@ class Peserta extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
+    }
+
+
+    public function lampiran(): HasOne
+    {
+        return $this->hasOne(LampiranPeserta::class);
     }
 
     public function instansi()
@@ -63,13 +69,15 @@ class Peserta extends Model
         );
     }
 
-    public function lampiranFolder(): string
+    public function pendaftaranPelatihan()
     {
-        return 'lampiran/' . Str::slug($this->nama);
+        // Terhubung ke PendaftaranPelatihan::class melalui 'peserta_id'
+        return $this->hasMany(PendaftaranPelatihan::class, 'peserta_id');
     }
 
-    public function getUmurAttribute()
-    {
-        return $this->tanggal_lahir ? $this->tanggal_lahir->age : null;
-    }
+    /**
+     * Mendapatkan semua sesi/jadwal (kompetensi_pelatihan) yang pernah diikuti peserta
+     * (melalui tabel pendaftaran_pelatihan).
+     */
+
 }

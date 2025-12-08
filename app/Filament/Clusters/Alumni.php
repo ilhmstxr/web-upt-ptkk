@@ -10,4 +10,8 @@ class Alumni extends Cluster
 
     protected static ?int $navigationSort = 4;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }

@@ -38,7 +38,7 @@
             <p><strong>No HP:</strong> {{ $peserta->no_hp }}</p>
             <p><strong>Alamat:</strong> {{ $peserta->alamat }}</p>
             <p><strong>Asal Instansi:</strong> {{ $peserta->instansi->asal_instansi}}</p>
-            <p><strong>Bidang Keahlian:</strong> {{ $peserta->bidang_keahlian}}</p>
+            <p><strong>Kompetensi Keahlian:</strong> {{ $peserta->instansi->kompetensi_keahlian ?? '-'}}</p>
             <p><strong>Kelas:</strong> {{ $peserta->kelas}}</p>
             <p><strong>Cabang Dinas/Wilayah:</strong> {{ $peserta->cabang_dinas_wilayah}}</p>
             <hr>

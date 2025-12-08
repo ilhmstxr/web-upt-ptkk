@@ -5,7 +5,7 @@ KONSEP ARSITEKTUR
 =================================================================
 IMPLEMENTASI
 =================================================================
-siap—kita fokus “membongkar” controller pendaftaran yang gemuk jadi potongan kecil yang rapi. Karena kamu minta **belum menulis kode**, di bawah ini adalah **daftar file** + **peran masing-masing** yang biasanya diperlukan untuk kasus pendaftaran peserta (dengan entitas: peserta, user/operator, instansi, bidang, pelatihan, lampiran, dan alur status).
+siap—kita fokus “membongkar” controller pendaftaran yang gemuk jadi potongan kecil yang rapi. Karena kamu minta **belum menulis kode**, di bawah ini adalah **daftar file** + **peran masing-masing** yang biasanya diperlukan untuk kasus pendaftaran peserta (dengan entitas: peserta, user/operator, instansi, kompetensi, pelatihan, lampiran, dan alur status).
 
 ---
 
@@ -33,7 +33,7 @@ Taruh semua aturan validasi di sini, bukan di controller.
 -   `app/Http/Requests/Pendaftaran/ChangeStatusRequest.php` (opsional)
 -   `app/Http/Requests/Pendaftaran/UploadLampiranRequest.php`
 
-**Fokus:** aturan field, exists/unique, korelasi antar field (mis. `bidang_id` harus milik `instansi_id`), otorisasi endpoint (boleh create/edit?).
+**Fokus:** aturan field, exists/unique, korelasi antar field (mis. `kompetensi_id` harus milik `instansi_id`), otorisasi endpoint (boleh create/edit?).
 
 ---
 
@@ -69,8 +69,8 @@ Satu use-case → satu kelas. Di sinilah **transaksi DB** berlangsung.
 Supaya tidak menjejali FormRequest dengan closure panjang.
 
 -   `app/Rules/UniquePendaftaranPerPesertaPelatihan.php`
--   `app/Rules/BidangBelongsToInstansi.php`
--   `app/Rules/ValidLampiranType.php` (opsional: cek jenis berkas terhadap pelatihan/bidang)
+-   `app/Rules/KompetensiBelongsToInstansi.php`
+-   `app/Rules/ValidLampiranType.php` (opsional: cek jenis berkas terhadap pelatihan/kompetensi)
 
 ---
 
@@ -102,7 +102,7 @@ Kalau endpoint kamu JSON, bentuknya jangan di controller.
 Pisahkan hal yang berpotensi dipakai lintas aksi.
 
 -   `app/Services/Numbering/NomorRegistrasiFormatter.php`
-    (format kode, padding, pola per tahun/bidang)
+    (format kode, padding, pola per tahun/kompetensi)
 -   `app/Services/Storage/LampiranStorage.php`
     (path, direktori, rename, keamanan akses)
 -   (opsional) `app/Services/Export/PendaftaranExporter.php` (CSV/XLSX/PDF)
@@ -196,7 +196,7 @@ Jika kamu juga pakai Filament, UI admin pindah ke sini (controller makin bebas).
 -   **Cek izin** → `PendaftaranPolicy`
 -   **Generate nomor registrasi** → `Actions/GenerateNomorRegistrasi` (atau Service Numbering) + optional `Observer`
 -   **Cek unik (peserta×pelatihan)** → `Rules/UniquePendaftaranPerPesertaPelatihan`
--   **Relasi `bidang` milik `instansi`** → `Rules/BidangBelongsToInstansi`
+-   **Relasi `kompetensi` milik `instansi`** → `Rules/KompetensiBelongsToInstansi`
 -   **Simpan/hapus lampiran** → `Actions/AddLampiran/RemoveLampiran` + `Services/Storage/LampiranStorage`
 -   **Filter/search daftar** → `PendaftaranRepository`
 -   **Perubahan status (submit/verify/approve/reject)** → `Actions/ChangeStatus` (+ Policy)
@@ -249,54 +249,48 @@ guru & siswa
 191
 SELECT \* FROM jawaban_user WHERE pertanyaan_id = 105;
 
-
-
-
-
-    
 -- JALANKAN QUERY INI UNTUK MEMPERBAIKI DATA JAWABAN_USER
 UPDATE
-  jawaban_user
+jawaban_user
 SET
-  opsi_jawaban_id = CASE
-    -- ## Mapping untuk Pertanyaan 105 (Q24) ##
-    -- Sesuaikan ID Lama => ID Baru berdasarkan peta Anda
-    WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 353 THEN 708 -- Contoh untuk 'Sangat Perlu'
-    WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 354 THEN 707 -- Contoh untuk 'Perlu'
-    WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 355 THEN 706 -- Contoh untuk 'Kurang Perlu'
-    WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 356 THEN 705 -- Contoh untuk 'Tidak Perlu'
-    
+opsi_jawaban_id = CASE
+-- ## Mapping untuk Pertanyaan 105 (Q24) ##
+-- Sesuaikan ID Lama => ID Baru berdasarkan peta Anda
+WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 353 THEN 708 -- Contoh untuk 'Sangat Perlu'
+WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 354 THEN 707 -- Contoh untuk 'Perlu'
+WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 355 THEN 706 -- Contoh untuk 'Kurang Perlu'
+WHEN pertanyaan_id = 105 AND opsi_jawaban_id = 356 THEN 705 -- Contoh untuk 'Tidak Perlu'
+
     -- Jaga nilai asli jika tidak cocok
     ELSE opsi_jawaban_id
-  END
+
+END
 WHERE
-  -- Filter hanya untuk pertanyaan yang relevan
-  pertanyaan_id = 105 AND opsi_jawaban_id IN (353, 354, 355, 356);
-
-
+-- Filter hanya untuk pertanyaan yang relevan
+pertanyaan_id = 105 AND opsi_jawaban_id IN (353, 354, 355, 356);
 
 -- JALANKAN QUERY INI UNTUK MEMPERBAIKI DATA JAWABAN_USER
 UPDATE
-  jawaban_user
+jawaban_user
 SET
-  opsi_jawaban_id = CASE
-    -- ## Mapping untuk Pertanyaan 105 (Q24) ##
-    -- Sesuaikan ID Lama => ID Baru berdasarkan peta Anda
-       WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 685 THEN 712 -- Contoh untuk 'Sangat Perlu'
-    WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 686 THEN 711 -- Contoh untuk 'Perlu'
-    WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 687 THEN 710 -- Contoh untuk 'Kurang Perlu'
-    WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 688 THEN 709 -- Contoh untuk 'Tidak Perlu'
- 
+opsi_jawaban_id = CASE
+-- ## Mapping untuk Pertanyaan 105 (Q24) ##
+-- Sesuaikan ID Lama => ID Baru berdasarkan peta Anda
+WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 685 THEN 712 -- Contoh untuk 'Sangat Perlu'
+WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 686 THEN 711 -- Contoh untuk 'Perlu'
+WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 687 THEN 710 -- Contoh untuk 'Kurang Perlu'
+WHEN pertanyaan_id = 191 AND opsi_jawaban_id = 688 THEN 709 -- Contoh untuk 'Tidak Perlu'
+
     -- Jaga nilai asli jika tidak cocok
     ELSE opsi_jawaban_id
-  END
+
+END
 WHERE
-  -- Filter hanya untuk pertanyaan yang relevan
-  pertanyaan_id = 191 AND opsi_jawaban_id IN (685, 686, 687, 688);
-
-
+-- Filter hanya untuk pertanyaan yang relevan
+pertanyaan_id = 191 AND opsi_jawaban_id IN (685, 686, 687, 688);
 
 <!-- rubah db -->
+
 ALTER TABLE percobaan
 ADD COLUMN tipe ENUM('pre-test', 'post-test', 'survey') NULL AFTER tes_id;
 
@@ -310,17 +304,15 @@ WHERE skor IS NOT NULL AND skor > 0;
 
 nambahin peserta_id otomatis
 
-
 perubahan untuk asrama
 
 ASRAMA
-id 
+id
 name
 gender
 
-
 KAMAR
-id 
+id
 asrama
 nomor_kamar
 lantai
@@ -328,121 +320,104 @@ status
 total_beds
 available_beds
 
-
 penambahan kolom
 tabel percobaan
-+ pelatihan_id 
 
+-   pelatihan_id
 
-tabel peserta 
-+ pretest
-+ posttest
-+ praktek
-+ rata rata
-+ nilai survei
-+ status
+tabel peserta
 
-
-
-
+-   pretest
+-   posttest
+-   praktek
+-   rata rata
+-   nilai survei
+-   status
 
 mindah nilai ke pendafaran pelatihan
 UPDATE pendaftaran_pelatihan AS pp
 LEFT JOIN (
-    -- Subquery untuk mengambil skor pre-test terbaru
-    SELECT
-        p.peserta_id,
-        p.pelatihan_id,
-        p.skor AS nilai_pre_test
-    FROM percobaan AS p
-    INNER JOIN (
-        SELECT peserta_id, pelatihan_id, MAX(id) AS max_id
-        FROM percobaan
-        WHERE tipe = 'pre-test' AND peserta_id IS NOT NULL AND pelatihan_id IS NOT NULL
-        GROUP BY peserta_id, pelatihan_id
-    ) AS latest_pre
-    ON p.id = latest_pre.max_id
+-- Subquery untuk mengambil skor pre-test terbaru
+SELECT
+p.peserta_id,
+p.pelatihan_id,
+p.skor AS nilai_pre_test
+FROM percobaan AS p
+INNER JOIN (
+SELECT peserta_id, pelatihan_id, MAX(id) AS max_id
+FROM percobaan
+WHERE tipe = 'pre-test' AND peserta_id IS NOT NULL AND pelatihan_id IS NOT NULL
+GROUP BY peserta_id, pelatihan_id
+) AS latest_pre
+ON p.id = latest_pre.max_id
 ) AS pre_test_data
 ON pp.peserta_id = pre_test_data.peserta_id AND pp.pelatihan_id = pre_test_data.pelatihan_id
 
 LEFT JOIN (
-    -- Subquery untuk mengambil skor post-test terbaru dan status kelulusan
-    SELECT
-        p.peserta_id,
-        p.pelatihan_id,
-        p.skor AS nilai_post_test,
-        CASE WHEN p.lulus = 1 THEN 'Lulus' ELSE 'Belum Lulus' END AS status
-    FROM percobaan AS p
-    INNER JOIN (
-        SELECT peserta_id, pelatihan_id, MAX(id) AS max_id
-        FROM percobaan
-        WHERE tipe = 'post-test' AND peserta_id IS NOT NULL AND pelatihan_id IS NOT NULL
-        GROUP BY peserta_id, pelatihan_id
-    ) AS latest_post
-    ON p.id = latest_post.max_id
+-- Subquery untuk mengambil skor post-test terbaru dan status kelulusan
+SELECT
+p.peserta_id,
+p.pelatihan_id,
+p.skor AS nilai_post_test,
+CASE WHEN p.lulus = 1 THEN 'Lulus' ELSE 'Belum Lulus' END AS status
+FROM percobaan AS p
+INNER JOIN (
+SELECT peserta_id, pelatihan_id, MAX(id) AS max_id
+FROM percobaan
+WHERE tipe = 'post-test' AND peserta_id IS NOT NULL AND pelatihan_id IS NOT NULL
+GROUP BY peserta_id, pelatihan_id
+) AS latest_post
+ON p.id = latest_post.max_id
 ) AS post_test_data
 ON pp.peserta_id = post_test_data.peserta_id AND pp.pelatihan_id = post_test_data.pelatihan_id
 
 SET
-    pp.nilai_pre_test = COALESCE(pre_test_data.nilai_pre_test, pp.nilai_pre_test),
-    pp.nilai_post_test = COALESCE(post_test_data.nilai_post_test, pp.nilai_post_test),
-    pp.status = COALESCE(post_test_data.status, 'Belum Lulus');
+pp.nilai_pre_test = COALESCE(pre_test_data.nilai_pre_test, pp.nilai_pre_test),
+pp.nilai_post_test = COALESCE(post_test_data.nilai_post_test, pp.nilai_post_test),
+pp.status = COALESCE(post_test_data.status, 'Belum Lulus');
 
+cek kompetensi_id lama ke kompetensi_id baru
 
-
-
-
-
-
-cek bidang_id lama ke bidang_id baru
-
-COUNT(*)
+COUNT(\*)
 OR
 
 SELECT
 
 pp.id AS id_pendaftaran,
-  pp.bidang_id AS id_bidang_lama,
-  bp.id AS id_bidang_baru_yang_akan_dipakai
-
+pp.kompetensi_id AS id_kompetensi_lama,
+bp.id AS id_kompetensi_baru_yang_akan_dipakai
 
 FROM
-  `pendaftaran_pelatihan` AS pp
+`pendaftaran_pelatihan` AS pp
 JOIN
-  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`;
+`kompetensi_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`kompetensi_id` = bp.`kompetensi_id`;
 
-
-
-update bidang_id  lama ke bidang_Id baru
+update kompetensi_id lama ke kompetensi_Id baru
 UPDATE
-  `pendaftaran_pelatihan` AS pp
+`pendaftaran_pelatihan` AS pp
 JOIN
-  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`
+`kompetensi_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`kompetensi_id` = bp.`kompetensi_id`
 SET
-  pp.`bidang_id` = bp.`id`;
-
-
+pp.`kompetensi_id` = bp.`id`;
 
 SELECT
 pp.id AS id_pendaftaran,
-  pp.bidang_id AS id_bidang_lama,
-  bp.id AS id_bidang_baru_yang_akan_dipakai
-
+pp.kompetensi_id AS id_kompetensi_lama,
+bp.id AS id_kompetensi_baru_yang_akan_dipakai
 
 FROM
-  `pendaftaran_pelatihan` AS pp
+`pendaftaran_pelatihan` AS pp
 JOIN
-  `bidang_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`bidang_id` = bp.`bidang_id`
-  ORDER BY PP.id asc;
+`kompetensi_pelatihan` AS bp ON pp.`pelatihan_id` = bp.`pelatihan_id` AND pp.`kompetensi_id` = bp.`kompetensi_id`
+ORDER BY PP.id asc;
 
 95 ~ 114
 140 ~ 150
 180 an
 
-
 AH KOPLAK, konsistensi data yang ada di mtu & mjc di pelatihan 10 & 11 masih belum konsisten
 
-TODO, ngulik, ngecek pendaftaran_pelatihan dan diesuaikan dengan bidang_pelatihan 
+TODO, ngulik, ngecek pendaftaran_pelatihan dan diesuaikan dengan kompetensi_pelatihan
 
 foto - malang
 video - magetan
@@ -450,112 +425,94 @@ plc - nganjuk
 tptu - kediri
 tptu - tuban
 
-
-SELECT bidang_id, COUNT(*) AS jumlah_peserta
+SELECT kompetensi_id, COUNT(\*) AS jumlah_peserta
 FROM peserta
 WHERE pelatihan_id = 1
-GROUP BY bidang_id;
+GROUP BY kompetensi_id;
 
-
-
-
-SELECT bidang_id, COUNT(*) AS jumlah_peserta
+SELECT kompetensi_id, COUNT(\*) AS jumlah_peserta
 FROM pendaftaran_pelatihan
 WHERE pelatihan_id = 1
-GROUP BY bidang_id;
+GROUP BY kompetensi_id;
 
+nambahin data terbaru lalu ditampilkan
 
-nambahin data terbaru lalu ditampilkan 
+tata boga v
+tata busana v
+tata kecantikan v
+tptu v
+web desain V
+desain grafis V
+motion animasi V
+foto produk V
+videografi V
+fotografi V
+plc V
 
-tata boga         v 
-tata busana       v
-tata kecantikan   v
-tptu              v
-web desain        V
-desain grafis     V
-motion animasi    V
-foto produk       V
-videografi        V
-fotografi         V
-plc               V
-
-
-injection 8 data pelatihan 
+injection 8 data pelatihan
 DONE pelatihan
-DONE bidang
-DONE bidang_pelatihan 
+DONE kompetensi
+DONE kompetensi_pelatihan
 TODO pretest
 TODO posttest
 TODO praktek
 TODO semua nilai (tanpa nilai survei)
 TODO semua jawaban user (pretest, possttest, survey / monev)
 
-
-
-
 masukkin data pretest
-dari pretest posttest  -> jadikan diagram (ambil dari survey)
-
+dari pretest posttest -> jadikan diagram (ambil dari survey)
 
 MONEV
 monev aksel guru
 monev aksel Teknik guru
 monev aksel Teknik siswa
-monev siswa aksel mjc 
+monev siswa aksel mjc
 monev siswa regular Teknik 1
 monev siswa regular mjc 1
 monev siswa regular mjc 2
 monev siswa mtu 1
 
-
 sudah di database
 monev siswa regular Teknik 2
 monev siswa mtu 2
 
-
 PRETEST
-⦁	pretest aksel guru 			5 done
-⦁	pretest aksel Teknik guru		4 done
-⦁	pretest aksel Teknik siswa		4 done
-⦁	pretest siswa aksel mjc 		5 done
-⦁	pretest siswa regular Teknik 1	4 done
-⦁	pretest siswa regular Teknik 2	4 done
-⦁	pretest siswa regular mjc 1		5 done
-⦁	pretest siswa regular mjc 2		5 done
-⦁	pretest siswa mtu 1			4 done (5 actually)
-
+⦁ pretest aksel guru 5 done
+⦁ pretest aksel Teknik guru 4 done
+⦁ pretest aksel Teknik siswa 4 done
+⦁ pretest siswa aksel mjc 5 done
+⦁ pretest siswa regular Teknik 1 4 done
+⦁ pretest siswa regular Teknik 2 4 done
+⦁ pretest siswa regular mjc 1 5 done
+⦁ pretest siswa regular mjc 2 5 done
+⦁ pretest siswa mtu 1 4 done (5 actually)
 
 sudah di database (cek ulang)
-⦁	pretest siswa regular Teknik 2	v
-⦁	pretest siswa mtu 2			v
-
-
-
+⦁ pretest siswa regular Teknik 2 v
+⦁ pretest siswa mtu 2 v
 
 POSTTEST
-⦁	posttest aksel guru			      5 done
-⦁	posttest aksel Teknik guru		4 done
-⦁	posttest aksel Teknik siswa		4 done
-⦁	posttest siswa aksel mjc 		  5 done
-⦁	posttest siswa regular Teknik 1	4 done
-⦁	posttest siswa regular Teknik 2	4 done
-⦁	posttest siswa regular mjc 1		5 done
-⦁	posttest siswa regular mjc 2		5 done
-⦁	posttest siswa mtu 1			4 done (actualy 5)
-
+⦁ posttest aksel guru 5 done
+⦁ posttest aksel Teknik guru 4 done
+⦁ posttest aksel Teknik siswa 4 done
+⦁ posttest siswa aksel mjc 5 done
+⦁ posttest siswa regular Teknik 1 4 done
+⦁ posttest siswa regular Teknik 2 4 done
+⦁ posttest siswa regular mjc 1 5 done
+⦁ posttest siswa regular mjc 2 5 done
+⦁ posttest siswa mtu 1 4 done (actualy 5)
 
 sudah di database
-⦁	posttest siswa regular Teknik 2	x
-⦁	posttest siswa mtu 2			x
+⦁ posttest siswa regular Teknik 2 x
+⦁ posttest siswa mtu 2 x
 
 CREATE TABLE id_mapping(
-  `old_id` bigint(20) unsigned NOT NULL,
-  `new_id` bigint(20) unsigned NOT NULL,
+`old_id` bigint(20) unsigned NOT NULL,
+`new_id` bigint(20) unsigned NOT NULL,
 
-  PRIMARY KEY (`old_id`),
-  UNIQUE KEY `new_id` ( `new_id`)
+PRIMARY KEY (`old_id`),
+UNIQUE KEY `new_id` ( `new_id`)
 )
-
 
 INSERT INTO `id_mapping` (`old_id`,`new_id`)
 VALUES
@@ -574,57 +531,125 @@ VALUES
 (102,8);
 
 web-content
-- upload banner (hero)
-- Berita
-- Sorotan pelatihan (judul, keterangan, foto-foto)
-- kompetensi bidang pelatihan
-- statistik (iki sg rata rata pretest post test)
-- edit kepala upt (foto, nama)
-- text pelatihan (syarat ketentuan, lokasi, jadwal)
+
+-   upload banner (hero)
+-   Berita
+-   Sorotan pelatihan (judul, keterangan, foto-foto)
+-   kompetensi kompetensi pelatihan
+-   statistik (iki sg rata rata pretest post test)
+-   edit kepala upt (foto, nama)
+-   text pelatihan (syarat ketentuan, lokasi, jadwal)
 
 ga wajib
-- foto di cerita kami 
-- foto foto di program pelatihan
 
-
+-   foto di cerita kami
+-   foto foto di program pelatihan
 
 pelatihan
-1. informasi dasar 
-jenis program diganti dropdown reguler, mtu, mjc
-batch diganti angkatan
-kuota dihapus
-instansi dihapus
-gambar dihapus
-deskripsi dihapus
-tambahkan tanggal mulai ~ tanggal selesai pelatihan
+
+1. informasi dasar
+   jenis program diganti dropdown reguler, mtu, mjc
+   batch diganti angkatan
+   kuota dihapus
+   instansi dihapus
+   gambar dihapus
+   deskripsi dihapus
+   tambahkan tanggal mulai ~ tanggal selesai pelatihan
 
 2. kurikulum & jadwal
-bidang awalnya disediakan 1 card saja
-modul di komen terlebih dahulu
-tanggal mulai dihapus
-jam mulai selesai dihapus
-default lokasi di upt-ptkk
-metode dihapus
+   kompetensi awalnya disediakan 1 card saja
+   modul di komen terlebih dahulu
+   tanggal mulai dihapus
+   jam mulai selesai dihapus
+   default lokasi di upt-ptkk
+   metode dihapus
 
 3. durasi pelatihan dihapus
 
-
-
 admin
-TODO - instruktur (blm di tes)
+DONE - instruktur (updated schema, removed unused columns)
 DONE configure db
-CHECK crud filament instruktur resource 
+CHECK crud filament instruktur resource
 CHECK crud yang berhubungan dengan instruktur
 
-- create bidang (stuck instruktur)
+-   create kompetensi (stuck instruktur)
 
+-   setup tes
+    CHECK test crud test di filament
+    CHECK the error n solve
 
-- setup tes
-CHECK test crud test di filament
-CHECK the error n solve
+TESTING BRANCH MERGE-FINAL
 
+-   nav beranda e jek dashboard peserta
+    DONE - gambar di bidang resource ga muncul (nyimpen gambar e ubah jadi ke public aja soale sekalian di buat halaman user)
+    DONE- ubah gambar di pelatihan susah/ gaisok // NOTE ini nanti diganti ketika deploy(config/filesystems.php:line41:branch merge-final)
+    DONE - bidang diganti kompetensi - Bu Nur 1 Desember 2025
+-   UELEK ADMINE PELATIHAN
+    DONE - lihat gambar (hapusen sg tak block)
+    DONE - lihat gambar (putih putih elek iku hapuen ae)
+    DONE - lihat gambar ( si filter kategori sama status pindah ke yang tak tandain warna pink)
+    DONE - lihat gambar (gausah dikei opsi tampilan grid lek elek)
+    DONE - kolom table pelatihan gaush dikei gambar/cover
 
-- emailing peserta
-- export excel buat backup data
-- export pdf, sesuai kebutuhan
+DONE - lihat gambar (hybrid/zoom? pic admin? hapus ae ganti total peserta:63251876)
 
+-   uwelek tampilan e
+    DONE - lihat gambar (bidang ganti kompetensi)
+    DONE - 3 kotak iku hapus ae stats overview
+
+DONE - statusmu isine ga konsisten di filter pelatihan, di table pelatihan sama yang di detail (create, edit)
+DONE - nama mentor e udah diubah ga tampil di card daftar bidang pelatihan.
+DONE - foto hapus nk bidang pelatihan
+DONE - 12 sesi 3 tugas. lek statis gausa di gae hapus ae
+
+DONE - data peserta terdaftar filter sama tambah peserta 22 e gabisa di pencet
+DONE - liat data peserta iku lapu mok kei inisial nama peserta e
+DONE - instruktur e gaisok di tambah (di bidang pelatihan)
+DONE - SYARAT INFORMAI JADWAL LOKASI GA KEUBAH NK DATABASE duh
+DONE - tambah peserta malah error tambah pelatihan
+DONE - instruktur iku gausa digae dropdown isok ga gae format text ae (gak)
+
+user
+
+-   nav beranda e jek dashboard peserta
+-   asrama blom di cek gaoonk data e
+
+-   status e uda tak buka pendaftaran tapi nk user ga metu form pendaftaran e
+-   export e kabeh grg isok
+
+export peserta pelatihan:
+excel
+nama lengkap,
+email,
+asal lembaga (sekolah),
+kelas,
+cabdin,
+jenis pelatihan,
+kompetensi pelatihan (bidangnya apa misal fotografi),
+nama angkatan pelatihannya (misal milea...),
+no hp,
+link drive pas foto
+
+TODO - hasil tes survey kumulasi Total (Indeks Kepuasan) jadiin pie chart
+TODO - hasil tes survey lain e blom di cek gaonk data e
+
+-   emailing peserta
+
+DONE
+kolom tabel instruktur
+data pribadi:
+user_id
+nama,
+tempat lahir,
+tanggal lahir,
+jenis kelamin,
+agama,
+no hp
+lampiran : cv, ktp, ijazah, sertifikat kompetensi
+
+pdf: biodata peserta
+
+nambah data pretest, posttest, monev
+
+export full pelatihan
+export per pelatihan

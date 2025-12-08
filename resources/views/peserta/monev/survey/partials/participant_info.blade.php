@@ -22,7 +22,7 @@
         </div>
         <div>
             <p class="text-gray-500">Kompetensi</p>
-            <p class="font-medium">{{ $peserta->bidang->nama_bidang }}</p>
+            <p class="font-medium">{{ $peserta->kompetensi->nama_kompetensi }}</p>
         </div>
     </div>
 </div>

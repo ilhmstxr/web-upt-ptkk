@@ -52,10 +52,10 @@ CREATE TABLE `asramas` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bidang`
+-- Table structure for table `kompetensi`
 --
 
-CREATE TABLE `bidang` (
+CREATE TABLE `kompetensi` (
   `id` bigint UNSIGNED NOT NULL,
   `nama` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `deskripsi` text COLLATE utf8mb4_unicode_ci,
@@ -64,10 +64,10 @@ CREATE TABLE `bidang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `bidang`
+-- Dumping data for table `kompetensi`
 --
 
-INSERT INTO `bidang` (`id`, `nama`, `deskripsi`, `created_at`, `updated_at`) VALUES
+INSERT INTO `kompetensi` (`id`, `nama`, `deskripsi`, `created_at`, `updated_at`) VALUES
 (1, 'Tata Boga', 'Kompetensi Tata Boga', '2025-09-03 03:49:41', '2025-09-03 03:49:41'),
 (2, 'Tata Busana', 'Kompetensi Tata Busana', '2025-09-03 03:49:41', '2025-09-03 03:49:41'),
 (3, 'Teknik Pendingin', 'Kompetensi Refrigeration', '2025-09-03 03:49:41', '2025-09-03 03:49:41');
@@ -123,7 +123,7 @@ CREATE TABLE `instansi` (
 
 CREATE TABLE `instruktur` (
   `id` bigint UNSIGNED NOT NULL,
-  `bidang_id` bigint UNSIGNED DEFAULT NULL,
+  `kompetensi_id` bigint UNSIGNED DEFAULT NULL,
   `pelatihan_id` bigint UNSIGNED DEFAULT NULL,
   `nama_gelar` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tempat_lahir` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -315,7 +315,7 @@ CREATE TABLE `peserta` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
   `pelatihan_id` bigint UNSIGNED NOT NULL,
-  `bidang_id` bigint UNSIGNED DEFAULT NULL,
+  `kompetensi_id` bigint UNSIGNED DEFAULT NULL,
   `instansi_id` bigint UNSIGNED DEFAULT NULL,
   `cabang_dinas_id` bigint UNSIGNED DEFAULT NULL,
   `alamat` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -426,9 +426,9 @@ ALTER TABLE `asramas`
   ADD KEY `fk_asrama_instruktur` (`instruktur_id`);
 
 --
--- Indexes for table `bidang`
+-- Indexes for table `kompetensi`
 --
-ALTER TABLE `bidang`
+ALTER TABLE `kompetensi`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -456,7 +456,7 @@ ALTER TABLE `instansi`
 --
 ALTER TABLE `instruktur`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `instruktur_bidang_idx` (`bidang_id`),
+  ADD KEY `instruktur_kompetensi_idx` (`kompetensi_id`),
   ADD KEY `instruktur_pelatihan_idx` (`pelatihan_id`);
 
 --
@@ -542,7 +542,7 @@ ALTER TABLE `peserta`
   ADD PRIMARY KEY (`id`),
   ADD KEY `peserta_user_idx` (`user_id`),
   ADD KEY `fk_peserta_pelatihan` (`pelatihan_id`),
-  ADD KEY `fk_peserta_bidang` (`bidang_id`),
+  ADD KEY `fk_peserta_kompetensi` (`kompetensi_id`),
   ADD KEY `fk_peserta_instansi` (`instansi_id`),
   ADD KEY `fk_peserta_cabang` (`cabang_dinas_id`);
 
@@ -600,9 +600,9 @@ ALTER TABLE `asramas`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `bidang`
+-- AUTO_INCREMENT for table `kompetensi`
 --
-ALTER TABLE `bidang`
+ALTER TABLE `kompetensi`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
@@ -746,7 +746,7 @@ ALTER TABLE `instansi`
 -- Constraints for table `instruktur`
 --
 ALTER TABLE `instruktur`
-  ADD CONSTRAINT `fk_instruktur_bidang` FOREIGN KEY (`bidang_id`) REFERENCES `bidang` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_instruktur_kompetensi` FOREIGN KEY (`kompetensi_id`) REFERENCES `kompetensi` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_instruktur_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihan` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
@@ -808,7 +808,7 @@ ALTER TABLE `pertanyaan`
 -- Constraints for table `peserta`
 --
 ALTER TABLE `peserta`
-  ADD CONSTRAINT `fk_peserta_bidang` FOREIGN KEY (`bidang_id`) REFERENCES `bidang` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_peserta_kompetensi` FOREIGN KEY (`kompetensi_id`) REFERENCES `kompetensi` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_peserta_cabang` FOREIGN KEY (`cabang_dinas_id`) REFERENCES `cabang_dinas` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_peserta_instansi` FOREIGN KEY (`instansi_id`) REFERENCES `instansi` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_peserta_pelatihan` FOREIGN KEY (`pelatihan_id`) REFERENCES `pelatihan` (`id`) ON DELETE CASCADE,

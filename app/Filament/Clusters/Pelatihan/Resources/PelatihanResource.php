@@ -32,161 +32,117 @@ final class PelatihanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Wizard::make([
-                    // STEP 1 — Informasi Dasar
-                    Forms\Components\Wizard\Step::make('Informasi Dasar')
+                Forms\Components\Wizard::make(self::getWizardSteps())
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    public static function getWizardSteps(): array
+    {
+        return [
+            Forms\Components\Wizard\Step::make('Informasi Dasar')
+                ->schema([
+                    Forms\Components\Section::make('Detail Pelatihan')
+                        ->description('Informasi utama mengenai pelatihan')
                         ->schema([
-                            Forms\Components\Section::make('Detail Pelatihan')
-                                ->description('Informasi utama mengenai pelatihan.')
+                            Forms\Components\Grid::make(2)
                                 ->schema([
-                                    // Baris atas: nama pelatihan full width
                                     Forms\Components\TextInput::make('nama_pelatihan')
-                                        ->label('Nama Pelatihan')
                                         ->required()
                                         ->maxLength(255)
                                         ->columnSpanFull(),
-
-                                    // Baris berikutnya: 2 kolom rapi
+                                    
                                     Forms\Components\Select::make('jenis_program')
-                                        ->label('Jenis Program')
                                         ->options([
-                                            'reguler'    => 'Reguler',
-                                            'mtu'        => 'MTU',
+                                            'reguler' => 'Reguler',
+                                            'mtu' => 'MTU',
                                             'akselerasi' => 'Akselerasi',
                                         ])
                                         ->required(),
 
                                     Forms\Components\Select::make('status')
-                                        ->label('Status')
                                         ->options([
-                                            'Pendaftaran Buka' => 'Pendaftaran Buka',
-                                            'Sedang Berjalan'  => 'Sedang Berjalan',
-                                            'Selesai'          => 'Selesai',
-                                            'Mendatang'        => 'Mendatang',
+                                            'belum dimulai' => 'Belum Dimulai',
+                                            'aktif' => 'Aktif',
+                                            'selesai' => 'Selesai',
                                         ])
                                         ->required()
-                                        ->default('Mendatang'),
-
+                                        ->default('belum dimulai'),
+                                    
                                     Forms\Components\TextInput::make('angkatan')
                                         ->label('Angkatan')
                                         ->numeric()
                                         ->default(1)
                                         ->required(),
-
+                                    
                                     Forms\Components\DatePicker::make('tanggal_mulai')
-                                        ->label('Tanggal Mulai')
                                         ->required(),
-
+                                    
                                     Forms\Components\DatePicker::make('tanggal_selesai')
-                                        ->label('Tanggal Selesai')
                                         ->required(),
-                                ])
-                                // 2 kolom responsif di dalam section
-                                ->columns([
-                                    'default' => 1,
-                                    'md'      => 2,
                                 ]),
                         ]),
-
-                    // STEP 2 — Kurikulum & Jadwal
-                    Forms\Components\Wizard\Step::make('Kurikulum & Jadwal')
+                ]),
+            Forms\Components\Wizard\Step::make('Kurikulum & Jadwal')
+                ->schema([
+                    Forms\Components\Section::make('Materi & Jadwal')
+                        ->description('Atur kurikulum dan jadwal pelatihan')
                         ->schema([
-                            Forms\Components\Section::make('Materi & Jadwal')
-                                ->description('Atur kurikulum, instruktur, dan lokasi pelatihan.')
+                            Forms\Components\Repeater::make('kompetensi_items')
+                                ->label('Jadwal Kompetensi')
                                 ->schema([
-                                    Forms\Components\Repeater::make('bidangPelatihan')
-                                        ->relationship('bidangPelatihan')
-                                        ->schema([
-                                            // Bidang dibuat lebih lebar (2 kolom)
-                                            Forms\Components\Select::make('bidang_id')
-                                                ->label('Materi / Bidang')
-                                                ->relationship('bidang', 'nama_bidang')
+                                    Forms\Components\Select::make('kompetensi_id')
+                                        ->label('Materi / Kompetensi')
+                                        ->options(\App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
+                                        ->searchable()
+                                        ->required()
+                                        ->columnSpan(2),
+                                    
+                                    Forms\Components\Select::make('instruktur_id')
+                                        ->label('Nama Instruktur')
+                                        ->options(\App\Models\Instruktur::pluck('nama', 'id'))
+                                        ->searchable()
+                                        ->preload()
+                                        ->multiple() // Allow multiple selection
+                                        ->required()
+                                        ->createOptionForm([
+                                            Forms\Components\TextInput::make('nama')
                                                 ->required()
-                                                ->searchable()
-                                                ->preload()
-                                                ->columnSpan(2),
-
-                                            Forms\Components\Select::make('instruktur_id')
-                                                ->label('Instruktur')
-                                                ->relationship('instruktur', 'nama')
-                                                ->searchable()
-                                                ->preload(),
-
-                                            Forms\Components\TextInput::make('lokasi')
-                                                ->label('Lokasi / Ruangan')
-                                                ->default('UPT-PTKK'),
+                                                ->maxLength(255),
+                                            Forms\Components\Select::make('kompetensi_id')
+                                                ->relationship('kompetensi', 'nama_kompetensi')
+                                                ->required(),
                                         ])
-                                        // layout dalam repeater: 3 kolom di layar besar
-                                        ->columns([
-                                            'default' => 1,
-                                            'md'      => 3,
-                                        ])
-                                        ->defaultItems(1)
-                                        ->addActionLabel('Tambah Sesi')
-                                        ->itemLabel(function (array $state): ?string {
-                                            // Tampilkan nama bidang bila ada bidang_id; fallback ke id
-                                            if (! empty($state['bidang_id'])) {
-                                                $bidang = Bidang::find($state['bidang_id']);
-                                                return $bidang ? $bidang->nama_bidang : ('ID: ' . $state['bidang_id']);
-                                            }
-                                            return null;
-                                        })
-                                        ->columnSpanFull(),
+                                        ->createOptionUsing(function (array $data) {
+                                            return \App\Models\Instruktur::create($data)->id;
+                                        }),
+                                    
+                                    Forms\Components\TextInput::make('lokasi')
+                                        ->label('Lokasi / Ruangan')
+                                        ->default('UPT-PTKK'),
                                 ])
-                                ->columns(1),
+                                ->columns(2)
+                                ->defaultItems(1)
+                                ->addActionLabel('Tambah Sesi')
+                                ->itemLabel(fn (array $state): ?string => \App\Models\Kompetensi::find($state['kompetensi_id'] ?? null)?->nama_kompetensi),
                         ]),
+                ]),
+            Forms\Components\Wizard\Step::make('Konten Halaman Pendaftaran')
+                ->description('Teks yang akan tampil di accordion halaman daftar pelatihan')
+                ->schema([
+                    Forms\Components\RichEditor::make('syarat_ketentuan')
+                        ->label('Syarat & Ketentuan Peserta')
+                        ->columnSpanFull(),
 
-                    // STEP 3 — Konten Halaman Pendaftaran (Rich text untuk accordion)
-                    Forms\Components\Wizard\Step::make('Konten Halaman Pendaftaran')
-                        ->description('Teks yang akan tampil di accordion halaman daftar pelatihan.')
-                        ->schema([
-                            Forms\Components\Section::make('Konten Informasi')
-                                ->schema([
-                                    Forms\Components\RichEditor::make('syarat_ketentuan')
-                                        ->label('Syarat & Ketentuan Peserta')
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'underline',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'undo',
-                                            'redo',
-                                        ])
-                                        ->columnSpanFull(),
+                    Forms\Components\RichEditor::make('jadwal_text')
+                        ->label('Informasi Jadwal (untuk accordion)')
+                        ->columnSpanFull(),
 
-                                    Forms\Components\RichEditor::make('jadwal_text')
-                                        ->label('Informasi Jadwal (untuk accordion)')
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'undo',
-                                            'redo',
-                                        ])
-                                        ->columnSpanFull(),
-
-                                    Forms\Components\RichEditor::make('lokasi_text')
-                                        ->label('Lokasi Pelaksanaan (untuk accordion)')
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'undo',
-                                            'redo',
-                                        ])
-                                        ->columnSpanFull(),
-                                ])
-                                ->columns(1),
-                        ]),
-                ])
-                ->columnSpanFull(),
-            ]);
+                    Forms\Components\RichEditor::make('lokasi_text')
+                        ->label('Lokasi Pelaksanaan (untuk accordion)')
+                        ->columnSpanFull(),
+                ]),
+        ];
     }
 
     /**
@@ -196,14 +152,12 @@ final class PelatihanResource extends Resource
     {
         return $table
             ->columns([
-                // Cover image
                 Tables\Columns\ImageColumn::make('gambar')
                     ->label('Cover')
                     ->square()
                     ->size(60)
                     ->defaultImageUrl('https://via.placeholder.com/150'),
 
-                // Nama pelatihan + deskripsi singkat
                 Tables\Columns\TextColumn::make('nama_pelatihan')
                     ->label('Nama Pelatihan')
                     ->searchable()
@@ -222,12 +176,11 @@ final class PelatihanResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'Sedang Berjalan'  => 'success',
-                        'Pendaftaran Buka' => 'info',
-                        'Selesai'          => 'gray',
-                        'Mendatang'        => 'warning',
-                        default            => 'secondary',
+                    ->color(fn (string $state): string => match ($state) {
+                        'aktif' => 'success',
+                        'belum dimulai' => 'info',
+                        'selesai' => 'gray',
+                        default => 'gray',
                     })
                     ->alignCenter(),
 
@@ -250,8 +203,12 @@ final class PelatihanResource extends Resource
                     ),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('instansi')
-                    ->relationship('instansi', 'asal_instansi'),
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'belum dimulai' => 'Belum Dimulai',
+                        'aktif' => 'Aktif',
+                        'selesai' => 'Selesai',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -283,12 +240,12 @@ final class PelatihanResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'             => Pages\ListPelatihans::route('/'),
-            'create'            => Pages\CreatePelatihan::route('/create'),
-            'view'              => Pages\ViewPelatihan::route('/{record}'),
-            'edit'              => Pages\EditPelatihan::route('/{record}/edit'),
-            'view-bidang'       => Pages\ViewBidangPelatihan::route('/{record}/bidang/{bidang_id}'),
-            'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/bidang/{bidang_id}/monev'),
+            'index' => Pages\ListPelatihans::route('/'),
+            'create' => Pages\CreatePelatihan::route('/create'),
+            'view' => Pages\ViewPelatihan::route('/{record}'),
+            'edit' => Pages\EditPelatihan::route('/{record}/edit'),
+            'view-kompetensi' => Pages\ViewKompetensiPelatihan::route('/{record}/kompetensi/{kompetensi_id}'),
+            'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/kompetensi/{kompetensi_id}/monev'),
         ];
     }
 }

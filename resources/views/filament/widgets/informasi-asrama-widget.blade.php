@@ -12,7 +12,7 @@
                     data: {
                         labels: ['Laki-laki', 'Perempuan', 'Kosong'],
                         datasets: [{
-                            data: [45, 30, 15],
+                            data: [{{ $male }}, {{ $female }}, {{ $empty }}],
                             backgroundColor: [
                                 '#3b82f6', // Blue
                                 '#ec4899', // Pink
@@ -53,7 +53,7 @@
             <div class="relative h-48 mb-6">
                 <canvas x-ref="canvas"></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span class="text-4xl font-bold text-gray-800 dark:text-white">75%</span>
+                    <span class="text-4xl font-bold text-gray-800 dark:text-white">{{ $percent }}%</span>
                     <span class="text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Terisi</span>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                         <span class="w-3 h-3 rounded-full bg-blue-500"></span>
                         <span class="text-gray-600 dark:text-gray-300">Laki-laki</span>
                     </div>
-                    <span class="font-bold text-gray-800 dark:text-white">45 Org</span>
+                    <span class="font-bold text-gray-800 dark:text-white">{{ $male }} Org</span>
                 </div>
                 <!-- Perempuan -->
                 <div class="flex items-center justify-between text-sm">
@@ -74,7 +74,7 @@
                         <span class="w-3 h-3 rounded-full bg-pink-500"></span>
                         <span class="text-gray-600 dark:text-gray-300">Perempuan</span>
                     </div>
-                    <span class="font-bold text-gray-800 dark:text-white">30 Org</span>
+                    <span class="font-bold text-gray-800 dark:text-white">{{ $female }} Org</span>
                 </div>
                 <!-- Kosong -->
                 <div class="flex items-center justify-between text-sm">
@@ -82,7 +82,7 @@
                         <span class="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-700"></span>
                         <span class="text-gray-600 dark:text-gray-300">Kosong</span>
                     </div>
-                    <span class="font-bold text-green-600 dark:text-green-400">15 Bed</span>
+                    <span class="font-bold text-green-600 dark:text-green-400">{{ $empty }} Bed</span>
                 </div>
             </div>
         </div>

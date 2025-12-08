@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StartSurveyRequest;
 use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\StoreSurveyRequest;
-use App\Models\Bidang;
+use App\Models\Kompetensi;
 use App\Models\Survey;
 use App\Models\Jawaban;
 use App\Models\JawabanUser;
@@ -35,10 +35,10 @@ class SurveyController extends Controller
         // return 'konto';
         $tes = Tes::where('tipe', 'survei')->firstorfail();
         $pelatihan = Pelatihan::all();
-        $bidang = Bidang::all();
-        // return $bidang;
+        $kompetensi = Kompetensi::all();
+        // return $kompetensi;
         // return $tes;
-        return view('peserta.monev.survey.start', compact('tes', 'pelatihan', 'bidang'));
+        return view('peserta.monev.survey.start', compact('tes', 'pelatihan', 'kompetensi'));
     }
 
     /**
@@ -135,7 +135,7 @@ class SurveyController extends Controller
         //     'nama'         => 'required|string',
         //     'angkatan'         => 'required|string',
         //     'pelatihan_id' => 'required|integer|exists:pelatihan,id', // Sebaiknya integer & exists
-        //     'bidang_id' => 'required|integer|exists:bidang,id',   // Ganti nama & validasi
+        //     'kompetensi_id' => 'required|integer|exists:kompetensi,id',   // Ganti nama & validasi
         //     'tes_id'       => 'required|integer|exists:tes,id'
         // ]);
 
@@ -149,7 +149,7 @@ class SurveyController extends Controller
         //         'nama'         => $validated['nama'],
         //         'angkatan'         => $validated['angkatan'],
         //         'pelatihan_id' => $validated['pelatihan_id'],
-        //         'bidang_id'    => $validated['bidang_id'] // Sesuaikan dengan nama dari form
+        //         'kompetensi_id'    => $validated['kompetensi_id'] // Sesuaikan dengan nama dari form
         //     ]
         // );
         // REVISI DI SINI

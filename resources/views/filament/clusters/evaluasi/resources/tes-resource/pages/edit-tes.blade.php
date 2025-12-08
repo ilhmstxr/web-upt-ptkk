@@ -59,50 +59,7 @@
 
     <!-- CONTENT 1: SETUP SOAL -->
     <div id="content-setup" class="tab-content active">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- LEFT COLUMN: SETTINGS -->
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 sticky top-24">
-                    <h3 class="font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100">Pengaturan Dasar</h3>
-                    {{ $this->form }}
-                    
-                    <div class="mt-6 bg-blue-50 rounded-xl border border-blue-100 p-4">
-                        <h4 class="font-bold text-blue-800 text-sm mb-2">
-                            <x-heroicon-o-light-bulb class="w-4 h-4 inline mr-1" /> Tips
-                        </h4>
-                        <p class="text-xs text-blue-700 leading-relaxed mb-3">Import soal dari bank soal untuk menghemat waktu.</p>
-                        <button type="button" class="w-full py-2 bg-white border border-blue-200 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100">
-                            Buka Bank Soal
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RIGHT COLUMN: QUESTION BUILDER (Placeholder for now, keeping it simple) -->
-            <div class="lg:col-span-2 space-y-6">
-                <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-gray-800">Daftar Pertanyaan</h3>
-                    <button type="button" class="text-sm text-primary-600 hover:underline font-medium">
-                        <x-heroicon-o-eye class="w-4 h-4 inline mr-1" /> Preview Ujian
-                    </button>
-                </div>
-                
-                <!-- We can render the repeater here if we want, or custom JS builder -->
-                <!-- For now, let's use the form's repeater which is rendered in $this->form above, 
-                     but typically $this->form renders the WHOLE form. 
-                     If we want to split it, we need to use $this->form->getComponent('section_name') or similar, 
-                     or just rely on the standard form for now but wrapped in this layout.
-                -->
-                <!-- Actually, since we put {{ $this->form }} in the left column, it renders EVERYTHING there.
-                     We should probably split the form schema in the Resource to have two sections, 
-                     and render them separately here if possible, OR just use the standard form for the "Settings"
-                     and build a custom UI for questions.
-                -->
-                <div class="bg-white p-6 rounded-xl border border-gray-200 text-center text-gray-500">
-                    <p>Form builder is rendered in the left column for now. Custom JS builder implementation requires more complex Livewire integration.</p>
-                </div>
-            </div>
-        </div>
+        {{ $this->form }}
     </div>
 
     <!-- CONTENT 2: ANALISIS HASIL -->

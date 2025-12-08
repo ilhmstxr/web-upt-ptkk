@@ -39,23 +39,15 @@ return new class extends Migration
             $table->string('nama_pelatihan');
             $table->string('slug')->nullable()->unique();
             $table->string('gambar')->nullable();
-            $table->string('status')->nullable()->default('belum dimulai');
-
-            // Tanggal
-            $table->date('tanggal_mulai')->nullable();
-            $table->date('tanggal_selesai')->nullable();
-
-            // Deskripsi dan Data Text Tambahan
+            $table->enum('status',['belum dimulai','aktif','selesai'])->nullable()->default('belum dimulai');
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
             $table->text('deskripsi')->nullable();
-            $table->text('syarat_ketentuan')->nullable();
-            $table->text('jadwal_text')->nullable();
-            $table->text('lokasi_text')->nullable();
-
-            // Data tambahan
-            $table->integer('jumlah_peserta')->nullable();
-            $table->enum('sasaran', ['siswa','guru','instruktur'])->nullable();
-
-            // Timestamps
+            $table->Integer('jumlah_peserta')->nullable();
+            $table->Enum('sasaran',['siswa','guru','instruktur'])->nullable();
+            $table->longText('syarat_ketentuan')->nullable();
+            $table->longText('jadwal_text')->nullable();
+            $table->longText('lokasi_text')->nullable();
             $table->timestamps();
         });
     }

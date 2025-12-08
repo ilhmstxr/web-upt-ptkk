@@ -29,30 +29,30 @@ penataan folder / View untuk admin
 |
 |
 |- Reguler
-|	|-- Pelatihan 1 (pie/ doughnut chart kepuasan, venue kegiatan, line chart akumulasi skor per bidang, total peserta, total instruktur, tanggal pelatihan)
+|	|-- Pelatihan 1 (pie/ doughnut chart kepuasan, venue kegiatan, line chart akumulasi skor per kompetensi, total peserta, total instruktur, tanggal pelatihan)
 |	|	|-----Angkatan I
-|	|	|	|------- bidang / jurusan A
+|	|	|	|------- kompetensi / jurusan A
 |	|	|	|		|------ peserta 1
 |	|	|	|		|------ peserta 2
 |	|	|	|		|------ peserta n
-|	|	|	|------- bidang / jurusan B
+|	|	|	|------- kompetensi / jurusan B
 |	|	|	|		|------ peserta 1
 |	|	|	|		|------ peserta 2
 |	|	|	|		|------ peserta n
-|	|	|	|------- bidang / jurusan n
+|	|	|	|------- kompetensi / jurusan n
 |	|	|			|------ peserta 1
 |	|	|			|------ peserta 2
 |	|	|			|------ peserta n
 |	|	|-----Angkatan II (jika ada)
-|	|		|------- bidang / jurusan A
+|	|		|------- kompetensi / jurusan A
 |	|		|		|------ peserta 1
 |	|		|		|------ peserta 2
 |	|		|		|------ peserta n
-|	|		|------- bidang / jurusan B
+|	|		|------- kompetensi / jurusan B
 |	|		|		|------ peserta 1
 |	|		|		|------ peserta 2
 |	|		|		|------ peserta n
-|	|		|------- bidang / jurusan n
+|	|		|------- kompetensi / jurusan n
 |	|				|------ peserta 1
 |	|				|------ peserta 2
 |	|				|------ peserta n

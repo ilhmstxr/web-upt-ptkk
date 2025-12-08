@@ -13,7 +13,7 @@ class TesSeeder extends Seeder
             [
                 'judul' => 'Pre-Test PHP',
                 'tipe' => 'pre-test',
-                'bidang' => 'Programming',
+                'kompetensi' => 'Programming',
                 'pelatihan' => 'PHP Dasar',
                 'durasi_menit' => 30,
                 'created_at' => now(),
@@ -22,7 +22,7 @@ class TesSeeder extends Seeder
             [
                 'judul' => 'Post-Test PHP',
                 'tipe' => 'post-test',
-                'bidang' => 'Programming',
+                'kompetensi' => 'Programming',
                 'pelatihan' => 'PHP Lanjut',
                 'durasi_menit' => 45,
                 'created_at' => now(),

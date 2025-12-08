@@ -1,28 +1,28 @@
 --
--- Dumping data for table `bidang`
+-- Dumping data for table `kompetensi`
 --
 
-INSERT INTO `bidang` (`id`, `nama_bidang`, `deskripsi`, `kode`, `kelas_keterampilan`, `gambar`, `created_at`, `updated_at`) VALUES
-(1, 'Tata Boga', 'bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.', 'TTBG', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(2, 'Tata Busana', 'bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.', 'TTBS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(3, 'Kecantikan', 'bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.', 'KCAN', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(4, 'Teknik Pendingin dan Tata Udara', 'bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.', 'TPTU', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(5, 'Web Desain', 'bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.', 'WBDS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(6, 'Desain Grafis', 'bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.', 'DSGF', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(7, 'Motion Animasi', 'bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.', 'ANMS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(8, 'Fotografi', 'bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.', 'FTGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(9, 'Videografi', 'bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.', 'VDGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(10, 'PLC', 'bidang keahlian yang mengajarkan programming logic controller', 'PLC', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+INSERT INTO `kompetensi` (`id`, `nama_kompetensi`, `deskripsi`, `kode`, `kelas_keterampilan`, `gambar`, `created_at`, `updated_at`) VALUES
+(1, 'Tata Boga', 'kompetensi keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.', 'TTBG', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(2, 'Tata Busana', 'kompetensi keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.', 'TTBS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(3, 'Kecantikan', 'kompetensi keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.', 'KCAN', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(4, 'Teknik Pendingin dan Tata Udara', 'kompetensi keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.', 'TPTU', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(5, 'Web Desain', 'kompetensi keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.', 'WBDS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(6, 'Desain Grafis', 'kompetensi keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.', 'DSGF', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(7, 'Motion Animasi', 'kompetensi keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.', 'ANMS', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(8, 'Fotografi', 'kompetensi keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.', 'FTGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(9, 'Videografi', 'kompetensi keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.', 'VDGR', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
+(10, 'PLC', 'kompetensi keahlian yang mengajarkan programming logic controller', 'PLC', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
 (11, 'Foto Produk', 'Foto Produk', 'FTPD', 'Milenial Job Center (MJC)', NULL, NULL, NULL),
-(12, 'Teknik Pemesinan', 'bidang keahlian teknik pemesinan', 'TPM', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(13, 'Teknik Otomotif', 'bidang keahlian teknik otomotif', 'TOTO', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
-(14, 'Teknik Pengelasan', 'bidang keahlian teknik pengelasan', 'TLAS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL);
+(12, 'Teknik Pemesinan', 'kompetensi keahlian teknik pemesinan', 'TPM', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(13, 'Teknik Otomotif', 'kompetensi keahlian teknik otomotif', 'TOTO', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL),
+(14, 'Teknik Pengelasan', 'kompetensi keahlian teknik pengelasan', 'TLAS', 'Kelas Keterampilan dan Teknik', NULL, NULL, NULL);
 
 --
--- Dumping data for table `bidang_pelatihan`
+-- Dumping data for table `kompetensi_pelatihan`
 --
 
-INSERT INTO `bidang_pelatihan` (`id`, `pelatihan_id`, `bidang_id`, `lokasi`, `kota`, `kode_bidang_pelatihan`, `created_at`, `updated_at`) VALUES
+INSERT INTO `kompetensi_pelatihan` (`id`, `pelatihan_id`, `kompetensi_id`, `lokasi`, `kota`, `kode_kompetensi_pelatihan`, `created_at`, `updated_at`) VALUES
 (1, 1, 4, 'upt-ptkk', 'Surabaya', 'REG-TPTU-25-2-SBY', NULL, NULL),
 (2, 1, 3, 'upt-ptkk', 'Surabaya', 'REG-TTKC-25-2-SBY', NULL, NULL),
 (3, 1, 1, 'upt-ptkk', 'Surabaya', 'REG-TTBG-25-2-SBY', NULL, NULL),
@@ -37,7 +37,7 @@ INSERT INTO `bidang_pelatihan` (`id`, `pelatihan_id`, `bidang_id`, `lokasi`, `ko
 (12, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
 (13, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
 (14, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
--- perubahan bidang
+-- perubahan kompetensi
 (15, 4, 10, 'smk negeri 3 Boyolangu Tulungagung', 'Tulungagung', 'MTU-TPTU-25-2-TBN', NULL, NULL),
 (16, 4, 4, 'smk negeri 1 bendo Magetan', 'Magetan', 'MTU-TPTU-25-2-TBN', NULL, NULL),
 (17, 4, 4, 'smk negeri 1 Lamongan', 'Lamongan', 'MTU-TPTU-25-2-TBN', NULL, NULL),
@@ -127,7 +127,7 @@ INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
 -- Dumping data for table `instansi`
 --
 
-INSERT INTO `instansi` (`id`, `asal_instansi`, `alamat_instansi`, `kota_id`, `kota`, `bidang_keahlian`, `cabangDinas_id`, `user_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `instansi` (`id`, `asal_instansi`, `alamat_instansi`, `kota_id`, `kota`, `kompetensi_keahlian`, `cabangDinas_id`, `user_id`, `created_at`, `updated_at`) VALUES
     (2, 'SMKN 2 BOJONEGORO', 'JL.patimura NO.3', '3522', 'KABUPATEN BOJONEGORO', '4', 15, NULL, '2025-08-20 01:29:27', '2025-08-20 01:29:27'),
     (3, 'SMKN 2 KOTA PROBOLINGGO', 'Jl. Mastrip No. 153 Kota Probolinggo', '3574', 'KOTA PROBOLINGGO', '4', 2, NULL, '2025-08-20 02:28:17', '2025-08-20 02:28:17'),
     (4, 'SMKN 3 Probolinggo', 'Jl. Pahlawan No. 26A, Kota Probolinggo.', '3574', 'KOTA PROBOLINGGO', '3', 2, NULL, '2025-08-20 03:06:36', '2025-08-20 03:06:36'),
@@ -2419,7 +2419,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (2286, 356, 104, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2287, 705, 105, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2288, 360, 106, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
-(2289, NULL, 107, 64, NULL, 'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di bidangnya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.', '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
+(2289, NULL, 107, 64, NULL, 'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di kompetensinya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.', '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2290, 344, 108, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2291, 364, 109, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
 (2292, 344, 110, 64, NULL, NULL, '2025-08-31 22:08:53', '2025-08-31 22:08:53'),
@@ -3351,7 +3351,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (3441, 676, 179, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3442, 676, 180, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3443, 676, 181, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
-(3444, NULL, 182, 183, NULL, 'saya jadi banyak menambah ilmu di bidang refrigeran ,saya sangat suka pelatihan MTU', '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
+(3444, NULL, 182, 183, NULL, 'saya jadi banyak menambah ilmu di kompetensi refrigeran ,saya sangat suka pelatihan MTU', '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3445, 675, 183, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3446, 680, 184, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
 (3447, 675, 185, 183, '0', NULL, '2025-09-25 18:11:50', '2025-09-25 18:11:50'),
@@ -6902,7 +6902,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (7010, 676, 200, 377, '0', NULL, '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
 (7011, 676, 201, 377, '0', NULL, '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
 (7012, NULL, 202, 377, NULL, 'Pak Kiky dan Pak Fredy', '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
-(7013, NULL, 203, 377, NULL, 'Program yang sangat berguna bagi kami supaya dapat mengembangkan bakat dibidang TPTUP dan dapat membuka peluang pekerjaan yang lebih besar.', '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
+(7013, NULL, 203, 377, NULL, 'Program yang sangat berguna bagi kami supaya dapat mengembangkan bakat dikompetensi TPTUP dan dapat membuka peluang pekerjaan yang lebih besar.', '2025-09-26 00:40:39', '2025-09-26 00:40:39'),
 (7014, 568, 156, 298, NULL, NULL, '2025-09-26 00:40:41', '2025-09-26 00:40:41'),
 (7015, 560, 154, 319, NULL, NULL, '2025-09-26 00:40:42', '2025-09-26 00:40:42'),
 (7016, 676, 177, 379, '0', NULL, '2025-09-26 00:40:43', '2025-09-26 00:40:43'),
@@ -7129,7 +7129,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (7237, 676, 200, 387, '0', NULL, '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
 (7238, 676, 201, 387, '0', NULL, '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
 (7239, NULL, 202, 387, NULL, 'Pak KIKI dan Pak fredy', '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
-(7240, NULL, 203, 387, NULL, 'terima kasih untuk semua penyelenggara pelatian MTU di bidang teknik pendinginan dan tata udara,\r\nsetelah mengikuti pelatian ini saya telah mendapatkan tambahan ilmu dan pengalaman.mungkin itu dari saya \r\nwassalamu\'alaikum wr.wb', '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
+(7240, NULL, 203, 387, NULL, 'terima kasih untuk semua penyelenggara pelatian MTU di kompetensi teknik pendinginan dan tata udara,\r\nsetelah mengikuti pelatian ini saya telah mendapatkan tambahan ilmu dan pengalaman.mungkin itu dari saya \r\nwassalamu\'alaikum wr.wb', '2025-09-26 00:41:13', '2025-09-26 00:41:13'),
 (7241, 519, 146, 321, NULL, NULL, '2025-09-26 00:41:14', '2025-09-26 00:41:14'),
 (7242, 547, 151, 322, NULL, NULL, '2025-09-26 00:41:16', '2025-09-26 00:41:16'),
 (7243, 547, 151, 328, NULL, NULL, '2025-09-26 00:41:16', '2025-09-26 00:41:16'),
@@ -8175,7 +8175,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (8297, 687, 190, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8298, 712, 191, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8299, 692, 192, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
-(8300, NULL, 193, 410, NULL, 'materinya sangat mendukung dalam bidang keahlian khususnya dkv', '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
+(8300, NULL, 193, 410, NULL, 'materinya sangat mendukung dalam kompetensi keahlian khususnya dkv', '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8301, 675, 194, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8302, 696, 195, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
 (8303, 676, 196, 410, '0', NULL, '2025-09-26 00:54:42', '2025-09-26 00:54:42'),
@@ -8883,7 +8883,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (9104, 688, 190, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9105, 712, 191, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9106, 692, 192, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
-(9107, NULL, 193, 440, NULL, 'Saya sangat senang dengan adanya pelatihan ini dan sangat bermanfaat bagi masa depan saya dibidang kelistrikan', '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
+(9107, NULL, 193, 440, NULL, 'Saya sangat senang dengan adanya pelatihan ini dan sangat bermanfaat bagi masa depan saya dikompetensi kelistrikan', '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9108, 675, 194, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9109, 696, 195, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
 (9110, 676, 196, 440, '0', NULL, '2025-09-26 01:02:39', '2025-09-26 01:02:39'),
@@ -8937,7 +8937,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (9158, 687, 190, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9159, 712, 191, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9160, 692, 192, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
-(9161, NULL, 193, 442, NULL, 'Program yang sangat di butuhkan oleh siswa smk karena dengan melatih bidang kejuruan siswa seperti ini di harapkan siswa lebih bersiap untuk masuk ke industri yang sesuai dengan bidang nya seperti fotografi, kesan saya dari program pelatihan ini adalah sangat seru karena bisa sharing sharing dengan temen temen dari SMKN lain.', '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
+(9161, NULL, 193, 442, NULL, 'Program yang sangat di butuhkan oleh siswa smk karena dengan melatih kompetensi kejuruan siswa seperti ini di harapkan siswa lebih bersiap untuk masuk ke industri yang sesuai dengan kompetensi nya seperti fotografi, kesan saya dari program pelatihan ini adalah sangat seru karena bisa sharing sharing dengan temen temen dari SMKN lain.', '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9162, 676, 194, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9163, 696, 195, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
 (9164, 676, 196, 442, '0', NULL, '2025-09-26 01:02:45', '2025-09-26 01:02:45'),
@@ -9948,10 +9948,10 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (10167, NULL, 203, 480, NULL, 'sehat selalu kakak kakak', '2025-09-26 01:25:19', '2025-09-26 01:25:19');
 
 --
--- Dumping data for table `lampiran`
+-- Dumping data for table `lampiran_peserta`
 --
 
-INSERT INTO `lampiran` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijazah`, `fc_surat_tugas`, `fc_surat_sehat`, `pas_foto`, `created_at`, `updated_at`) VALUES
+INSERT INTO `lampiran_peserta` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijazah`, `fc_surat_tugas`, `fc_surat_sehat`, `pas_foto`, `created_at`, `updated_at`) VALUES
 (1, 1, NULL, 'berkas_pendaftaran/DLiOhW7qkRRVbZwHfETKUC8bKKnlmBF633kBuOgW.jpg', 'berkas_pendaftaran/Uqav8U7DdXePLsRivxC2IgTNb0nj5KmOh9lVUbSg.jpg', NULL, 'berkas_pendaftaran/LBXViL1dZLM0TsWPJuqWW8ZJLTvrNGk4IPwxAoPM.jpg', 'berkas_pendaftaran/ip61RuFJWUBjEKh7uaL8dm4eutKk1NcJrylpYEYn.jpg', '2025-08-20 02:28:17', '2025-08-20 02:28:17'),
 (2, 2, NULL, 'berkas_pendaftaran/R24rYR0U23bEm6bGsHpa35B7ZbKg8HqT8LJd3oZa.jpg', 'berkas_pendaftaran/4az0mbQTUVIKdi9BhXR1LBuzQsoz36USW7Xlyktq.jpg', 'berkas_pendaftaran/88ToPmJkkpgTDlKMXDMSJdah1xKKP52ig3Gqr0wd.jpg', 'berkas_pendaftaran/m0YRJC5rgeAeCLnvvgWh1sFu9a80AqNWdHYfixFJ.jpg', 'berkas_pendaftaran/oN7XlcbWUsW9t7QffHcQRXB2I4PsSqwKmNqlLOs2.jpg', '2025-08-20 03:06:36', '2025-08-20 03:06:36'),
 (3, 3, NULL, 'berkas_pendaftaran/DsiVteYESVXEpTSifNDDB4hhum5UAvxqe9A4ctWm.jpg', 'berkas_pendaftaran/wQ2I4soU1zhT4Hq9lipydpWacwwGLwQMYOf2fwXp.jpg', 'berkas_pendaftaran/gSgFkVkXx33Bms4aTsgASBxrEVpjMWbTcDjbaywA.jpg', 'berkas_pendaftaran/uRCGhWQfZ8XxDSnUZi84nGj4tM6BcCjJkuUdC3cA.jpg', 'berkas_pendaftaran/udpmuXJdXckaDa2AbBFauTAi81PpwGjCp4eIsmDa.jpg', '2025-08-20 04:23:32', '2025-08-20 04:23:32'),
@@ -10122,7 +10122,7 @@ INSERT INTO `lampiran` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijaz
 (172, 184, NULL, 'berkas_pendaftaran/184_4_137_fc_ktp.jpg', 'berkas_pendaftaran/184_4_137_fc_ijazah.jpg', 'berkas_pendaftaran/184_4_137_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/184_4_137_pas_foto.jpg', '2025-09-15 06:57:42', '2025-09-15 06:57:42'),
 (173, 185, NULL, 'berkas_pendaftaran/185_8_138_fc_ktp.jpg', 'berkas_pendaftaran/185_8_138_fc_ijazah.jpg', 'berkas_pendaftaran/185_8_138_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/185_8_138_pas_foto.jpg', '2025-09-15 07:09:26', '2025-09-15 07:09:26'),
 (174, 186, NULL, 'berkas_pendaftaran/186_4_139_fc_ktp.jpg', 'berkas_pendaftaran/186_4_139_fc_ijazah.jpg', 'berkas_pendaftaran/186_4_139_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/186_4_139_pas_foto.jpg', '2025-09-15 15:51:53', '2025-09-15 15:51:53');
-INSERT INTO `lampiran` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijazah`, `fc_surat_tugas`, `fc_surat_sehat`, `pas_foto`, `created_at`, `updated_at`) VALUES
+INSERT INTO `lampiran_peserta` (`id`, `peserta_id`, `no_surat_tugas`, `fc_ktp`, `fc_ijazah`, `fc_surat_tugas`, `fc_surat_sehat`, `pas_foto`, `created_at`, `updated_at`) VALUES
 (175, 187, NULL, 'berkas_pendaftaran/187_9_140_fc_ktp.jpg', 'berkas_pendaftaran/187_9_140_fc_ijazah.jpg', 'berkas_pendaftaran/187_9_140_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/187_9_140_pas_foto.jpg', '2025-09-15 17:18:52', '2025-09-15 17:18:52'),
 (176, 188, NULL, 'berkas_pendaftaran/188_4_70_fc_ktp.jpg', 'berkas_pendaftaran/188_4_70_fc_ijazah.jpg', NULL, NULL, 'berkas_pendaftaran/188_4_70_pas_foto.jpg', '2025-09-15 18:11:09', '2025-09-15 18:11:09'),
 (177, 189, NULL, 'berkas_pendaftaran/189_9_141_fc_ktp.jpg', 'berkas_pendaftaran/189_9_141_fc_ijazah.jpg', 'berkas_pendaftaran/189_9_141_fc_surat_tugas.jpg', NULL, 'berkas_pendaftaran/189_9_141_pas_foto.jpg', '2025-09-15 19:04:46', '2025-09-15 19:04:46'),
@@ -10174,7 +10174,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (3, '0001_01_01_000002_create_jobs_table', 1),
 (4, '2025_08_10_121502_create_cabang_dinas_table', 1),
 (5, '2025_08_11_034126_create_instansi_table', 1),
-(6, '2025_08_11_075813_create_bidang_table', 1),
+(6, '2025_08_11_075813_create_kompetensi_table', 1),
 (7, '2025_08_11_082738_create_asrama_table', 1),
 (8, '2025_08_11_082833_create_kamar_table', 1),
 (9, '2025_08_12_035432_create_pelatihan_table', 1),
@@ -10201,7 +10201,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (30, '2025_09_04_014937_create_penempatan_asrama_table', 1),
 (31, '2025_09_04_021821_create_instruktur_pelatihan_table', 1),
 (32, '2025_09_08_094559_create_pivot_jawaban_table', 1),
-(33, '2025_10_13_084746_create_bidang_pelatihan_table', 1);
+(33, '2025_10_13_084746_create_kompetensi_pelatihan_table', 1);
 
 --
 -- Dumping data for table `opsi_jawaban`
@@ -10942,7 +10942,7 @@ INSERT INTO `pelatihan` (`id`, `instansi_id`, `angkatan`, `jenis_program`,`nama_
 --
 
 
-INSERT INTO `pendaftaran_pelatihan` (`id`, `peserta_id`, `pelatihan_id`, `bidang_pelatihan_id`, `kelas`, `nilai_pre_test`, `nilai_post_test`, `nilai_praktek`, `rata_rata`, `nilai_survey`, `status`, `nomor_registrasi`, `tanggal_pendaftaran`, `created_at`, `updated_at`) VALUES
+INSERT INTO `pendaftaran_pelatihan` (`id`, `peserta_id`, `pelatihan_id`, `kompetensi_pelatihan_id`, `kelas`, `nilai_pre_test`, `nilai_post_test`, `nilai_praktek`, `rata_rata`, `nilai_survey`, `status`, `nomor_registrasi`, `tanggal_pendaftaran`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, 1, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '1-TPTU-001', '2025-08-19 12:28:17', '2025-08-19 12:28:17', '2025-08-19 12:28:17'),
 (2, 2, 1, 2, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '1-TTKC-001', '2025-08-19 13:06:36', '2025-08-19 13:06:36', '2025-08-19 13:06:36'),
 (3, 3, 1, 1, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '1-TPTU-002', '2025-08-19 14:23:32', '2025-08-19 14:23:32', '2025-08-19 14:23:32'),
@@ -12033,7 +12033,7 @@ INSERT INTO `peserta` (`id`, `instansi_id`, `user_id`, `nama`, `nik`, `tempat_la
 -- Dumping data for table `peserta_survei`
 --
 
-INSERT INTO `peserta_survei` (`id`, `nama`, `email`, `angkatan`, `bidang_id`, `pelatihan_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `peserta_survei` (`id`, `nama`, `email`, `angkatan`, `kompetensi_id`, `pelatihan_id`, `created_at`, `updated_at`) VALUES
 (3, 'Ryndi Mega Herawati', 'rindi121299@gmail.com', 'Angkatan ll', 2, 1, '2025-08-29 00:40:28', '2025-08-29 00:40:28'),
 (4, 'SABRINA WAFA AQILLAH', 's6951820@gmail.com', 'Angkatan ll', 2, 1, '2025-08-29 00:41:11', '2025-08-29 00:41:11'),
 (5, 'AMELTA AULIA SUDARKO', 'meltacialia@gmail.com', 'Angkatan 2', 2, 1, '2025-08-29 00:42:33', '2025-08-29 00:42:33'),
@@ -12148,7 +12148,7 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 -- Dumping data for table `tes`
 --
 
-INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
+INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `kompetensi_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
 
 -- asli
 -- TEKNIK ANG. 2
@@ -12592,32 +12592,84 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 (1027, 'Fajar Alfian', 'fajar.alfian@uptptkk.com', NULL, '$2y$12$NNPg0AvTL1q1eAqMFZxfseAb5RNH4VMYt4wjngx4RgOgIhEyS/kdm', NULL, '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
 (1028, 'Rian Ardianto', 'rian.ardianto@uptptkk.com', NULL, '$2y$12$NNPg0AvTL1q1eAqMFZxfseAb5RNH4VMYt4wjngx4RgOgIhEyS/kdm', NULL, '2025-09-24 00:00:00', '2025-09-24 00:00:00');
 
-INSERT INTO `instruktur` (`bidang_id`, `user_id`, `nama`, `tempat_lahir`, `tgl_lahir`, `jenis_kelamin`, `agama`, `alamat_rumah`, `no_hp`, `instansi`, `npwp`, `nik`, `nama_bank`, `no_rekening`, `pendidikan_terakhir`, `pengalaman_kerja`, `created_at`, `updated_at`) VALUES
-(1, 1001, 'Budi Santoso, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 1', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(1, 1002, 'Siti Aminah, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 2', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(2, 1003, 'Rudi Hartono, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 3', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(2, 1004, 'Dewi Sartika, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 4', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(3, 1005, 'Agus Salim, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 5', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(3, 1006, 'Rina Wati, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 6', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(4, 1007, 'Eko Prasetyo, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 7', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(4, 1008, 'Sri Wahyuni, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 8', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(5, 1009, 'Joko Widodo, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 9', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(5, 1010, 'Megawati Putri, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 10', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(6, 1011, 'Susilo Bambang, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 11', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(6, 1012, 'Ani Yudhoyono, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 12', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(7, 1013, 'Bambang Pamungkas, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 13', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(7, 1014, 'Taufik Hidayat, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 14', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(8, 1015, 'Susi Susanti, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 15', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(8, 1016, 'Alan Budikusuma, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 16', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(9, 1017, 'Liliyana Natsir, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 17', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(9, 1018, 'Tontowi Ahmad, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 18', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(10, 1019, 'Greysia Polii, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 19', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(10, 1020, 'Apriyani Rahayu, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 20', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(11, 1021, 'Kevin Sanjaya, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 21', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(11, 1022, 'Marcus Gideon, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 22', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(12, 1023, 'Hendra Setiawan, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 23', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(12, 1024, 'Mohammad Ahsan, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 24', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(13, 1025, 'Anthony Ginting, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 25', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(13, 1026, 'Jonatan Christie, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 26', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(14, 1027, 'Fajar Alfian, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', 'Jl. Contoh No. 27', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
-(14, 1028, 'Rian Ardianto, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', 'Jl. Contoh No. 28', '081234567890', 'UPT PTKK', '1234567890', '1234567890123456', 'Bank Jatim', '1234567890', 'S1', '5 Tahun', '2025-09-24 00:00:00', '2025-09-24 00:00:00');
+INSERT INTO `instruktur` (`kompetensi_id`, `user_id`, `nama`, `tempat_lahir`, `tgl_lahir`, `jenis_kelamin`, `agama`, `no_hp`, `created_at`, `updated_at`) VALUES
+(1, 1001, 'Budi Santoso, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(1, 1002, 'Siti Aminah, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(2, 1003, 'Rudi Hartono, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(2, 1004, 'Dewi Sartika, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(3, 1005, 'Agus Salim, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(3, 1006, 'Rina Wati, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(4, 1007, 'Eko Prasetyo, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(4, 1008, 'Sri Wahyuni, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(5, 1009, 'Joko Widodo, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(5, 1010, 'Megawati Putri, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(6, 1011, 'Susilo Bambang, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(6, 1012, 'Ani Yudhoyono, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(7, 1013, 'Bambang Pamungkas, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(7, 1014, 'Taufik Hidayat, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(8, 1015, 'Susi Susanti, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(8, 1016, 'Alan Budikusuma, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(9, 1017, 'Liliyana Natsir, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(9, 1018, 'Tontowi Ahmad, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(10, 1019, 'Greysia Polii, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(10, 1020, 'Apriyani Rahayu, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(11, 1021, 'Kevin Sanjaya, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(11, 1022, 'Marcus Gideon, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(12, 1023, 'Hendra Setiawan, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(12, 1024, 'Mohammad Ahsan, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(13, 1025, 'Anthony Ginting, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(13, 1026, 'Jonatan Christie, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(14, 1027, 'Fajar Alfian, S.Kom', 'Surabaya', '1990-01-01', 'L', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00'),
+(14, 1028, 'Rian Ardianto, S.Kom', 'Surabaya', '1990-01-01', 'P', 'Islam', '081234567890', '2025-09-24 00:00:00', '2025-09-24 00:00:00');
+
+--
+-- Dumping data for table `kompetensi_pelatihan_instruktur`
+--
+
+INSERT INTO `kompetensi_pelatihan_instruktur` (`kompetensi_pelatihan_id`, `instruktur_id`) VALUES
+(1, 7), (1, 8),
+(2, 5), (2, 6),
+(3, 1), (3, 2),
+(4, 3), (4, 4),
+(5, 17), (5, 18),
+(6, 19), (6, 20),
+(7, 15), (7, 16),
+(8, 1), (8, 2),
+(9, 1), (9, 2),
+(10, 1), (10, 2),
+(11, 1), (11, 2),
+(12, 1), (12, 2),
+(13, 1), (13, 2),
+(14, 1), (14, 2),
+(15, 19), (15, 20),
+(16, 7), (16, 8),
+(17, 7), (17, 8),
+(18, 17), (18, 18),
+(19, 15), (19, 16),
+(20, 7), (20, 8),
+(21, 3), (21, 4),
+(22, 1), (22, 2),
+(23, 5), (23, 6),
+(24, 7), (24, 8),
+(25, 3), (25, 4),
+(26, 1), (26, 2),
+(27, 5), (27, 6),
+(28, 9), (28, 10),
+(29, 11), (29, 12),
+(30, 13), (30, 14),
+(31, 21), (31, 22),
+(32, 17), (32, 18),
+(33, 7), (33, 8),
+(34, 3), (34, 4),
+(35, 1), (35, 2),
+(36, 5), (36, 6),
+(37, 9), (37, 10),
+(38, 11), (38, 12),
+(39, 13), (39, 14),
+(40, 21), (40, 22),
+(41, 17), (41, 18),
+(42, 9), (42, 10),
+(43, 11), (43, 12),
+(44, 13), (44, 14),
+(45, 21), (45, 22),
+(46, 17), (46, 18);

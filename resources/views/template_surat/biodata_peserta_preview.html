@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Biodata Peserta Preview</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 12pt;
+            margin: 2cm;
+            background-color: #f0f0f0;
+        }
+
+        /* Override body bg for the paper effect in preview */
+        body {
+            background-color: #525659;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .paper {
+            background-color: white;
+            width: 210mm;
+            /* A4 width */
+            padding: 2cm;
+            box-sizing: border-box;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            min-height: 297mm;
+            /* A4 height */
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 18pt;
+            text-decoration: underline;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14pt;
+            font-weight: bold;
+        }
+
+        .content-table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            font-size: 12pt;
+        }
+
+        .content-table td {
+            padding: 5px 0;
+            vertical-align: top;
+        }
+
+        .label {
+            width: 35%;
+        }
+
+        .separator {
+            width: 2%;
+            text-align: center;
+        }
+
+        .data {
+            width: 63%;
+        }
+
+        .signature-section {
+            margin-top: 80px;
+            width: 100%;
+            display: table;
+            font-size: 12pt;
+        }
+
+        .signature-right {
+            display: table-cell;
+            text-align: right;
+            vertical-align: top;
+            width: 50%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="paper">
+        <div class="container">
+            <div class="header" style="margin-bottom: 50px;">
+                <div class="title" style="text-decoration: none; margin-bottom: 20px;">BIODATA PESERTA</div>
+                <div class="subtitle" style="font-weight: normal; font-size: 14pt; margin-bottom: 20px;">
+                    Kegiatan Pelatihan Kompetensi Vokasi bagi Siswa SMK / SMA (MILEA)<br>
+                    melalui Mobile Training Unit (MTU) Angkatan II Tahun 2025
+                </div>
+                <div style="font-size: 13pt;">
+                    Tanggal 22 s/d 27 September 2025
+                </div>
+            </div>
+
+            <table class="content-table">
+                <tr>
+                    <td class="label">Nama</td>
+                    <td class="separator">:</td>
+                    <td class="data"><b>Budi Santoso</b></td>
+                </tr>
+                <tr>
+                    <td class="label">Tempat / tgl Lahir</td>
+                    <td class="separator">:</td>
+                    <td class="data">Malang, 12 Januari 1990</td>
+                </tr>
+                <tr>
+                    <td class="label">Jenis Kelamin</td>
+                    <td class="separator">:</td>
+                    <td class="data">Laki-laki</td>
+                </tr>
+                <tr>
+                    <td class="label">Agama</td>
+                    <td class="separator">:</td>
+                    <td class="data">Islam</td>
+                </tr>
+                <tr>
+                    <td class="label">No. HP</td>
+                    <td class="separator">:</td>
+                    <td class="data">081234567890</td>
+                </tr>
+                <tr>
+                    <td class="label">Nomor Induk Siswa</td>
+                    <td class="separator">:</td>
+                    <td class="data">350712345678</td>
+                </tr>
+                <tr>
+                    <td class="label">Asal Lembaga</td>
+                    <td class="separator">:</td>
+                    <td class="data">SMK Negeri 1 Malang</td>
+                </tr>
+                <tr>
+                    <td class="label">Alamat Lembaga</td>
+                    <td class="separator">:</td>
+                    <td class="data">Jl. Tanimbar No. 22, Malang</td>
+                </tr>
+                <tr>
+                    <td class="label">Kelas</td>
+                    <td class="separator">:</td>
+                    <td class="data">XII TAV 1</td>
+                </tr>
+                <tr>
+                    <td class="label">Kompetensi Keahlian</td>
+                    <td class="separator">:</td>
+                    <td class="data">Teknik Audio Video</td>
+                </tr>
+            </table>
+
+            <div class="signature-section">
+                <div class="signature-right">
+                    <p>
+                        Malang, 12 Maret 2025<br>
+                        Peserta Pelatihan,
+                    </p>
+                    <br><br><br>
+                    <p style="text-decoration: underline; font-weight: bold;">Budi Santoso</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 60px; font-size: 12pt; text-align: left; width: 60%;">
+                <p style="margin-bottom: 5px;"><b>Catatan :</b> Mohon Melampirkan Surat Tugas, Fc Kartu
+                    Pelajar/KTP/KK/Ijazah</p>
+                <div style="border-bottom: 3px solid black; width: 100%;"></div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

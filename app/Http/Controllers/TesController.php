@@ -14,7 +14,7 @@ class TesController extends Controller
      */
     public function index()
     {
-        $tes = Tes::with(['bidang', 'pelatihan'])->get();
+        $tes = Tes::with(['kompetensi', 'pelatihan'])->get();
         return view('tes.index', compact('tes'));
     }
 

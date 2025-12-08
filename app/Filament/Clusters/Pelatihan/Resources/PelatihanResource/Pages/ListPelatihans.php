@@ -11,7 +11,7 @@ class ListPelatihans extends ListRecords
 {
     protected static string $resource = PelatihanResource::class;
 
-    protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.list-pelatihans';
+    protected static string $view = 'filament-panels::resources.pages.list-records';
 
     public function getPaginator()
     {
@@ -22,6 +22,13 @@ class ListPelatihans extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            // PelatihanResource\Widgets\PelatihanStatsOverview::class,
         ];
     }
     

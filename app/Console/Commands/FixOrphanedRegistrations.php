@@ -52,17 +52,17 @@ class FixOrphanedRegistrations extends Command
                 $this->line("Memproses Peserta ID: {$peserta->id} - {$peserta->nama}");
 
                 // Panggil fungsi generateToken dari Trait
-                ['nomor' => $nomorReg, 'urutan' => $urutBidang] = $this->generateToken(
+                ['nomor' => $nomorReg, 'urutan' => $urutKompetensi] = $this->generateToken(
                     $peserta->pelatihan_id,
-                    $peserta->bidang_id
+                    $peserta->kompetensi_id
                 );
 
                 // Buat record pendaftaran_pelatihan yang hilang
                 PendaftaranPelatihan::create([
                     'peserta_id'            => $peserta->id,
                     'pelatihan_id'          => $peserta->pelatihan_id,
-                    // 'bidang_id'          => $peserta->bidang_id, // (Opsional) jika ada di tabel pendaftaran
-                    // 'urutan_per_bidang'  => $urutBidang,      // (Opsional) jika ada di tabel pendaftaran
+                    // 'kompetensi_id'          => $peserta->kompetensi_id, // (Opsional) jika ada di tabel pendaftaran
+                    // 'urutan_per_kompetensi'  => $urutKompetensi,      // (Opsional) jika ada di tabel pendaftaran
                     'nomor_registrasi'      => $nomorReg,
                     'tanggal_pendaftaran'   => $peserta->created_at ?? now(), // Gunakan tanggal dibuatnya peserta
                 ]);

@@ -16,10 +16,8 @@ class PendaftaranPelatihan extends Model
         // Identitas & Relasi
         'peserta_id',
         'pelatihan_id',
-        'bidang_id',
-        'bidang_pelatihan_id', // Dari versi pertama
-        
-        // Data Registrasi
+        'kompetensi_id',
+        'kompetensi_pelatihan_id', // Added missing field from usage
         'nomor_registrasi',
         'tanggal_pendaftaran',
         'urutan_per_bidang',
@@ -39,6 +37,9 @@ class PendaftaranPelatihan extends Model
         'nilai_praktek',
         'rata_rata',
         'nilai_survey',
+        'status',
+        'status_pendaftaran',
+        'urutan_per_kompetensi', // Added missing field from usage
     ];
 
     protected $casts = [
@@ -59,15 +60,12 @@ class PendaftaranPelatihan extends Model
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
-
-    public function bidang()
+    public function kompetensiPelatihan()
     {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
+        return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
     }
-
-    // Relasi tambahan dari versi pertama (jika Anda menggunakan tabel pivot bidang_pelatihan)
-    public function bidangPelatihan()
+    public function kompetensi()
     {
-        return $this->belongsTo(BidangPelatihan::class, 'bidang_pelatihan_id');
+        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 }

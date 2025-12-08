@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('inject_data_details', function (Blueprint $table) {
             $table->id();
-            // tes_id,bidang_id,foreign_id,Attribute,Value
+            // tes_id,kompetensi_id,foreign_id,Attribute,Value
             // $table->string('inject_data_id');
             $table->foreignId('tes_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('bidang_id')->constrained('bidang')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('kompetensi_id')->constrained('kompetensi')->cascadeOnDelete()->cascadeOnUpdate();
             $table->integer('foreign_id');
             // $table->longText('attribute');
             // $table->text('attribute');
