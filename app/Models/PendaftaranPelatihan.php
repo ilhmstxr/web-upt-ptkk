@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PendaftaranPelatihan extends Model
 {
@@ -32,39 +34,48 @@ class PendaftaranPelatihan extends Model
     ];
 
     protected $casts = [
-        'tanggal_pendaftaran'     => 'date',
-        'assessment_token_sent_at'=> 'datetime',
+        'tanggal_pendaftaran'      => 'date',
+        'assessment_token_sent_at' => 'datetime',
     ];
 
     // ======================
     // RELATIONS UTAMA
     // ======================
-    public function peserta()
+
+    public function peserta(): BelongsTo
     {
         return $this->belongsTo(Peserta::class, 'peserta_id');
     }
 
-    public function pelatihan()
+    public function pelatihan(): BelongsTo
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
-    public function kompetensiPelatihan()
+    public function kompetensiPelatihan(): BelongsTo
     {
         return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
     }
 
-    public function kompetensi()
+    public function kompetensi(): BelongsTo
     {
         return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 
-    public function penempatanAsrama()
+    /**
+     * ✅ Relasi penempatan yang tepat untuk pendaftaran ini:
+     * peserta_id + pelatihan_id harus match
+     */
+    public function penempatanAsrama(): HasOne
     {
-        return $this->hasOne(PenempatanAsrama::class, 'peserta_id', 'peserta_id');
+        return $this->hasOne(PenempatanAsrama::class, 'peserta_id', 'peserta_id')
+            ->where('pelatihan_id', $this->pelatihan_id);
     }
 
-    public function penempatanAsramaAktif()
+    /**
+     * ✅ Helper aman kalau kamu butuh langsung objeknya.
+     */
+    public function penempatanAsramaAktif(): ?PenempatanAsrama
     {
         return PenempatanAsrama::query()
             ->where('peserta_id', $this->peserta_id)

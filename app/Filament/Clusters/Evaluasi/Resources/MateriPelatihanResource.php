@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Evaluasi\Resources;
 
+use App\Filament\Clusters\Evaluasi;
 use App\Filament\Clusters\Evaluasi\Resources\MateriPelatihanResource\Pages;
 use App\Models\MateriPelatihan;
 use Filament\Forms;
@@ -11,22 +12,17 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-// kalau kamu punya file cluster Evaluasi, aktifkan:
-// use App\Filament\Clusters\Evaluasi;
-
 class MateriPelatihanResource extends Resource
 {
     protected static ?string $model = MateriPelatihan::class;
 
-    // kalau pakai cluster, aktifkan:
-    // protected static ?string $cluster = Evaluasi::class;
+    // ✅ konsisten kayak TesResource
+    protected static ?string $cluster = Evaluasi::class;
 
-    protected static ?string $navigationIcon   = 'heroicon-o-book-open';
-    protected static ?string $navigationGroup  = 'Evaluasi';
-    protected static ?string $navigationLabel  = 'Materi Pelatihan';
-    protected static ?string $modelLabel       = 'Materi';
-    protected static ?string $pluralModelLabel = 'Materi Pelatihan';
-    protected static ?int $navigationSort      = 20;
+    protected static ?string $navigationIcon  = 'heroicon-o-book-open';
+    protected static ?string $navigationLabel = 'Materi Pelatihan';
+    protected static ?string $modelLabel      = 'Materi';
+    protected static ?int $navigationSort     = 20;
 
     public static function form(Form $form): Form
     {
@@ -38,7 +34,11 @@ class MateriPelatihanResource extends Resource
                         ->relationship('pelatihan', 'nama_pelatihan')
                         ->searchable()
                         ->preload()
-                        ->required(),
+                        ->required()
+                        ->default(request()->query('pelatihan_id'))
+                        ->disabled(fn (?string $operation)
+                            => $operation === 'edit' || request()->has('pelatihan_id')
+                        ),
 
                     Forms\Components\TextInput::make('judul')
                         ->label('Judul Materi')
@@ -55,7 +55,8 @@ class MateriPelatihanResource extends Resource
                             'link'  => 'Link',
                             'teks'  => 'Teks',
                         ])
-                        ->reactive(),
+                        ->default('file')
+                        ->live(), // biar visible() langsung update
 
                     Forms\Components\TextInput::make('urutan')
                         ->label('Urutan')
@@ -83,24 +84,24 @@ class MateriPelatihanResource extends Resource
                         ->directory('materi')
                         ->openable()
                         ->downloadable()
-                        ->visible(fn ($get) => $get('tipe') === 'file')
+                        ->visible(fn (Forms\Get $get) => $get('tipe') === 'file')
                         ->columnSpanFull(),
 
                     Forms\Components\TextInput::make('video_url')
                         ->label('Video URL')
                         ->url()
-                        ->visible(fn ($get) => $get('tipe') === 'video')
+                        ->visible(fn (Forms\Get $get) => $get('tipe') === 'video')
                         ->columnSpanFull(),
 
                     Forms\Components\TextInput::make('link_url')
                         ->label('Link URL')
                         ->url()
-                        ->visible(fn ($get) => $get('tipe') === 'link')
+                        ->visible(fn (Forms\Get $get) => $get('tipe') === 'link')
                         ->columnSpanFull(),
 
                     Forms\Components\RichEditor::make('teks')
                         ->label('Isi Materi (Teks)')
-                        ->visible(fn ($get) => $get('tipe') === 'teks')
+                        ->visible(fn (Forms\Get $get) => $get('tipe') === 'teks')
                         ->columnSpanFull(),
                 ]),
 
@@ -116,71 +117,51 @@ class MateriPelatihanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(
-                MateriPelatihan::query()
-                    ->orderBy('pelatihan_id')
-                    ->orderBy('urutan')
-            )
             ->columns([
+                Tables\Columns\TextColumn::make('judul')
+                    ->label('Judul')
+                    ->searchable()
+                    ->sortable()
+                    ->wrap(),
+
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
                     ->label('Pelatihan')
-                    ->sortable()
                     ->searchable()
-                    ->wrap(),
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('tipe')
+                    ->label('Tipe')
+                    ->badge()
+                    ->color(fn (string $state) => match ($state) {
+                        'video' => 'info',
+                        'file'  => 'success',
+                        'link'  => 'warning',
+                        'teks'  => 'gray',
+                        default => 'gray',
+                    }),
 
                 Tables\Columns\TextColumn::make('urutan')
                     ->label('Urutan')
-                    ->alignCenter()
-                    ->badge()
-                    ->color('warning')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('judul')
-                    ->label('Judul Materi')
-                    ->searchable()
+                    ->numeric()
                     ->sortable()
-                    ->wrap()
-                    ->weight('bold'),
-
-                Tables\Columns\BadgeColumn::make('tipe')
-                    ->label('Tipe')
-                    ->colors([
-                        'info'    => 'video',
-                        'success' => 'file',
-                        'warning' => 'link',
-                        'primary' => 'teks',
-                    ])
-                    ->icons([
-                        'video' => 'heroicon-o-play-circle',
-                        'file'  => 'heroicon-o-document',
-                        'link'  => 'heroicon-o-link',
-                        'teks'  => 'heroicon-o-pencil-square',
-                    ])
-                    ->sortable(),
+                    ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('estimasi_menit')
                     ->label('Estimasi')
+                    ->numeric()
                     ->suffix(' menit')
-                    ->alignCenter()
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\IconColumn::make('is_published')
                     ->label('Publish')
                     ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->alignCenter()
-                    ->sortable(),
+                    ->alignCenter(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('pelatihan_id')
-                    ->label('Pelatihan')
-                    ->relationship('pelatihan', 'nama_pelatihan')
-                    ->searchable()
-                    ->preload(),
+                Tables\Filters\SelectFilter::make('pelatihan')
+                    ->relationship('pelatihan', 'nama_pelatihan'),
 
                 Tables\Filters\SelectFilter::make('tipe')
-                    ->label('Tipe')
                     ->options([
                         'video' => 'Video',
                         'file'  => 'File',
@@ -192,15 +173,22 @@ class MateriPelatihanResource extends Resource
                     ->label('Publish?'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-            ]);
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ])
+            ->defaultSort('urutan', 'asc');
     }
 
-    public static function getEloquentQuery(): Builder
+    public static function getRelations(): array
     {
-        return parent::getEloquentQuery()->with('pelatihan');
+        return [
+            //
+        ];
     }
 
     public static function getPages(): array
@@ -208,7 +196,6 @@ class MateriPelatihanResource extends Resource
         return [
             'index'  => Pages\ListMateriPelatihans::route('/'),
             'create' => Pages\CreateMateriPelatihan::route('/create'),
-            'view'   => Pages\ViewMateriPelatihan::route('/{record}'),
             'edit'   => Pages\EditMateriPelatihan::route('/{record}/edit'),
         ];
     }

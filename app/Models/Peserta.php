@@ -29,12 +29,13 @@ class Peserta extends Model
         'user_id',
     ];
 
-    // ✅ cukup date biar gak ada jam/timezone ganggu login
     protected $casts = [
         'tanggal_lahir' => 'date',
-        'created_at'    => 'datetime',
-        'updated_at'    => 'datetime',
     ];
+
+    // ======================
+    // RELATIONS
+    // ======================
 
     public function pelatihan(): BelongsTo
     {
@@ -48,22 +49,57 @@ class Peserta extends Model
 
     public function lampiran(): HasOne
     {
-        return $this->hasOne(LampiranPeserta::class);
+        return $this->hasOne(LampiranPeserta::class, 'peserta_id', 'id');
     }
 
+    // plural utama
+    public function pendaftaranPelatihans(): HasMany
+    {
+        return $this->hasMany(PendaftaranPelatihan::class, 'peserta_id', 'id');
+    }
+
+    // alias singular untuk kompatibilitas
     public function pendaftaranPelatihan(): HasMany
     {
-        return $this->hasMany(PendaftaranPelatihan::class, 'peserta_id');
+        return $this->pendaftaranPelatihans();
     }
 
+    // riwayat penempatan
+    public function penempatanAsramas(): HasMany
+    {
+        return $this->hasMany(PenempatanAsrama::class, 'peserta_id', 'id');
+    }
+
+    // penempatan terbaru (alias singular)
+    public function penempatanAsrama(): HasOne
+    {
+        return $this->hasOne(PenempatanAsrama::class, 'peserta_id', 'id')
+            ->latestOfMany();
+    }
+
+    public function percobaans(): HasMany
+    {
+        return $this->hasMany(Percobaan::class, 'peserta_id', 'id');
+    }
+
+    // alias kalau ada kode lama manggil singular
     public function percobaan(): HasMany
     {
-        return $this->hasMany(Percobaan::class, 'peserta_id');
+        return $this->percobaans();
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // ======================
+    // ACCESSORS / HELPERS
+    // ======================
+
+    public function getGenderAttribute(): ?string
+    {
+        return $this->jenis_kelamin;
     }
 
     public function lampiranFolder(): string

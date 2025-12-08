@@ -16,6 +16,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\AssessmentLoginController;
 use App\Http\Controllers\AsramaOtomasiController;
 use App\Http\Controllers\PelatihanDetailController;
+use App\Http\Controllers\StatistikPelatihanController;
 
 use App\Models\Peserta;
 use App\Mail\TestMail;
@@ -27,7 +28,31 @@ use App\Exports\LampiranSheet;
 |--------------------------------------------------------------------------
 | Web Routes Final + Assessment Token Login
 |--------------------------------------------------------------------------
+|
+| This file contains public routes, dashboard routes (guest-friendly),
+| admin helpers and a small fallback for Filament route name mismatch.
+|
 */
+
+/*
+|--------------------------------------------------------------------------
+| Safety fallback for Filament route name missing (workaround)
+|--------------------------------------------------------------------------
+| If Filament expects a named route like `filament.admin.resources.materi-pelatihans.index`
+| but it doesn't exist (due to resource registration or namespace change),
+| this alias prevents RouteNotFoundException on /admin/login.
+| You can remove this when Filament resources are registered properly.
+*/
+if (! Route::has('filament.admin.resources.materi-pelatihans.index')) {
+    Route::get('/_filament_stub/materi-pelatihans', function () {
+        // Prefer to redirect to Filament's default resource route if present,
+        // otherwise send to dashboard home.
+        if (Route::has('filament.resources.materi-pelatihans.index')) {
+            return redirect()->route('filament.resources.materi-pelatihans.index');
+        }
+        return redirect()->route('dashboard.home');
+    })->name('filament.admin.resources.materi-pelatihans.index');
+}
 
 /* ======================================================================
 |  A. BERANDA & HOME
@@ -38,7 +63,6 @@ Route::get('/', fn () => view('pages.landing'))->name('landing');
 Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
 Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
 Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
-Route::redirect('/kompetensi-pelatihan', '/kompetensi-pelatihan', 301);
 
 Route::view('/berita',  'pages.berita')->name('news');
 Route::view('/panduan', 'pages.panduan')->name('panduan');
@@ -46,9 +70,8 @@ Route::view('/panduan', 'pages.panduan')->name('panduan');
 // halaman masuk admin/user default (kalau masih dipakai)
 Route::view('/masuk', 'pages.masuk')->name('masuk');
 
-
 /* ======================================================================
-|  B. ASSESSMENT LOGIN (NO REG / TOKEN + TGL LAHIR)
+|  B. ASSESSMENT LOGIN (NO REG + TGL LAHIR)
 ====================================================================== */
 Route::middleware(['web', 'guest'])->group(function () {
     Route::get('/assessment/login', [AssessmentLoginController::class, 'show'])
@@ -62,7 +85,6 @@ Route::post('/assessment/logout', [AssessmentLoginController::class, 'logout'])
     ->middleware(['web'])
     ->name('assessment.logout');
 
-
 /* ======================================================================
 |  C. HOME redirect
 ====================================================================== */
@@ -72,7 +94,6 @@ Route::get('/home', function () {
     }
     return redirect()->route('landing');
 })->name('home');
-
 
 /* ======================================================================
 |  D. PENDAFTARAN
@@ -91,18 +112,15 @@ Route::get('pendaftaran/download-file', [PendaftaranController::class, 'download
 Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])
     ->name('pendaftaran.daftar');
 
-// Form baru pendaftaran
 Route::get('pendaftaran-baru', fn () => view('registration-form-new'))
     ->name('pendaftaran.baru');
 
-// Peserta PDF
 Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])
     ->name('peserta.download-pdf');
 
 Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])
     ->name('peserta.download-bulk');
 
-// Cetak Massal & Exports
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])
     ->name('pendaftaran.generateMassal');
 
@@ -115,14 +133,12 @@ Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::cl
 Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
     ->name('exports.pendaftaran.single');
 
-// Export laporan pelatihan
-Route::middleware(['auth'])
-    ->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
+// Export laporan pelatihan (PDF)
+Route::middleware(['auth'])->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
     ->name('export.report.pelatihan');
 
 // Export jawaban survei (PDF)
-Route::middleware(['auth'])
-    ->get('/reports/jawaban-survei/pdf/{pelatihanId}', [ExportController::class, 'pdfView'])
+Route::middleware(['auth'])->get('/reports/jawaban-survei/pdf/{pelatihanId}', [ExportController::class, 'pdfView'])
     ->name('reports.jawaban-survei.pdf');
 
 // Step pendaftaran statis
@@ -137,7 +153,6 @@ Route::prefix('pendaftaran/step')->group(function () {
 Route::view('template/instruktur', 'template_surat.instruktur');
 Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 
-
 /* ======================================================================
 |  E. DASHBOARD (guest-friendly)
 ====================================================================== */
@@ -147,50 +162,51 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/', [DashboardController::class, 'home'])->name('home');
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
 
-    // ✅ MATERI - FIX: gunakan materi.index biar match blade
+    // MATERI
     Route::get('/materi', [DashboardController::class, 'materi'])->name('materi.index');
     Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
+    Route::post('/materi/{materi}/complete', [DashboardController::class, 'materiComplete'])->name('materi.complete');
 
-    // SET PESERTA
-    Route::post('set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
+    // SET PESERTA (optional legacy UI)
+    Route::post('/set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
 
-    Route::get('ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
+    // AJAX helper
+    Route::get('/ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
         ->name('ajax.peserta.instansiByNama');
 
-    Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
+    // LOGOUT (session for assessment/dashboard)
+    Route::post('/logout', [DashboardController::class, 'logout'])->name('logout');
 
-
-    // ===== PRETEST =====
+    // PRETEST
     Route::prefix('pretest')->name('pretest.')->group(function () {
         Route::get('/', [DashboardController::class, 'pretest'])->name('index');
-        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
-        Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
-        Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
-        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
+        Route::get('/result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
+        Route::post('/{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
+        Route::get('/{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
+        Route::get('/{tes}', [DashboardController::class, 'pretestShow'])->name('show');
     });
 
-    // ===== POSTTEST =====
+    // POSTTEST
     Route::prefix('posttest')->name('posttest.')->group(function () {
         Route::get('/', [DashboardController::class, 'posttest'])->name('index');
-        Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
-        Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
-        Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
-        Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
+        Route::get('/result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
+        Route::post('/{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
+        Route::get('/{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
+        Route::get('/{tes}', [DashboardController::class, 'posttestShow'])->name('show');
     });
 
-    // ===== SURVEY =====
-    Route::get('survey', [DashboardController::class, 'survey'])->name('survey');
-    Route::post('survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
+    // SURVEY
+    Route::get('/survey', [DashboardController::class, 'survey'])->name('survey');
+    Route::post('/survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
 
-    // ===== MONEV =====
+    // MONEV
     Route::prefix('monev')->name('monev.')->group(function () {
         Route::get('/', [DashboardController::class, 'monev'])->name('index');
-        Route::get('{tes}/start', [DashboardController::class, 'monevStart'])->name('start');
-        Route::get('{tes}/begin', [DashboardController::class, 'monevBegin'])->name('begin');
-        Route::get('{tes}', [DashboardController::class, 'monevShow'])->name('show');
+        Route::get('/{tes}/start', [DashboardController::class, 'monevStart'])->name('start');
+        Route::get('/{tes}/begin', [DashboardController::class, 'monevBegin'])->name('begin');
+        Route::get('/{tes}', [DashboardController::class, 'monevShow'])->name('show');
     });
 });
-
 
 /* ======================================================================
 |  F. UPLOAD admin
@@ -199,19 +215,16 @@ Route::post('/admin/uploads', [UploadController::class, 'store'])
     ->middleware(['web', 'auth'])
     ->name('admin.uploads.store');
 
-
 /* ======================================================================
 |  G. PERTANYAAN
 ====================================================================== */
 Route::resource('pertanyaan', PertanyaanController::class);
-
 
 /* ======================================================================
 |  H. DETAIL PELATIHAN
 ====================================================================== */
 Route::get('/pelatihan/{slug}', [PelatihanDetailController::class, 'show'])
     ->name('detail-pelatihan');
-
 
 /* ======================================================================
 |  I. SURVEY / MONEV PUBLIC
@@ -228,11 +241,11 @@ Route::post('/survey/check-credentials', [SurveyController::class, 'checkCredent
 Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.step');
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
 
-Route::resource('/survey', SurveyController::class)->except(['index','create','store']);
-
+// admin variant to avoid name clashes with public survey routes
+Route::resource('/survey-admin', SurveyController::class)->except(['index','create','store']);
 
 /* ======================================================================
-|  J. EXCEL EXPORT
+|  J. EXCEL EXPORT & TEST HELPERS
 ====================================================================== */
 Route::get('/test-peserta', fn () => dd((new PesertaSheet(null))->collection()->take(5)));
 Route::get('/test-lampiran', fn () => dd((new LampiranSheet(null))->collection()->take(5)));
@@ -245,7 +258,6 @@ Route::get('/admin/tes/{tes}/rekap-download', [TesRekapDownloadController::class
     ->middleware(['web', 'auth'])
     ->name('tes.rekap.download');
 
-
 /* ======================================================================
 |  K. SETTINGS (Volt)
 ====================================================================== */
@@ -256,21 +268,24 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-
 /* ======================================================================
 |  L. MAIL TESTING
 ====================================================================== */
 Route::get('/send', fn () => Mail::to('23082010166@student.upnjatim.ac.id')->send(new TestMail()));
 
-
 /* ======================================================================
 |  M. DATA PESERTA API (debug)
 ====================================================================== */
-Route::get('api/peserta', fn () => Peserta::with('lampiran','kompetensi','pelatihan','instansi')->get());
-
+Route::get('/api/peserta', fn () => Peserta::with('lampiran','kompetensi','pelatihan','instansi')->get());
 
 /* ======================================================================
-|  N. TESTING / SANDBOX LOCAL
+|  N. STATISTIK PELATIHAN (user requested)
+====================================================================== */
+Route::get('/statistik-pelatihan', [StatistikPelatihanController::class, 'index']);
+Route::get('/api/statistik-pelatihan', [StatistikPelatihanController::class, 'data']);
+
+/* ======================================================================
+|  O. TESTING / SANDBOX LOCAL
 ====================================================================== */
 require __DIR__ . '/auth.php';
 

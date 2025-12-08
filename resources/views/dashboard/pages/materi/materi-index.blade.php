@@ -6,74 +6,174 @@
 
 @section('content')
 @php
-    // Variabel dikirim dari controller sebagai $materiList.
-    // Kita gunakan $materiList langsung untuk konsistensi.
+    /**
+     * ==========================================================
+     * 1) DATA ASLI dari controller
+     * ==========================================================
+     */
     $materis = $materiList ?? collect();
+
+    /**
+     * ==========================================================
+     * 2) DUMMY FALLBACK
+     * - aktif kalau data kosong / belum ada
+     * - bentuk object supaya kompatibel dengan materi-card
+     * ==========================================================
+     */
+    $isDummy = false;
+
+    if ($materis->isEmpty()) {
+        $isDummy = true;
+
+        $materis = collect([
+            (object)[
+                'id' => 'dummy-1',
+                'judul' => 'Pengenalan Keselamatan Kerja',
+                'deskripsi' => 'Materi dasar mengenai aturan keselamatan kerja di workshop.',
+                'tipe' => 'teks',
+                'estimasi_menit' => 15,
+                'urutan' => 1,
+                'kategori' => 'Dasar',
+                'file_path' => null,
+                'video_url' => null,
+                'link_url' => null,
+                'teks' => '<p>Contoh isi materi dummy...</p>',
+                'is_published' => true,
+                'pelatihan_id' => null,
+            ],
+            (object)[
+                'id' => 'dummy-2',
+                'judul' => 'Video Teknik Dasar Pengelasan',
+                'deskripsi' => 'Video praktik teknik pengelasan untuk pemula.',
+                'tipe' => 'video',
+                'estimasi_menit' => 20,
+                'urutan' => 2,
+                'kategori' => 'Praktik',
+                'file_path' => null,
+                'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'link_url' => null,
+                'teks' => null,
+                'is_published' => true,
+                'pelatihan_id' => null,
+            ],
+            (object)[
+                'id' => 'dummy-3',
+                'judul' => 'Modul Mesin Bubut (PDF)',
+                'deskripsi' => 'Dokumen modul lengkap tentang pengoperasian mesin bubut.',
+                'tipe' => 'file',
+                'estimasi_menit' => 30,
+                'urutan' => 3,
+                'kategori' => 'Modul',
+                'file_path' => 'materi/dummy-modul-mesin-bubut.pdf',
+                'video_url' => null,
+                'link_url' => null,
+                'teks' => null,
+                'is_published' => true,
+                'pelatihan_id' => null,
+            ],
+            (object)[
+                'id' => 'dummy-4',
+                'judul' => 'Referensi External CNC',
+                'deskripsi' => 'Link referensi pembelajaran CNC resmi.',
+                'tipe' => 'link',
+                'estimasi_menit' => 10,
+                'urutan' => 4,
+                'kategori' => 'Referensi',
+                'file_path' => null,
+                'video_url' => null,
+                'link_url' => 'https://example.com/referensi-cnc',
+                'teks' => null,
+                'is_published' => true,
+                'pelatihan_id' => null,
+            ],
+        ]);
+    }
+
+    /**
+     * ==========================================================
+     * 3) KATEGORI untuk dropdown filter
+     * - ambil dari data yang ada (asli/dummy)
+     * ==========================================================
+     */
+    $kategoriList = $materis
+        ->pluck('kategori')
+        ->filter()
+        ->unique()
+        ->values();
 @endphp
+
+
+{{-- Notice jika dummy aktif --}}
+@if($isDummy)
+    <div class="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-sm">
+        Data materi belum tersedia. Menampilkan contoh materi sementara.
+    </div>
+@endif
+
 
 {{-- Bagian Pencarian & Filter --}}
 <div class="mb-6 bg-white p-4 rounded-xl shadow-md">
     <div class="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
-        <input type="text" placeholder="Cari materi berdasarkan judul atau kategori..."
+        <input type="text"
+               placeholder="Cari materi berdasarkan judul atau kategori..."
                class="w-full md:w-2/3 p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition"
                onkeyup="filterMateri(this.value)">
-        <select class="w-full md:w-1/4 p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+
+        {{-- Filter kategori (dinamis) --}}
+        <select id="kategoriFilter"
+                class="w-full md:w-1/4 p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition"
+                onchange="filterKategori(this.value)">
             <option value="">Semua Kategori</option>
-            {{-- jika punya daftar kategori, loop di sini --}}
+            @foreach($kategoriList as $kat)
+                <option value="{{ strtolower($kat) }}">{{ $kat }}</option>
+            @endforeach
         </select>
     </div>
 </div>
 
+
+{{-- Grid Materi --}}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    
-    {{-- 🛑 Perbaikan Utama: Menggunakan @each untuk memanggil partial view --}}
-    @if ($materis->isNotEmpty())
-        @each('dashboard.pages.materi.materi-card', $materis, 'materi', 'dashboard.pages.materi.empty-materi-list')
-    @else
-        {{-- Tampilkan pesan kosong jika $materis kosong (handle-nya mirip seperti forelse empty) --}}
-        <div class="col-span-full bg-white p-8 rounded-xl shadow-md text-center border-2 border-dashed border-gray-300">
-            <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9.75 17L9 20l-1 1h8l-1-1v-3m2 0H9.75M17 12h.01M17 16h.01M16 12h1M16 16h1M9 16h.01M9 12h.01M12 12h.01M12 16h.01M5 16h.01M5 12h.01M19 8V5a2 2 0 00-2-2H7a2 2 0 00-2 2v3m14 0h-1m-4 0h-4m-4 0H3m14 0c-.552 0-1 .448-1 1s.448 1 1 1h.01c.552 0 1-.448 1-1s-.448-1-1-1zm-10 0c-.552 0-1 .448-1 1s.448 1 1 1h.01c.552 0 1-.448 1-1s-.448-1-1-1z"></path>
-            </svg>
-            <p class="text-gray-600 font-semibold text-lg">Oops! Belum Ada Materi Pelatihan.</p>
-            <p class="text-gray-500 mt-1">Silakan hubungi administrator jika Anda merasa ini adalah kesalahan.</p>
-        </div>
-    @endif
-    
+    @foreach($materis as $materi)
+        {{-- Materi card sebagai partial biasa --}}
+        @include('dashboard.pages.materi.materi-card', [
+            'materi' => $materi,
+        ])
+    @endforeach
 </div>
 
-{{-- Pagination --}}
-@if(method_exists($materis, 'links'))
+
+{{-- Pagination hanya kalau data asli dan paginator --}}
+@if(!$isDummy && $materis instanceof \Illuminate\Pagination\AbstractPaginator)
     <div class="mt-8">
         {{ $materis->links() }}
     </div>
 @endif
 
-{{-- Simple frontend filter script (opsional) --}}
+
 @push('scripts')
 <script>
 function filterMateri(query) {
-    // Perhatikan: sekarang card harus memiliki class 'materi-card-container' di dalamnya
     const cards = document.querySelectorAll('.materi-card-container');
-    query = query.toLowerCase();
-    
-    let found = false;
-    
-    cards.forEach(card => {
-        // Cek jika elemen ada sebelum mencoba mengakses properti
-        const title = (card.querySelector('h3')?.textContent || '').toLowerCase();
-        const description = (card.querySelector('p')?.textContent || '').toLowerCase();
-        
-        if (title.includes(query) || description.includes(query)) {
-            card.style.display = 'block';
-            found = true;
-        } else {
-            card.style.display = 'none';
-        }
-    });
+    query = (query || '').toLowerCase();
 
-    // Anda mungkin ingin menampilkan pesan 'tidak ditemukan' di sini jika filter terlalu ketat
+    cards.forEach(card => {
+        const title = (card.querySelector('h3')?.textContent || '').toLowerCase();
+        const desc  = (card.querySelector('p')?.textContent || '').toLowerCase();
+        const kategori = (card.dataset.kategori || '').toLowerCase();
+
+        const cocokJudulDesc = title.includes(query) || desc.includes(query);
+        const cocokKategori  = !window.__kategoriFilter || kategori.includes(window.__kategoriFilter);
+
+        card.style.display = (cocokJudulDesc && cocokKategori) ? 'block' : 'none';
+    });
+}
+
+function filterKategori(value) {
+    window.__kategoriFilter = (value || '').toLowerCase();
+    // re-run filter text if any
+    const input = document.querySelector('input[onkeyup="filterMateri(this.value)"]');
+    filterMateri(input?.value || '');
 }
 </script>
 @endpush

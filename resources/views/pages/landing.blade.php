@@ -1145,7 +1145,7 @@
   </script>
 </section>
 
-<!-- SECTION: Data Statistik -->
+<!-- SECTION: Data Statistik (DINAMIS + DUMMY FALLBACK) -->
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -1156,88 +1156,80 @@
           <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-3">
             <span class="text-[#861D23] font-[Volkhov] font-bold text-[16px]">Data Statistik</span>
           </div>
-        <h2 class="heading-stroke font-[Volkhov] font-bold text-[24px] md:text-[28px] leading-snug mb-3">
-  Rekapitulasi Rata-Rata<br/>Program Pelatihan
-</h2>
+
+          <h2 class="heading-stroke font-[Volkhov] font-bold text-[24px] md:text-[28px] leading-snug mb-3">
+            Rekapitulasi Rata-Rata<br/>Program Pelatihan
+          </h2>
+
           <p class="text-sm text-slate-700 leading-relaxed mb-5">
             Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
             terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
           </p>
 
-         <!-- Bagian list judul pelatihan (ubah hanya bagian ini) -->
-<ul id="listPelatihan" class="space-y-2">
-  <li>
-    <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="0">
-      <span class="dot w-2 h-2 rounded-full bg-[#1524AF]"></span>
-      <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#1524AF]">Judul Pelatihan 1</span>
-    </button>
-    <div class="divider h-[1px] bg-[#1524AF]"></div>
-  </li>
-  <li>
-    <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="1">
-      <span class="dot w-2 h-2 rounded-full bg-[#000000]"></span>
-      <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#000000]">Judul Pelatihan 2</span>
-    </button>
-    <div class="divider h-[1px] bg-[#000000]"></div>
-  </li>
-  <li>
-    <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="2">
-      <span class="dot w-2 h-2 rounded-full bg-[#000000]"></span>
-      <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#000000]">Judul Pelatihan 3</span>
-    </button>
-    <div class="divider h-[1px] bg-[#000000]"></div>
-  </li>
-  <li>
-    <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="3">
-      <span class="dot w-2 h-2 rounded-full bg-[#000000]"></span>
-      <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#000000]">Judul Pelatihan 4</span>
-    </button>
-    <div class="divider h-[1px] bg-[#000000]"></div>
-  </li>
-</ul>
+          <!-- List Pelatihan (akan di-replace JS) -->
+          <ul id="listPelatihan" class="space-y-2">
+            <li>
+              <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="0">
+                <span class="dot w-2 h-2 rounded-full bg-[#1524AF]"></span>
+                <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#1524AF]">Loading...</span>
+              </button>
+              <div class="divider h-[1px] bg-[#1524AF]"></div>
+            </li>
+          </ul>
+
+          <!-- Badge dummy info (hidden by default, akan muncul jika dummy dipakai) -->
+          <div id="dummyNotice"
+               class="hidden mt-4 text-[12px] text-slate-600 bg-white/70 border border-slate-200 rounded-lg p-3">
+            Data asli belum tersedia. Menampilkan contoh statistik sementara.
+          </div>
         </div>
 
-        <a href="#" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#1524AF] text-white text-[14px] mt-6 shadow-sm hover:shadow transition-all duration-200 self-start">Cari Tahu Lebih
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        <a href="#"
+           class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#1524AF] text-white text-[14px] mt-6 shadow-sm hover:shadow transition-all duration-200 self-start">
+          Cari Tahu Lebih
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
         </a>
       </div>
-<!-- Right Column (Chart) -->
-<div class="lg:col-span-8 mt-6 lg:mt-0">
-  <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
-    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
-      <div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">
-        63.48
-      </div>
-      <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
-        Rata-Rata Pre-Test
-      </div>
-    </div>
 
-    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
-      <div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">
-        90
-      </div>
-      <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
-        Praktek
-      </div>
-    </div>
+      <!-- Right Column (Chart) -->
+      <div class="lg:col-span-8 mt-6 lg:mt-0">
 
-    <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
-      <div class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">
-        80.76
-      </div>
-      <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
-        Rata-Rata Post-Test
-      </div>
-    </div>
-  </div>
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+          <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
+            <div id="preAvgCard"
+                 class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">0</div>
+            <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
+              Rata-Rata Pre-Test
+            </div>
+          </div>
 
-  <div class="rounded-2xl bg-white border-2 border-[#1524AF] p-4 md:p-5">
-    <div class="relative w-full h-[320px]">
-      <canvas id="statistikChart"></canvas>
-    </div>
-  </div>
-</div>
+          <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
+            <div id="praktekAvgCard"
+                 class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">0</div>
+            <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
+              Praktek
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
+            <div id="postAvgCard"
+                 class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">0</div>
+            <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
+              Rata-Rata Post-Test
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart Wrapper -->
+        <div class="rounded-2xl bg-white border-2 border-[#1524AF] p-4 md:p-5">
+          <div class="relative w-full h-[320px]">
+            <canvas id="statistikChart"></canvas>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -1245,20 +1237,154 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script>
-  const ctx = document.getElementById('statistikChart').getContext('2d');
 
-  const pelatihanLabels = ['Teknik Pengelasan', 'Teknik Mesin Bubut', 'Teknik Mesin CNC', 'Teknik Elektro'];
+<script>
+(async function () {
+  // =========================
+  // DUMMY DATA (fallback)
+  // =========================
+  const dummyData = {
+    pelatihans: [
+      { id: 1, nama: 'Teknik Pengelasan' },
+      { id: 2, nama: 'Teknik Mesin Bubut' },
+      { id: 3, nama: 'Teknik Mesin CNC' },
+      { id: 4, nama: 'Teknik Elektro' },
+    ],
+    labels: ['Teknik Pengelasan', 'Teknik Mesin Bubut', 'Teknik Mesin CNC', 'Teknik Elektro'],
+    datasets: {
+      pre:     [8, 22, 12, 29],
+      post:    [24, 53, 75, 94],
+      praktek: [38, 70, 35, 60],
+      rata:    [52, 10, 26, 49],
+    },
+  };
+
+  const list      = document.getElementById('listPelatihan');
+  const canvasEl  = document.getElementById('statistikChart');
+  const dummyNote = document.getElementById('dummyNotice');
+
+  const preCard      = document.getElementById('preAvgCard');
+  const praktekCard  = document.getElementById('praktekAvgCard');
+  const postCard     = document.getElementById('postAvgCard');
+
+  if (!list || !canvasEl) return;
+
+  // =========================
+  // Fetch API
+  // =========================
+  let apiData = null;
+  let useDummy = false;
+
+  try {
+    const res = await fetch('/api/statistik-pelatihan');
+    apiData = await res.json();
+  } catch (e) {
+    useDummy = true;
+  }
+
+  // =========================
+  // Deteksi data kosong
+  // =========================
+  function isEmptyData(d) {
+    if (!d) return true;
+    if (!Array.isArray(d.pelatihans) || d.pelatihans.length === 0) return true;
+
+    const ds = d.datasets || {};
+    const allVals = [
+      ...(ds.pre || []),
+      ...(ds.post || []),
+      ...(ds.praktek || []),
+      ...(ds.rata || []),
+    ];
+
+    // kalau semua nilainya 0 atau array kosong → dianggap belum ada data
+    if (allVals.length === 0) return true;
+    if (allVals.every(v => Number(v) === 0)) return true;
+
+    return false;
+  }
+
+  if (isEmptyData(apiData)) useDummy = true;
+
+  const data = useDummy ? dummyData : apiData;
+  if (useDummy && dummyNote) dummyNote.classList.remove('hidden');
+
+  // =========================
+  // Render list pelatihan
+  // =========================
+  list.innerHTML = (data.pelatihans ?? []).map((p, i) => `
+    <li>
+      <button type="button"
+        class="pel-btn w-full flex items-center gap-2 py-1.5 text-left"
+        data-index="${i}">
+        <span class="dot w-2 h-2 rounded-full ${i===0 ? 'bg-[#1524AF]' : 'bg-[#000000]'}"></span>
+        <span class="label flex-1 text-[14px] font-[Montserrat] font-medium ${i===0 ? 'text-[#1524AF]' : 'text-[#000000]'}">
+          ${p.nama}
+        </span>
+      </button>
+      <div class="divider h-[1px] ${i===0 ? 'bg-[#1524AF]' : 'bg-[#000000]'}"></div>
+    </li>
+  `).join('');
+
+  // =========================
+  // Active state helper
+  // =========================
+  const ACTIVE_TEXT = 'text-[#1524AF]';
+  const INACTIVE_TEXT = 'text-[#000000]';
+  const ACTIVE_DOT = 'bg-[#1524AF]';
+  const INACTIVE_DOT = 'bg-[#000000]';
+  const ACTIVE_DIV = 'bg-[#1524AF]';
+  const INACTIVE_DIV = 'bg-[#000000]';
+
+  function setActive(idx){
+    list.querySelectorAll('li').forEach((li, i) => {
+      const label = li.querySelector('.label');
+      const dot   = li.querySelector('.dot');
+      const div   = li.querySelector('.divider');
+      if (!label || !dot || !div) return;
+
+      label.classList.remove(ACTIVE_TEXT); label.classList.add(INACTIVE_TEXT);
+      dot.classList.remove(ACTIVE_DOT);   dot.classList.add(INACTIVE_DOT);
+      div.classList.remove(ACTIVE_DIV);   div.classList.add(INACTIVE_DIV);
+
+      if (i === idx){
+        label.classList.remove(INACTIVE_TEXT); label.classList.add(ACTIVE_TEXT);
+        dot.classList.remove(INACTIVE_DOT);    dot.classList.add(ACTIVE_DOT);
+        div.classList.remove(INACTIVE_DIV);    div.classList.add(ACTIVE_DIV);
+      }
+    });
+  }
+
+  // =========================
+  // Summary cards per index
+  // =========================
+  function setSummaryByIndex(idx){
+    const preVal     = data.datasets?.pre?.[idx] ?? 0;
+    const praktekVal = data.datasets?.praktek?.[idx] ?? 0;
+    const postVal    = data.datasets?.post?.[idx] ?? 0;
+
+    if (preCard) preCard.textContent = preVal;
+    if (praktekCard) praktekCard.textContent = praktekVal;
+    if (postCard) postCard.textContent = postVal;
+  }
+
+  setActive(0);
+  setSummaryByIndex(0);
+
+  // =========================
+  // Render Chart
+  // =========================
+  const ctx = canvasEl.getContext('2d');
 
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: pelatihanLabels,
+      labels: data.labels ?? [],
       datasets: [
         {
           label: 'Pre-Test',
-          data: [8, 22, 12, 29],
-          borderColor: '#FF6107',        // oranye
+          data: data.datasets?.pre ?? [],
+          borderColor: '#FF6107',
           pointBackgroundColor: '#FF6107',
           pointBorderColor: '#FF6107',
           borderWidth: 2,
@@ -1269,8 +1395,8 @@
         },
         {
           label: 'Post-Test',
-          data: [24, 53, 75, 94],
-          borderColor: '#2F4BFF',        // biru
+          data: data.datasets?.post ?? [],
+          borderColor: '#2F4BFF',
           pointBackgroundColor: '#2F4BFF',
           pointBorderColor: '#2F4BFF',
           borderWidth: 2,
@@ -1281,8 +1407,8 @@
         },
         {
           label: 'Praktek',
-          data: [38, 70, 35, 60],
-          borderColor: '#6B2C47',        // maroon/ungu tua
+          data: data.datasets?.praktek ?? [],
+          borderColor: '#6B2C47',
           pointBackgroundColor: '#6B2C47',
           pointBorderColor: '#6B2C47',
           borderWidth: 2,
@@ -1293,8 +1419,8 @@
         },
         {
           label: 'Rata-Rata',
-          data: [52, 10, 26, 49],
-          borderColor: '#DBCC8F',        // beige/kuning muda
+          data: data.datasets?.rata ?? [],
+          borderColor: '#DBCC8F',
           pointBackgroundColor: '#DBCC8F',
           pointBorderColor: '#DBCC8F',
           borderWidth: 2,
@@ -1326,7 +1452,6 @@
         },
         tooltip: {
           callbacks: {
-            // tooltip ringkas: “Label Dataset: Angka”
             label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}`
           }
         }
@@ -1339,7 +1464,7 @@
             color: '#8787A3'
           },
           grid: {
-            display: true,                 // garis vertikal seperti contoh
+            display: true,
             drawTicks: false,
             color: '#8787A3',
             lineWidth: 1
@@ -1360,7 +1485,6 @@
             color: '#8787A3'
           },
           grid: {
-            // hanya garis 0 yang terlihat (baseline)
             color: (ctx) => (ctx.tick.value === 0 ? '#8787A3' : 'transparent'),
             lineWidth: (ctx) => (ctx.tick.value === 0 ? 1.5 : 0),
             drawTicks: false
@@ -1374,49 +1498,19 @@
       }
     }
   });
-</script>
 
+  // =========================
+  // Click list => aktif + update summary
+  // =========================
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pel-btn');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.index, 10) || 0;
+    setActive(idx);
+    setSummaryByIndex(idx);
+  });
 
-<script>
-  // Toggle active state (ubah bagian dot, label, divider warna)
-  (function(){
-    const list = document.getElementById('listPelatihan');
-    if (!list || list.dataset.inited) return;
-    list.dataset.inited = '1';
-
-    const ACTIVE_TEXT = 'text-[#1524AF]';
-    const INACTIVE_TEXT = 'text-[#000000]';
-    const ACTIVE_DOT = 'bg-[#1524AF]';
-    const INACTIVE_DOT = 'bg-[#000000]';
-    const ACTIVE_DIV = 'bg-[#1524AF]';
-    const INACTIVE_DIV = 'bg-[#000000]';
-
-    function setActive(idx){
-      list.querySelectorAll('li').forEach((li,i)=>{
-        const label = li.querySelector('.label');
-        const dot   = li.querySelector('.dot');
-        const div   = li.querySelector('.divider');
-        if (!label || !dot || !div) return;
-        label.classList.remove(ACTIVE_TEXT); label.classList.add(INACTIVE_TEXT);
-        dot.classList.remove(ACTIVE_DOT);     dot.classList.add(INACTIVE_DOT);
-        div.classList.remove(ACTIVE_DIV);     div.classList.add(INACTIVE_DIV);
-        if (i === idx){
-          label.classList.remove(INACTIVE_TEXT); label.classList.add(ACTIVE_TEXT);
-          dot.classList.remove(INACTIVE_DOT);     dot.classList.add(ACTIVE_DOT);
-          div.classList.remove(INACTIVE_DIV);     div.classList.add(ACTIVE_DIV);
-        }
-      });
-    }
-
-    setActive(0);
-
-    list.addEventListener('click',(e)=>{
-      const btn = e.target.closest('.pel-btn');
-      if (!btn) return;
-      const idx = parseInt(btn.dataset.index,10) || 0;
-      setActive(idx);
-    });
-  })();
+})();
 </script>
 
 {{-- SECTION: Panduan Pelatihan (Full-width image + gradient overlay) --}}
