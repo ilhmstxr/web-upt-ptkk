@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         // Tambah kolom hanya kalau BELUM ada
-        if (!Schema::hasColumn('bidang', 'gambar')) {
-            Schema::table('bidang', function (Blueprint $table) {
+        if (!Schema::hasColumn('kompetensi', 'gambar')) {
+            Schema::table('kompetensi', function (Blueprint $table) {
                 $table->string('gambar')
                     ->nullable()
                     ->after('kelas_keterampilan');
@@ -20,9 +20,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('bidang', function (Blueprint $table) {
+        Schema::table('kompetensi', function (Blueprint $table) {
             // Hapus kolom hanya kalau ADA
-            if (Schema::hasColumn('bidang', 'gambar')) {
+            if (Schema::hasColumn('kompetensi', 'gambar')) {
                 $table->dropColumn('gambar');
             }
         });
