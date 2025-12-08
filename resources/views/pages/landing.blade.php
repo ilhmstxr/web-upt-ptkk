@@ -614,40 +614,84 @@ $latestBeritas = Berita::query()
 </section>
 {{-- /SECTION: Cerita Kami --}}
 
-{{-- SECTION: Jatim Bangkit --}}
+{{-- SECTION: Jatim Bangkit (oval slim, bigger icons, tighter gap) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <style>
-    @keyframes jatim-scroll-x { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes jatim-scroll-x {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .jatim-marquee { animation: none !important; }
+    }
   </style>
+
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="relative">
-      <div class="relative bg-[#DBE7F7] rounded-full overflow-hidden h-[54px] md:h-[58px] lg:h-[62px] flex items-center">
-        <div class="relative w-full overflow-hidden">
-          <div class="jatim-marquee flex w-[200%] items-center animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
-             {{-- icons sederhana --}}
-             @foreach(['cetar','dindik','jatim','berakhlak','optimis'] as $icon)
-                @php
-                    $iconPath = 'icons/'.$icon.'.svg';
-                    $iconSrc = Storage::disk('public')->exists($iconPath) ? Storage::url($iconPath) : asset('images/icons/'.$icon.'.svg');
-                @endphp
-                <img src="{{ $iconSrc }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0 mx-4" alt="{{ ucfirst($icon) }}">
-             @endforeach
 
-             {{-- duplikat untuk marquee --}}
-             @foreach(['cetar','dindik','jatim','berakhlak','optimis'] as $icon)
-                @php
-                    $iconPath = 'icons/'.$icon.'.svg';
-                    $iconSrc = Storage::disk('public')->exists($iconPath) ? Storage::url($iconPath) : asset('images/icons/'.$icon.'.svg');
-                @endphp
-                <img src="{{ $iconSrc }}" class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0 mx-4" alt="">
-             @endforeach
+      {{-- BG oval lebih tinggi sedikit --}}
+      <div class="relative bg-[#DBE7F7] rounded-full overflow-hidden
+                  h-[54px] md:h-[58px] lg:h-[62px] flex items-center">
+
+        {{-- Viewport --}}
+        <div class="relative w-full overflow-hidden">
+
+          {{-- TRACK --}}
+          <div class="jatim-marquee flex w-[200%] items-center
+                      animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
+
+            {{-- Bagian 1 --}}
+            <div class="flex w-1/2 items-center justify-between
+                        px-6 md:px-10 lg:px-16
+                        gap-4 md:gap-6 lg:gap-8">
+
+              <img src="{{ asset('images/icons/cetar.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Cetar">
+              <img src="{{ asset('images/icons/dindik.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Dindik">
+              <img src="{{ asset('images/icons/jatim.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Jatim">
+              <img src="{{ asset('images/icons/berakhlak.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Berakhlak">
+              <img src="{{ asset('images/icons/optimis.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Optimis">
+
+            </div>
+
+            {{-- Bagian 2 (duplikat) --}}
+            <div class="flex w-1/2 items-center justify-between
+                        px-6 md:px-10 lg:px-16
+                        gap-4 md:gap-6 lg:gap-8"
+                 aria-hidden="true">
+
+              <img src="{{ asset('images/icons/cetar.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+              <img src="{{ asset('images/icons/dindik.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+              <img src="{{ asset('images/icons/jatim.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+              <img src="{{ asset('images/icons/berakhlak.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+              <img src="{{ asset('images/icons/optimis.svg') }}"
+                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+
+            </div>
+
           </div>
-          <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]"></div>
+
+          {{-- Fade kiri–kanan --}}
+          <div class="pointer-events-none absolute inset-0
+                      [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+          </div>
+
         </div>
+
       </div>
+
     </div>
   </div>
 </section>
+{{-- /SECTION --}}
 
 {{-- SECTION: Berita Terbaru (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">

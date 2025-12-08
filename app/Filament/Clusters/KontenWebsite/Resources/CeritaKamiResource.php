@@ -51,51 +51,48 @@ class CeritaKamiResource extends Resource
                         ->rows(4)
                         ->columnSpanFull(),
 
-                    Forms\Components\RichEditor::make('content')
-                        ->label('Konten lengkap (opsional)')
-                        ->columnSpanFull(),
+                    // ✅ RichEditor "Konten lengkap (opsional)" DIHAPUS
                 ]),
         ]);
     }
 
-   public static function table(Table $table): Table
-{
-    return $table
-        ->columns([
-            Tables\Columns\TextColumn::make('title')
-                ->label('Judul')
-                ->searchable()
-                ->sortable(),
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('title')
+                    ->label('Judul')
+                    ->searchable()
+                    ->sortable(),
 
-            Tables\Columns\IconColumn::make('is_published')
-                ->label('Tayang')
-                ->boolean(),
+                Tables\Columns\IconColumn::make('is_published')
+                    ->label('Tayang')
+                    ->boolean(),
 
-            Tables\Columns\TextColumn::make('created_at')
-                ->label('Dibuat')
-                ->dateTime('d M Y')
-                ->sortable(),
-        ])
-        ->filters([
-            //
-        ])
-        ->actions([
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\DeleteAction::make(),
-        ])
-        ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
-        ])
-        ->defaultSort('created_at', 'desc');
-
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y')
+                    ->sortable(),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCeritaKamis::route('/'),
+            'index'  => Pages\ListCeritaKamis::route('/'),
             'create' => Pages\CreateCeritaKami::route('/create'),
-            'edit' => Pages\EditCeritaKami::route('/{record}/edit'),
+            'edit'   => Pages\EditCeritaKami::route('/{record}/edit'),
         ];
     }
 }
