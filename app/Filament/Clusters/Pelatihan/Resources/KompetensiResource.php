@@ -3,14 +3,9 @@
 namespace App\Filament\Clusters\Pelatihan\Resources;
 
 use App\Filament\Clusters\Pelatihan;
-<<<<<<< HEAD:app/Filament/Clusters/Pelatihan/Resources/BidangResource.php
-use App\Filament\Clusters\Pelatihan\Resources\BidangResource\Pages;
-use App\Models\Bidang;
-=======
 use App\Filament\Clusters\Pelatihan\Resources\KompetensiResource\Pages;
 use App\Filament\Clusters\Pelatihan\Resources\KompetensiResource\RelationManagers;
 use App\Models\Kompetensi;
->>>>>>> ilham-widget-ui-overhaul-custom:app/Filament/Clusters/Pelatihan/Resources/KompetensiResource.php
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -33,47 +28,6 @@ class KompetensiResource extends Resource
         return $form
             ->columns(3)
             ->schema([
-<<<<<<< HEAD:app/Filament/Clusters/Pelatihan/Resources/BidangResource.php
-                Forms\Components\FileUpload::make('gambar')
-                    ->label('Gambar/Icon Bidang')
-                    ->disk('public')                 // simpan di disk public
-                    ->directory('bidang-images')     // folder: storage/app/public/bidang-images
-                    ->visibility('public')           // bisa diakses via /storage/...
-                    ->image()
-                    ->imageEditor()
-                    ->imageEditorAspectRatios([
-                        '1:1',
-                        '4:3',
-                        '16:9',
-                    ])
-                    ->maxSize(2048) // 2MB
-                    ->columnSpanFull(),
-
-                Forms\Components\TextInput::make('nama_bidang')
-                    ->label('Nama Bidang')
-                    ->required()
-                    ->maxLength(255),
-
-                Forms\Components\TextInput::make('kode')
-                    ->label('Kode Bidang')
-                    ->maxLength(255),
-
-                Forms\Components\Select::make('kelas_keterampilan')
-                    ->label('Kelompok Bidang')
-                    ->options([
-                        1 => 'Kelas Keterampilan & Teknik',
-                        0 => 'Milenial Job Center',
-                    ])
-                    ->required()
-                    ->native(false)
-                    ->default(1),
-
-                Forms\Components\Textarea::make('deskripsi')
-                    ->label('Deskripsi')
-                    ->maxLength(65535)
-                    ->rows(4)
-                    ->columnSpanFull(),
-=======
                 Forms\Components\Group::make()
                     ->schema([
                         Forms\Components\Section::make('Informasi Kompetensi')
@@ -122,7 +76,6 @@ class KompetensiResource extends Resource
                                     ->disk('public'),
                             ]),
                     ])->columnSpan(['lg' => 1]),
->>>>>>> ilham-widget-ui-overhaul-custom:app/Filament/Clusters/Pelatihan/Resources/KompetensiResource.php
             ]);
     }
 
@@ -139,22 +92,11 @@ class KompetensiResource extends Resource
                     Tables\Columns\ImageColumn::make('gambar')
                         ->disk('public') // ambil dari disk public
                         ->height(150)
-<<<<<<< HEAD:app/Filament/Clusters/Pelatihan/Resources/BidangResource.php
-                        ->defaultImageUrl(fn ($record) =>
-                            'https://ui-avatars.com/api/?name=' .
-                            urlencode($record->nama_bidang) .
-                            '&size=300&background=random'
-                        )
-                        ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3']),
-
-                    Tables\Columns\TextColumn::make('nama_bidang')
-=======
                         ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->nama_kompetensi) . '&size=300&background=random')
                         ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3'])
                         ->disk('public'),
                     
                     Tables\Columns\TextColumn::make('nama_kompetensi')
->>>>>>> ilham-widget-ui-overhaul-custom:app/Filament/Clusters/Pelatihan/Resources/KompetensiResource.php
                         ->weight('bold')
                         ->size('lg')
                         ->icon('heroicon-o-academic-cap')
@@ -211,15 +153,9 @@ class KompetensiResource extends Resource
     public static function getPages(): array
     {
         return [
-<<<<<<< HEAD:app/Filament/Clusters/Pelatihan/Resources/BidangResource.php
-            'index'  => Pages\ListBidangs::route('/'),
-            'create' => Pages\CreateBidang::route('/create'),
-            'edit'   => Pages\EditBidang::route('/{record}/edit'),
-=======
             'index' => Pages\ListKompetensi::route('/'),
             'create' => Pages\CreateKompetensi::route('/create'),
             'edit' => Pages\EditKompetensi::route('/{record}/edit'),
->>>>>>> ilham-widget-ui-overhaul-custom:app/Filament/Clusters/Pelatihan/Resources/KompetensiResource.php
         ];
     }
 }
