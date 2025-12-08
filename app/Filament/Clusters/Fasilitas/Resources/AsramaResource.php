@@ -53,7 +53,7 @@ class AsramaResource extends Resource
                             ->required()
                             ->maxLength(255),
 
-                        Forms\Components\Select::make('gender')
+                        Forms\Components\Select::make('jenis_kelamin')
                             ->label('Khusus')
                             ->options([
                                 'Laki-laki' => 'Laki-laki',

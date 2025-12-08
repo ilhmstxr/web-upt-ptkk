@@ -13,7 +13,7 @@ class Asrama extends Model
 
     protected $fillable = [
         'nama',
-        'gender',
+        'jenis_kelamin',
         'alamat',
     ];
 
@@ -47,7 +47,7 @@ class Asrama extends Model
             static::firstOrCreate(
                 ['nama' => $namaAsrama],
                 [
-                    'gender' => 'Campur', // default kalau belum di-set
+                    'jenis_kelamin' => 'Campur', // default kalau belum di-set
                     'alamat' => null,
                 ]
             );

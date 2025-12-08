@@ -1,5 +1,4 @@
 <?php
-// app/Services/AsramaAllocator.php
 
 namespace App\Services;
 
@@ -10,160 +9,230 @@ use App\Models\Pelatihan;
 use App\Models\PenempatanAsrama;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 
 class AsramaAllocator
 {
     /**
-     * @param  \App\Models\Pelatihan  $pelatihan   Pelatihan yang sedang berjalan / dibuka
-     * @param  \Illuminate\Support\Collection<int,\App\Models\Peserta>  $pesertaList
+     * Allocate peserta ke kamar asrama untuk sebuah pelatihan.
+     *
+     * Aturan:
+     * 1) Strict: dalam 1 kamar tidak boleh campur jenis_kelamin
+     *    kecuali asrama berjenis_kelamin "Campur".
+     * 2) Fallback: kalau masih ada sisa peserta, boleh campur jenis_kelamin
+     *    hanya di kamar besar (>= 8 bed).
+     *
+     * @return int jumlah peserta yang berhasil ditempatkan
      */
-    public function allocate(Pelatihan $pelatihan, Collection $pesertaList): void
+    public function allocate(Pelatihan $pelatihan, Collection $pesertaList): int
     {
-        DB::transaction(function () use ($pelatihan, $pesertaList) {
-            // pisahkan berdasarkan gender
-            $male   = $pesertaList->where('jenis_kelamin', 'Laki-laki')->values();
-            $female = $pesertaList->where('jenis_kelamin', 'Perempuan')->values();
+        return DB::transaction(function () use ($pelatihan, $pesertaList) {
 
-            // ambil semua kamar asrama yang statusnya bukan Rusak
-            /** @var Collection<int,Kamar> $kamarAll */
+            // =========================
+            // NORMALISASI JENIS KELAMIN PESERTA
+            // =========================
+            $pesertaLakiLaki = $pesertaList
+                ->filter(fn ($p) => $this->normalizeJenisKelamin($p?->jenis_kelamin) === 'laki-laki')
+                ->values();
+
+            $pesertaPerempuan = $pesertaList
+                ->filter(fn ($p) => $this->normalizeJenisKelamin($p?->jenis_kelamin) === 'perempuan')
+                ->values();
+
+            // legacy / tidak jelas jenis kelamin → nanti masuk queue terakhir
+            $pesertaUnknown = $pesertaList
+                ->reject(fn ($p) =>
+                    in_array($this->normalizeJenisKelamin($p?->jenis_kelamin), ['laki-laki', 'perempuan'], true)
+                )
+                ->values();
+
+            // =========================
+            // AMBIL KAMAR YANG BISA DIPAKAI
+            // =========================
             $kamarAll = Kamar::with('asrama')
-                ->where('status', '!=', 'Rusak')
+                ->where('status', 'Tersedia') // hanya kamar tersedia
                 ->orderBy('asrama_id')
                 ->orderBy('lantai')
                 ->orderBy('nomor_kamar')
                 ->get();
 
-            // 1) alokasi normal (tidak boleh campur gender dalam kamar)
-            $maleUnassigned   = $this->assignByGenderStrict($pelatihan, $male, $kamarAll, 'Laki-laki');
-            $femaleUnassigned = $this->assignByGenderStrict($pelatihan, $female, $kamarAll, 'Perempuan');
+            $jumlahTerbagi = 0;
 
-            // 2) fallback: kalau masih ada yang belum dapat kamar
-            $remaining = $maleUnassigned->count() + $femaleUnassigned->count();
+            // =========================
+            // 1) STRICT BY JENIS KELAMIN (TIDAK CAMPUR DALAM 1 KAMAR)
+            // =========================
+            [$sisaLakiLaki, $terbagiLakiLaki] =
+                $this->assignStrictByJenisKelamin($pelatihan, $pesertaLakiLaki, $kamarAll, 'laki-laki');
 
-            if ($remaining > 0) {
-                $this->assignFallbackMixed(
-                    $pelatihan,
-                    $maleUnassigned,
-                    $femaleUnassigned,
-                    $kamarAll
-                );
+            [$sisaPerempuan, $terbagiPerempuan] =
+                $this->assignStrictByJenisKelamin($pelatihan, $pesertaPerempuan, $kamarAll, 'perempuan');
+
+            $jumlahTerbagi += $terbagiLakiLaki + $terbagiPerempuan;
+
+            // =========================
+            // 2) FALLBACK CAMPUR (HANYA KAMAR BESAR >= 8 BED)
+            // =========================
+            $queueFallback = $sisaLakiLaki
+                ->concat($sisaPerempuan)
+                ->concat($pesertaUnknown)
+                ->values();
+
+            if ($queueFallback->isNotEmpty()) {
+                $jumlahTerbagi += $this->assignFallbackCampur($pelatihan, $queueFallback, $kamarAll);
             }
+
+            return $jumlahTerbagi;
         });
     }
 
-    protected function assignByGenderStrict(
+    /**
+     * Strict: kamar tidak boleh campur jenis_kelamin,
+     * kecuali asrama.jenis_kelamin = "Campur".
+     *
+     * @return array{0: Collection, 1: int} [sisaPeserta, jumlahTerbagi]
+     */
+    protected function assignStrictByJenisKelamin(
         Pelatihan $pelatihan,
         Collection $peserta,
         Collection $kamarAll,
-        string $gender
-    ): Collection {
-        $unassigned = collect();
+        string $jenisKelaminNormalized
+    ): array {
+        $sisaPeserta = collect();
+        $jumlahTerbagi = 0;
 
         foreach ($peserta as $p) {
             /** @var Peserta $p */
-            $assigned = false;
+            $sudahTerbagi = false;
 
             foreach ($kamarAll as $kamar) {
                 /** @var Kamar $kamar */
                 $asrama = $kamar->asrama;
+                if (! $asrama) continue;
 
-                // Asrama tidak boleh terbalik gendernya, kecuali Campur
-                if ($asrama->gender !== 'Campur' && $asrama->gender !== $gender) {
+                // ✅ pakai kolom yang benar: asrama.jenis_kelamin
+                $jenisKelaminAsrama = $this->normalizeJenisKelamin($asrama->jenis_kelamin ?? null);
+
+                // kalau asrama "Campur" → null → bebas
+                if ($jenisKelaminAsrama && $jenisKelaminAsrama !== $jenisKelaminNormalized) {
                     continue;
                 }
 
-                if ($kamar->available_beds <= 0 || $kamar->status !== 'Tersedia') {
-                    continue;
-                }
+                // cek bed tersedia realtime
+                $bedTersedia = $this->getAvailableBeds($pelatihan, $kamar);
+                if ($bedTersedia <= 0) continue;
 
-                // cek apakah kamar ini sudah terisi gender lain di riwayat penempatan pelatihan ini
-                $existingGender = PenempatanAsrama::where('pelatihan_id', $pelatihan->id)
+                // kamar strict: tidak boleh isi jenis_kelamin lain dalam pelatihan ini
+                $jenisKelaminSudahAdaDiKamar = PenempatanAsrama::where('pelatihan_id', $pelatihan->id)
                     ->where('kamar_id', $kamar->id)
                     ->join('peserta', 'penempatan_asrama.peserta_id', '=', 'peserta.id')
-                    ->select('peserta.jenis_kelamin')
-                    ->distinct()
-                    ->pluck('jenis_kelamin')
+                    ->pluck('peserta.jenis_kelamin')
+                    ->map(fn ($jk) => $this->normalizeJenisKelamin($jk))
+                    ->filter()
                     ->first();
 
-                if ($existingGender && $existingGender !== $gender) {
-                    // kamar ini sudah terisi gender lain → skip untuk mode strict
+                if ($jenisKelaminSudahAdaDiKamar && $jenisKelaminSudahAdaDiKamar !== $jenisKelaminNormalized) {
                     continue;
                 }
 
-                // assign di sini
+                // assign
                 $this->storeAssignment($pelatihan, $p, $asrama, $kamar);
-                $assigned = true;
 
-                $kamar->available_beds = max(0, $kamar->available_beds - 1);
-                if ($kamar->available_beds === 0) {
-                    $kamar->status = 'Penuh';
-                }
-                $kamar->save();
+                $sudahTerbagi = true;
+                $jumlahTerbagi++;
 
+                $this->decreaseBeds($pelatihan, $kamar);
                 break;
             }
 
-            if (! $assigned) {
-                $unassigned->push($p);
+            if (! $sudahTerbagi) {
+                $sisaPeserta->push($p);
             }
         }
 
-        return $unassigned;
+        return [$sisaPeserta, $jumlahTerbagi];
     }
 
-    protected function assignFallbackMixed(
+    /**
+     * Fallback campur: boleh campur jenis_kelamin,
+     * tapi hanya di kamar besar (>= 8 bed).
+     */
+    protected function assignFallbackCampur(
         Pelatihan $pelatihan,
-        Collection $maleUnassigned,
-        Collection $femaleUnassigned,
+        Collection $queue,
         Collection $kamarAll
-    ): void {
-        // fallback hanya untuk kamar besar (>= 8 bed)
-        $kamarBesar = $kamarAll->filter(function (Kamar $k) {
-            return $k->total_beds >= 8 && $k->status === 'Tersedia';
-        });
+    ): int {
+        $jumlahTerbagi = 0;
 
-        $queue = $maleUnassigned->concat($femaleUnassigned)->values();
+        $kamarBesar = $kamarAll->filter(fn (Kamar $k) => (int) $k->total_beds >= 8);
 
         foreach ($queue as $p) {
             /** @var Peserta $p */
-            $assigned = false;
-
             foreach ($kamarBesar as $kamar) {
-                if ($kamar->available_beds <= 0 || $kamar->status !== 'Tersedia') {
-                    continue;
-                }
+                $bedTersedia = $this->getAvailableBeds($pelatihan, $kamar);
+                if ($bedTersedia <= 0) continue;
 
                 $asrama = $kamar->asrama;
-
-                // di fallback, asrama sebenarnya boleh campur gender,
-                // tetapi JIKA asrama.gender *bukan* Campur,
-                // ini menandakan aturan darurat (kamar tidak mencukupi).
-                // jadi di sini kita tidak cek lagi asrama->gender.
+                if (! $asrama) continue;
 
                 $this->storeAssignment($pelatihan, $p, $asrama, $kamar);
-                $assigned = true;
 
-                $kamar->available_beds = max(0, $kamar->available_beds - 1);
-                if ($kamar->available_beds === 0) {
-                    $kamar->status = 'Penuh';
-                }
-                $kamar->save();
-
+                $jumlahTerbagi++;
+                $this->decreaseBeds($pelatihan, $kamar);
                 break;
             }
-
-            // kalau sampai sini masih belum assigned → memang benar-benar tidak ada kamar lagi
         }
+
+        return $jumlahTerbagi;
     }
 
+    /**
+     * available beds:
+     * - pakai available_beds kalau masih ada nilainya
+     * - kalau 0/null, hitung realtime dari total_beds - usedBeds (per pelatihan)
+     */
+    protected function getAvailableBeds(Pelatihan $pelatihan, Kamar $kamar): int
+    {
+        if ($kamar->available_beds !== null && (int) $kamar->available_beds > 0) {
+            return (int) $kamar->available_beds;
+        }
+
+        $totalBeds = (int) ($kamar->total_beds ?? 0);
+        if ($totalBeds <= 0) return 0;
+
+        $usedBeds = PenempatanAsrama::where('pelatihan_id', $pelatihan->id)
+            ->where('kamar_id', $kamar->id)
+            ->count();
+
+        return max($totalBeds - $usedBeds, 0);
+    }
+
+    /**
+     * Kurangi bed global kamar + update status kalau penuh
+     */
+    protected function decreaseBeds(Pelatihan $pelatihan, Kamar $kamar): void
+    {
+        if ($kamar->available_beds === null || (int) $kamar->available_beds <= 0) {
+            $kamar->available_beds = $this->getAvailableBeds($pelatihan, $kamar);
+        }
+
+        $kamar->available_beds = max(0, (int) $kamar->available_beds - 1);
+
+        if ($kamar->available_beds === 0) {
+            $kamar->status = 'Penuh';
+        }
+
+        $kamar->save();
+    }
+
+    /**
+     * Simpan penempatan (pelatihan_id wajib).
+     */
     protected function storeAssignment(
         Pelatihan $pelatihan,
         Peserta $peserta,
         Asrama $asrama,
         Kamar $kamar
     ): void {
-        // simpan ke tabel riwayat penempatan
         PenempatanAsrama::updateOrCreate(
             [
                 'pelatihan_id' => $pelatihan->id,
@@ -175,11 +244,29 @@ class AsramaAllocator
                 'periode'      => $pelatihan->periode ?? null,
             ]
         );
+    }
 
-        // kirim email ke peserta (jika email ada)
-        if (!empty($peserta->email)) {
-            // TODO: buat Mailable InfoKamarMail
-            // Mail::to($peserta->email)->queue(new \App\Mail\InfoKamarMail($pelatihan, $peserta, $asrama, $kamar));
+    /**
+     * Normalisasi nilai jenis_kelamin dari database lama:
+     * - "L", "laki-laki", "pria", "putra" => laki-laki
+     * - "P", "perempuan", "wanita", "putri" => perempuan
+     * - "Campur" => null (bebas)
+     */
+    protected function normalizeJenisKelamin(?string $value): ?string
+    {
+        $v = strtolower(trim($value ?? ''));
+        if ($v === '') return null;
+
+        if (in_array($v, ['l', 'laki-laki', 'laki laki', 'pria', 'putra', 'male'], true)) {
+            return 'laki-laki';
         }
+
+        if (in_array($v, ['p', 'perempuan', 'wanita', 'putri', 'female'], true)) {
+            return 'perempuan';
+        }
+
+        if ($v === 'campur') return null;
+
+        return null;
     }
 }

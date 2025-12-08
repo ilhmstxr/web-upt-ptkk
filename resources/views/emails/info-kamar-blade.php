@@ -13,7 +13,7 @@
     </p>
 
     <ul>
-        <li>Asrama : <strong>{{ $asrama->nama }}</strong> ({{ $asrama->gender }})</li>
+        <li>Asrama : <strong>{{ $asrama->nama }}</strong> ({{ $asrama->jenis_kelamin }})</li>
         <li>Nomor Kamar : <strong>{{ $kamar->nomor_kamar }}</strong></li>
         <li>Lantai : <strong>{{ $kamar->lantai }}</strong></li>
         <li>Kapasitas : <strong>{{ $kamar->total_beds }} bed</strong></li>

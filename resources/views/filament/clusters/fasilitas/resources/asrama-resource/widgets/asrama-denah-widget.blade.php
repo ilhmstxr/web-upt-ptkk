@@ -11,7 +11,7 @@
                         Denah Asrama: {{ $asrama->nama }}
                     </h2>
                     <p class="text-sm font-semibold text-white/90 mt-1">
-                        Khusus: <span class="font-bold">{{ $asrama->gender }}</span>
+                        Khusus: <span class="font-bold">{{ $asrama->jenis_kelamin }}</span>
                         &middot; Total kamar: <span class="font-bold">{{ $asrama->kamars()->count() }}</span>
                     </p>
                 </div>

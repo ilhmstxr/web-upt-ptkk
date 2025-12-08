@@ -71,12 +71,12 @@
                         </div>
                         <div>
                             <label class="text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
-                            <select wire:model="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5c76c1]">
+                            <select wire:model="jenis_kelamin" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5c76c1]">
                                 <option value="">Pilih Jenis Kelamin</option>
                                 <option value="Laki-laki">Laki-laki</option>
                                 <option value="Perempuan">Perempuan</option>
                             </select>
-                            @error('gender') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                            @error('jenis_kelamin') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                         </div>
                         <div>
                             <label class="text-sm font-medium text-gray-700 mb-1">Agama</label>

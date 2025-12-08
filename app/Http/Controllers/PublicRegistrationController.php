@@ -13,7 +13,7 @@ class PublicRegistrationController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'phone' => 'required|string|max:20',
-            'gender' => 'required',
+            'jenis_kelamin' => 'required',
             'training_id' => 'required|exists:trainings,id',
         ]);
 

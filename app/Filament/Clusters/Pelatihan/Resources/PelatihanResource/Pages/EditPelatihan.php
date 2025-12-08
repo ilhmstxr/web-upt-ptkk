@@ -66,7 +66,7 @@ class EditPelatihan extends EditRecord
                 ->color('success')
                 ->requiresConfirmation()
                 ->modalHeading('Jalankan Otomasi Penempatan Asrama')
-                ->modalSubheading('Sistem akan membagi peserta ke kamar asrama sesuai aturan kapasitas & gender.')
+                ->modalSubheading('Sistem akan membagi peserta ke kamar asrama sesuai aturan kapasitas & jenis kelamin.')
                 ->modalButton('Jalankan Otomasi')
                 ->action(function (AsramaAllocator $allocator) {
                     $this->jalankanOtomasi($this->record->id, $allocator);

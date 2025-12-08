@@ -91,7 +91,7 @@ class RegistrationFlowController extends Controller
             'nik'          => ['required','digits:16', Rule::unique('biodata_diri','nik')->ignore($userId,'user_id')],
             'birth_place'  => ['required','string','max:255'],
             'birth_date'   => ['required','date'],
-            'gender'       => ['required', Rule::in(['Laki-laki','Perempuan'])],
+            'jenis_kelamin'       => ['required', Rule::in(['Laki-laki','Perempuan'])],
             'religion'     => ['nullable','string','max:50'],
             'address'      => ['nullable','string','max:500'],
         ]);

@@ -44,7 +44,7 @@ class AsramaPelatihanTable extends BaseWidget
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('peserta.jenis_kelamin')
-                    ->label('Gender')
+                    ->label('Jenis Kelamin')
                     ->badge()
                     ->colors([
                         'info' => 'Laki-laki',

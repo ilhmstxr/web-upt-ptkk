@@ -359,13 +359,13 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="gender">Jenis Kelamin</label>
-                            <select id="gender" name="gender" required aria-required="true">
+                            <label for="jenis_kelamin">Jenis Kelamin</label>
+                            <select id="jenis_kelamin" name="jenis_kelamin" required aria-required="true">
                                 <option value="">Masukkan Jenis Kelamin</option>
                                 <option value="Laki-laki">Laki-laki</option>
                                 <option value="Perempuan">Perempuan</option>
                             </select>
-                            <div id="gender-error" class="error-text" style="display:none;">Jenis kelamin wajib diisi.</div>
+                            <div id="jenis_kelamin-error" class="error-text" style="display:none;">Jenis kelamin wajib diisi.</div>
                         </div>
                         <div class="form-group">
                             <label for="religion">Agama</label>
@@ -616,7 +616,7 @@
 
     // Kumpulan field wajib (update: menambahkan field sekolah dan lampiran sesuai controller)
     const requiredFields = {
-        'step-1': ['name', 'nik', 'birth_place', 'birth_date', 'gender', 'religion', 'address', 'phone', 'email'],
+        'step-1': ['name', 'nik', 'birth_place', 'birth_date', 'jenis_kelamin', 'religion', 'address', 'phone', 'email'],
         'step-2': ['npsn', 'school_name', 'school_address', 'competence', 'class', 'dinas_branch'],
         'step-3': ['file_ktp', 'file_ijazah', 'file_photo'] // surat tugas & surat sehat bersifat opsional di client (sesuaikan jika perlu)
     };

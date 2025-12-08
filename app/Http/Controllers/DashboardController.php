@@ -109,7 +109,6 @@ class DashboardController extends Controller
         };
 
         if ($type === 'pre') {
-            // prioritas tipe kolom
             if (Schema::hasColumn('tes', 'tipe')) {
                 $tes = (clone $base)->where('tipe', 'pre-test')->first();
                 if ($tes) return $tes;
@@ -253,7 +252,6 @@ class DashboardController extends Controller
             ? Peserta::with('instansi:id,asal_instansi,kota')->find($id)
             : null;
 
-        // pastikan session pelatihan/pendaftaran aktif
         $this->ensureActiveTrainingSession($pesertaAktif);
 
         $pelatihanId = session('pelatihan_id');
@@ -300,7 +298,7 @@ class DashboardController extends Controller
             });
         }
 
-        // Optional tes object untuk blade (misal tampilkan durasi/tanggal)
+        // Optional tes object untuk blade
         $preTes   = $this->getTesByType('pre');
         $postTes  = $this->getTesByType('post');
         $monevTes = $this->getTesByType('monev');
@@ -320,21 +318,23 @@ class DashboardController extends Controller
     }
 
     /* =========================================================
-     * SET PESERTA (fallback manual)
+     * SET PESERTA (dropdown / input nama) + redirect_to
      * ========================================================= */
     public function setPeserta(Request $request)
     {
         $validated = $request->validate([
-            'nama'       => ['required', 'string', 'max:150'],
-            'peserta_id' => ['nullable', 'exists:peserta,id'],
+            'peserta_id'  => ['nullable', 'exists:peserta,id'],
+            'nama'        => ['nullable', 'string', 'max:150'],
+            'redirect_to' => ['nullable', 'in:materi,pretest,posttest,monev'],
         ]);
 
+        // 1) pilih via peserta_id (dropdown)
         if ($request->filled('peserta_id')) {
-            $peserta = Peserta::with('instansi')->findOrFail($request->peserta_id);
+            $peserta = Peserta::with('instansi:id,asal_instansi,kota')->findOrFail($request->peserta_id);
 
             session([
                 'peserta_id'    => $peserta->id,
-                'peserta_nama'  => $peserta->nama, // ✅ biar blade bisa ambil nama session
+                'peserta_nama'  => $peserta->nama,
                 'instansi_id'   => optional($peserta->instansi)->id,
                 'instansi_nama' => optional($peserta->instansi)->asal_instansi,
                 'instansi_kota' => optional($peserta->instansi)->kota,
@@ -342,8 +342,20 @@ class DashboardController extends Controller
 
             $this->ensureActiveTrainingSession($peserta);
 
-            return redirect()->route('dashboard.home')
-                ->with('success', 'Peserta dipilih: ' . $peserta->nama);
+            $redirectTo = $request->input('redirect_to');
+
+            return match ($redirectTo) {
+                'materi'   => redirect()->route('dashboard.materi.index'),
+                'pretest'  => redirect()->route('dashboard.pretest.index'),
+                'posttest' => redirect()->route('dashboard.posttest.index'),
+                'monev'    => redirect()->route('dashboard.monev.index'),
+                default    => redirect()->route('dashboard.home'),
+            }->with('success', 'Peserta dipilih: ' . $peserta->nama);
+        }
+
+        // 2) fallback via input nama
+        if (!$request->filled('nama')) {
+            return back()->withInput()->with('error', 'Nama atau Peserta wajib diisi.');
         }
 
         $nama = mb_strtolower(trim($validated['nama']));
@@ -368,7 +380,7 @@ class DashboardController extends Controller
 
         session([
             'peserta_id'    => $peserta->id,
-            'peserta_nama'  => $peserta->nama, // ✅ set nama
+            'peserta_nama'  => $peserta->nama,
             'instansi_id'   => optional($peserta->instansi)->id,
             'instansi_nama' => optional($peserta->instansi)->asal_instansi,
             'instansi_kota' => optional($peserta->instansi)->kota,
@@ -376,8 +388,15 @@ class DashboardController extends Controller
 
         $this->ensureActiveTrainingSession($peserta);
 
-        return redirect()->route('dashboard.home')
-            ->with('success', 'Peserta dipilih: ' . $peserta->nama);
+        $redirectTo = $request->input('redirect_to');
+
+        return match ($redirectTo) {
+            'materi'   => redirect()->route('dashboard.materi.index'),
+            'pretest'  => redirect()->route('dashboard.pretest.index'),
+            'posttest' => redirect()->route('dashboard.posttest.index'),
+            'monev'    => redirect()->route('dashboard.monev.index'),
+            default    => redirect()->route('dashboard.home'),
+        }->with('success', 'Peserta dipilih: ' . $peserta->nama);
     }
 
     public function lookupInstansiByNama(Request $request)
@@ -632,17 +651,22 @@ class DashboardController extends Controller
     }
 
     /* =========================================================
-     * HANDLE TES SHOW (PRE/POST)
+     * HANDLE TES SHOW (PRE/POST/MONEV)
      * ========================================================= */
     protected function handleTesShow(Tes $tes, Request $request, string $mode, string $resultRouteName)
     {
         $percobaanId = (int) $request->query('percobaan');
+
         if (!$percobaanId) {
             $startRoute = $mode === 'post-test'
                 ? 'dashboard.posttest.start'
-                : 'dashboard.pretest.start';
+                : ($mode === 'survey'
+                    ? 'dashboard.monev.begin'
+                    : 'dashboard.pretest.start'
+                );
 
-            return redirect()->route($startRoute, $tes->id)
+            // PATCH C: startRoute tanpa param tes id
+            return redirect()->route($startRoute)
                 ->with('error', 'Silakan mulai tes terlebih dahulu.');
         }
 
@@ -688,7 +712,7 @@ class DashboardController extends Controller
     }
 
     /* =========================================================
-     * SUBMIT TES (PRE/POST)
+     * SUBMIT TES (PRE/POST/MONEV)
      * ========================================================= */
     protected function processTesSubmit(Request $request, Percobaan $percobaan, string $showRouteName, string $resultRouteName)
     {
@@ -731,7 +755,8 @@ class DashboardController extends Controller
         $base = $this->baseTesQuery();
 
         $tes = (clone $base)
-            ->when(Schema::hasColumn('tes', 'sub_tipe'),
+            ->when(
+                Schema::hasColumn('tes', 'sub_tipe'),
                 fn($q) => $q->where('sub_tipe', 'monev'),
                 fn($q) => $q->whereRaw('LOWER(judul) LIKE ?', ['%monev%'])
             )
@@ -751,6 +776,7 @@ class DashboardController extends Controller
         return redirect()->route('dashboard.monev.begin', ['tes' => $tes->id]);
     }
 
+    // PATCH D: monevBegin pola done/running/baru
     public function monevBegin(Request $request, $tesId)
     {
         ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
@@ -759,11 +785,29 @@ class DashboardController extends Controller
                 ->with('error', 'Silakan login terlebih dahulu.');
         }
 
+        $tes = Tes::findOrFail($tesId);
+
+        $basePerc = $this->basePercobaanQuery()->where('tes_id', $tes->id);
+
+        $done = (clone $basePerc)->whereNotNull('waktu_selesai')->latest('waktu_selesai')->first();
+        if ($done) {
+            return redirect()->route('dashboard.monev.result', ['percobaan' => $done->id])
+                ->with('success', 'Anda sudah mengisi Monev. Berikut hasilnya.');
+        }
+
+        $running = (clone $basePerc)->whereNull('waktu_selesai')->first();
+        if ($running) {
+            return redirect()->route('dashboard.monev.show', [
+                'tes'       => $tes->id,
+                'percobaan' => $running->id,
+            ]);
+        }
+
         $data = [
-            'tes_id'      => $tesId,
+            'tes_id'      => $tes->id,
             'waktu_mulai' => now(),
+            $key          => $id,
         ];
-        $data[$key] = $id;
 
         if (Schema::hasColumn('percobaan', 'pelatihan_id')) {
             $data['pelatihan_id'] = session('pelatihan_id');
@@ -776,8 +820,29 @@ class DashboardController extends Controller
         $percobaan = Percobaan::create($data);
 
         return redirect()->route('dashboard.monev.show', [
-            'tes'       => $tesId,
+            'tes'       => $tes->id,
             'percobaan' => $percobaan->id,
+        ])->with('success', 'Monev dimulai.');
+    }
+
+    // PATCH D: tambahan show/submit/result monev supaya route nyambung
+    public function monevShow(Tes $tes, Request $request)
+    {
+        return $this->handleTesShow($tes, $request, 'survey', 'dashboard.monev.result');
+    }
+
+    public function monevSubmit(Request $request, Percobaan $percobaan)
+    {
+        return $this->processTesSubmit($request, $percobaan, 'dashboard.monev.show', 'dashboard.monev.result');
+    }
+
+    public function monevResult(Percobaan $percobaan)
+    {
+        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'peserta', 'pesertaSurvei']);
+
+        return view('dashboard.pages.tes.result', [
+            'percobaan' => $percobaan,
+            'mode'      => 'survey',
         ]);
     }
 
@@ -837,11 +902,11 @@ class DashboardController extends Controller
         }
 
         return view('dashboard.pages.materi.materi-show', [
-            'materi'          => $m,
-            'materiProgress'  => $progress,
-            'relatedMateris'  => MateriPelatihan::where('pelatihan_id', $m->pelatihan_id)
-                                    ->orderBy('urutan')
-                                    ->get(),
+            'materi'         => $m,
+            'materiProgress' => $progress,
+            'relatedMateris' => MateriPelatihan::where('pelatihan_id', $m->pelatihan_id)
+                ->orderBy('urutan')
+                ->get(),
         ]);
     }
 

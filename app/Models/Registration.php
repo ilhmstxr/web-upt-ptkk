@@ -11,7 +11,7 @@ class Registration extends Model
         'nik',
         'birth_place',
         'birth_date',
-        'gender',
+        'jenis_kelamin',
         'religion',
         'address',
         'phone',
