@@ -4,17 +4,13 @@ namespace App\Filament\Clusters\KontenWebsite\Resources;
 
 use App\Filament\Clusters\KontenWebsite;
 use App\Filament\Clusters\KontenWebsite\Resources\KontenProgramPelatihanResource\Pages;
-use App\Filament\Clusters\KontenWebsite\Resources\KontenProgramPelatihanResource\RelationManagers;
 use App\Models\KontenProgramPelatihan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
-
 
 class KontenProgramPelatihanResource extends Resource
 {
@@ -22,7 +18,7 @@ class KontenProgramPelatihanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-photo';
 
-    protected static ?string $navigationLabel = "Foto Program Pelatihan";
+    protected static ?string $navigationLabel = 'Foto Program Pelatihan';
 
     protected static ?string $modelLabel = 'Foto Program Pelatihan';
 
@@ -35,9 +31,12 @@ class KontenProgramPelatihanResource extends Resource
         return $form->schema([
             Forms\Components\TextInput::make('judul')
                 ->label('Judul Program')
-                ->disabled(), // judul fix, tidak bisa diubah
+                ->required()
+                ->maxLength(255)
+                // saat create: bisa diisi, saat edit: dikunci
+                ->disabled(fn (?Model $record) => $record !== null),
 
-            Forms\Components\Textarea::make('deskripsi')    
+            Forms\Components\Textarea::make('deskripsi')
                 ->label('Deskripsi')
                 ->rows(6)
                 ->columnSpanFull(),
@@ -57,23 +56,34 @@ class KontenProgramPelatihanResource extends Resource
         ]);
     }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('judul')->label('Program'),
-                Tables\Columns\TextColumn::make('deskripsi')->limit(60),
+ public static function table(Table $table): Table
+{
+    return $table
+        ->columns([
+            Tables\Columns\TextColumn::make('judul')
+                ->label('Program')
+                ->searchable(),
 
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->headerActions([]) // hilangkan tombol "New"
-            ->bulkActions([]);  // hilangkan delete
-    }
+            Tables\Columns\TextColumn::make('deskripsi')
+                ->limit(60),
+        ])
+        ->filters([
+            //
+        ])
+        ->actions([
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),   // <= TAMBAHKAN INI
+        ])
+        ->headerActions([
+            // tetap kosong gapapa
+        ])
+        ->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),   // kalau mau bulk delete juga
+            ]),
+        ]);
+}
+
 
     public static function getRelations(): array
     {
@@ -86,10 +96,17 @@ class KontenProgramPelatihanResource extends Resource
     {
         return [
             'index' => Pages\ListKontenProgramPelatihans::route('/'),
-            'edit' => Pages\EditKontenProgramPelatihan::route('/{record}/edit'),
+            'edit'  => Pages\EditKontenProgramPelatihan::route('/{record}/edit'),
         ];
     }
-    public static function canCreate(): bool { return false; }
-    public static function canDelete(Model $record): bool { return false; }
 
+    public static function canCreate(): bool
+    {
+        return true;
+    }
+
+   public static function canDelete(Model $record): bool
+{
+    return true; // atau hapus method ini sekalian
+}
 }

@@ -6,5 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class KontenProgramPelatihan extends Model
 {
-    protected $fillable = ['judul','deskripsi','hero_image','galeri'];
+    protected $fillable = [
+        'judul',
+        'deskripsi',
+        'hero_image',
+        'galeri',
+    ];
+
+    protected $casts = [
+        'galeri' => 'array',   // penting, galeri jadi array otomatis
+    ];
 }

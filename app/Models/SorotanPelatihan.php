@@ -3,36 +3,52 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SorotanPelatihan extends Model
 {
+    use HasFactory;
+
     protected $table = 'sorotan_pelatihans';
 
     protected $fillable = [
         'kelas',        // 'mtu', 'reguler', 'akselerasi'
         'title',
         'description',
+        'photos',
         'is_published',
-        'photos',       // json array path foto
     ];
 
     protected $casts = [
+        'photos'       => 'array',   // JSON -> array
         'is_published' => 'boolean',
-        'photos'       => 'array',
     ];
 
+    // biar di Blade enak: $row->photo_urls
     public function getPhotoUrlsAttribute(): array
     {
-        $photos = $this->photos ?? [];
+        $files = $this->photos ?? [];
 
-        return collect($photos)->map(function ($path) {
-            if (!$path) {
-                return asset('images/placeholder_kunjungan.jpg');
-            }
+        return collect($files)
+            ->filter()
+            ->map(function ($path) {
+                // pastikan string dulu
+                if (! is_string($path)) {
+                    return null;
+                }
 
-            $p = ltrim($path, '/');
-            // asumsi pakai disk public
-            return asset('storage/' . $p);
-        })->all();
+                // pakai Str::startsWith (bisa array)
+                if (Str::startsWith($path, ['http://', 'https://'])) {
+                    return $path;
+                }
+
+                // anggap path relatif di disk public
+                return Storage::url($path);
+            })
+            ->filter()   // buang hasil null kalau ada
+            ->values()
+            ->all();
     }
 }

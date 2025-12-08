@@ -21,7 +21,6 @@
       --merah-stroke: #861D23;
       --card-manfaat: #DBE7F7;
     }
-<<<<<<< HEAD
 
     .judul-stroke {
       color: #1524AF !important;
@@ -48,11 +47,6 @@
       .section-container { padding-left: 80px; padding-right: 80px; }
     }
 
-=======
-    .section-container { max-width:1280px; margin-left:auto; margin-right:auto; padding-left:1.5rem; padding-right:1.5rem; }
-    @media (min-width:768px){ .section-container{ padding-left:3rem; padding-right:3rem; } }
-    @media (min-width:1024px){ .section-container{ padding-left:80px; padding-right:80px; } }
->>>>>>> bb957f848c51108415c7a5beee75061bfb673daf
     section + section { margin-top: 30px !important; }
   </style>
 </head>
@@ -80,9 +74,6 @@
   use Illuminate\Support\Str;
   use Illuminate\Support\Carbon;
 
-  // HAPUS FUNGSI force_storage_url YANG RUMIT
-  // Kita ganti logikanya langsung di bawah (simple logic)
-
   // normalisasi input dari controller
   $postsPaginator = $postsPaginator ?? ($posts ?? null);
   $featured = $featured ?? null;
@@ -108,47 +99,8 @@
     $others = collect($others);
   }
 
-<<<<<<< HEAD
-        return $fallback;
-      }
-    }
-
-    // ----- Normalize variables from controller -----
-    $postsPaginator = $postsPaginator ?? ($posts ?? null);
-    $featured = $featured ?? null;
-    $others = $others ?? null;
-
-    // If controller only sent $posts as LengthAwarePaginator, use it
-    if (empty($postsPaginator) && ! empty($posts) && is_object($posts) && method_exists($posts, 'items')) {
-      $postsPaginator = $posts;
-    }
-
-    // If there is a paginator but featured not set, compute from current page items
-    if ($postsPaginator && empty($featured)) {
-      $items = collect($postsPaginator->items());
-      $featured = $items->first() ?: null;
-      $others = $items->slice(1);
-    }
-
-    // If controller sent $posts as Collection (not paginator)
-    if (empty($postsPaginator) && ! empty($posts) && ($posts instanceof \Illuminate\Support\Collection)) {
-      $items = $posts;
-      $featured = $featured ?? $items->first();
-      $others = $others ?? $items->slice(1);
-    }
-
-    // Ensure $others is a collection
-    if ($others && ! ($others instanceof \Illuminate\Support\Collection)) {
-      $others = collect($others);
-    }
-
-    // timezone helper
-    $tz = config('app.timezone') ?: 'UTC';
-  @endphp
-=======
   $tz = config('app.timezone') ?: 'UTC';
 @endphp
->>>>>>> bb957f848c51108415c7a5beee75061bfb673daf
 
   <section class="section-container py-8 md:py-10">
     @if( ! $postsPaginator || ($postsPaginator->count() === 0 && (empty($featured) && ($others ? $others->isEmpty() : true))) )
@@ -161,42 +113,18 @@
       @if($featured)
         @php
           $fIsModel = is_object($featured);
-<<<<<<< HEAD
-          $fTitle   = $fIsModel ? ($featured->title ?? '—') : ($featured['title'] ?? '—');
-          $fSlug    = $fIsModel ? ($featured->slug ?? '#')   : ($featured['url'] ?? '#');
-
-          // 🔥 PRIORITAS: sama seperti show page → Storage::url
-          if ($fIsModel && !empty($featured->image)) {
-            $fImgUrl = Storage::url($featured->image);
-          } elseif ($fIsModel && method_exists($featured, 'getImageUrlAttribute') && !empty($featured->image_url)) {
-            $fImgUrl = $featured->image_url;
-          } else {
-            $fImgUrl = resolve_image_url(
-              $fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null),
-              asset('images/beranda/slide1.jpg')
-            );
-          }
-
-          $fDate = $fIsModel ? ($featured->published_at ?? $featured->created_at) : ($featured['date'] ?? null);
-
-=======
           $fTitle = $fIsModel ? ($featured->title ?? '—') : ($featured['title'] ?? '—');
           $fSlug = $fIsModel ? ($featured->slug ?? '#') : ($featured['url'] ?? '#');
 
-          // --- LOGIKA GAMBAR DIPERBAIKI (SIMPLE) ---
           $rawImg = $fIsModel ? ($featured->image ?? null) : ($featured['thumb'] ?? null);
 
           if ($rawImg) {
-              // Jika path image ada, gunakan Storage::url
               $fImgUrl = Storage::url($rawImg);
           } else {
-              // Fallback default
               $fImgUrl = asset('images/beranda/slide1.jpg');
           }
-          // -----------------------------------------
 
           $fDate = $fIsModel ? ($featured->published_at ?? $featured->created_at) : ($featured['date'] ?? null);
->>>>>>> bb957f848c51108415c7a5beee75061bfb673daf
           if ($fDate && is_object($fDate) && method_exists($fDate, 'setTimezone')) {
             $fDateForDisplay = $fDate->setTimezone($tz)->translatedFormat('d F Y H:i');
           } elseif (!empty($fDate)) {
@@ -207,29 +135,31 @@
         @endphp
 
         <article class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 lg:mb-10">
+          {{-- KIRI: GAMBAR --}}
           <div class="lg:col-span-5">
             <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}" class="block group">
               <div class="aspect-[16/12] md:aspect-[16/11] w-full rounded-[18px] overflow-hidden">
-<<<<<<< HEAD
-                @if($fImgUrl)
-                  <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}"
-                       class="w-full h-full object-cover transition group-hover:scale-[1.02]"
-                       loading="lazy"
-                       onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
-                @else
-                  <div class="w-full h-full bg-slate-300/60"></div>
-                @endif
-=======
-                <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}" class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy"
+                <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}"
+                     class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy"
                      onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
->>>>>>> bb957f848c51108415c7a5beee75061bfb673daf
               </div>
             </a>
           </div>
 
+          {{-- KANAN: BADGE + TANGGAL + JUDUL + EXCERPT --}}
           <div class="lg:col-span-7">
-            <div class="mb-2">
-              <span class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] text-[#861D23] font-[Volkhov] text-[15px] leading-none shadow-sm">
+            <div class="mb-3">
+              <span class="inline-flex items-center
+                           px-4 py-1.5
+                           rounded-lg
+                           bg-[#F6D8DC]
+                           text-[#861D23]
+                           font-[Volkhov]
+                           text-[17px] md:text-[18px]
+                           font-semibold
+                           leading-none
+                           shadow-sm
+                           whitespace-nowrap">
                 Berita Baru
               </span>
             </div>
@@ -273,38 +203,18 @@
       <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
         @foreach ($others as $post)
           @php
-            $isModel  = is_object($post);
-            $title    = $isModel ? ($post->title ?? '—') : ($post['title'] ?? '—');
+            $isModel   = is_object($post);
+            $title     = $isModel ? ($post->title ?? '—') : ($post['title'] ?? '—');
             $slugOrUrl = $isModel ? route('berita.show', $post->slug) : ($post['url'] ?? '#');
 
-<<<<<<< HEAD
-            // 🔥 Sama: prioritaskan Storage::url untuk model Post
-            if ($isModel && !empty($post->image)) {
-              $imgUrl = Storage::url($post->image);
-            } elseif ($isModel && method_exists($post, 'getImageUrlAttribute') && !empty($post->image_url)) {
-              $imgUrl = $post->image_url;
-            } else {
-              $imgUrl = resolve_image_url(
-                $isModel ? ($post->image ?? null) : ($post['thumb'] ?? null),
-                asset('images/beranda/slide1.jpg')
-              );
-            }
-=======
-            // --- LOGIKA GAMBAR DIPERBAIKI (SIMPLE) ---
             $rawImg = $isModel ? ($post->image ?? null) : ($post['thumb'] ?? null);
-
             if ($rawImg) {
-                // Gunakan Storage::url
-                $imgUrl = Storage::url($rawImg);
+              $imgUrl = Storage::url($rawImg);
             } else {
-                // Fallback
-                $imgUrl = asset('images/beranda/slide1.jpg');
+              $imgUrl = asset('images/beranda/slide1.jpg');
             }
-            // -----------------------------------------
->>>>>>> bb957f848c51108415c7a5beee75061bfb673daf
 
             $date = $isModel ? ($post->published_at ?? $post->created_at) : ($post['date'] ?? null);
-
             if ($date && is_object($date) && method_exists($date, 'setTimezone')) {
               $dateForDisplay = $date->setTimezone($tz)->translatedFormat('d F Y');
             } elseif (!empty($date)) {
@@ -318,15 +228,28 @@
               : ($post['excerpt'] ?? '');
           @endphp
 
-          <article class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm hover:shadow-md transition">
+          <article
+            class="group rounded-[26px] border border-[#D0D5DD] bg-white
+                   p-4 sm:p-5 shadow-sm
+                   transition-all duration-300
+                   hover:border-[#1524AF]
+                   hover:shadow-[0_10px_30px_rgba(21,36,175,0.18)]
+                   hover:bg-gradient-to-br hover:from-[#EFF5FF] hover:to-[#F8FBFF]">
+
+            {{-- Gambar --}}
             <a href="{{ $slugOrUrl }}" class="block mb-3">
-              <div class="aspect-[16/11] w-full rounded-xl border border-[#1524AF]/40 overflow-hidden">
-                <img src="{{ $imgUrl }}" alt="{{ $title }}" class="w-full h-full object-cover hover:scale-[1.02] transition" loading="lazy"
-                     onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
+              <div class="aspect-[16/11] w-full rounded-[20px] overflow-hidden border border-[#E2E8F0] transition-colors group-hover:border-[#1524AF]">
+                <img
+                  src="{{ $imgUrl }}"
+                  alt="{{ $title }}"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
               </div>
             </a>
 
-            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1">
+            {{-- Tanggal --}}
+            <div class="flex items-center gap-2 text-[#6B7280] text-xs mb-1">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
                 <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
@@ -336,18 +259,30 @@
               <span>{{ $dateForDisplay }}</span>
             </div>
 
-            <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug text-[#1524AF] mb-2 judul-stroke">
-              <a href="{{ $slugOrUrl }}" class="hover:text-[#1524AF] transition">{{ $title }}</a>
+            {{-- Judul --}}
+            <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2
+                       text-[#081526] transition-colors duration-200
+                       group-hover:text-[#1524AF]">
+              <a href="{{ $slugOrUrl }}" class="block">
+                {{ $title }}
+              </a>
             </h3>
 
-            <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-slate-700 mb-3">
+            {{-- Excerpt --}}
+            <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-[#374151] mb-3 leading-relaxed">
               {!! $excerpt !!}
             </p>
 
-            <a href="{{ $slugOrUrl }}" class="inline-flex items-center gap-2 text-[#1524AF] text-[13px] sm:text-[14px] hover:underline">
+            {{-- Baca Selengkapnya --}}
+            <a href="{{ $slugOrUrl }}"
+               class="inline-flex items-center gap-2 font-[Montserrat]
+                      text-[13px] sm:text-[14px]
+                      text-[#595959]
+                      transition-colors duration-200
+                      group-hover:text-[#1524AF] group-hover:underline underline-offset-2">
               Baca Selengkapnya
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </a>
           </article>

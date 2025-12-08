@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Public;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
@@ -15,13 +15,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
-
 class LandingController extends Controller
 {
     public function index()
     {
-        // === 🎯 INISIALISASI FALLBACK MUTLAK ===
-        // JAMIN SEMUA VARIABEL YANG DI-COMPACT DI AKHIR SUDAH DIDEFINISIKAN.
+        // === 🎯 INISIALISASI FALLBACK ===
         $pelatihans = collect();
         $labels = [];
         $pre = [];
@@ -37,7 +35,7 @@ class LandingController extends Controller
         $sorotans = collect();
         // =======================================
 
-        // 1) BANNERS (cache 30 menit)
+        // 1) BANNERS
         try {
             $banners = Cache::remember('landing_banners', 1800, function () {
                 return Banner::where('is_active', true)
@@ -45,10 +43,11 @@ class LandingController extends Controller
                     ->limit(6)
                     ->get();
             });
-             // Normalisasi URL image tiap banner -> $banner->image_url
-             $banners = $banners->map(function (Banner $b) {
+
+            $banners = $banners->map(function (Banner $b) {
                 $img = $b->image;
                 $imageUrl = null;
+
                 if ($img) {
                     if (Str::startsWith($img, ['http://', 'https://'])) {
                         $imageUrl = $img;
@@ -68,12 +67,11 @@ class LandingController extends Controller
                                 $imageUrl = asset("images/{$basename}");
                             } elseif (file_exists(public_path("images/banners/{$basename}"))) {
                                 $imageUrl = asset("images/banners/{$basename}");
-                            } else {
-                                $imageUrl = null;
                             }
                         }
                     }
                 }
+
                 $b->image_url = $imageUrl;
                 return $b;
             });
@@ -81,7 +79,7 @@ class LandingController extends Controller
             Log::error("Gagal memuat Banners: " . $e->getMessage());
         }
 
-        // 2) BERITA (cache 30 menit)
+        // 2) BERITA
         try {
             $beritas = Cache::remember('landing_beritas', 1800, function () {
                 return Berita::where('is_published', true)
@@ -90,10 +88,11 @@ class LandingController extends Controller
                     ->limit(6)
                     ->get();
             });
-             // normalisasi image untuk berita
-             $beritas = $beritas->map(function (Berita $post) {
+
+            $beritas = $beritas->map(function (Berita $post) {
                 $img = $post->image ?? null;
                 $imageUrl = null;
+
                 if ($img) {
                     if (Str::startsWith($img, ['http://', 'https://'])) {
                         $imageUrl = $img;
@@ -111,12 +110,11 @@ class LandingController extends Controller
                                 $imageUrl = Storage::url($basename);
                             } elseif (file_exists(public_path("images/{$basename}"))) {
                                 $imageUrl = asset("images/{$basename}");
-                            } else {
-                                $imageUrl = null;
                             }
                         }
                     }
                 }
+
                 $post->image_url = $imageUrl;
                 return $post;
             });
@@ -124,47 +122,45 @@ class LandingController extends Controller
             Log::error("Gagal memuat Berita: " . $e->getMessage());
         }
 
-        // 3) Profil UPT (cache 30 menit)
+        // 3) PROFIL UPT
         try {
-            $profil = Cache::remember('landing_profil', 1800, function () {
-                return ProfilUPT::first();
-            });
+            $profil = Cache::remember('landing_profil', 1800, fn () => ProfilUPT::first());
         } catch (Throwable $e) {
             Log::error("Gagal memuat Profil UPT: " . $e->getMessage());
         }
 
-        // 4) Kepala UPT (singleton) (cache 1 jam)
+        // 4) KEPALA UPT
         try {
-            $kepala = Cache::remember('kepala_upt', 3600, function () {
-                return KepalaUpt::latest()->first();
-            });
+            $kepala = Cache::remember('kepala_upt', 3600, fn () => KepalaUpt::latest()->first());
         } catch (Throwable $e) {
             Log::error("Gagal memuat Kepala UPT: " . $e->getMessage());
         }
 
-        // 5) Cerita Kami (latest published) (cache 1 jam)
+        // 5) CERITA KAMI
         try {
-            $cerita = Cache::remember('cerita_kami', 3600, function () {
-                return CeritaKami::where('is_published', true)->latest()->first();
-            });
+            $cerita = Cache::remember('cerita_kami', 3600, fn () =>
+                CeritaKami::where('is_published', true)->latest()->first()
+            );
         } catch (Throwable $e) {
             Log::error("Gagal memuat Cerita Kami: " . $e->getMessage());
         }
 
-       // 6) Sorotan Pelatihan (cache 1 jam)
-try {
-    $sorotans = Cache::remember('sorotan_pelatihan', 3600, function () {
-        return SorotanPelatihan::where('is_published', true)->get();
-    });
-} catch (Throwable $e) {
-    Log::error("Gagal memuat Sorotan Pelatihan: " . $e->getMessage());
-    $sorotans = collect();
-}
-
-
-        // --- PELATIHAN (dynamic statistik untuk section)
+        // 6) SOROTAN PELATIHAN
         try {
-            // Ambil (misal) 4 pelatihan terbaru / terjadwal
+            $sorotans = Cache::remember('sorotan_pelatihan', 3600, function () {
+                return SorotanPelatihan::query()
+                    ->where('is_published', true)
+                    ->whereIn('kelas', ['mtu', 'reguler', 'akselerasi'])
+                    ->orderByRaw("FIELD(kelas, 'mtu', 'reguler', 'akselerasi')")
+                    ->get();
+            });
+        } catch (Throwable $e) {
+            Log::error("Gagal memuat Sorotan Pelatihan: " . $e->getMessage());
+            $sorotans = collect();
+        }
+
+        // 7) DATA PELATIHAN (CHART)
+        try {
             $pelatihans = Cache::remember('landing_pelatihans', 1800, function () {
                 return Pelatihan::where('status', '!=', 'belum dimulai')
                     ->orderBy('tanggal_mulai', 'asc')
@@ -175,14 +171,12 @@ try {
             Log::error("Gagal memuat data Pelatihan untuk Chart: " . $e->getMessage());
         }
 
-        // siapkan data chart dari $pelatihans
         $labels = $pelatihans->map(fn($p) => (string) ($p->nama_pelatihan ?? $p->title ?? 'Pelatihan'))->toArray();
         $pre    = $pelatihans->map(fn($p) => (float) ($p->avg_pre_test ?? 0))->toArray();
         $post   = $pelatihans->map(fn($p) => (float) ($p->avg_post_test ?? 0))->toArray();
         $prak   = $pelatihans->map(fn($p) => (float) ($p->avg_praktek ?? 0))->toArray();
         $rata   = $pelatihans->map(fn($p) => (float) ($p->avg_rata ?? round((($p->avg_pre_test ?? 0) + ($p->avg_post_test ?? 0) + ($p->avg_praktek ?? 0)) / 3, 2)))->toArray();
 
-        // KIRIM SEMUA VARIABEL KE VIEW
         return view('pages.landing', compact(
             'banners',
             'beritas',
@@ -197,5 +191,28 @@ try {
             'prak',
             'rata'
         ));
+    }
+
+ // 🔹 METHOD BARU BUAT HALAMAN CERITA KAMI
+    public function ceritaKami()
+    {
+        // ambil kepala upt dari cache / DB
+        try {
+            $kepala = Cache::remember('kepala_upt', 3600, fn () =>
+                KepalaUpt::latest()->first()
+            );
+        } catch (Throwable $e) {
+            Log::error("Gagal memuat Kepala UPT: " . $e->getMessage());
+            $kepala = null;
+        }
+
+        // kalau nanti mau ambil konten cerita dari tabel CeritaKami juga bisa tambahin di sini
+        // misalnya:
+        // $cerita = CeritaKami::where('is_published', true)->latest()->first();
+
+        return view('pages.profil.cerita-kami', [
+            'kepala' => $kepala,
+            // 'cerita' => $cerita, // kalau dipakai
+        ]);
     }
 }
