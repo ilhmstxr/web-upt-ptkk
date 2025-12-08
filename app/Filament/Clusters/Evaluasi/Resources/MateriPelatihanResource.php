@@ -11,16 +11,22 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+// kalau kamu punya file cluster Evaluasi, aktifkan:
+// use App\Filament\Clusters\Evaluasi;
+
 class MateriPelatihanResource extends Resource
 {
     protected static ?string $model = MateriPelatihan::class;
 
-    protected static ?string $navigationIcon  = 'heroicon-o-book-open';
-    protected static ?string $navigationGroup = 'Evaluasi';
-    protected static ?string $navigationLabel = 'Materi Pelatihan';
-    protected static ?string $modelLabel      = 'Materi';
-    protected static ?string $pluralModelLabel= 'Materi Pelatihan';
-    protected static ?int $navigationSort     = 20;
+    // kalau pakai cluster, aktifkan:
+    // protected static ?string $cluster = Evaluasi::class;
+
+    protected static ?string $navigationIcon   = 'heroicon-o-book-open';
+    protected static ?string $navigationGroup  = 'Evaluasi';
+    protected static ?string $navigationLabel  = 'Materi Pelatihan';
+    protected static ?string $modelLabel       = 'Materi';
+    protected static ?string $pluralModelLabel = 'Materi Pelatihan';
+    protected static ?int $navigationSort      = 20;
 
     public static function form(Form $form): Form
     {
@@ -110,8 +116,11 @@ class MateriPelatihanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('pelatihan_id')
-            ->defaultSort('urutan')
+            ->query(
+                MateriPelatihan::query()
+                    ->orderBy('pelatihan_id')
+                    ->orderBy('urutan')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
                     ->label('Pelatihan')

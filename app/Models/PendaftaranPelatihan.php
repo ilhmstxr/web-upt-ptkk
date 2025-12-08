@@ -32,8 +32,8 @@ class PendaftaranPelatihan extends Model
     ];
 
     protected $casts = [
-        'tanggal_pendaftaran' => 'datetime',
-        'assessment_token_sent_at' => 'datetime',
+        'tanggal_pendaftaran'     => 'datetime',
+        'assessment_token_sent_at'=> 'datetime',
     ];
 
     // ======================
@@ -69,8 +69,7 @@ class PendaftaranPelatihan extends Model
     }
 
     /**
-     * ✅ Helper buat ambil penempatan asrama sesuai pelatihan pendaftaran ini.
-     * Ini aman untuk peserta ikut banyak pelatihan.
+     * ✅ Helper ambil penempatan asrama sesuai pelatihan pendaftaran ini.
      */
     public function penempatanAsramaAktif()
     {

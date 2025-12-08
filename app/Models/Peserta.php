@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class Peserta extends Model
 {
@@ -29,9 +28,9 @@ class Peserta extends Model
         'user_id',
     ];
 
-    // ✅ otomatis casting ke Carbon
+    // ✅ casting tanggal lahir cukup "date"
     protected $casts = [
-        'tanggal_lahir' => 'datetime',
+        'tanggal_lahir' => 'date',
         'created_at'    => 'datetime',
         'updated_at'    => 'datetime',
     ];
@@ -42,41 +41,27 @@ class Peserta extends Model
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
-
-    public function lampiran(): HasOne
-    {
-        return $this->hasOne(LampiranPeserta::class);
-    }
-
     // 🔗 Relasi ke Instansi
     public function instansi(): BelongsTo
     {
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
 
-    public function lampiranFolder(): string
+    public function lampiran(): HasOne
     {
-        return 'lampiran/' . Str::slug($this->nama); // folder storage/app/public/lampiran/{nama}
+        return $this->hasOne(LampiranPeserta::class);
     }
 
-    // public function lampiran(): array
-    // {
-    //     $files = [];
-    //     if ($this->lampiran) {
-    //         foreach ($this->lampiran->getAttributes() as $key => $value) {
-    //             if (in_array($key, ['id', 'peserta_id', 'created_at', 'updated_at'])) continue;
-    //             if ($value) $files[$key] = asset('storage/' . $value);
-    //         }
-    //     }
-    //     return $files;
-    // }
+    public function lampiranFolder(): string
+    {
+        return 'lampiran/' . Str::slug($this->nama);
+    }
 
     public function pertanyaan()
     {
         return $this->hasMany(Pertanyaan::class);
     }
 
-    // Relasi ke komentar survei (sebelumnya ada di Participant)
     public function comments()
     {
         return $this->hasMany(Comment::class);
@@ -92,21 +77,14 @@ class Peserta extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    // ✅ SATU relasi saja (hapus duplikat)
     public function pendaftaranPelatihan()
     {
-        // Terhubung ke PendaftaranPelatihan::class melalui 'peserta_id'
         return $this->hasMany(PendaftaranPelatihan::class, 'peserta_id');
     }
 
-        public function penempatanAsrama()
+    public function penempatanAsrama()
     {
         return $this->hasMany(PenempatanAsrama::class, 'peserta_id');
     }
-
-
-    /**
-     * Mendapatkan semua sesi/jadwal (kompetensi_pelatihan) yang pernah diikuti peserta
-     * (melalui tabel pendaftaran_pelatihan).
-     */
-
 }

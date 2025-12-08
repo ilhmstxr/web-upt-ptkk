@@ -1,19 +1,11 @@
 <?php
 
-namespace App\Filament\Clusters\Pelatihan\Resources\MateriPelatihanResource\Pages;
+namespace App\Filament\Clusters\Evaluasi\Resources\MateriPelatihanResource\Pages;
 
-use App\Filament\Clusters\Pelatihan\Resources\MateriPelatihanResource;
-use Filament\Actions;
+use App\Filament\Clusters\Evaluasi\Resources\MateriPelatihanResource;
 use Filament\Resources\Pages\EditRecord;
 
 class EditMateriPelatihan extends EditRecord
 {
     protected static string $resource = MateriPelatihanResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\DeleteAction::make(),
-        ];
-    }
 }
