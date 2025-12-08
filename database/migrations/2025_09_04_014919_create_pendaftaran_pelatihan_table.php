@@ -39,7 +39,7 @@ return new class extends Migration
             $table->enum('status', ['Lulus', 'Tidak Lulus', 'Belum Lulus'])->default('Belum Lulus');
             $table->enum('status_pendaftaran', ['Pending', 'Verifikasi', 'Diterima', 'Ditolak'])->default('Pending');
             $table->string('nomor_registrasi')->unique();
-            $table->timestamp('tanggal_pendaftaran');
+            $table->timestamp('tanggal_pendaftaran')->nullable();
             $table->timestamps();
         });
     }

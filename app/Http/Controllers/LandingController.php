@@ -36,48 +36,19 @@ class LandingController extends Controller
         // =======================================
 
         // 1) BANNERS
-        try {
-            $banners = Cache::remember('landing_banners', 1800, function () {
-                return Banner::where('is_active', true)
-                    ->orderBy('sort_order', 'asc')
-                    ->limit(6)
-                    ->get();
-            });
+        // Ambil featured banner (hanya satu)
+        $featured = Banner::where('is_active', true)
+            ->where('is_featured', true)
+            ->orderBy('updated_at', 'desc')
+            ->first();
 
-            $banners = $banners->map(function (Banner $b) {
-                $img = $b->image;
-                $imageUrl = null;
+        // Ambil banner aktif lain
+        $others = Banner::where('is_active', true)
+            ->where('is_featured', false)
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
-                if ($img) {
-                    if (Str::startsWith($img, ['http://', 'https://'])) {
-                        $imageUrl = $img;
-                    } else {
-                        $normalized = ltrim($img, '/');
-                        if (Storage::disk('public')->exists($normalized)) {
-                            $imageUrl = Storage::url($normalized);
-                        } elseif (file_exists(public_path($normalized))) {
-                            $imageUrl = asset($normalized);
-                        } elseif (file_exists(public_path("images/{$normalized}"))) {
-                            $imageUrl = asset("images/{$normalized}");
-                        } else {
-                            $basename = basename($normalized);
-                            if (Storage::disk('public')->exists($basename)) {
-                                $imageUrl = Storage::url($basename);
-                            } elseif (file_exists(public_path("images/{$basename}"))) {
-                                $imageUrl = asset("images/{$basename}");
-                            } elseif (file_exists(public_path("images/banners/{$basename}"))) {
-                                $imageUrl = asset("images/banners/{$basename}");
-                            }
-                        }
-                    }
-                }
-
-                $b->image_url = $imageUrl;
-                return $b;
-            });
-        } catch (Throwable $e) {
-            Log::error("Gagal memuat Banners: " . $e->getMessage());
-        }
+        return view('pages.landing', compact('featured', 'others'));
 
         // 2) BERITA
         try {

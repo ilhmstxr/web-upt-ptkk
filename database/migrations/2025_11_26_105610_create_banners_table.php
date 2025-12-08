@@ -13,15 +13,9 @@ return new class extends Migration
             Schema::create('banners', function (Blueprint $table) {
                 $table->id();
                 // PERBAIKAN: Tambahkan ->nullable() di kolom image
-                $table->string('image')->nullable();
-                
-                $table->string('title')->nullable();
-                $table->text('description')->nullable();
-                
+                $table->string('image');
                 $table->boolean('is_active')->default(true);
                 $table->boolean('is_featured')->default(false); 
-                $table->integer('sort_order')->default(0);
-
                 // Menggunakan timestamps() bawaan lebih disarankan
                 $table->timestamps();
             });
@@ -32,14 +26,14 @@ return new class extends Migration
         // 2) Jika tabel sudah ada (bagian ALTER TABLE)
         Schema::table('banners', function (Blueprint $table) {
             
-            // PERBAIKAN: Pastikan 'image' bisa diubah menjadi nullable jika sebelumnya NOT NULL
             if (Schema::hasColumn('banners', 'image')) {
-                // Catatan: Ini memerlukan package doctrine/dbal jika Anda belum menginstalnya
-                $table->string('image')->nullable()->change();
+                $table->string('image')->change();
             }
-            
-            // ... (Kode untuk is_featured dan kolom lain yang hilang)
-            
+
+            if (Schema::hasColumn('banners', 'is_active')) {
+                $table->boolean('is_active')->default(  true)->change();
+            }
+
             if (! Schema::hasColumn('banners', 'is_featured')) {
                 $table->boolean('is_featured')->default(false)->after('is_active');
             }
