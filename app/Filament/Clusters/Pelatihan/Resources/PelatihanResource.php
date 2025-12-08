@@ -89,9 +89,10 @@ class PelatihanResource extends Resource
                                 ->label('Jadwal Kompetensi')
                                 ->schema([
                                     Forms\Components\Select::make('kompetensi_id')
-                                        ->relationship('kompetensi', 'nama_kompetensi') // This works for options, but we manage saving manually
-                                        ->required()
                                         ->label('Materi / Kompetensi')
+                                        ->options(\App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
+                                        ->searchable()
+                                        ->required()
                                         ->columnSpan(2),
                                     
                                     Forms\Components\Select::make('instruktur_id')

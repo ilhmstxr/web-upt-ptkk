@@ -52,7 +52,8 @@ class ExportController extends Controller
                 ->format('A4')
                 ->pdf();
 
-            $filename = 'laporan-pelatihan-' . $pelatihan->nama_pelatihan . '-' . now()->format('Y-m-d') . '.pdf';
+            $safeNamaPelatihan = str_replace(['/', '\\'], '_', $pelatihan->nama_pelatihan);
+            $filename = 'laporan-pelatihan-' . $safeNamaPelatihan . '-' . now()->format('Y-m-d') . '.pdf';
 
             // Kirim sebagai attachment agar langsung ter-download
             return Response::make($pdf, 200, [
@@ -247,7 +248,7 @@ class ExportController extends Controller
 
             return Response::make($pdf, 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="Rekap_Peserta_' . $pelatihan->nama_pelatihan . '.pdf"',
+                'Content-Disposition' => 'attachment; filename="Rekap_Peserta_' . str_replace(['/', '\\'], '_', $pelatihan->nama_pelatihan) . '.pdf"',
             ]);
         } catch (CouldNotTakeBrowsershot $e) {
             return response("Gagal export PDF: " . $e->getMessage(), 500);
@@ -257,7 +258,7 @@ class ExportController extends Controller
     public function pesertaExcel($pelatihanId)
     {
         $pelatihan = Pelatihan::findOrFail($pelatihanId);
-        $pendaftaran = PendaftaranPelatihan::with(['peserta.instansi.cabangDinas', 'peserta.lampiran', 'kompetensi'])
+        $pendaftaran = PendaftaranPelatihan::with(['peserta.instansi.cabangDinas', 'peserta.lampiran', 'kompetensi', 'kompetensiPelatihan.kompetensi'])
             ->where('pelatihan_id', $pelatihanId)
             ->get();
 
@@ -279,7 +280,7 @@ class ExportController extends Controller
                     'pelatihan' => $this->pelatihan
                 ]);
             }
-        }, 'Data_Peserta_' . $pelatihan->nama_pelatihan . '.xlsx');
+        }, 'Data_Peserta_' . str_replace(['/', '\\'], '_', $pelatihan->nama_pelatihan) . '.xlsx');
     }
 
     public function daftarInstruktur($pelatihanId)
@@ -326,7 +327,7 @@ class ExportController extends Controller
 
             return Response::make($pdf, 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="Biodata_Instruktur_' . $pelatihan->nama_pelatihan . '.pdf"',
+                'Content-Disposition' => 'attachment; filename="Biodata_Instruktur_' . str_replace(['/', '\\'], '_', $pelatihan->nama_pelatihan) . '.pdf"',
             ]);
         } catch (CouldNotTakeBrowsershot $e) {
             return response("Gagal export PDF: " . $e->getMessage(), 500);
@@ -372,7 +373,7 @@ class ExportController extends Controller
 
             return Response::make($pdf, 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="Biodata_Peserta_' . $pelatihan->nama_pelatihan . '.pdf"',
+                'Content-Disposition' => 'attachment; filename="Biodata_Peserta_' . str_replace(['/', '\\'], '_', $pelatihan->nama_pelatihan) . '.pdf"',
             ]);
         } catch (CouldNotTakeBrowsershot $e) {
             return response("Gagal export PDF: " . $e->getMessage(), 500);
