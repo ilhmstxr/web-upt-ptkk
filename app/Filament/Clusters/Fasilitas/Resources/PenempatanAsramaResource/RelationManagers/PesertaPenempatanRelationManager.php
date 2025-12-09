@@ -6,22 +6,15 @@ use App\Models\PendaftaranPelatihan;
 use App\Models\Peserta;
 use App\Models\Pelatihan;
 use App\Services\AsramaAllocator;
-
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Actions\Action as TableAction;
 use Filament\Tables\Table;
-
 use Illuminate\Database\Eloquent\Builder;
 
 class PesertaPenempatanRelationManager extends RelationManager
 {
-    /**
-     * HARUS sama dengan relasi di Model Pelatihan.
-     * Kalau di Pelatihan kamu relasinya `pendaftaranPelatihans`,
-     * ganti string ini juga.
-     */
     protected static string $relationship = 'pendaftaranPelatihan';
     protected static ?string $title = 'Peserta Pelatihan';
 
@@ -64,31 +57,23 @@ class PesertaPenempatanRelationManager extends RelationManager
                     ->formatStateUsing(fn ($state) => $state ? ucfirst($state) : '-')
                     ->alignCenter(),
 
-                /**
-                 * ✅ ambil penempatan aktif per pelatihan ini
-                 * pakai helper `penempatanAsramaAktif()` di PendaftaranPelatihan
-                 */
                 Tables\Columns\TextColumn::make('asrama_kamar')
-                    ->label('Asrama / Kamar')
-                    ->state(function (PendaftaranPelatihan $record) {
-                        $penempatan = $record->penempatanAsramaAktif();
+                ->label('Asrama / Kamar')
+                ->state(function (PendaftaranPelatihan $record) {
+                    $penempatan = $record->penempatanAsramaAktif();
 
-                        if (! $penempatan || ! $penempatan->kamar) {
-                            return 'Belum dibagi';
-                        }
+                    if (! $penempatan || ! $penempatan->kamar) {
+                        return 'Belum dibagi';
+                    }
 
-                        // ⚠️ sesuai model hybrid: field asrama = name
-                        $asramaName = $penempatan->kamar->asrama->name ?? 'Asrama';
-                        $kamarNo    = $penempatan->kamar->nomor_kamar ?? '-';
-                        $bedNo      = $penempatan->bed_no ?? null;
+                    $asramaName = $penempatan->kamar->asrama->name ?? 'Asrama';
+                    $kamarNo    = $penempatan->kamar->nomor_kamar ?? '-';
 
-                        $bedText = $bedNo ? " (Bed {$bedNo})" : '';
+                    return "{$asramaName} - Kamar {$kamarNo}";
+                })
+                ->wrap(),
 
-                        return "{$asramaName} - Kamar {$kamarNo}{$bedText}";
-                    })
-                    ->wrap(),
             ])
-
             ->headerActions([
                 TableAction::make('otomasi')
                     ->label('Otomasi Penempatan Asrama')
@@ -99,7 +84,6 @@ class PesertaPenempatanRelationManager extends RelationManager
 
                         /** @var Pelatihan $pelatihan */
                         $pelatihan = $this->getOwnerRecord();
-
                         if (! $pelatihan) {
                             Notification::make()
                                 ->title('Pelatihan tidak ditemukan')
@@ -108,19 +92,23 @@ class PesertaPenempatanRelationManager extends RelationManager
                             return;
                         }
 
-                        /**
-                         * ✅ 1) Sync config → DB (Asrama + Kamar)
-                         * (biar allocator pakai data terbaru)
-                         */
+                        $pendaftaranIds = PendaftaranPelatihan::where('pelatihan_id', $pelatihan->id)
+                            ->pluck('peserta_id');
+
+                        $pesertaList = Peserta::whereIn('id', $pendaftaranIds)->get();
+                        if ($pesertaList->isEmpty()) {
+                            Notification::make()
+                                ->title('Tidak ada peserta untuk pelatihan ini')
+                                ->warning()
+                                ->send();
+                            return;
+                        }
+
                         $kamarConfig = session('kamar') ?? config('kamar');
                         $allocator->generateRoomsFromConfig($pelatihan->id, $kamarConfig);
 
-                        /**
-                         * ✅ 2) Allocate peserta yg terdaftar pelatihan ini
-                         */
                         $result = $allocator->allocatePesertaPerPelatihan($pelatihan->id);
 
-                        // refresh table
                         $this->dispatch('$refresh');
 
                         Notification::make()
@@ -134,9 +122,6 @@ class PesertaPenempatanRelationManager extends RelationManager
             ->bulkActions([]);
     }
 
-    /**
-     * ✅ Query dipaksa hanya peserta pelatihan ini
-     */
     protected function getTableQuery(): Builder
     {
         /** @var Pelatihan $pelatihan */

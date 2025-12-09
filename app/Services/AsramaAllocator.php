@@ -10,32 +10,23 @@ use Illuminate\Support\Facades\DB;
 
 class AsramaAllocator
 {
-    /**
-     * Mapping blok berdasarkan gender.
-     * Boleh kamu ubah sesuai aturan.
-     */
     protected array $blokByGender = [
         'Laki-laki' => ['Melati Bawah', 'Tulip Bawah'],
         'Perempuan' => ['Mawar', 'Melati Atas', 'Tulip Atas'],
     ];
 
-    /**
-     * STEP 1:
-     * Generate struktur asrama/kamar di DB dari config, PER PELATIHAN.
-     * Dipanggil sekali sebelum allocate.
-     */
     public function generateRoomsFromConfig(int $pelatihanId, ?array $overrideConfig = null): void
     {
         $config = $overrideConfig ?? config('kamar');
 
         DB::transaction(function () use ($pelatihanId, $config) {
-
             foreach ($this->blokByGender as $gender => $blokList) {
-
                 foreach ($blokList as $blok) {
                     $rooms = $config[$blok] ?? [];
 
-                    // create/update Asrama
+                    $blokLower = strtolower($blok);
+                    $lantai = str_contains($blokLower, 'atas') ? 'atas' : 'bawah';
+
                     $asrama = Asrama::updateOrCreate(
                         [
                             'pelatihan_id' => $pelatihanId,
@@ -44,27 +35,27 @@ class AsramaAllocator
                         ],
                         [
                             'total_kamar' => collect($rooms)
-                                ->filter(fn ($r) => is_numeric($r['bed']) && (int)$r['bed'] > 0)
+                                ->filter(fn ($r) => is_numeric($r['bed']) && (int) $r['bed'] > 0)
                                 ->count(),
                         ]
                     );
 
-                    // create/update each room
                     foreach ($rooms as $room) {
                         $no  = (int) ($room['no'] ?? 0);
                         $bed = $room['bed'] ?? null;
 
-                        $isActive = is_numeric($bed) && (int)$bed > 0;
+                        $isActive = is_numeric($bed) && (int) $bed > 0;
 
                         Kamar::updateOrCreate(
                             [
-                                'asrama_id'   => $asrama->id,
-                                'nomor_kamar' => $no,
+                                'pelatihan_id' => $pelatihanId,
+                                'asrama_id'    => $asrama->id,
+                                'nomor_kamar'  => $no,
                             ],
                             [
-                                'pelatihan_id'   => $pelatihanId,
-                                'total_beds'     => $isActive ? (int)$bed : 0,
-                                'available_beds' => $isActive ? (int)$bed : 0,
+                                'lantai'         => $lantai,
+                                'total_beds'     => $isActive ? (int) $bed : 0,
+                                'available_beds' => $isActive ? (int) $bed : 0,
                                 'is_active'      => $isActive,
                             ]
                         );
@@ -74,16 +65,10 @@ class AsramaAllocator
         });
     }
 
-    /**
-     * STEP 2:
-     * Allocate peserta ke kamar/bed secara permanen.
-     * Hasil masuk penempatan_asrama.
-     */
     public function allocatePesertaPerPelatihan(int $pelatihanId): array
     {
         return DB::transaction(function () use ($pelatihanId) {
 
-            // ambil semua pendaftaran pelatihan ini
             $pendaftaranList = PendaftaranPelatihan::with('peserta')
                 ->where('pelatihan_id', $pelatihanId)
                 ->orderBy('id')
@@ -98,8 +83,8 @@ class AsramaAllocator
 
             foreach ($pendaftaranList as $pend) {
 
-                // skip kalau sudah pernah ditempatkan
-                if (PenempatanAsrama::where('pendaftaran_id', $pend->id)->exists()) {
+                // skip kalau sudah ditempatkan
+                if (PenempatanAsrama::where('pendaftaran_pelatihan_id', $pend->id)->exists()) {
                     $result['skipped_already_assigned']++;
                     continue;
                 }
@@ -109,14 +94,13 @@ class AsramaAllocator
                     $result['failed_full']++;
                     $result['details'][] = [
                         'pendaftaran_id' => $pend->id,
-                        'reason' => 'gender tidak valid / kosong',
+                        'reason' => 'gender kosong/tidak valid',
                     ];
                     continue;
                 }
 
-                // cari kamar aktif dengan available_beds > 0 sesuai gender
                 $kamar = Kamar::where('pelatihan_id', $pelatihanId)
-                    ->whereHas('asrama', fn($q) => $q->where('gender', $gender))
+                    ->whereHas('asrama', fn ($q) => $q->where('gender', $gender))
                     ->where('is_active', true)
                     ->where('available_beds', '>', 0)
                     ->orderBy('asrama_id')
@@ -133,13 +117,9 @@ class AsramaAllocator
                     continue;
                 }
 
-                // bed_no = total_beds - available_beds + 1
-                $bedNo = ($kamar->total_beds - $kamar->available_beds) + 1;
-
                 PenempatanAsrama::create([
-                    'pendaftaran_id' => $pend->id,
-                    'kamar_id'       => $kamar->id,
-                    'bed_no'         => $bedNo,
+                    'pendaftaran_pelatihan_id' => $pend->id,
+                    'kamar_id'                 => $kamar->id,
                 ]);
 
                 $kamar->decrement('available_beds');
@@ -147,8 +127,7 @@ class AsramaAllocator
                 $result['ok']++;
                 $result['details'][] = [
                     'pendaftaran_id' => $pend->id,
-                    'kamar_id' => $kamar->id,
-                    'bed_no' => $bedNo,
+                    'kamar_id'       => $kamar->id,
                 ];
             }
 
@@ -156,13 +135,10 @@ class AsramaAllocator
         });
     }
 
-    /**
-     * Helper ambil penempatan peserta (buat dashboard/email)
-     */
     public function getPenempatanByPendaftaran(int $pendaftaranId)
     {
         return PenempatanAsrama::with('kamar.asrama')
-            ->where('pendaftaran_id', $pendaftaranId)
+            ->where('pendaftaran_pelatihan_id', $pendaftaranId)
             ->first();
     }
 }

@@ -33,13 +33,14 @@ class AsramaResource extends Resource
 
     /**
      * ✅ sebelum list tampil, sync dulu dari config kamar.php
+     * sekarang methodnya udah ada di model Asrama.
      */
     public static function getEloquentQuery(): Builder
     {
         Asrama::syncFromConfig();
 
         return parent::getEloquentQuery()
-            ->withCount('kamars'); // hasilkan kamars_count
+            ->withCount('kamars');
     }
 
     public static function form(Form $form): Form
@@ -48,25 +49,19 @@ class AsramaResource extends Resource
             Forms\Components\Section::make('Informasi Asrama')
                 ->schema([
                     Forms\Components\Grid::make(2)->schema([
-                        Forms\Components\TextInput::make('nama')
+                        Forms\Components\TextInput::make('name')
                             ->label('Nama Asrama')
                             ->required()
                             ->maxLength(255),
 
-                        Forms\Components\Select::make('jenis_kelamin')
+                        Forms\Components\Select::make('gender')
                             ->label('Khusus')
                             ->options([
                                 'Laki-laki' => 'Laki-laki',
                                 'Perempuan' => 'Perempuan',
-                                'Campur'    => 'Campur',
                             ])
                             ->required(),
                     ]),
-
-                    Forms\Components\Textarea::make('alamat')
-                        ->label('Alamat / Keterangan Tambahan')
-                        ->rows(3)
-                        ->columnSpanFull(),
                 ]),
         ]);
     }
@@ -75,9 +70,8 @@ class AsramaResource extends Resource
     {
         return $table
             ->heading('Fasilitas Asrama')
-            ->description('Menampilkan nama asrama, jumlah kamar, dan jumlah bed.')
+            ->description('Menampilkan asrama per pelatihan sesuai config kamar.php.')
 
-            // ✅ grid card
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,
@@ -85,8 +79,7 @@ class AsramaResource extends Resource
 
             ->columns([
                 Stack::make([
-                    // ===== Nama Asrama =====
-                    TextColumn::make('nama')
+                    TextColumn::make('name')
                         ->label('')
                         ->size(TextColumn\TextColumnSize::Large)
                         ->weight('bold')
@@ -96,30 +89,32 @@ class AsramaResource extends Resource
                             'class' => 'text-indigo-800 text-xl font-extrabold tracking-wide',
                         ]),
 
-                    // ===== Stats kamar & bed =====
+                    // tampilkan pelatihan biar jelas ini asrama pelatihan mana
+                    TextColumn::make('pelatihan.nama_pelatihan')
+                        ->label('Pelatihan')
+                        ->wrap()
+                        ->limit(60)
+                        ->extraAttributes([
+                            'class' => 'text-slate-600 text-sm',
+                        ]),
+
                     ColumnGrid::make(2)->schema([
                         BadgeColumn::make('kamars_count')
                             ->label('Jumlah Kamar')
-                            ->color('primary') // ✅ bukan gray
-                            ->icon('heroicon-o-building-office-2')
-                            ->alignCenter()
-                            ->extraAttributes([
-                                'class' => 'text-white font-bold',
-                            ]),
+                            ->color('primary')
+                            ->alignCenter(),
 
-                        BadgeColumn::make('total_bed_config')
+                        BadgeColumn::make('total_beds')
                             ->label('Jumlah Bed')
-                            ->color('success') // ✅ bukan gray
-                            ->icon('heroicon-o-user-group')
-                            ->alignCenter()
-                            ->extraAttributes([
-                                'class' => 'text-white font-bold',
-                            ]),
+                            ->state(fn (Asrama $record) =>
+                                $record->kamars()->sum('total_beds')
+                            )
+                            ->color('success')
+                            ->alignCenter(),
                     ]),
                 ])
                 ->space(3)
                 ->extraAttributes([
-                    // ✅ full warna-warni, tanpa white/gray
                     'class' => '
                         p-6 rounded-3xl shadow-lg border-2 border-indigo-300
                         bg-gradient-to-br from-indigo-100 via-pink-100 to-yellow-100
@@ -131,7 +126,7 @@ class AsramaResource extends Resource
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')
-                    ->color('warning')  // ✅ warna-warni
+                    ->color('warning')
                     ->button(),
 
                 Tables\Actions\DeleteAction::make()

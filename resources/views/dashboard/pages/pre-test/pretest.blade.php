@@ -37,7 +37,6 @@
                     </div>
                 </div>
 
-                {{-- Badge tipe/sub_tipe --}}
                 <div class="text-xs shrink-0">
                     @if(!empty($t->sub_tipe))
                         <span class="px-2 py-1 rounded-full bg-slate-100 text-slate-700">
@@ -51,25 +50,7 @@
                 </div>
             </div>
 
-            {{-- Status / Action --}}
             <div class="mt-4 pt-4 border-t border-slate-100">
-                @php
-                    $participantKey = session('peserta_id')
-                        ? 'peserta_id'
-                        : (session('pesertaSurvei_id') ? 'pesertaSurvei_id' : null);
-                    $participantId = $participantKey ? session($participantKey) : null;
-
-                    // cari percobaan selesai terakhir buat link hasil
-                    $percobaanDoneId = null;
-                    if (!empty($t->__already_done) && $participantKey && $participantId) {
-                        $percobaanDoneId = \App\Models\Percobaan::where('tes_id', $t->id)
-                            ->where($participantKey, $participantId)
-                            ->whereNotNull('waktu_selesai')
-                            ->latest('waktu_selesai')
-                            ->value('id');
-                    }
-                @endphp
-
                 {{-- 1) SUDAH SELESAI --}}
                 @if(!empty($t->__already_done))
                     <div class="flex flex-wrap items-center gap-2">
@@ -83,8 +64,8 @@
                             </span>
                         @endif
 
-                        @if($percobaanDoneId)
-                            <a href="{{ route('dashboard.pretest.result', ['percobaan' => $percobaanDoneId]) }}"
+                        @if(!empty($t->__done_id))
+                            <a href="{{ route('dashboard.pretest.result', ['percobaan' => $t->__done_id]) }}"
                                class="text-sm text-blue-600 underline ml-1">
                                 Lihat hasil
                             </a>

@@ -5,21 +5,15 @@ namespace App\Filament\Clusters\Fasilitas\Resources;
 use App\Filament\Clusters\Fasilitas;
 use App\Filament\Clusters\Fasilitas\Resources\PenempatanAsramaResource\Pages;
 use App\Filament\Clusters\Fasilitas\Resources\PenempatanAsramaResource\RelationManagers;
-
 use App\Models\Pelatihan;
-
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-
 use Illuminate\Database\Eloquent\Builder;
 
 class PenempatanAsramaResource extends Resource
 {
-    /**
-     * ✅ BASIS LIST = PELATIHAN
-     */
     protected static ?string $model = Pelatihan::class;
     protected static ?string $cluster = Fasilitas::class;
 
@@ -30,19 +24,13 @@ class PenempatanAsramaResource extends Resource
 
     public static function form(Form $form): Form
     {
-        // Resource ini read-only (pengelolaan lewat view + relation manager)
         return $form->schema([]);
     }
 
-    /**
-     * ✅ eager load count peserta biar list informatif
-     * Pastikan relasi ini ada di Model Pelatihan:
-     * public function pendaftaranPelatihan(){ return $this->hasMany(...); }
-     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withCount('pendaftaranPelatihan')
+            ->withCount('pendaftaranPelatihan as total_peserta')
             ->orderByDesc('tanggal_mulai');
     }
 
@@ -71,7 +59,7 @@ class PenempatanAsramaResource extends Resource
                     ->formatStateUsing(fn (?string $state) => $state ? ucfirst($state) : '-')
                     ->alignCenter(),
 
-                Tables\Columns\TextColumn::make('pendaftaran_pelatihan_count')
+                Tables\Columns\TextColumn::make('total_peserta')
                     ->label('Total Peserta')
                     ->alignCenter()
                     ->sortable(),
@@ -91,12 +79,9 @@ class PenempatanAsramaResource extends Resource
                     ->label('Kelola Asrama')
                     ->icon('heroicon-o-home-modern'),
             ])
-            ->bulkActions([]); // tidak perlu bulk
+            ->bulkActions([]);
     }
 
-    /**
-     * ✅ Relation manager tabel peserta & otomasi penempatan
-     */
     public static function getRelations(): array
     {
         return [

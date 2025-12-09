@@ -69,7 +69,6 @@
                             </div>
                         @endif
 
-                        {{-- Above avg/passing --}}
                         <div class="text-sm">
                             Status:
                             @if($t->__above_avg)
@@ -79,23 +78,8 @@
                             @endif
                         </div>
 
-                        {{-- Link hasil --}}
-                        @php
-                            $participantKey = session('peserta_id') ? 'peserta_id' : (session('pesertaSurvei_id') ? 'pesertaSurvei_id' : null);
-                            $participantId = session($participantKey);
-
-                            $percobaanId = null;
-                            if ($participantKey && $participantId) {
-                                $percobaanId = \App\Models\Percobaan::where('tes_id', $t->id)
-                                    ->where($participantKey, $participantId)
-                                    ->whereNotNull('waktu_selesai')
-                                    ->latest('waktu_selesai')
-                                    ->value('id');
-                            }
-                        @endphp
-
-                        @if($percobaanId)
-                            <a href="{{ route('dashboard.posttest.result', ['percobaan' => $percobaanId]) }}"
+                        @if(!empty($t->__done_id))
+                            <a href="{{ route('dashboard.posttest.result', ['percobaan' => $t->__done_id]) }}"
                                class="text-sm text-blue-600 font-semibold underline w-fit">
                                 Lihat hasil detail →
                             </a>
@@ -109,7 +93,7 @@
                             ⏳ Tes sedang berjalan
                         </div>
 
-                        <a href="{{ route('dashboard.posttest.show', ['tes' => $t->id, 'percobaan' => $t->__running_id]) }}"
+                        <a href="{{ route('dashboard.posttest.show', $t->id).'?percobaan='.$t->__running_id }}"
                            class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm font-semibold">
                             Lanjutkan
                         </a>

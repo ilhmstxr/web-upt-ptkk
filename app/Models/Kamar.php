@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Kamar extends Model
 {
@@ -12,11 +12,18 @@ class Kamar extends Model
     protected $table = 'kamar';
 
     protected $fillable = [
+        'pelatihan_id',
         'asrama_id',
         'nomor_kamar',
+        'lantai',          // atas / bawah
         'total_beds',
         'available_beds',
-        'status', // kalau nggak punya kolom ini, hapus
+        'is_active',
+        'status',          // kalau kamu punya kolom status
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function asrama()
@@ -24,7 +31,7 @@ class Kamar extends Model
         return $this->belongsTo(Asrama::class, 'asrama_id');
     }
 
-    public function penempatanAsramas()
+    public function penempatanAsrama()
     {
         return $this->hasMany(PenempatanAsrama::class, 'kamar_id');
     }

@@ -4,7 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+
+use App\Models\Pelatihan;
+use App\Models\Kamar;
+use App\Services\AsramaAllocator;
 
 class Asrama extends Model
 {
@@ -19,72 +24,40 @@ class Asrama extends Model
         'total_kamar',
     ];
 
-    public function kamars()
+    public function kamars(): HasMany
     {
         return $this->hasMany(Kamar::class, 'asrama_id');
     }
 
     /**
-     * Sync Asrama + Kamar dari config/session ke DB.
-     * Dipakai Filament sebelum list tampil.
+     * ✅ Sync Asrama + Kamar dari config/session ke DB PER PELATIHAN.
      *
-     * Struktur config kamar:
-     * [
-     *   "Mawar" => [
-     *      ["no"=>1,"bed"=>4], ...
-     *   ],
-     *   "Melati Bawah" => [...]
-     * ]
+     * - Kalau $pelatihanId diisi → sync hanya pelatihan itu.
+     * - Kalau null → sync semua pelatihan (biar AsramaResource ngga error).
+     *
+     * sumber data:
+     * - session('kamar') kalau admin pernah ubah
+     * - fallback config('kamar')
      */
     public static function syncFromConfig(?int $pelatihanId = null, ?array $kamarConfig = null): void
     {
-        $pelatihanId = $pelatihanId ?? session('pelatihan_id');
-        if (!$pelatihanId) return;
-
+        $allocator = app(AsramaAllocator::class);
         $kamarConfig = $kamarConfig ?? (session('kamar') ?? config('kamar'));
-        if (!$kamarConfig || !is_array($kamarConfig)) return;
 
-        DB::transaction(function () use ($pelatihanId, $kamarConfig) {
+        if (!is_array($kamarConfig)) {
+            return;
+        }
 
-            foreach ($kamarConfig as $blok => $rooms) {
-
-                // tentukan gender blok (sesuaikan aturan kamu)
-                $gender = in_array($blok, ['Melati Bawah', 'Tulip Bawah'])
-                    ? 'Laki-laki'
-                    : 'Perempuan';
-
-                // create / update asrama per pelatihan
-                $asrama = self::updateOrCreate(
-                    [
-                        'pelatihan_id' => $pelatihanId,
-                        'name'         => $blok,
-                    ],
-                    [
-                        'gender'      => $gender,
-                        'total_kamar' => count($rooms),
-                    ]
-                );
-
-                // sync kamar
-                foreach ($rooms as $r) {
-                    $bed = $r['bed'];
-
-                    // kalau rusak / null -> skip allocator tapi kamar tetap ada di DB biar kebaca denah
-                    $bedsNumeric = is_numeric($bed) ? (int)$bed : 0;
-
-                    Kamar::updateOrCreate(
-                        [
-                            'asrama_id'    => $asrama->id,
-                            'nomor_kamar'  => (string)$r['no'],
-                        ],
-                        [
-                            'total_beds'     => $bedsNumeric,
-                            'available_beds' => $bedsNumeric,
-                            'status'         => is_numeric($bed) ? 'Aktif' : ( $bed === 'rusak' ? 'Rusak' : 'Perbaikan'),
-                        ]
-                    );
-                }
+        // kalau tidak dikasih pelatihan → sync semua pelatihan
+        if (!$pelatihanId) {
+            $pelatihanIds = Pelatihan::query()->pluck('id');
+            foreach ($pelatihanIds as $pid) {
+                $allocator->generateRoomsFromConfig($pid, $kamarConfig);
             }
-        });
+            return;
+        }
+
+        // sync hanya pelatihan tertentu
+        $allocator->generateRoomsFromConfig($pelatihanId, $kamarConfig);
     }
 }
