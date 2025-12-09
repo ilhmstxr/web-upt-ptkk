@@ -31,7 +31,7 @@
 use Illuminate\Support\Facades\Storage;
 use App\Models\Banner;
 use App\Models\Berita;
-use App\Models\Bidang;
+use App\Models\Kompetensi;
 use Illuminate\Support\Str;
 
 /* Ambil 3 berita terbaru */
@@ -933,16 +933,16 @@ $latestBeritas = Berita::query()
       // Ambil dari DB:
       // 1 = Kelas Keterampilan & Teknik
       // 0 = MJC
-      $bidangKeterampilan = Bidang::where('kelas_keterampilan', 1)
-          ->orderBy('nama_bidang')
+      $kompetensiKeterampilan = Kompetensi::where('kelas_keterampilan', 1)
+          ->orderBy('nama_kompetensi')
           ->get();
 
-      $bidangMjc = Bidang::where('kelas_keterampilan', 0)
-          ->orderBy('nama_bidang')
+      $kompetensiMjc = Kompetensi::where('kelas_keterampilan', 0)
+          ->orderBy('nama_kompetensi')
           ->get();
 
       // Gabungkan: Keterampilan dulu, baru MJC
-      $bidangItems = $bidangKeterampilan->concat($bidangMjc);
+      $kompetensiItems = $kompetensiKeterampilan->concat($kompetensiMjc);
     @endphp
 
     <div class="relative">
@@ -950,21 +950,21 @@ $latestBeritas = Berita::query()
            class="flex gap-4 md:gap-5 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-1"
            style="scrollbar-width:none;-ms-overflow-style:none;">
 
-        @forelse($bidangItems as $bidang)
+        @forelse($kompetensiItems as $kompetensi)
           @php
-            $nama = $bidang->nama_bidang ?? 'Kompetensi';
+            $nama = $kompetensi->nama_kompetensi ?? 'Kompetensi';
 
             // Ambil URL gambar:
-            if (!empty($bidang->gambar)) {
-                if (Str::startsWith($bidang->gambar, ['http://', 'https://'])) {
-                    $imgUrl = $bidang->gambar; // sudah full URL
+            if (!empty($kompetensi->gambar)) {
+                if (Str::startsWith($kompetensi->gambar, ['http://', 'https://'])) {
+                    $imgUrl = $kompetensi->gambar; // sudah full URL
                 } else {
-                    // diasumsikan disimpan di storage public (storage/bidang/xxx)
-                    $imgUrl = Storage::url($bidang->gambar);
+                    // diasumsikan disimpan di storage public (storage/kompetensi/xxx)
+                    $imgUrl = Storage::url($kompetensi->gambar);
                 }
             } else {
                 // fallback ke gambar default
-                $imgUrl = asset('images/profil/default-bidang.svg');
+                $imgUrl = asset('images/profil/default-kompetensi.svg');
             }
           @endphp
 

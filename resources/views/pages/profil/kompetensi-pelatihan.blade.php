@@ -55,7 +55,7 @@
     ];
 
     // list kanan sesuai tab aktif
-    $listBidang = $activeTab === 'mjc' ? $mjc : $keterampilan;
+    $listKompetensi = $activeTab === 'mjc' ? $mjc : $keterampilan;
   @endphp
 
  <section class="w-full bg-[#F1F9FC] py-8 md:py-10">
@@ -111,13 +111,13 @@
         {{-- pakai scroll biasa (page), tapi snap per kartu --}}
         <div id="scroll-pane" class="space-y-8 snap-y snap-mandatory">
 
-          @foreach ($listBidang as $bidang)
+          @foreach ($listKompetensi as $kompetensi)
             @php
-              $judul   = $bidang->nama_bidang;
-              $desc    = $bidang->deskripsi;
-              $imgPath = $bidang->gambar
-                  ? asset('storage/' . $bidang->gambar)
-                  : asset('images/profil/default-bidang.svg');
+              $judul   = $kompetensi->nama_kompetensi;
+              $desc    = $kompetensi->deskripsi;
+              $imgPath = $kompetensi->gambar
+                  ? asset('storage/' . $kompetensi->gambar)
+                  : asset('images/profil/default-kompetensi.svg');
             @endphp
 
             <article

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bidang;
+use App\Models\Kompetensi;
 use Illuminate\Http\Request;
 
 class KompetensiController extends Controller
@@ -11,13 +11,13 @@ class KompetensiController extends Controller
     {
         $activeTab = $request->query('tab', 'keterampilan'); // default tab
 
-        // ambil data dari tabel bidang
-        $keterampilan = Bidang::where('kelas_keterampilan', 1)
-            ->orderBy('nama_bidang')
+        // ambil data dari tabel kompetensi
+        $keterampilan = Kompetensi::where('kelas_keterampilan', 1)
+            ->orderBy('nama_kompetensi')
             ->get();
 
-        $mjc = Bidang::where('kelas_keterampilan', 0)
-            ->orderBy('nama_bidang')
+        $mjc = Kompetensi::where('kelas_keterampilan', 0)
+            ->orderBy('nama_kompetensi')
             ->get();
 
       return view('pages.profil.kompetensi-pelatihan', [
