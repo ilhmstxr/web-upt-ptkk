@@ -38,7 +38,7 @@ class TestWidgetPage extends Page
     public function getHeaderWidgets(): array
     {
         // $pid = 1;
-        // $testStats = $this->bidang();
+        // $testStats = $this->kompetensi();
         // $testStats = $this->peserta($pid);
         // $testStats = $this->instruktur($pid);
         // $testStats = $this->getPesertaTableConfig();

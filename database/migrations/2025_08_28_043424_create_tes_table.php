@@ -18,9 +18,11 @@ return new class extends Migration
             // $table->foreignId('peserta_id')->constrained('peserta')->onDelete('cascade');
             $table->enum('tipe', ['post-test','pre-test', 'survei']);
             // $table->enum('sub_tipe', ['pre-test', 'post-test'])->nullable();
-            $table->foreignId('bidang_id')->nullable()->constrained('bidang')->onDelete('cascade');
+            $table->foreignId('kompetensi_id')->nullable()->constrained('kompetensi')->onDelete('cascade');
             $table->foreignId('pelatihan_id')->constrained('pelatihan')->onDelete('cascade');
             $table->integer('durasi_menit')->nullable();
+            $table->timestamp('tanggal_mulai')->nullable();
+            $table->timestamp('tanggal_selesai')->nullable();
             $table->timestamps();
         });
     }

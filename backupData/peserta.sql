@@ -26,9 +26,9 @@ VALUES
         NULL
     ),
 INSERT INTO
-    `bidang` (
+    `kompetensi` (
         `id`,
-        `nama_bidang`,
+        `nama_kompetensi`,
         `deskripsi`,
         `kode`,
         `created_at`,
@@ -38,7 +38,7 @@ VALUES
     (
         1,
         'Tata Boga',
-        'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.',
+        'Kompetensi keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.',
         'TTBG',
         NULL,
         NULL
@@ -46,7 +46,7 @@ VALUES
     (
         2,
         'Tata Busana',
-        'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.',
+        'Kompetensi keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.',
         'TTBS',
         NULL,
         NULL
@@ -54,7 +54,7 @@ VALUES
     (
         3,
         'Kecantikan',
-        'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.',
+        'Kompetensi keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.',
         'KCAN',
         NULL,
         NULL
@@ -62,7 +62,7 @@ VALUES
     (
         4,
         'Teknik Pendingin dan Tata Udara',
-        'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.',
+        'Kompetensi keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.',
         'TPTU',
         NULL,
         NULL
@@ -70,7 +70,7 @@ VALUES
     (
         5,
         'Web Desain',
-        'Bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.',
+        'Kompetensi keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.',
         'WBDS',
         NULL,
         NULL
@@ -78,7 +78,7 @@ VALUES
     (
         6,
         'Desain Grafis',
-        'Bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.',
+        'Kompetensi keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.',
         'DSGF',
         NULL,
         NULL
@@ -86,7 +86,7 @@ VALUES
     (
         7,
         'Animasi',
-        'Bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.',
+        'Kompetensi keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.',
         'ANMS',
         NULL,
         NULL
@@ -94,7 +94,7 @@ VALUES
     (
         8,
         'Fotografi',
-        'Bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.',
+        'Kompetensi keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.',
         'FTGR',
         NULL,
         NULL
@@ -102,7 +102,7 @@ VALUES
     (
         9,
         'Videografi',
-        'Bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.',
+        'Kompetensi keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.',
         'VDGR',
         NULL,
         NULL
@@ -110,7 +110,7 @@ VALUES
     (
         10,
         'PLC',
-        'Bidang keahlian yang mengajarkan programming logic controller',
+        'Kompetensi keahlian yang mengajarkan programming logic controller',
         'PLC',
         NULL,
         NULL
@@ -120,7 +120,7 @@ INSERT INTO
     `peserta` (
         `id`,
         `pelatihan_id`,
-        `bidang_id`,
+        `kompetensi_id`,
         `instansi_id`,
         `user_id`,
         `nama`,

@@ -1,6 +1,6 @@
--- Pastikan Anda sudah memiliki data di tabel `bidang` dan `pelatihan` sebelum menjalankan ini.
+-- Pastikan Anda sudah memiliki data di tabel `kompetensi` dan `pelatihan` sebelum menjalankan ini.
 
-INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
+INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `kompetensi_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
 (1, 'Post-Test Teknik Pendingin', 'Tes akhir untuk mengukur pemahaman materi Teknik Pendingin dan Tata Udara.', 'tes', 'post-test', 4, 1, 30, NOW(), NOW()),
 (2, 'Post-Test Kecantikan', 'Tes akhir untuk mengukur pemahaman materi Kecantikan (Perawatan Rambut).', 'tes', 'post-test', 3, 1, 30, NOW(), NOW()),
 (3, 'Post-Test Tata Boga', 'Tes akhir untuk mengukur pemahaman materi Produk Bakery dan Pastry.', 'tes', 'post-test', 1, 1, 30, NOW(), NOW()),
@@ -743,7 +743,7 @@ INSERT INTO pivot_jawaban (pertanyaan_id, template_pertanyaan_id) VALUES
 -- ===================================================================
 -- KUNCI JAWABAN BARU 09/09/2025
 -- ===================================================================
-INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
+INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `kompetensi_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
 (6, 'Post-Test Videografi', 'Tes akhir untuk mengukur pemahaman materi Videografi.', 'tes', 'post-test', 5, 1, 30, NOW(), NOW()),
 (7, 'Post-Test PLC', 'Tes akhir untuk mengukur pemahaman materi Programmable Logic Controllers (PLC).', 'tes', 'post-test', 6, 1, 30, NOW(), NOW()),
 (8, 'Post-Test Fotografi', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'tes', 'post-test', 7, 1, 30, NOW(), NOW()),

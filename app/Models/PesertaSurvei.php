@@ -14,7 +14,7 @@ class PesertaSurvei extends Model
     protected $fillable = [
         'nama',
         'pelatihan_id',
-        'bidang_id',
+        'kompetensi_id',
         'tes_id',
     ];
 
@@ -43,11 +43,11 @@ class PesertaSurvei extends Model
     }
 
     /**
-     * Relasi ke bidang
+     * Relasi ke kompetensi
      */
-    public function bidang()
+    public function kompetensi()
     {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
+        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 
     /**

@@ -2,7 +2,7 @@ INSERT INTO
   `peserta` (
     `id`,
     `pelatihan_id`,
-    `bidang_id`,
+    `kompetensi_id`,
     `instansi_id`,
     `user_id`,
     `nama`,
@@ -1045,7 +1045,7 @@ INSERT INTO
     `nama`,
     `email`,
     `angkatan`,
-    `bidang_id`,
+    `kompetensi_id`,
     `pelatihan_id`,
     `created_at`,
     `updated_at`
@@ -25026,7 +25026,7 @@ VALUES
     107,
     64,
     NULL,
-    'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di bidangnya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.',
+    'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di kompetensinya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.',
     '2025-09-01 05:08:53',
     '2025-09-01 05:08:53'
   ),

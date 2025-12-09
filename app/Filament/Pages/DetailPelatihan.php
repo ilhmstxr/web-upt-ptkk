@@ -4,10 +4,10 @@
 
 namespace App\Filament\Pages;
 
-// use App\Filament\Widgets\Custom\BidangVenueWidget;
+// use App\Filament\Widgets\Custom\KompetensiVenueWidget;
 // use App\Filament\Widgets\Custom\InformasiAsramaWidget;
 
-use App\Filament\Widgets\BidangVenueWidget;
+use App\Filament\Widgets\KompetensiVenueWidget;
 use App\Filament\Widgets\Custom\PengaturanTesWidget;
 use App\Filament\Widgets\InformasiAsramaWidget;
 use App\Models\Pelatihan;
@@ -63,7 +63,7 @@ class DetailPelatihan extends Page
                     PengaturanTesWidget::make(['pelatihan' => $this->pelatihan]),
                     
                     // HAPUS ->columnSpan(1) dari sini
-                    BidangVenueWidget::make(['pelatihan' => $this->pelatihan]),
+                    KompetensiVenueWidget::make(['pelatihan' => $this->pelatihan]),
                     
                     // HAPUS ->columnSpan(1) dari sini
                     InformasiAsramaWidget::make(['pelatihan' => $this->pelatihan]),

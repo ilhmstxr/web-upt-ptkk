@@ -4,8 +4,8 @@ namespace App\Http\Requests\Pendaftaran;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\{Pendaftaran, Peserta, Pelatihan, Instansi, Bidang};
-use App\Rules\{UniquePendaftaranPerPesertaPelatihan, BidangBelongsToInstansi};
+use App\Models\{Pendaftaran, Peserta, Pelatihan, Instansi, Kompetensi};
+use App\Rules\{UniquePendaftaranPerPesertaPelatihan, KompetensiBelongsToInstansi};
 
 class StoreRequest extends FormRequest
 {
@@ -21,11 +21,11 @@ class StoreRequest extends FormRequest
             'peserta_id'      => ['required', 'integer', 'exists:peserta,id'],
             'pelatihan_id'    => ['required', 'integer', 'exists:pelatihan,id', new UniquePendaftaranPerPesertaPelatihan($this->input('peserta_id'))],
             'instansi_id'     => ['required', 'integer', 'exists:instansi,id'],
-            'bidang_id'       => [
+            'kompetensi_id'   => [
                 'nullable',
                 'integer',
-                'exists:bidang,id',
-                new BidangBelongsToInstansi($this->input('instansi_id')),
+                'exists:kompetensi,id',
+                new KompetensiBelongsToInstansi($this->input('instansi_id')),
             ],
             'operator_user_id'=> ['nullable', 'integer', 'exists:users,id'],
             // status awal biasanya dikunci di service; kalau mau kirim:
@@ -46,7 +46,7 @@ class StoreRequest extends FormRequest
             'pelatihan_id.exists' => 'Pelatihan tidak ditemukan.',
             'peserta_id.exists'   => 'Peserta tidak ditemukan.',
             'instansi_id.exists'  => 'Instansi tidak ditemukan.',
-            'bidang_id.exists'    => 'Bidang tidak ditemukan.',
+            'kompetensi_id.exists'=> 'Kompetensi tidak ditemukan.',
             'nomor_registrasi.unique' => 'Nomor registrasi sudah dipakai.',
         ];
     }
@@ -57,7 +57,7 @@ class StoreRequest extends FormRequest
             'peserta_id'   => 'peserta',
             'pelatihan_id' => 'pelatihan',
             'instansi_id'  => 'instansi',
-            'bidang_id'    => 'bidang',
+            'kompetensi_id'=> 'kompetensi',
         ];
     }
 
@@ -67,7 +67,7 @@ class StoreRequest extends FormRequest
             'peserta_id'       => $this->toNullableInt('peserta_id'),
             'pelatihan_id'     => $this->toNullableInt('pelatihan_id'),
             'instansi_id'      => $this->toNullableInt('instansi_id'),
-            'bidang_id'        => $this->toNullableInt('bidang_id'),
+            'kompetensi_id'    => $this->toNullableInt('kompetensi_id'),
             'operator_user_id' => $this->toNullableInt('operator_user_id'),
         ]);
     }

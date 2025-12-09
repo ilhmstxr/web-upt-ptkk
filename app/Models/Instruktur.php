@@ -14,25 +14,17 @@ class Instruktur extends Model
 
     protected $fillable = [
         'user_id',
-        'bidang_id',
+        'kompetensi_id',
         'nama',
         'tempat_lahir',
         'tgl_lahir',
         'jenis_kelamin',
         'agama',
-        'alamat_rumah',
         'no_hp',
-        'instansi',
-        'npwp',
-        'nik',
-        'nama_bank',
-        'no_rekening',
-        'pendidikan_terakhir',
-        'pengalaman_kerja'
     ];
-    public function bidang()
+    public function kompetensi()
     {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
+        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 
     public function pelatihan()
@@ -44,4 +36,19 @@ class Instruktur extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function lampiran()
+    {
+        return $this->hasOne(LampiranInstruktur::class);
+    }
+    public function kompetensiPelatihan()
+    {
+        return $this->belongsToMany(KompetensiPelatihan::class, 'kompetensi_pelatihan_instruktur');
+    }
+
+    public function getNamaGelarAttribute()
+    {
+        return $this->nama;
+    }
+
 }

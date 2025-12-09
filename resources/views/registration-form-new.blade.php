@@ -435,7 +435,7 @@
                             <div id="school_name-error" class="error-text" style="display:none;">Nama sekolah wajib diisi.</div>
                         </div>
                         <div class="form-group">
-                            <label for="competence">Kompetensi / Bidang Keahlian</label>
+                            <label for="competence">Kompetensi / Kompetensi Keahlian</label>
                             <select id="competence" name="competence" required>
                                 <option value="">Masukkan Kompetensi</option>
                                 <option value="teknik-informatika">Teknik Informatika</option>

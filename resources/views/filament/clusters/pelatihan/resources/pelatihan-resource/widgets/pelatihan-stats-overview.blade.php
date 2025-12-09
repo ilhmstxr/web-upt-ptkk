@@ -10,10 +10,7 @@
                     <x-heroicon-o-rectangle-stack class="w-6 h-6" />
                 </div>
             </div>
-            <div class="mt-4 flex items-center text-xs">
-                <span class="text-green-600 dark:text-green-400 font-bold bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded mr-2">+2</span>
-                <span class="text-gray-400 dark:text-gray-500">bulan ini</span>
-            </div>
+
         </div>
 
         <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
@@ -26,9 +23,7 @@
                     <x-heroicon-o-play class="w-6 h-6" />
                 </div>
             </div>
-            <div class="mt-4 flex items-center text-xs">
-                <span class="text-gray-400 dark:text-gray-500">3 akan selesai minggu ini</span>
-            </div>
+
         </div>
 
         <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
@@ -41,10 +36,7 @@
                     <x-heroicon-o-users class="w-6 h-6" />
                 </div>
             </div>
-            <div class="mt-4 flex items-center text-xs">
-                <span class="text-green-600 dark:text-green-400 font-bold bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded mr-2">+45</span>
-                <span class="text-gray-400 dark:text-gray-500">pendaftar baru</span>
-            </div>
+
         </div>
 
 

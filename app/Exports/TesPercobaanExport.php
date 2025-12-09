@@ -20,7 +20,7 @@ class TesPercobaanExport implements FromCollection, WithHeadings
         return $this->query->with(['peserta','tes'])->get()->map(function($row){
             return [
                 'peserta' => $row->peserta->nama ?? '-',
-                'bidang' => $row->peserta->bidang->nama_bidang ?? '-',
+                'kompetensi' => $row->peserta->kompetensi->nama_kompetensi ?? '-',
                 'instansi' => $row->peserta->instansi->asal_instansi ?? '-',
                 'tes' => $row->tes->judul ?? $row->tes->jenis,
                 'jenis' => $row->tes->jenis ?? '-',
@@ -33,6 +33,6 @@ class TesPercobaanExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return ['Peserta','Bidang','Instansi','Tes','Jenis','Skor','Waktu Mulai','Waktu Selesai'];
+        return ['Peserta','Kompetensi','Instansi','Tes','Jenis','Skor','Waktu Mulai','Waktu Selesai'];
     }
 }

@@ -18,7 +18,7 @@ JOIN (
       pp.pelatihan_id, '-', b.kode, '-',
       LPAD(
         ROW_NUMBER() OVER (
-          PARTITION BY p.bidang_id
+          PARTITION BY p.kompetensi_id
           ORDER BY pp.id ASC
         ),
         3, '0'
@@ -27,7 +27,7 @@ JOIN (
   FROM
     pendaftaran_pelatihan pp
     JOIN peserta p ON pp.peserta_id = p.id
-    JOIN bidang b ON p.bidang_id = b.id
+    JOIN kompetensi b ON p.kompetensi_id = b.id
   WHERE
     pp.pelatihan_id = 2 -- Sesuaikan jika perlu
 ) AS n ON pp.id = n.id
@@ -45,19 +45,19 @@ SET
 
 3. cek konsistensi
 SELECT
-  b.nama_bidang,
+  b.nama_kompetensi,
   b.kode,
   COUNT(DISTINCT p.id) AS jumlah_peserta_valid,
   COUNT(pp.id) AS jumlah_nomor_registrasi
 FROM
-  bidang b
+  kompetensi b
 LEFT JOIN
-  peserta p ON b.id = p.bidang_id
+  peserta p ON b.id = p.kompetensi_id
 LEFT JOIN
   pendaftaran_pelatihan pp ON p.id = pp.peserta_id
 GROUP BY
-  b.id, b.nama_bidang, b.kode
+  b.id, b.nama_kompetensi, b.kode
 ORDER BY
-  b.nama_bidang; 
+  b.nama_kompetensi; 
 
 4. cek id bermasalah

@@ -43,11 +43,11 @@ List pelatihan dengan status (Draft/Published/Archived).
 
 Indikator jumlah sesi dan total peserta.
 
-B. BidangResource
+B. KompetensiResource
 
-Referensi: bidang-pelatihan2.html
+Referensi: kompetensi-pelatihan2.html
 
-Model: Bidang (Category/Sector)
+Model: Kompetensi (Category/Sector)
 
 Fungsi: Master data untuk mengelompokkan pelatihan (misal: IT, Bisnis, Las, Otomotif).
 

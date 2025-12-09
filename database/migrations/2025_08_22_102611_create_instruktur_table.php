@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('instruktur', function (Blueprint $table) {
             $table->id();
-            // $table->string('kompetensi'); // bidang
+            // $table->string('kompetensi'); // kompetensi
             // $table->date('tanggal_mulai'); // pelatihan
             // $table->date('tanggal_akhir'); // pelatihan
-            $table->foreignId('bidang_id')->constrained('bidang')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('kompetensi_id')->constrained('kompetensi')->onUpdate('cascade')->onDelete('cascade');
 
             $table->foreignId('user_id')
                 ->constrained('users')
@@ -30,15 +30,7 @@ return new class extends Migration
             $table->date('tgl_lahir');
             $table->string('jenis_kelamin');
             $table->string('agama');
-            $table->text('alamat_rumah');
             $table->string('no_hp');
-            $table->string('instansi');
-            $table->string('npwp');
-            $table->string('nik');
-            $table->string('nama_bank');
-            $table->string('no_rekening');
-            $table->string('pendidikan_terakhir');
-            $table->text('pengalaman_kerja')->nullable();
             $table->timestamps();
         });
     }

@@ -1,10 +1,10 @@
 --
--- Dumping data for table `bidang`
+-- Dumping data for table `kompetensi`
 --
 INSERT INTO
-  `bidang` (
+  `kompetensi` (
     `id`,
-    `nama_bidang`,
+    `nama_kompetensi`,
     `deskripsi`,
     `kode`,
     `created_at`,
@@ -14,7 +14,7 @@ VALUES
   (
     1,
     'Tata Boga',
-    'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.',
+    'Kompetensi keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.',
     'TTBG',
     NULL,
     NULL
@@ -22,7 +22,7 @@ VALUES
   (
     2,
     'Tata Busana',
-    'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.',
+    'Kompetensi keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.',
     'TTBS',
     NULL,
     NULL
@@ -30,7 +30,7 @@ VALUES
   (
     3,
     'Kecantikan',
-    'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.',
+    'Kompetensi keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.',
     'KCAN',
     NULL,
     NULL
@@ -38,7 +38,7 @@ VALUES
   (
     4,
     'Teknik Pendingin dan Tata Udara',
-    'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.',
+    'Kompetensi keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.',
     'TPTU',
     NULL,
     NULL
@@ -46,7 +46,7 @@ VALUES
   (
     5,
     'Web Desain',
-    'Bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.',
+    'Kompetensi keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.',
     'WBDS',
     NULL,
     NULL
@@ -54,7 +54,7 @@ VALUES
   (
     6,
     'Desain Grafis',
-    'Bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.',
+    'Kompetensi keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.',
     'DSGF',
     NULL,
     NULL
@@ -62,7 +62,7 @@ VALUES
   (
     7,
     'Animasi',
-    'Bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.',
+    'Kompetensi keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.',
     'ANMS',
     NULL,
     NULL
@@ -70,7 +70,7 @@ VALUES
   (
     8,
     'Fotografi',
-    'Bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.',
+    'Kompetensi keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.',
     'FTGR',
     NULL,
     NULL
@@ -78,7 +78,7 @@ VALUES
   (
     9,
     'Videografi',
-    'Bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.',
+    'Kompetensi keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.',
     'VDGR',
     NULL,
     NULL
@@ -86,7 +86,7 @@ VALUES
   (
     10,
     'PLC',
-    'Bidang keahlian yang mengajarkan programming logic controller',
+    'Kompetensi keahlian yang mengajarkan programming logic controller',
     'PLC',
     NULL,
     NULL
@@ -308,7 +308,7 @@ INSERT INTO
     `alamat_instansi`,
     `kota_id`,
     `kota`,
-    `bidang_keahlian`,
+    `kompetensi_keahlian`,
     `kelas`,
     `cabangDinas_id`,
     `user_id`,
@@ -2611,7 +2611,7 @@ INSERT INTO
     `judul`,
     `deskripsi`,
     `tipe`,
-    `bidang_id`,
+    `kompetensi_id`,
     `pelatihan_id`,
     `durasi_menit`,
     `created_at`,
@@ -8312,7 +8312,7 @@ INSERT INTO
     `nama`,
     `email`,
     `angkatan`,
-    `bidang_id`,
+    `kompetensi_id`,
     `pelatihan_id`,
     `created_at`,
     `updated_at`
@@ -11312,7 +11312,7 @@ INSERT INTO
   `peserta` (
     `id`,
     `pelatihan_id`,
-    `bidang_id`,
+    `kompetensi_id`,
     `instansi_id`,
     `user_id`,
     `nama`,
@@ -14970,7 +14970,7 @@ INSERT INTO
   `peserta` (
     `id`,
     `pelatihan_id`,
-    `bidang_id`,
+    `kompetensi_id`,
     `instansi_id`,
     `user_id`,
     `nama`,
@@ -40285,7 +40285,7 @@ VALUES
     107,
     64,
     NULL,
-    'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di bidangnya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.',
+    'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di kompetensinya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.',
     '2025-09-01 05:08:53',
     '2025-09-01 05:08:53'
   ),

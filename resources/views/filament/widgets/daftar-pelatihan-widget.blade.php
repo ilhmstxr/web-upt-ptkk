@@ -1,5 +1,5 @@
 {{-- 
-  Gunakan <x-filament-widgets::widget> sebagai pembungkus utama.
+  Gunakan <x-filament-widget::widget> sebagai pembungkus utama.
   Variabel $pelatihan otomatis tersedia dari file PHP widget.
 --}}
 <x-filament-widgets::widget>

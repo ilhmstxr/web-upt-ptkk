@@ -3,7 +3,7 @@
 namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Pages;
 
 use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource;
-use App\Models\BidangPelatihan;
+use App\Models\KompetensiPelatihan;
 use App\Models\JawabanUser;
 use App\Models\Pelatihan;
 use App\Models\Pertanyaan;
@@ -18,27 +18,27 @@ class ViewMonevDetail extends Page
     protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-monev-detail';
 
     public Pelatihan $record;
-    public BidangPelatihan $bidangPelatihan;
+    public KompetensiPelatihan $kompetensiPelatihan;
     public $surveyData = [];
 
-    public function mount(Pelatihan $record, $bidang_id): void
+    public function mount(Pelatihan $record, $kompetensi_id): void
     {
         $this->record = $record;
-        $this->bidangPelatihan = BidangPelatihan::findOrFail($bidang_id);
+        $this->kompetensiPelatihan = KompetensiPelatihan::findOrFail($kompetensi_id);
         
         $this->prepareSurveyData();
     }
 
     public function getTitle(): string | Htmlable
     {
-        return 'Analisis Hasil Survey Monev - ' . ($this->bidangPelatihan->bidang->nama_bidang ?? 'Detail Bidang');
+        return 'Analisis Hasil Survey Monev - ' . ($this->kompetensiPelatihan->kompetensi->nama_kompetensi ?? 'Detail Kompetensi');
     }
 
     protected function prepareSurveyData()
     {
         // 1. Get Survey Tests
         $surveyTesIds = Tes::where('pelatihan_id', $this->record->id)
-            ->where('bidang_id', $this->bidangPelatihan->bidang_id)
+            ->where('kompetensi_id', $this->kompetensiPelatihan->kompetensi_id)
             ->where('tipe', 'survey')
             ->pluck('id');
 

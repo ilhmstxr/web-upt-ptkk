@@ -33,7 +33,7 @@
                         colors: @js($chartData['colors']),
                         init() {
                             new Chart(this.$refs.canvas, {
-                                type: 'doughnut',
+                                type: 'pie',
                                 data: {
                                     labels: this.labels,
                                     datasets: [{
@@ -46,7 +46,7 @@
                                 options: {
                                     responsive: true,
                                     maintainAspectRatio: false,
-                                    cutout: '70%',
+                                    // cutout removed for pie
                                     plugins: { legend: { display: false } }
                                 }
                             });

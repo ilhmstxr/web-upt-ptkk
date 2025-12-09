@@ -29,7 +29,7 @@ lalu tabel percobaan di join dengan jawaban user lalu dihitung untuk survey mone
 1. akumulasi totall
 2. jawaban per kategori
 3. jawaban per pertanyaan
-4. jawaban akumulasi total per bidang
+4. jawaban akumulasi total per kompetensi
 
 
 - PROGRESS buat chart nilai monev
@@ -40,12 +40,12 @@ fetching tabel per
 data  yang dibutuhkan:
 jawaban user
 pelatihan
--> bidang
+-> kompetensi
 -> per percobaan (pretest, posttest, monev)
 -> diak
 
 
-per bidang
+per kompetensi
 - nama pelatihan
 - No.	
 - NAMA LENGKAP	
@@ -57,7 +57,7 @@ per bidang
 - Rata-Rata(pretest posttest praktek)
 - Pembagi(3)
 
-rekap all bidang per pelatihan
+rekap all kompetensi per pelatihan
 - NAMA 
 - PROGRAM KEAHLIAN	
 - PRE	
@@ -99,7 +99,7 @@ score
 
 
 SKEMA TABEL INJECTION
-- bidang                xv
+- kompetensi                xv
 - cabang dinas          xv
 - instansi              xv
 - pelatihan             xv

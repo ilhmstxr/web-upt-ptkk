@@ -22,20 +22,20 @@ SET time_zone = "+00:00";
 --
 
 --
--- Dumping data for table `bidang`
+-- Dumping data for table `kompetensi`
 --
 
-INSERT INTO `bidang` (`id`, `nama_bidang`, `deskripsi`, `kode`, `created_at`, `updated_at`) VALUES
-(1, 'Tata Boga', 'Bidang keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.', 'TTBG', NULL, NULL),
-(2, 'Tata Busana', 'Bidang keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.', 'TTBS', NULL, NULL),
-(3, 'Kecantikan', 'Bidang keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.', 'KCAN', NULL, NULL),
-(4, 'Teknik Pendingin dan Tata Udara', 'Bidang keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.', 'TPTU', NULL, NULL),
-(5, 'Web Desain', 'Bidang keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.', 'WBDS', NULL, NULL),
-(6, 'Desain Grafis', 'Bidang keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.', 'DSGF', NULL, NULL),
-(7, 'Animasi', 'Bidang keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.', 'ANMS', NULL, NULL),
-(8, 'Fotografi', 'Bidang keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.', 'FTGR', NULL, NULL),
-(9, 'Videografi', 'Bidang keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.', 'VDGR', NULL, NULL),
-(10, 'PLC', 'Bidang keahlian yang mengajarkan programming logic controller', 'PLC', NULL, NULL);
+INSERT INTO `kompetensi` (`id`, `nama_kompetensi`, `deskripsi`, `kode`, `created_at`, `updated_at`) VALUES
+(1, 'Tata Boga', 'Kompetensi keahlian yang mengajarkan teknik memasak, penyajian, dan manajemen makanan.', 'TTBG', NULL, NULL),
+(2, 'Tata Busana', 'Kompetensi keahlian untuk menjadi desainer busana yang handal, dari membuat pola hingga jahitan akhir.', 'TTBS', NULL, NULL),
+(3, 'Kecantikan', 'Kompetensi keahlian yang mengajarkan teknik perawatan kecantikan, mulai dari wajah hingga tubuh.', 'KCAN', NULL, NULL),
+(4, 'Teknik Pendingin dan Tata Udara', 'Kompetensi keahlian yang berfokus pada instalasi dan perawatan sistem pendingin dan tata udara.', 'TPTU', NULL, NULL),
+(5, 'Web Desain', 'Kompetensi keahlian yang mengajarkan pembuatan dan pengembangan situs web, termasuk desain antarmuka pengguna dan pengalaman pengguna.', 'WBDS', NULL, NULL),
+(6, 'Desain Grafis', 'Kompetensi keahlian yang mengajarkan pembuatan dan pengembangan karya desain grafis seperti poster, brosur, dan logo.', 'DSGF', NULL, NULL),
+(7, 'Animasi', 'Kompetensi keahlian yang mengajarkan pembuatan dan pengembangan animasi, seperti animasi 2D dan animasi 3D.', 'ANMS', NULL, NULL),
+(8, 'Fotografi', 'Kompetensi keahlian yang mengajarkan teknik pengambilan gambar, pengeditan foto, dan pencetakan.', 'FTGR', NULL, NULL),
+(9, 'Videografi', 'Kompetensi keahlian yang mengajarkan teknik pembuatan dan pengeditan video, termasuk sinematografi dan pascaproduksi.', 'VDGR', NULL, NULL),
+(10, 'PLC', 'Kompetensi keahlian yang mengajarkan programming logic controller', 'PLC', NULL, NULL);
 
 --
 -- Dumping data for table `cabang_dinas`
@@ -80,7 +80,7 @@ INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
 -- Dumping data for table `instansi`
 --
 
-INSERT INTO `instansi` (`id`, `asal_instansi`, `alamat_instansi`, `kota_id`, `kota`, `bidang_keahlian`, `kelas`, `cabangDinas_id`, `user_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `instansi` (`id`, `asal_instansi`, `alamat_instansi`, `kota_id`, `kota`, `kompetensi_keahlian`, `kelas`, `cabangDinas_id`, `user_id`, `created_at`, `updated_at`) VALUES
 (2, 'SMK NEGRI 2 BOJONEGORO', 'JL.patimura NO.3', '3522', 'KABUPATEN BOJONEGORO', '4', 'XI', 15, NULL, '2025-08-20 08:29:27', '2025-08-20 08:29:27'),
 (3, 'SMKN 2 KOTA PROBOLINGGO', 'Jl. Mastrip No. 153 Kota Probolinggo', '3574', 'KOTA PROBOLINGGO', '4', 'XI', 2, NULL, '2025-08-20 09:28:17', '2025-08-20 09:28:17'),
 (4, 'SMKN 3 Probolinggo', 'Jl. Pahlawan No. 26A, Kota Probolinggo.', '3574', 'KOTA PROBOLINGGO', '3', 'XI', 2, NULL, '2025-08-20 10:06:36', '2025-08-20 10:06:36'),
@@ -2514,7 +2514,7 @@ INSERT INTO `jawaban_user` (`id`, `opsi_jawaban_id`, `pertanyaan_id`, `percobaan
 (2286, 356, 104, 64, NULL, NULL, '2025-09-01 05:08:53', '2025-09-01 05:08:53'),
 (2287, 356, 105, 64, NULL, NULL, '2025-09-01 05:08:53', '2025-09-01 05:08:53'),
 (2288, 360, 106, 64, NULL, NULL, '2025-09-01 05:08:53', '2025-09-01 05:08:53'),
-(2289, NULL, 107, 64, NULL, 'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di bidangnya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.', '2025-09-01 05:08:53', '2025-09-01 05:08:53'),
+(2289, NULL, 107, 64, NULL, 'Kesan:\r\nSaya merasa sangat senang dan terbantu ketika dapat belajar bersama dengan seseorang yang ahli di kompetensinya. Hal tersebut membuat saya lebih mudah memahami materi dan termotivasi untuk terus belajar.\r\n\r\nKalau mau tetap singkat, versi ringkasnya:\r\nSaya sangat senang dapat belajar bersama orang yang ahli, karena hal itu membuat saya lebih paham dan termotivasi.', '2025-09-01 05:08:53', '2025-09-01 05:08:53'),
 (2290, 344, 108, 64, NULL, NULL, '2025-09-01 05:08:53', '2025-09-01 05:08:53'),
 (2291, 364, 109, 64, NULL, NULL, '2025-09-01 05:08:53', '2025-09-01 05:08:53'),
 (2292, 344, 110, 64, NULL, NULL, '2025-09-01 05:08:53', '2025-09-01 05:08:53'),
@@ -2752,7 +2752,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (3, '0001_01_01_000002_create_jobs_table', 1),
 (4, '2025_08_10_121502_create_cabang_dinas_table', 1),
 (5, '2025_08_11_034126_create_instansi_table', 1),
-(6, '2025_08_11_075813_create_bidang_table', 1),
+(6, '2025_08_11_075813_create_kompetensi_table', 1),
 (7, '2025_08_11_082738_create_asrama_table', 1),
 (8, '2025_08_11_082833_create_kamar_table', 1),
 (9, '2025_08_12_035432_create_pelatihan_table', 1),
@@ -4002,7 +4002,7 @@ INSERT INTO `pertanyaan` (`id`, `tes_id`, `nomor`, `teks_pertanyaan`, `gambar`, 
 -- Dumping data for table `peserta`
 --
 
-INSERT INTO `peserta` (`id`, `pelatihan_id`, `bidang_id`, `instansi_id`, `user_id`, `nama`, `nik`, `tempat_lahir`, `tanggal_lahir`, `jenis_kelamin`, `agama`, `alamat`, `no_hp`, `created_at`, `updated_at`) VALUES
+INSERT INTO `peserta` (`id`, `pelatihan_id`, `kompetensi_id`, `instansi_id`, `user_id`, `nama`, `nik`, `tempat_lahir`, `tanggal_lahir`, `jenis_kelamin`, `agama`, `alamat`, `no_hp`, `created_at`, `updated_at`) VALUES
 (1, 1, 4, 3, 2, 'Sepni Amzah', '3574041406080003', 'Probolinggo', '2008-06-14', 'Laki-laki', 'Islam', 'Jalan Slamet Riyadi S Rokan Blok Klompang N0 42', '082331020465', '2025-08-20 09:28:17', '2025-08-20 09:28:17'),
 (2, 1, 3, 4, 3, 'Firdaussy Nurliza Ramadhani', '3513056109070001', 'Probolinggo', '2007-09-21', 'Perempuan', 'Islam', 'Jl. Pahlawan 1, RT 004/RW 005, Sumberkedawung, Leces, Probolinggo', '085815776656', '2025-08-20 10:06:36', '2025-08-20 10:06:36'),
 (3, 1, 4, 5, 4, 'MOCH ADAM ASSADDIL RAIZ', '3517062106090001', 'JOMBANG', '2009-06-21', 'Laki-laki', 'Islam', 'JAMBUWOK, DUSUN JAMBUWOK\r\nRT 07 RW 02', '085755193621', '2025-08-20 11:23:32', '2025-08-20 11:23:32'),
@@ -4217,14 +4217,14 @@ INSERT INTO `peserta` (`id`, `pelatihan_id`, `bidang_id`, `instansi_id`, `user_i
 (236, 2, 9, 176, 224, 'Novita Nur Salamah', '3520095811080001', 'Magetan', '2008-11-18', 'Perempuan', 'Islam', 'RT 02 RW 02,Desa Milangasri, Kecamatan Panekan, Kabupaten Magetan', '085730292296', '2025-09-19 03:34:10', '2025-09-19 03:34:10'),
 (238, 2, 9, 177, 225, 'ARYA PRATAMA PUTRA', '3520081301080001', 'Magetan', '2008-01-13', 'Laki-laki', 'Islam', 'Desa Cepoko Dusun Sadon RT 07 RW 01 Kecamatan Panekan, Kabupaten Magetan, Jawa Timur', '085855500050', '2025-09-19 03:43:59', '2025-09-19 03:43:59'),
 (239, 2, 9, 178, 226, 'Ilham Bintang herlambang', '9090900900909009', 'su', '2025-09-19', 'Laki-laki', 'Islam', 'jl kebraon indah permai', '02931938293', '2025-09-19 03:45:21', '2025-09-19 03:45:21');
-INSERT INTO `peserta` (`id`, `pelatihan_id`, `bidang_id`, `instansi_id`, `user_id`, `nama`, `nik`, `tempat_lahir`, `tanggal_lahir`, `jenis_kelamin`, `agama`, `alamat`, `no_hp`, `created_at`, `updated_at`) VALUES
+INSERT INTO `peserta` (`id`, `pelatihan_id`, `kompetensi_id`, `instansi_id`, `user_id`, `nama`, `nik`, `tempat_lahir`, `tanggal_lahir`, `jenis_kelamin`, `agama`, `alamat`, `no_hp`, `created_at`, `updated_at`) VALUES
 (240, 2, 9, 179, 227, 'Asiska apriliana susanti', '3520085604080001', 'magetan', '2008-04-18', 'Perempuan', 'Islam', 'Sumberdodol,Panekan-Magetan', '0', '2025-09-19 10:42:14', '2025-09-19 10:42:14');
 
 --
 -- Dumping data for table `peserta_survei`
 --
 
-INSERT INTO `peserta_survei` (`id`, `nama`, `email`, `angkatan`, `bidang_id`, `pelatihan_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `peserta_survei` (`id`, `nama`, `email`, `angkatan`, `kompetensi_id`, `pelatihan_id`, `created_at`, `updated_at`) VALUES
 (3, 'Ryndi Mega Herawati', 'rindi121299@gmail.com', 'Angkatan ll', 2, 1, '2025-08-29 07:40:28', '2025-08-29 07:40:28'),
 (4, 'SABRINA WAFA AQILLAH', 's6951820@gmail.com', 'Angkatan ll', 2, 1, '2025-08-29 07:41:11', '2025-08-29 07:41:11'),
 (5, 'AMELTA AULIA SUDARKO', 'meltacialia@gmail.com', 'Angkatan 2', 2, 1, '2025-08-29 07:42:33', '2025-08-29 07:42:33'),
@@ -4332,7 +4332,7 @@ INSERT INTO `pivot_jawaban` (`pertanyaan_id`, `template_pertanyaan_id`, `created
 -- Dumping data for table `tes`
 --
 
-INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `bidang_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
+INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `sub_tipe`, `kompetensi_id`, `pelatihan_id`, `durasi_menit`, `created_at`, `updated_at`) VALUES
 (1, 'Teknik Pendingin', 'Tes akhir untuk mengukur pemahaman materi Teknik Pendingin dan Tata Udara.', 'tes', 'post-test', 4, 1, 30, '2025-08-29 06:03:02', '2025-08-29 06:03:02'),
 (2, 'Kecantikan', 'Tes akhir untuk mengukur pemahaman materi Kecantikan (Perawatan Rambut).', 'tes', 'post-test', 3, 1, 30, '2025-08-29 06:03:02', '2025-08-29 06:03:02'),
 (3, 'Post-Test Tata Boga', 'Tes akhir untuk mengukur pemahaman materi Produk Bakery dan Pastry.', 'tes', 'post-test', 1, 1, 30, '2025-08-29 06:03:02', '2025-08-29 06:03:02'),

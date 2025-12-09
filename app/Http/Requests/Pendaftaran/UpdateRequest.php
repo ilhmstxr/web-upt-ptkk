@@ -5,7 +5,7 @@ namespace App\Http\Requests\Pendaftaran;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Models\Pendaftaran;
-use App\Rules\BidangBelongsToInstansi;
+use App\Rules\KompetensiBelongsToInstansi;
 
 class UpdateRequest extends FormRequest
 {
@@ -22,9 +22,9 @@ class UpdateRequest extends FormRequest
 
         return [
             'instansi_id'      => ['sometimes','required', 'integer', 'exists:instansi,id'],
-            'bidang_id'        => [
-                'sometimes','nullable','integer','exists:bidang,id',
-                new BidangBelongsToInstansi($this->input('instansi_id', $pendaftaran?->instansi_id)),
+            'kompetensi_id'        => [
+                'sometimes','nullable','integer','exists:kompetensi,id',
+                new KompetensiBelongsToInstansi($this->input('instansi_id', $pendaftaran?->instansi_id)),
             ],
             'operator_user_id' => ['sometimes','nullable','integer','exists:users,id'],
             'catatan'          => ['sometimes','nullable','string','max:1000'],
@@ -38,13 +38,13 @@ class UpdateRequest extends FormRequest
     {
         return [
             'instansi_id' => 'instansi',
-            'bidang_id'   => 'bidang',
+            'kompetensi_id'   => 'kompetensi',
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        foreach (['instansi_id','bidang_id','operator_user_id'] as $key) {
+        foreach (['instansi_id','kompetensi_id','operator_user_id'] as $key) {
             if ($this->has($key)) {
                 $this->merge([$key => $this->toNullableInt($key)]);
             }

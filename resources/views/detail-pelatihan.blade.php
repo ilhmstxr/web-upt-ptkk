@@ -147,17 +147,17 @@
                 </div>
             </div>
 
-            <!-- Total Bidang -->
+            <!-- Total Kompetensi -->
             <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200 group hover:shadow-md transition-shadow">
                 <div class="flex flex-col h-full justify-between">
                     <div class="flex items-center gap-3">
                         <div class="p-2 bg-orange-50 text-orange-600 rounded-lg group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-layer-group"></i>
                         </div>
-                        <h3 class="text-gray-500 text-xs uppercase tracking-wide font-semibold">Bidang</h3>
+                        <h3 class="text-gray-500 text-xs uppercase tracking-wide font-semibold">Kompetensi</h3>
                     </div>
                     <div>
-                        <p class="text-3xl font-bold text-gray-900">{{ $pelatihan->bidangPelatihan->count() }}</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $pelatihan->kompetensiPelatihan->count() }}</p>
                         <p class="text-xs text-gray-400 mt-1">Kelas Aktif</p>
                     </div>
                 </div>
@@ -185,8 +185,8 @@
             <!-- Tabs Header -->
             <div class="border-b border-gray-200 px-6 overflow-x-auto">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                    <button onclick="switchTab('bidang')" id="tab-bidang" class="tab-btn active border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                        <i class="fa-solid fa-layer-group mr-2"></i>Daftar Bidang ({{ $pelatihan->bidangPelatihan->count() }})
+                    <button onclick="switchTab('kompetensi')" id="tab-kompetensi" class="tab-btn active border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                        <i class="fa-solid fa-layer-group mr-2"></i>Daftar Kompetensi ({{ $pelatihan->kompetensiPelatihan->count() }})
                     </button>
                     <button onclick="switchTab('peserta')" id="tab-peserta" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
                         <i class="fa-solid fa-users mr-2"></i>Data Peserta
@@ -207,35 +207,35 @@
                 </nav>
             </div>
 
-            <!-- CONTENT 1: DAFTAR BIDANG -->
-            <div id="content-bidang" class="tab-content active p-6 bg-gray-50/30 min-h-[400px]">
+            <!-- CONTENT 1: DAFTAR KOMPETENSI -->
+            <div id="content-kompetensi" class="tab-content active p-6 bg-gray-50/30 min-h-[400px]">
                 <div class="flex justify-between items-center mb-6">
                      <h3 class="text-lg font-bold text-gray-800">Kelas yang tersedia</h3>
                      {{-- <div class="relative w-full max-w-xs">
-                        <input type="text" placeholder="Cari bidang..." class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        <input type="text" placeholder="Cari kompetensi..." class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 shadow-sm">
                         <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                      </div> --}}
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach($pelatihan->bidangPelatihan as $bidang)
+                    @foreach($pelatihan->kompetensiPelatihan as $kompetensi)
                     <!-- Card -->
                     <a href="#" class="group block bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-400 hover:shadow-md transition-all relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-blue-100"></div>
                         <div class="flex justify-between items-start relative z-10">
                             <div class="flex gap-4">
                                 <div class="h-14 w-14 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 text-xl font-bold border border-blue-200 shadow-sm">
-                                    {{ substr($bidang->bidang->nama_bidang ?? 'BD', 0, 2) }}
+                                    {{ substr($kompetensi->kompetensi->nama_kompetensi ?? 'KK', 0, 2) }}
                                 </div>
                                 <div>
-                                    <h4 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{{ $bidang->bidang->nama_bidang ?? 'Nama Bidang' }}</h4>
+                                    <h4 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{{ $kompetensi->kompetensi->nama_kompetensi ?? 'Nama Kompetensi' }}</h4>
                                     <div class="flex items-center gap-2 mt-1">
                                         {{-- <div class="flex -space-x-2"><img class="w-6 h-6 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Budi+Santoso&background=random" alt="Mentor"></div>
                                         <p class="text-xs text-gray-500">Mentor: Budi Santoso</p> --}}
                                     </div>
                                 </div>
                             </div>
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">{{ $bidang->kuota ?? 0 }} Kuota</span>
+                            {{-- <span class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-medium border border-gray-200">{{ $kompetensi->kuota ?? 0 }} Kuota</span> --}}
                         </div>
                         <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
                             <div class="flex gap-4 text-gray-500 text-xs">

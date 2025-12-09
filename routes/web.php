@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExportController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,6 @@ use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\MateriController;
-use App\Http\Controllers\ExportController;
 use App\Http\Controllers\AssessmentAuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Public\CeritaKamiController;
@@ -63,7 +63,7 @@ Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'inde
 Route::get('/kompetensi', [KompetensiController::class, 'index'])
     ->name('kompetensi');
 
-Route::redirect('/bidang-pelatihan', '/kompetensi-pelatihan', 301);
+Route::redirect('/kompetensi-pelatihan', '/kompetensi-pelatihan', 301);
 
 Route::view('/berita',  'pages.berita')->name('news');
 
@@ -139,10 +139,30 @@ Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::cl
 
 Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
     ->name('exports.pendaftaran.single');
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/reports/jawaban-akumulatif/pdf', [ExportController::class, 'jawabanAkumulatifPdf'])
+//         ->name('reports.jawaban-akumulatif.pdf');
+// });
+// Route::middleware(['auth']) // opsional, sesuai kebutuhan
+//     ->get('/exports/report-jawaban-survei', [ExportController::class, 'reportJawabanSurvei'])
+//     ->name('export.report-jawaban-survei');
 
-// Peserta downloads (Rute ini ada duplikasi di bagian bawah, dihapus duplikasinya):
-Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
-Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
+Route::middleware(['auth'])
+    ->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
+    ->name('export.report.pelatihan');
+
+// Export Template Surat Routes
+Route::middleware(['auth'])->prefix('export/template')->name('export.template.')->group(function () {
+    Route::get('rekap-pelatihan/{pelatihanId}', [ExportController::class, 'rekapPelatihan'])->name('rekap-pelatihan');
+    Route::get('peserta-excel/{pelatihanId}', [ExportController::class, 'pesertaExcel'])->name('peserta-excel');
+    Route::get('daftar-instruktur/{pelatihanId}', [ExportController::class, 'daftarInstruktur'])->name('daftar-instruktur');
+    Route::get('biodata-peserta/{pelatihanId}', [ExportController::class, 'biodataPeserta'])->name('biodata-peserta');
+});
+
+// routes/web.php
+Route::middleware(['auth']) // opsional
+    ->get('/reports/jawaban-survei/pdf/{pelatihanId}', [ExportController::class, 'pdfView'])
+    ->name('reports.jawaban-survei.pdf');
 
 // Wizard step views (convenience)
 Route::prefix('pendaftaran/step')->group(function () {
@@ -277,7 +297,23 @@ Route::get('/export-peserta', fn() => Excel::download(new PesertaExport(), 'pese
 
 Route::get('/send', fn() => Mail::to('23082010166@student.upnjatim.ac.id')->send(new TestMail()));
 
-Route::get('api/peserta', fn() => Peserta::with('lampiran', 'bidang', 'pelatihan', 'instansi')->get());
+/*
+|--------------------------------------------------------------------------
+| Data Peserta API
+|--------------------------------------------------------------------------
+*/
+Route::get('api/peserta', fn() => Peserta::with('lampiran', 'kompetensi', 'pelatihan', 'instansi')->get());
+
+/*
+|--------------------------------------------------------------------------
+| Route tambahan / fix
+|--------------------------------------------------------------------------
+*/
+Route::get('/download-file', [PendaftaranController::class, 'download_file'])->name('pendaftaran.download_file');
+Route::get('/cetak-massal', [PendaftaranController::class, 'generateMassal'])->name('pendaftaran.generateMassal');
+Route::get('testing', [PendaftaranController::class, 'testing'])->name('pendaftaran.testing');
+Route::get('/peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])->name('peserta.download-pdf');
+Route::get('/peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])->name('peserta.download-bulk');
 
 Route::get('/cek_icon', fn() => view('cek_icon'));
 Route::get('test-pdf', function () { return view('test-pdf'); });
@@ -299,7 +335,16 @@ if (App::isLocal()) {
     }
 
     Route::get('/test', function () {
-        $result = function_exists('countBidang') ? countBidang() : ['msg' => 'helper countBidang not found'];
+
+        // CUKUP GANTI NAMA FUNGSI DI BAWAH INI
+        // UNTUK MENGETES LOGIKA YANG BERBEDA.
+
+        // $result = SurveyHasilKegiatan();
+        $result = countKompetensi();
+        // $result = testCreateDummyUser();
+        // $result = testSomethingElse();
+
+        // Tampilkan hasilnya
         return response()->json($result);
     });
 }

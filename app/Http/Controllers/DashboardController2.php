@@ -150,8 +150,8 @@ class DashboardController extends Controller
             return redirect()->route('dashboard.home')->with('error', 'Silakan pilih peserta terlebih dahulu.');
         }
 
-        // Ambil tes berdasarkan bidang peserta
-        $tes = Tes::where('bidang_id', $peserta->bidang_id)->get();
+        // Ambil tes berdasarkan kompetensi peserta
+        $tes = Tes::where('kompetensi_id', $peserta->kompetensi_id)->get();
 
         return view("dashboard.pages.{$tipe}.{$tipe}", compact('tes', 'peserta', 'tipe'));
     }

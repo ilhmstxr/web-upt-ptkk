@@ -68,8 +68,7 @@ class PelatihanAktifTable extends BaseWidget
                     ->color('primary')
                     ->url(
                         fn(Pelatihan $record): string =>
-                        // Arahkan ke Halaman Kustom "DetailPelatihan"
-                        DetailPelatihan::getUrl(['recordId' => $record->id])
+                        PelatihanResource::getUrl('view', ['record' => $record])
                     ),
             ]);
     }

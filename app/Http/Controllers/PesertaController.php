@@ -33,7 +33,7 @@ class PesertaController extends Controller
             $template->setValue('email', $peserta->email);
             $template->setValue('asal_instansi', $peserta->instansi->asal_instansi ?? '-');
             $template->setValue('alamat_instansi', $peserta->instansi->alamat_instansi ?? '-');
-            $template->setValue('bidang_keahlian', $peserta->instansi->bidang_keahlian ?? '-');
+            $template->setValue('kompetensi_keahlian', $peserta->instansi->kompetensi_keahlian ?? '-');
             $template->setValue('no_surat_tugas', $peserta->lampiran->no_surat_tugas ?? '-');
 
             // simpan file sementara

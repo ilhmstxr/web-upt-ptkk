@@ -22,9 +22,9 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping
     public function collection()
     {
         if ($this->ids) {
-            return Peserta::with(['instansi', 'pelatihan', 'bidang'])->whereIn('id', $this->ids)->get();
+            return Peserta::with(['instansi', 'pelatihan', 'kompetensi'])->whereIn('id', $this->ids)->get();
         }
-        return Peserta::with(['instansi', 'pelatihan', 'bidang'])->get();
+        return Peserta::with(['instansi', 'pelatihan', 'kompetensi'])->get();
     }
 
     public function headings(): array
@@ -41,7 +41,7 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping
             'Alamat',
             'Asal Instansi',
             'Pelatihan',
-            'Bidang',
+            'Kompetensi',
         ];
     }
 
@@ -59,7 +59,7 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping
             $peserta->alamat,
             $peserta->instansi->asal_instansi ?? '-',
             $peserta->pelatihan->nama_pelatihan ?? '-',
-            $peserta->bidang->nama ?? '-',
+            $peserta->kompetensi->nama_kompetensi ?? '-',
         ];
     }
 }
