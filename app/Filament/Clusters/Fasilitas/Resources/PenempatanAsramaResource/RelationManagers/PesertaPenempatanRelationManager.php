@@ -17,7 +17,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PesertaPenempatanRelationManager extends RelationManager
 {
-    protected static string $relationship = 'pendaftaranPelatihan'; // tetap
+    /**
+     * HARUS sama dengan relasi di Model Pelatihan.
+     * Kalau di Pelatihan kamu relasinya `pendaftaranPelatihans`,
+     * ganti string ini juga.
+     */
+    protected static string $relationship = 'pendaftaranPelatihan';
     protected static ?string $title = 'Peserta Pelatihan';
 
     public function table(Table $table): Table
@@ -59,7 +64,10 @@ class PesertaPenempatanRelationManager extends RelationManager
                     ->formatStateUsing(fn ($state) => $state ? ucfirst($state) : '-')
                     ->alignCenter(),
 
-                // ✅ kolom asrama / kamar ambil dari helper aktif
+                /**
+                 * ✅ ambil penempatan aktif per pelatihan ini
+                 * pakai helper `penempatanAsramaAktif()` di PendaftaranPelatihan
+                 */
                 Tables\Columns\TextColumn::make('asrama_kamar')
                     ->label('Asrama / Kamar')
                     ->state(function (PendaftaranPelatihan $record) {
@@ -69,10 +77,14 @@ class PesertaPenempatanRelationManager extends RelationManager
                             return 'Belum dibagi';
                         }
 
-                        $asrama = $penempatan->kamar->asrama->nama ?? 'Asrama';
-                        $kamar  = $penempatan->kamar->nomor_kamar ?? '-';
+                        // ⚠️ sesuai model hybrid: field asrama = name
+                        $asramaName = $penempatan->kamar->asrama->name ?? 'Asrama';
+                        $kamarNo    = $penempatan->kamar->nomor_kamar ?? '-';
+                        $bedNo      = $penempatan->bed_no ?? null;
 
-                        return "{$asrama} - Kamar {$kamar}";
+                        $bedText = $bedNo ? " (Bed {$bedNo})" : '';
+
+                        return "{$asramaName} - Kamar {$kamarNo}{$bedText}";
                     })
                     ->wrap(),
             ])
@@ -96,29 +108,24 @@ class PesertaPenempatanRelationManager extends RelationManager
                             return;
                         }
 
-                        // ✅ AMBIL PESERTA PALING AMAN
-                        $pendaftaranIds = PendaftaranPelatihan::where('pelatihan_id', $pelatihan->id)
-                            ->pluck('peserta_id');
+                        /**
+                         * ✅ 1) Sync config → DB (Asrama + Kamar)
+                         * (biar allocator pakai data terbaru)
+                         */
+                        $kamarConfig = session('kamar') ?? config('kamar');
+                        $allocator->generateRoomsFromConfig($pelatihan->id, $kamarConfig);
 
-                        $pesertaList = Peserta::whereIn('id', $pendaftaranIds)->get();
+                        /**
+                         * ✅ 2) Allocate peserta yg terdaftar pelatihan ini
+                         */
+                        $result = $allocator->allocatePesertaPerPelatihan($pelatihan->id);
 
-                        if ($pesertaList->isEmpty()) {
-                            Notification::make()
-                                ->title('Tidak ada peserta untuk pelatihan ini')
-                                ->warning()
-                                ->send();
-                            return;
-                        }
-
-                        // ✅ JALANKAN ALOKASI
-                        $allocatedCount = $allocator->reallocate($pelatihan, $pesertaList);
-
-                        // ✅ REFRESH TABLE
+                        // refresh table
                         $this->dispatch('$refresh');
 
                         Notification::make()
                             ->title('Otomasi selesai')
-                            ->body("Terbagi: {$allocatedCount} dari {$pesertaList->count()} peserta.")
+                            ->body("OK={$result['ok']} | skipped={$result['skipped_already_assigned']} | gagal={$result['failed_full']}")
                             ->success()
                             ->send();
                     }),
@@ -128,8 +135,7 @@ class PesertaPenempatanRelationManager extends RelationManager
     }
 
     /**
-     * ✅ PAKSA QUERY HANYA UNTUK PELATIHAN INI
-     * (biar table pasti tampil dan sesuai ownerRecord)
+     * ✅ Query dipaksa hanya peserta pelatihan ini
      */
     protected function getTableQuery(): Builder
     {
@@ -140,7 +146,6 @@ class PesertaPenempatanRelationManager extends RelationManager
             ->where('pelatihan_id', $pelatihan->id)
             ->with([
                 'peserta.instansi',
-                // eager load aman tanpa whereColumn dinamis
                 'penempatanAsrama.kamar.asrama',
             ]);
     }

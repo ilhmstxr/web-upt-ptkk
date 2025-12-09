@@ -2,25 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Kamar extends Model
 {
-    /** @use HasFactory<\Database\Factories\KamarFactory> */
     use HasFactory;
-
-     //protected $connection = 'fasilitas';
 
     protected $table = 'kamar';
 
     protected $fillable = [
         'asrama_id',
         'nomor_kamar',
-        'lantai',
-        'status',
         'total_beds',
         'available_beds',
+        'status', // kalau nggak punya kolom ini, hapus
     ];
 
     public function asrama()
@@ -28,11 +24,8 @@ class Kamar extends Model
         return $this->belongsTo(Asrama::class, 'asrama_id');
     }
 
-
-    public function penempatanAsrama()
+    public function penempatanAsramas()
     {
         return $this->hasMany(PenempatanAsrama::class, 'kamar_id');
     }
-
-    
 }

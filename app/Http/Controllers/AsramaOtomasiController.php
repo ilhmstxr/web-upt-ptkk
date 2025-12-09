@@ -4,44 +4,41 @@ namespace App\Http\Controllers;
 
 use App\Services\AsramaAllocator;
 use App\Models\Pelatihan;
-use App\Models\Peserta;
+use App\Models\PenempatanAsrama;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PenempatanMail;
 
 class AsramaOtomasiController extends Controller
 {
     /**
-     * Jalankan otomasi penempatan kamar asrama untuk suatu pelatihan.
-     *
-     * Mengambil peserta lewat relasi pendaftaranPelatihans dan mengecek
-     * penempatan berdasarkan penempatanAsramas (filter pelatihan_id).
+     * Finalize + allocate penempatan asrama per pelatihan (manual route).
      */
-    public function jalankanOtomasi(int $pelatihanId, AsramaAllocator $allocator): RedirectResponse
+    public function finalizePenempatan(int $pelatihanId, AsramaAllocator $allocator): RedirectResponse
     {
         $pelatihan = Pelatihan::findOrFail($pelatihanId);
 
-        // Ambil peserta yang punya pendaftaran untuk pelatihan ini (opsional: diterima)
-        // dan yang BELUM punya penempatan untuk pelatihan ini.
-        $peserta = Peserta::whereHas('pendaftaranPelatihans', function ($q) use ($pelatihanId) {
-                $q->where('pelatihan_id', $pelatihanId);
+        // 1) generate kamar dari config/session untuk pelatihan ini
+        $allocator->generateRoomsFromConfig($pelatihan->id, session('kamar') ?? config('kamar'));
 
-                // optional: hanya yg diterima (safe-check kalau kolom ada)
-                if (Schema::hasColumn('pendaftaran_pelatihan', 'status_pendaftaran')) {
-                    $q->where('status_pendaftaran', 'diterima');
-                }
-            })
-            ->whereDoesntHave('penempatanAsramas', function ($q) use ($pelatihanId) {
-                $q->where('pelatihan_id', $pelatihanId);
-            })
+        // 2) allocate peserta
+        $result = $allocator->allocatePesertaPerPelatihan($pelatihan->id);
+
+        // 3) kirim email ke yang baru ditempatkan
+        $penempatanBaru = PenempatanAsrama::with('pendaftaran.peserta', 'kamar.asrama', 'pelatihan')
+            ->whereIn('pendaftaran_id', collect($result['details'])->pluck('pendaftaran_id'))
             ->get();
 
-        if ($peserta->isEmpty()) {
-            return back()->with('warning', 'Tidak ada peserta yang perlu ditempatkan untuk pelatihan ini.');
+        foreach ($penempatanBaru as $p) {
+            $email = $p->pendaftaran->peserta->email ?? null;
+            if ($email) {
+                Mail::to($email)->send(new PenempatanMail($p));
+            }
         }
 
-        // Jalankan allocator (AsramaAllocator akan handle logika detail)
-        $allocator->allocate($pelatihan, $peserta);
-
-        return back()->with('success', 'Otomasi penempatan kamar asrama berhasil dijalankan.');
+        return back()->with(
+            'success',
+            "Finalize penempatan: OK {$result['ok']}, skipped {$result['skipped_already_assigned']}, gagal {$result['failed_full']}"
+        );
     }
 }

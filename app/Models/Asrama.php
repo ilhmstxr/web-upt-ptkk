@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 
 class Asrama extends Model
 {
     use HasFactory;
 
-     //protected $connection = 'fasilitas';
-
     protected $table = 'asrama';
 
     protected $fillable = [
-        'nama',
-        'jenis_kelamin',
-        'alamat',
+        'pelatihan_id',
+        'name',
+        'gender',
+        'total_kamar',
     ];
 
     public function kamars()
@@ -25,98 +25,66 @@ class Asrama extends Model
     }
 
     /**
-     * Ambil denah kamar dari config/kamar.php berdasar nama asrama.
+     * Sync Asrama + Kamar dari config/session ke DB.
+     * Dipakai Filament sebelum list tampil.
+     *
+     * Struktur config kamar:
+     * [
+     *   "Mawar" => [
+     *      ["no"=>1,"bed"=>4], ...
+     *   ],
+     *   "Melati Bawah" => [...]
+     * ]
      */
-    public function getDenahConfig(): array
+    public static function syncFromConfig(?int $pelatihanId = null, ?array $kamarConfig = null): void
     {
-        $denah = config('kamar', []);
-        return $denah[$this->nama] ?? [];
-    }
+        $pelatihanId = $pelatihanId ?? session('pelatihan_id');
+        if (!$pelatihanId) return;
 
-    /**
-     * ✅ AUTO SYNC: bikin record Asrama dari config kamar.php kalau belum ada di DB.
-     * Dipanggil dari Resource saat list dibuka.
-     */
-    public static function syncFromConfig(): void
-    {
-        $denah = config('kamar', []);
+        $kamarConfig = $kamarConfig ?? (session('kamar') ?? config('kamar'));
+        if (!$kamarConfig || !is_array($kamarConfig)) return;
 
-        if (empty($denah) || !is_array($denah)) {
-            return;
-        }
+        DB::transaction(function () use ($pelatihanId, $kamarConfig) {
 
-        foreach (array_keys($denah) as $namaAsrama) {
-            static::firstOrCreate(
-                ['nama' => $namaAsrama],
-                [
-                    'jenis_kelamin' => 'Campur', // default kalau belum di-set
-                    'alamat' => null,
-                ]
-            );
-        }
-    }
+            foreach ($kamarConfig as $blok => $rooms) {
 
-    /**
-     * Virtual column: total_bed_config
-     */
-    public function getTotalBedConfigAttribute(): int
-    {
-        $rooms = $this->getDenahConfig();
-        $total = 0;
+                // tentukan gender blok (sesuaikan aturan kamu)
+                $gender = in_array($blok, ['Melati Bawah', 'Tulip Bawah'])
+                    ? 'Laki-laki'
+                    : 'Perempuan';
 
-        foreach ($rooms as $r) {
-            if (is_numeric($r['bed'] ?? null)) {
-                $total += (int) $r['bed'];
+                // create / update asrama per pelatihan
+                $asrama = self::updateOrCreate(
+                    [
+                        'pelatihan_id' => $pelatihanId,
+                        'name'         => $blok,
+                    ],
+                    [
+                        'gender'      => $gender,
+                        'total_kamar' => count($rooms),
+                    ]
+                );
+
+                // sync kamar
+                foreach ($rooms as $r) {
+                    $bed = $r['bed'];
+
+                    // kalau rusak / null -> skip allocator tapi kamar tetap ada di DB biar kebaca denah
+                    $bedsNumeric = is_numeric($bed) ? (int)$bed : 0;
+
+                    Kamar::updateOrCreate(
+                        [
+                            'asrama_id'    => $asrama->id,
+                            'nomor_kamar'  => (string)$r['no'],
+                        ],
+                        [
+                            'total_beds'     => $bedsNumeric,
+                            'available_beds' => $bedsNumeric,
+                            'status'         => is_numeric($bed) ? 'Aktif' : ( $bed === 'rusak' ? 'Rusak' : 'Perbaikan'),
+                        ]
+                    );
+                }
             }
-        }
-
-        return $total;
-    }
-
-    /**
-     * Virtual column: kamar_rusak_config
-     */
-    public function getKamarRusakConfigAttribute(): int
-    {
-        $rooms = $this->getDenahConfig();
-        return collect($rooms)->where('bed', 'rusak')->count();
-    }
-
-    /**
-     * Virtual column: deskripsi_fasilitas
-     */
-    public function getDeskripsiFasilitasAttribute(): string
-    {
-        $rooms = $this->getDenahConfig();
-
-        if (empty($rooms)) {
-            $kamarCount = $this->kamars()->count();
-            $bedsTotal  = $this->kamars()->sum('total_beds');
-            return "Terdaftar {$kamarCount} kamar, total kapasitas {$bedsTotal} bed (berdasarkan database).";
-        }
-
-        $totalKamar = count($rooms);
-        $bedCount   = 0;
-        $rusak      = 0;
-        $unknown    = 0;
-
-        foreach ($rooms as $r) {
-            $bed = $r['bed'] ?? null;
-
-            if ($bed === 'rusak') { $rusak++; continue; }
-            if (is_numeric($bed)) { $bedCount += (int) $bed; continue; }
-
-            $unknown++;
-        }
-
-        $parts = [
-            "Total {$totalKamar} kamar",
-            "kapasitas bed terdata {$bedCount}",
-        ];
-
-        if ($rusak > 0)   $parts[] = "{$rusak} kamar rusak";
-        if ($unknown > 0) $parts[] = "{$unknown} kamar belum terdata bed-nya";
-
-        return implode(', ', $parts) . '.';
+        });
     }
 }

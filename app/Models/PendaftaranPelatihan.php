@@ -70,7 +70,8 @@ class PendaftaranPelatihan extends Model
     {
         return $this->penempatanAsrama()
             ->where('pelatihan_id', $this->pelatihan_id)
-            ->first();
+            ->latest()
+            ->first(); 
     }
 
 }

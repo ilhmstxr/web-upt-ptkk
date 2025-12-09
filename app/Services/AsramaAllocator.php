@@ -4,346 +4,165 @@ namespace App\Services;
 
 use App\Models\Asrama;
 use App\Models\Kamar;
-use App\Models\Peserta;
-use App\Models\Pelatihan;
 use App\Models\PenempatanAsrama;
-use Illuminate\Support\Collection;
+use App\Models\PendaftaranPelatihan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class AsramaAllocator
 {
     /**
-     * RE-ALLOCATE TOTAL:
-     * - hapus penempatan lama pelatihan ini
-     * - reset available_beds = total_beds untuk semua kamar non-rusak
-     * - bagi ulang dari nol sesuai aturan
+     * Mapping blok berdasarkan gender.
+     * Boleh kamu ubah sesuai aturan.
      */
-    public function reallocate(Pelatihan $pelatihan, Collection $pesertaList): int
+    protected array $blokByGender = [
+        'Laki-laki' => ['Melati Bawah', 'Tulip Bawah'],
+        'Perempuan' => ['Mawar', 'Melati Atas', 'Tulip Atas'],
+    ];
+
+    /**
+     * STEP 1:
+     * Generate struktur asrama/kamar di DB dari config, PER PELATIHAN.
+     * Dipanggil sekali sebelum allocate.
+     */
+    public function generateRoomsFromConfig(int $pelatihanId, ?array $overrideConfig = null): void
     {
-        return DB::transaction(function () use ($pelatihan, $pesertaList) {
+        $config = $overrideConfig ?? config('kamar');
 
-            // 0) hapus penempatan lama pelatihan ini
-            PenempatanAsrama::where('pelatihan_id', $pelatihan->id)->delete();
+        DB::transaction(function () use ($pelatihanId, $config) {
 
-            // 1) reset bed kamar (lebih aman terhadap variasi status & kolom NULL)
-            $resetQuery = Kamar::query()
-                ->where(function ($q) {
-                    $q->whereNull('status')
-                      ->orWhereRaw('LOWER(status) != ?', ['rusak']);
-                });
+            foreach ($this->blokByGender as $gender => $blokList) {
 
-            $updateData = [
-                'status' => 'Tersedia',
-            ];
+                foreach ($blokList as $blok) {
+                    $rooms = $config[$blok] ?? [];
 
-            // hanya reset available_beds kalau kolomnya memang ada
-            if (Schema::hasColumn('kamar', 'available_beds')) {
-                $updateData['available_beds'] = DB::raw('total_beds');
+                    // create/update Asrama
+                    $asrama = Asrama::updateOrCreate(
+                        [
+                            'pelatihan_id' => $pelatihanId,
+                            'name'         => $blok,
+                            'gender'       => $gender,
+                        ],
+                        [
+                            'total_kamar' => collect($rooms)
+                                ->filter(fn ($r) => is_numeric($r['bed']) && (int)$r['bed'] > 0)
+                                ->count(),
+                        ]
+                    );
+
+                    // create/update each room
+                    foreach ($rooms as $room) {
+                        $no  = (int) ($room['no'] ?? 0);
+                        $bed = $room['bed'] ?? null;
+
+                        $isActive = is_numeric($bed) && (int)$bed > 0;
+
+                        Kamar::updateOrCreate(
+                            [
+                                'asrama_id'   => $asrama->id,
+                                'nomor_kamar' => $no,
+                            ],
+                            [
+                                'pelatihan_id'   => $pelatihanId,
+                                'total_beds'     => $isActive ? (int)$bed : 0,
+                                'available_beds' => $isActive ? (int)$bed : 0,
+                                'is_active'      => $isActive,
+                            ]
+                        );
+                    }
+                }
             }
-
-            $resetQuery->update($updateData);
-
-            // 2) lanjut allocate normal dari kondisi fresh
-            return $this->allocateFresh($pelatihan, $pesertaList);
         });
     }
 
     /**
-     * Allocate dari kondisi fresh (tanpa penempatan lama).
-     * 3 tahap:
-     * 1) Tahap Asrama single jenis_kelamin (lock per asrama).
-     * 2) Tahap campur boleh dalam 1 asrama, tetapi kamar tetap 1 jenis_kelamin.
-     * 3) Tahap darurat: kamar besar >= 8 bed boleh campur dalam 1 kamar.
+     * STEP 2:
+     * Allocate peserta ke kamar/bed secara permanen.
+     * Hasil masuk penempatan_asrama.
      */
-    protected function allocateFresh(Pelatihan $pelatihan, Collection $pesertaList): int
+    public function allocatePesertaPerPelatihan(int $pelatihanId): array
     {
-        // =========================
-        // NORMALISASI JENIS KELAMIN PESERTA
-        // =========================
-        $laki = $pesertaList
-            ->filter(fn ($p) => $this->normJK($p?->jenis_kelamin) === 'laki-laki')
-            ->values();
+        return DB::transaction(function () use ($pelatihanId) {
 
-        $perem = $pesertaList
-            ->filter(fn ($p) => $this->normJK($p?->jenis_kelamin) === 'perempuan')
-            ->values();
+            // ambil semua pendaftaran pelatihan ini
+            $pendaftaranList = PendaftaranPelatihan::with('peserta')
+                ->where('pelatihan_id', $pelatihanId)
+                ->orderBy('id')
+                ->get();
 
-        $unknown = $pesertaList
-            ->reject(fn ($p) => in_array($this->normJK($p?->jenis_kelamin), ['laki-laki', 'perempuan'], true))
-            ->values();
+            $result = [
+                'ok' => 0,
+                'skipped_already_assigned' => 0,
+                'failed_full' => 0,
+                'details' => [],
+            ];
 
-        // =========================
-        // AMBIL KAMAR NON RUSAK & BED POSITIF
-        // =========================
-        $kamarAll = Kamar::with('asrama')
-            ->where(function ($q) {
-                $q->whereNull('status')
-                  ->orWhereRaw('LOWER(status) != ?', ['rusak']);
-            })
-            ->where('total_beds', '>', 0)
-            ->orderBy('asrama_id')
-            ->orderBy('lantai')
-            ->orderBy('nomor_kamar')
-            ->get()
-            ->each(function ($k) {
-                // fallback available_beds kalau null
-                if (is_null($k->available_beds)) {
-                    $k->available_beds = (int) $k->total_beds;
-                }
-            });
+            foreach ($pendaftaranList as $pend) {
 
-        if ($kamarAll->isEmpty() || $pesertaList->isEmpty()) {
-            return 0; // gak ada kamar valid atau peserta kosong
-        }
-
-        $count = 0;
-
-        // =========================
-        // TAHAP 1: 1 asrama hanya 1 jenis_kelamin
-        // =========================
-        $asramaLock = collect(); // asrama_id => 'laki-laki' / 'perempuan'
-
-        [$sisaLaki, $t1Laki]   = $this->assignStage1($pelatihan, $laki,  $kamarAll, 'laki-laki', $asramaLock);
-        [$sisaPerem, $t1Perem] = $this->assignStage1($pelatihan, $perem, $kamarAll, 'perempuan', $asramaLock);
-
-        $count += $t1Laki + $t1Perem;
-
-        // =========================
-        // TAHAP 2: asrama boleh campur, kamar tetap 1 gender
-        // =========================
-        $queue2 = $sisaLaki->concat($sisaPerem)->concat($unknown)->values();
-        if ($queue2->isNotEmpty()) {
-            $count += $this->assignStage2($pelatihan, $queue2, $kamarAll);
-        }
-
-        // =========================
-        // TAHAP 3: darurat kamar besar >= 8 bed boleh campur kamar
-        // =========================
-        $sisa3 = $this->getUnassigned($pelatihan, $pesertaList);
-        if ($sisa3->isNotEmpty()) {
-            $count += $this->assignStage3($pelatihan, $sisa3, $kamarAll);
-        }
-
-        return $count;
-    }
-
-    /**
-     * Helper bed aman:
-     * available_beds kalau null -> fallback total_beds
-     */
-    protected function bedsLeft(Kamar $kamar): int
-    {
-        $avail = $kamar->available_beds;
-        if ($avail === null) {
-            $avail = $kamar->total_beds;
-        }
-        return max(0, (int) $avail);
-    }
-
-    /**
-     * Stage 1:
-     * Lock asrama ke 1 jenis_kelamin.
-     */
-    protected function assignStage1(
-        Pelatihan $pelatihan,
-        Collection $peserta,
-        Collection $kamarAll,
-        string $jk,
-        Collection $asramaLock
-    ): array {
-        $unassigned = collect();
-        $count = 0;
-
-        foreach ($peserta as $p) {
-            $assigned = false;
-
-            foreach ($kamarAll as $kamar) {
-                $asrama = $kamar->asrama;
-                if (! $asrama) continue;
-
-                // asrama rule berdasarkan kolom jenis_kelamin
-                $jkAsrama = $this->normJK($asrama->jenis_kelamin ?? null); // null = campur bebas
-                if ($jkAsrama && $jkAsrama !== $jk) continue;
-
-                // lock rule: kalau asrama sudah dipakai gender lain → skip tahap 1
-                if ($asramaLock->has($asrama->id) && $asramaLock->get($asrama->id) !== $jk) {
+                // skip kalau sudah pernah ditempatkan
+                if (PenempatanAsrama::where('pendaftaran_id', $pend->id)->exists()) {
+                    $result['skipped_already_assigned']++;
                     continue;
                 }
 
-                if ($this->bedsLeft($kamar) <= 0) continue;
-
-                // kamar tidak boleh campur dalam tahap ini
-                if ($this->roomHasOtherJK($pelatihan, $kamar, $jk)) continue;
-
-                $this->store($pelatihan, $p, $asrama, $kamar);
-                $this->decBed($kamar);
-
-                // set lock asrama
-                $asramaLock->put($asrama->id, $jk);
-
-                $assigned = true;
-                $count++;
-                break;
-            }
-
-            if (! $assigned) $unassigned->push($p);
-        }
-
-        return [$unassigned, $count];
-    }
-
-    /**
-     * Stage 2:
-     * asrama boleh campur,
-     * kamar tetap 1 jenis_kelamin.
-     */
-    protected function assignStage2(
-        Pelatihan $pelatihan,
-        Collection $queue,
-        Collection $kamarAll
-    ): int {
-        $count = 0;
-
-        foreach ($queue as $p) {
-            $jk = $this->normJK($p?->jenis_kelamin);
-
-            foreach ($kamarAll as $kamar) {
-                $asrama = $kamar->asrama;
-                if (! $asrama) continue;
-
-                if ($this->bedsLeft($kamar) <= 0) continue;
-
-                // kamar tetap gak boleh campur jenis_kelamin (jika jk diketahui)
-                if ($jk && $this->roomHasOtherJK($pelatihan, $kamar, $jk)) {
+                $gender = $pend->peserta->jenis_kelamin ?? null;
+                if (!$gender || !isset($this->blokByGender[$gender])) {
+                    $result['failed_full']++;
+                    $result['details'][] = [
+                        'pendaftaran_id' => $pend->id,
+                        'reason' => 'gender tidak valid / kosong',
+                    ];
                     continue;
                 }
 
-                $this->store($pelatihan, $p, $asrama, $kamar);
-                $this->decBed($kamar);
+                // cari kamar aktif dengan available_beds > 0 sesuai gender
+                $kamar = Kamar::where('pelatihan_id', $pelatihanId)
+                    ->whereHas('asrama', fn($q) => $q->where('gender', $gender))
+                    ->where('is_active', true)
+                    ->where('available_beds', '>', 0)
+                    ->orderBy('asrama_id')
+                    ->orderBy('nomor_kamar')
+                    ->lockForUpdate()
+                    ->first();
 
-                $count++;
-                break;
+                if (!$kamar) {
+                    $result['failed_full']++;
+                    $result['details'][] = [
+                        'pendaftaran_id' => $pend->id,
+                        'reason' => 'kamar penuh',
+                    ];
+                    continue;
+                }
+
+                // bed_no = total_beds - available_beds + 1
+                $bedNo = ($kamar->total_beds - $kamar->available_beds) + 1;
+
+                PenempatanAsrama::create([
+                    'pendaftaran_id' => $pend->id,
+                    'kamar_id'       => $kamar->id,
+                    'bed_no'         => $bedNo,
+                ]);
+
+                $kamar->decrement('available_beds');
+
+                $result['ok']++;
+                $result['details'][] = [
+                    'pendaftaran_id' => $pend->id,
+                    'kamar_id' => $kamar->id,
+                    'bed_no' => $bedNo,
+                ];
             }
-        }
 
-        return $count;
+            return $result;
+        });
     }
 
     /**
-     * Stage 3:
-     * Darurat: kamar besar >= 8 bed,
-     * boleh campur dalam 1 kamar.
+     * Helper ambil penempatan peserta (buat dashboard/email)
      */
-    protected function assignStage3(
-        Pelatihan $pelatihan,
-        Collection $queue,
-        Collection $kamarAll
-    ): int {
-        $count = 0;
-
-        $kamarBesar = $kamarAll->filter(fn ($k) => (int) $k->total_beds >= 8);
-
-        foreach ($queue as $p) {
-            foreach ($kamarBesar as $kamar) {
-                if ($this->bedsLeft($kamar) <= 0) continue;
-
-                $asrama = $kamar->asrama;
-                if (! $asrama) continue;
-
-                $this->store($pelatihan, $p, $asrama, $kamar);
-                $this->decBed($kamar);
-
-                $count++;
-                break;
-            }
-        }
-
-        return $count;
-    }
-
-    /**
-     * ✅ FIX MULTI-DB:
-     * Cek apakah kamar sudah terisi jenis_kelamin lain dalam pelatihan ini
-     * TANPA join tabel peserta (hindari cross-connection).
-     */
-    protected function roomHasOtherJK(Pelatihan $pelatihan, Kamar $kamar, string $jk): bool
+    public function getPenempatanByPendaftaran(int $pendaftaranId)
     {
-        $pesertaIds = PenempatanAsrama::where('pelatihan_id', $pelatihan->id)
-            ->where('kamar_id', $kamar->id)
-            ->pluck('peserta_id');
-
-        if ($pesertaIds->isEmpty()) {
-            return false;
-        }
-
-        $existingJK = Peserta::whereIn('id', $pesertaIds)
-            ->pluck('jenis_kelamin')
-            ->map(fn ($x) => $this->normJK($x))
-            ->filter()
+        return PenempatanAsrama::with('kamar.asrama')
+            ->where('pendaftaran_id', $pendaftaranId)
             ->first();
-
-        return $existingJK && $existingJK !== $jk;
-    }
-
-    /**
-     * Ambil peserta yang belum punya penempatan setelah tahap 1+2.
-     */
-    protected function getUnassigned(Pelatihan $pelatihan, Collection $allPeserta): Collection
-    {
-        $placedIds = PenempatanAsrama::where('pelatihan_id', $pelatihan->id)
-            ->pluck('peserta_id')
-            ->unique();
-
-        return $allPeserta
-            ->reject(fn ($p) => $placedIds->contains($p->id))
-            ->values();
-    }
-
-    protected function store(Pelatihan $pelatihan, Peserta $peserta, Asrama $asrama, Kamar $kamar): void
-    {
-        PenempatanAsrama::updateOrCreate(
-            [
-                'pelatihan_id' => $pelatihan->id,
-                'peserta_id'   => $peserta->id,
-            ],
-            [
-                'asrama_id' => $asrama->id,
-                'kamar_id'  => $kamar->id,
-                'periode'   => $pelatihan->periode ?? null,
-            ]
-        );
-    }
-
-    protected function decBed(Kamar $kamar): void
-    {
-        $kamar->available_beds = max(0, $this->bedsLeft($kamar) - 1);
-
-        if ($kamar->available_beds === 0) {
-            $kamar->status = 'Penuh';
-        }
-
-        $kamar->save();
-    }
-
-    /**
-     * Normalisasi jenis_kelamin.
-     */
-    protected function normJK(?string $value): ?string
-    {
-        $v = strtolower(trim($value ?? ''));
-        if ($v === '') return null;
-
-        if (in_array($v, ['l', 'laki-laki', 'laki laki', 'pria', 'putra', 'male'], true)) {
-            return 'laki-laki';
-        }
-
-        if (in_array($v, ['p', 'perempuan', 'wanita', 'putri', 'female'], true)) {
-            return 'perempuan';
-        }
-
-        if ($v === 'campur') return null;
-
-        return null;
     }
 }

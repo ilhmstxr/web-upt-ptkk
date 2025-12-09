@@ -19,7 +19,6 @@ class PenempatanAsramaResource extends Resource
 {
     /**
      * ✅ BASIS LIST = PELATIHAN
-     * klik pelatihan -> masuk ke tabel peserta + asrama
      */
     protected static ?string $model = Pelatihan::class;
     protected static ?string $cluster = Fasilitas::class;
@@ -31,16 +30,20 @@ class PenempatanAsramaResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form->schema([]); // read-only
+        // Resource ini read-only (pengelolaan lewat view + relation manager)
+        return $form->schema([]);
     }
 
     /**
-     * ✅ load count peserta biar list pelatihan informatif
+     * ✅ eager load count peserta biar list informatif
+     * Pastikan relasi ini ada di Model Pelatihan:
+     * public function pendaftaranPelatihan(){ return $this->hasMany(...); }
      */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withCount('pendaftaranPelatihan');
+            ->withCount('pendaftaranPelatihan')
+            ->orderByDesc('tanggal_mulai');
     }
 
     public static function table(Table $table): Table
@@ -59,12 +62,13 @@ class PenempatanAsramaResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn (?string $state): string => match (strtolower($state ?? '')) {
                         'aktif' => 'success',
                         'belum dimulai' => 'info',
                         'selesai' => 'gray',
                         default => 'gray',
                     })
+                    ->formatStateUsing(fn (?string $state) => $state ? ucfirst($state) : '-')
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('pendaftaran_pelatihan_count')
@@ -86,9 +90,13 @@ class PenempatanAsramaResource extends Resource
                 Tables\Actions\ViewAction::make()
                     ->label('Kelola Asrama')
                     ->icon('heroicon-o-home-modern'),
-            ]);
+            ])
+            ->bulkActions([]); // tidak perlu bulk
     }
 
+    /**
+     * ✅ Relation manager tabel peserta & otomasi penempatan
+     */
     public static function getRelations(): array
     {
         return [
