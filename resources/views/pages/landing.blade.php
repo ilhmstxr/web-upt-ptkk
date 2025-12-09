@@ -168,7 +168,7 @@ $latestBeritas = Berita::query()
 <script>
   (function () {
     const track = document.getElementById('hero-track');
-    
+
     // Jika tidak ada track (misal data kosong), hentikan script
     if (!track) return;
 
@@ -178,21 +178,21 @@ $latestBeritas = Berita::query()
     const next = document.getElementById('hero-next');
 
     // KONFIGURASI DINAMIS DARI BLADE
-    const REAL_COUNT = {{ $count }}; 
+    const REAL_COUNT = {{ $count }};
     // Kita menambahkan 2 clone di kiri, jadi slide "Real" pertama ada di index 2
-    const CLONES_LEFT_COUNT = 2; 
-    
-    const FIRST_REAL = CLONES_LEFT_COUNT; 
+    const CLONES_LEFT_COUNT = 2;
+
+    const FIRST_REAL = CLONES_LEFT_COUNT;
     const LAST_REAL = FIRST_REAL + REAL_COUNT - 1;
-    
+
     // Identifikasi index clone untuk swapping
     // Clone kiri (sebelum real pertama) adalah clone dari index terakhir
-    const LEFT_CLONE_BEFORE_FIRST = FIRST_REAL - 1; 
+    const LEFT_CLONE_BEFORE_FIRST = FIRST_REAL - 1;
     // Clone kanan (setelah real terakhir) adalah clone dari index 0
-    const RIGHT_CLONE_AFTER_LAST = LAST_REAL + 1; 
+    const RIGHT_CLONE_AFTER_LAST = LAST_REAL + 1;
 
     const ANIM = 300,
-      BUF = 40; 
+      BUF = 40;
 
     let currentIndex = FIRST_REAL;
     let isTransitioning = false;
@@ -229,7 +229,7 @@ $latestBeritas = Berita::query()
 
     function smoothScrollToIndex(idx, cb) {
       const prevSnap = track.style.scrollSnapType;
-      track.style.scrollSnapType = 'none'; 
+      track.style.scrollSnapType = 'none';
 
       const target = centerOffset(idx);
 
@@ -269,7 +269,7 @@ $latestBeritas = Berita::query()
       const delta =
         centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
 
-      track.scrollLeft += delta; 
+      track.scrollLeft += delta;
 
       track.style.scrollBehavior = prevBehavior || '';
       track.style.scrollSnapType = prevSnap || '';
@@ -289,7 +289,7 @@ $latestBeritas = Berita::query()
         setActive(FIRST_REAL); // Set visual aktif ke tujuan agar smooth
         setDots(0);
 
-        const cloneIdx = RIGHT_CLONE_AFTER_LAST; 
+        const cloneIdx = RIGHT_CLONE_AFTER_LAST;
 
         smoothScrollToIndex(cloneIdx, () => {
           rafSwap(() => {
@@ -319,7 +319,7 @@ $latestBeritas = Berita::query()
         setActive(LAST_REAL);
         setDots(REAL_COUNT - 1); // Dot terakhir
 
-        const cloneIdx = LEFT_CLONE_BEFORE_FIRST; 
+        const cloneIdx = LEFT_CLONE_BEFORE_FIRST;
 
         smoothScrollToIndex(cloneIdx, () => {
           rafSwap(() => {
@@ -437,7 +437,7 @@ $latestBeritas = Berita::query()
     function startAutoPlay() {
       // Hapus timer lama biar gak numpuk
       stopAutoPlay();
-      
+
       // Jalankan timer baru
       autoPlayTimer = setInterval(() => {
         // Hanya pindah jika sedang tidak ada animasi transisi
@@ -496,7 +496,12 @@ $latestBeritas = Berita::query()
   @elseif(!empty($cerita) && !empty($cerita->content))
     {{ \Illuminate\Support\Str::limit(strip_tags($cerita->content), 320) }}
   @else
-    Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi memberikan fasilitas melalui pelatihan berbasis kompetensi...
+    Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi
+    memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung
+    oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi,
+    UPT PTKK terus memperkuat posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata.
+    Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada
+    kemajuan pendidikan di Jawa Timur.
   @endif
 </p>
 

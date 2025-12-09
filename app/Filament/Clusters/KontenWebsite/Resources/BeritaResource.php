@@ -12,7 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
-use Filament\Forms\Components\FileUpload; // Pastikan ini diimpor
+use Filament\Forms\Components\FileUpload;
 
 class BeritaResource extends Resource
 {
@@ -44,7 +44,6 @@ class BeritaResource extends Resource
                                     ->maxLength(255)
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function (?string $state, callable $set) {
-                                        // Update slug secara otomatis (hanya saat input blur/hilang fokus)
                                         $set('slug', Str::slug($state));
                                     }),
 
@@ -52,15 +51,14 @@ class BeritaResource extends Resource
                                     ->label('Slug (URL)')
                                     ->required()
                                     ->maxLength(255)
-                                    // Memastikan slug unik kecuali saat edit record yang sama
                                     ->unique(Berita::class, 'slug', ignoreRecord: true)
                                     ->helperText('Biarkan terisi otomatis dari judul atau ubah jika perlu.'),
 
                                 Forms\Components\RichEditor::make('content')
                                     ->label('Konten Berita')
                                     ->required()
-                                    ->fileAttachmentsDisk('public')
-                                    ->fileAttachmentsDirectory('berita_content')
+                                    ->fileAttachmentsDisk('public') // ⬅ simpan lampiran di disk public
+                                    ->fileAttachmentsDirectory('konten-website/berita/content') // ⬅ folder rapi
                                     ->columnSpanFull(),
                             ]),
 
@@ -68,37 +66,32 @@ class BeritaResource extends Resource
                         Forms\Components\Group::make()
                             ->columnSpan(['sm' => 2, 'lg' => 1])
                             ->schema([
-                                // Komponen FileUpload yang Eksplisit
                                 FileUpload::make('image')
                                     ->label('Gambar Utama')
                                     ->image()
-                                    ->directory('berita')
-                                    ->disk('public')          // <--- Sangat penting: Tentukan disk public
-                                    ->visibility('public')    // <--- Sangat penting: Tentukan visibility public
+                                    ->disk('public') // ⬅ simpan di storage/app/public
+                                    ->directory('konten-website/berita/thumbnail') // ⬅ folder khusus thumbnail berita
                                     ->imageCropAspectRatio('16:9')
                                     ->imageEditor()
                                     ->maxSize(4096)
                                     ->helperText('Unggah gambar utama (maks 4MB) dengan rasio 16:9.'),
-                                    
+
                                 Forms\Components\Toggle::make('is_published')
                                     ->label('Publikasikan Segera')
                                     ->default(false)
-                                    ->reactive() // Membuat field di bawahnya bisa bereaksi
+                                    ->reactive()
                                     ->helperText('Aktifkan untuk menampilkan berita di website.'),
 
-                                // DateTimePicker
                                 Forms\Components\DateTimePicker::make('published_at')
                                     ->label('Tanggal & Waktu Publikasi')
                                     ->nullable()
-                                    ->default(now()) // Default ke waktu sekarang
+                                    ->default(now())
                                     ->withoutSeconds()
                                     ->displayFormat('d F Y H:i')
                                     ->placeholder('Pilih tanggal & jam publikasi (opsional)')
-                                    // Hanya tampilkan jika 'is_published' aktif
                                     ->visible(fn (Forms\Get $get): bool => (bool) $get('is_published'))
-                                    // Wajib diisi jika 'is_published' aktif
                                     ->required(fn (Forms\Get $get): bool => (bool) $get('is_published'))
-                                    ->helperText('Waktu publikasi yang sebenarnya. Wajib diisi jika status diaktifkan.'),
+                                    ->helperText('Wajib diisi jika status publikasi diaktifkan.'),
                             ]),
                     ]),
             ]);
@@ -110,8 +103,9 @@ class BeritaResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
+                    ->disk('public') // ⬅ ambil dari disk public
                     ->size(80)
-                    ->square(), // Menggunakan accessor bawaan Filament (perlu `php artisan storage:link`)
+                    ->square(),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Judul Berita')
@@ -129,7 +123,11 @@ class BeritaResource extends Resource
                     ->label('Tgl Publikasi')
                     ->dateTime('d M Y H:i')
                     ->sortable()
-                    ->tooltip(fn (Berita $record): ?string => $record->published_at ? $record->published_at->format('d M Y H:i') : null),
+                    ->tooltip(fn (Berita $record): ?string =>
+                        $record->published_at
+                            ? $record->published_at->format('d M Y H:i')
+                            : null
+                    ),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
@@ -145,7 +143,9 @@ class BeritaResource extends Resource
 
                 Tables\Filters\Filter::make('published_recently')
                     ->label('Baru Dipublikasi (7 hari)')
-                    ->query(fn (Builder $query): Builder => $query->where('published_at', '>=', now()->subDays(7)))
+                    ->query(fn (Builder $query): Builder =>
+                        $query->where('published_at', '>=', now()->subDays(7))
+                    )
                     ->toggle(),
             ])
             ->actions([
@@ -173,7 +173,7 @@ class BeritaResource extends Resource
             'index'  => Pages\ListBeritas::route('/'),
             'create' => Pages\CreateBerita::route('/create'),
             'edit'   => Pages\EditBerita::route('/{record}/edit'),
-            'view'   => Pages\ViewBerita::route('/{record}'), // Menambahkan halaman view
+            'view'   => Pages\ViewBerita::route('/{record}'),
         ];
     }
 }

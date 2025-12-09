@@ -14,7 +14,7 @@ use Filament\Tables\Table;
 
 class KompetensiResource extends Resource
 {
-    protected static ?string $model = \App\Models\Kompetensi::class;
+    protected static ?string $model = Kompetensi::class;
 
     protected static ?string $cluster = Pelatihan::class;
 
@@ -28,6 +28,7 @@ class KompetensiResource extends Resource
         return $form
             ->columns(3)
             ->schema([
+                // ==================== KOLOM KIRI ====================
                 Forms\Components\Group::make()
                     ->schema([
                         Forms\Components\Section::make('Informasi Kompetensi')
@@ -43,9 +44,14 @@ class KompetensiResource extends Resource
                                             ->label('Kode Kompetensi')
                                             ->maxLength(255),
 
-                                        Forms\Components\TextInput::make('kelas_keterampilan')
-                                            ->label('Kelas Keterampilan')
-                                            ->maxLength(255)
+                                        Forms\Components\Select::make('kelas_keterampilan')
+                                            ->label('Kelompok')
+                                            ->options([
+                                                1 => 'Kelas Keterampilan & Teknik',
+                                                0 => 'Milenial Job Center',
+                                            ])
+                                            ->required()
+                                            ->native(false)
                                             ->columnSpanFull(),
 
                                         Forms\Components\Textarea::make('deskripsi')
@@ -55,8 +61,10 @@ class KompetensiResource extends Resource
                                             ->columnSpanFull(),
                                     ]),
                             ]),
-                    ])->columnSpan(['lg' => 2]),
+                    ])
+                    ->columnSpan(['lg' => 2]),
 
+                // ==================== KOLOM KANAN ====================
                 Forms\Components\Group::make()
                     ->schema([
                         Forms\Components\Section::make('Media')
@@ -75,7 +83,8 @@ class KompetensiResource extends Resource
                                     ->visibility('public')
                                     ->disk('public'),
                             ]),
-                    ])->columnSpan(['lg' => 1]),
+                    ])
+                    ->columnSpan(['lg' => 1]),
             ]);
     }
 
@@ -88,13 +97,13 @@ class KompetensiResource extends Resource
             ])
             ->columns([
                 Tables\Columns\Layout\Stack::make([
-                    // Gambar di atas
                     Tables\Columns\ImageColumn::make('gambar')
-                        ->disk('public') // ambil dari disk public
+                        ->disk('public')
                         ->height(150)
-                        ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->nama_kompetensi) . '&size=300&background=random')
-                        ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3'])
-                        ->disk('public'),
+                        ->defaultImageUrl(fn ($record) =>
+                            'https://ui-avatars.com/api/?name=' . urlencode($record->nama_kompetensi) . '&size=300&background=random'
+                        )
+                        ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3']),
 
                     Tables\Columns\TextColumn::make('nama_kompetensi')
                         ->weight('bold')
@@ -153,9 +162,9 @@ class KompetensiResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListKompetensi::route('/'),
+            'index'  => Pages\ListKompetensi::route('/'),
             'create' => Pages\CreateKompetensi::route('/create'),
-            'edit' => Pages\EditKompetensi::route('/{record}/edit'),
+            'edit'   => Pages\EditKompetensi::route('/{record}/edit'),
         ];
     }
 }

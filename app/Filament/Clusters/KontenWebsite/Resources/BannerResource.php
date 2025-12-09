@@ -22,20 +22,20 @@ class BannerResource extends Resource
     protected static ?string $pluralModelLabel = 'Banner';
     protected static ?int $navigationSort = 1;
 
-    public static function form(Forms\Form $form): Forms\Form
+    public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Section::make('Banner ini akan ditampilkan pada halaman Beranda')
-                    ->description('Usahakan ukuran gambar kurang dari 4mb untuk peforma website')
+                    ->description('Usahakan ukuran gambar kurang dari 4 MB untuk performa website')
                     ->columns(2)
                     ->schema([
-                        // Upload langsung ke kolom 'image' (sesuai struktur tabel banners)
                         Forms\Components\FileUpload::make('image')
                             ->label('Gambar Banner (unggah)')
                             ->image()
-                            ->directory('banners')
-                            ->disk('public')
+                            ->disk('public') // ⬅ FILE DISIMPAN DI storage/app/public
+                            ->directory('konten-website/banners') // ⬅ FOLDER KHUSUS BANNER
+                            ->preserveFilenames() // opsional, biar nama file tidak diacak
                             ->maxSize(4096) // KB
                             ->imageCropAspectRatio('16:9')
                             ->columnSpanFull()
@@ -47,23 +47,22 @@ class BannerResource extends Resource
                             ->required()
                             ->default(true)
                             ->helperText('Nonaktifkan untuk menyembunyikan banner tanpa menghapusnya.'),
-                        
+
                         Forms\Components\Toggle::make('is_featured')
                             ->label('Tampilkan Pertama Kali')
                             ->default(false)
                             ->helperText('Banner ini akan ditampilkan pertama kali di beranda.'),
                     ]),
             ]);
-    }   
+    }
 
-    public static function table(Tables\Table $table): Tables\Table
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                // Tampilkan thumbnail dari kolom 'image'
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->disk('public'),
+                    ->disk('public'), // ⬅ ambil dari disk public (storage/app/public)
 
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Aktif'),
@@ -75,7 +74,7 @@ class BannerResource extends Resource
                     ->label('Dibuat')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
@@ -93,7 +92,23 @@ class BannerResource extends Resource
             ]);
     }
 
-    protected function mutateFormDataBeforeCreate(array $data): array
+    /**
+     * Pastikan hanya satu banner yang featured.
+     * Dipanggil waktu CREATE.
+     */
+    protected static function mutateFormDataBeforeCreate(array $data): array
+    {
+        if ($data['is_featured'] ?? false) {
+            Banner::query()->update(['is_featured' => false]);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Biar pas EDIT juga tetap cuma satu yang featured.
+     */
+    protected static function mutateFormDataBeforeSave(array $data): array
     {
         if ($data['is_featured'] ?? false) {
             Banner::query()->update(['is_featured' => false]);

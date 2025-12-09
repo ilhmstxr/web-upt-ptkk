@@ -59,7 +59,8 @@ Route::get('/cerita-kami', [LandingController::class, 'ceritaKami'])->name('ceri
 Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'index'])
     ->name('programs');
 
-Route::get('/kompetensi', [KompetensiController::class, 'index'])
+
+Route::get('/profil/kompetensi-pelatihan', [KompetensiController::class, 'index'])
     ->name('kompetensi');
 
 Route::redirect('/kompetensi-pelatihan', '/kompetensi-pelatihan', 301);

@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kompetensi;  // ⬅️ ganti Bidang jadi Kompetensi
+use App\Models\Kompetensi;
 use Illuminate\Http\Request;
 
 class KompetensiController extends Controller
 {
     public function index(Request $request)
     {
-        $activeTab = $request->query('tab', 'keterampilan'); // default tab
+        $activeTab = $request->query('tab', 'keterampilan');
 
-        // ambil data dari tabel kompetensi
+        // 1 = Kelas Keterampilan & Teknik
         $keterampilan = Kompetensi::where('kelas_keterampilan', 1)
-            ->orderBy('nama_kompetensi')   // ⬅️ dulu nama_bidang
+            ->orderBy('nama_kompetensi')
             ->get();
 
+        // 0 = Milenial Job Center
         $mjc = Kompetensi::where('kelas_keterampilan', 0)
             ->orderBy('nama_kompetensi')
             ->get();

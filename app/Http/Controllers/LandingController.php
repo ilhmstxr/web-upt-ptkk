@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
+
 class LandingController extends Controller
 {
     public function index()
@@ -27,7 +28,6 @@ class LandingController extends Controller
         $prak = [];
         $rata = [];
 
-        $banners = collect();
         $beritas = collect();
         $profil = null;
         $kepala = null;
@@ -36,19 +36,15 @@ class LandingController extends Controller
         // =======================================
 
         // 1) BANNERS
-        // Ambil featured banner (hanya satu)
         $featured = Banner::where('is_active', true)
             ->where('is_featured', true)
             ->orderBy('updated_at', 'desc')
             ->first();
 
-        // Ambil banner aktif lain
         $others = Banner::where('is_active', true)
             ->where('is_featured', false)
             ->orderBy('updated_at', 'desc')
             ->get();
-
-        return view('pages.landing', compact('featured', 'others'));
 
         // 2) BERITA
         try {
@@ -107,7 +103,7 @@ class LandingController extends Controller
             Log::error("Gagal memuat Kepala UPT: " . $e->getMessage());
         }
 
-        // 5) CERITA KAMI
+        // 5) CERITA KAMI (INI YANG DIPAKAI SECTION CERITA KAMI DI LANDING)
         try {
             $cerita = Cache::remember('cerita_kami', 3600, fn () =>
                 CeritaKami::where('is_published', true)->latest()->first()
@@ -148,26 +144,27 @@ class LandingController extends Controller
         $prak   = $pelatihans->map(fn($p) => (float) ($p->avg_praktek ?? 0))->toArray();
         $rata   = $pelatihans->map(fn($p) => (float) ($p->avg_rata ?? round((($p->avg_pre_test ?? 0) + ($p->avg_post_test ?? 0) + ($p->avg_praktek ?? 0)) / 3, 2)))->toArray();
 
-        return view('pages.landing', compact(
-            'banners',
-            'beritas',
-            'profil',
-            'kepala',
-            'cerita',
-            'sorotans',
-            'pelatihans',
-            'labels',
-            'pre',
-            'post',
-            'prak',
-            'rata'
-        ));
+        // 🔹 SATU-SATUNYA RETURN
+        return view('pages.landing', [
+            'featured'   => $featured,
+            'others'     => $others,
+            'beritas'    => $beritas,
+            'profil'     => $profil,
+            'kepala'     => $kepala,
+            'cerita'     => $cerita,
+            'sorotans'   => $sorotans,
+            'pelatihans' => $pelatihans,
+            'labels'     => $labels,
+            'pre'        => $pre,
+            'post'       => $post,
+            'prak'       => $prak,
+            'rata'       => $rata,
+        ]);
     }
 
- // 🔹 METHOD BARU BUAT HALAMAN CERITA KAMI
+    // 🔹 METHOD HALAMAN CERITA KAMI
     public function ceritaKami()
     {
-        // ambil kepala upt dari cache / DB
         try {
             $kepala = Cache::remember('kepala_upt', 3600, fn () =>
                 KepalaUpt::latest()->first()
@@ -177,13 +174,8 @@ class LandingController extends Controller
             $kepala = null;
         }
 
-        // kalau nanti mau ambil konten cerita dari tabel CeritaKami juga bisa tambahin di sini
-        // misalnya:
-        // $cerita = CeritaKami::where('is_published', true)->latest()->first();
-
         return view('pages.profil.cerita-kami', [
             'kepala' => $kepala,
-            // 'cerita' => $cerita, // kalau dipakai
         ]);
     }
 }

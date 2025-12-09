@@ -28,32 +28,33 @@ class KepalaUptResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Kepala UPT';
 
-    public static function form(Form $form): Form
-    {
-        return $form->schema([
-            Forms\Components\Group::make([
-                Forms\Components\FileUpload::make('foto')
-                    ->label('Foto Kepala UPT')
-                    ->image()
-                    ->directory('kepala_upt')
-                    ->imageEditor()
-                    ->downloadable()
-                    ->maxSize(2048),
+   public static function form(Form $form): Form
+{
+    return $form->schema([
+        Forms\Components\Group::make([
+            Forms\Components\FileUpload::make('foto')
+                ->label('Foto Kepala UPT')
+                ->image()
+                ->disk('public') // ⬅ penting! simpan di storage/app/public
+                ->directory('konten-website/kepala-upt') // ⬅ folder khusus agar rapi
+                ->imageEditor()
+                ->downloadable()
+                ->maxSize(2048),
 
-                Forms\Components\TextInput::make('nama_kepala_upt')
-                    ->label('Nama Kepala UPT')
-                    ->required()
-                    ->maxLength(255),
+            Forms\Components\TextInput::make('nama_kepala_upt')
+                ->label('Nama Kepala UPT')
+                ->required()
+                ->maxLength(255),
 
-                Forms\Components\RichEditor::make('sambutan')
-                    ->label('Teks Sambutan')
-                    ->required()
-                    ->toolbarButtons([
-                        'bold', 'italic', 'link', 'bulletList', 'h2', 'h3'
-                    ]),
-            ])->columnSpanFull()
-        ]);
-    }
+            Forms\Components\RichEditor::make('sambutan')
+                ->label('Teks Sambutan')
+                ->required()
+                ->toolbarButtons([
+                    'bold', 'italic', 'link', 'bulletList', 'h2', 'h3'
+                ]),
+        ])->columnSpanFull()
+    ]);
+}
 
 
    public static function table(Table $table): Table
