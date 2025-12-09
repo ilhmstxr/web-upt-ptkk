@@ -3,15 +3,9 @@
 namespace App\Filament\Clusters\Fasilitas\Resources\PenempatanAsramaResource\Pages;
 
 use App\Filament\Clusters\Fasilitas\Resources\PenempatanAsramaResource;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ViewRecord;
 
-class ListPenempatanAsramas extends ListRecords
+class ViewPenempatanAsrama extends ViewRecord
 {
     protected static string $resource = PenempatanAsramaResource::class;
-
-    // kalau gak butuh header action tambahan, biarin kosong
-    protected function getHeaderActions(): array
-    {
-        return [];
-    }
 }

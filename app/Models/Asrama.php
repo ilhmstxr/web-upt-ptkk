@@ -9,6 +9,8 @@ class Asrama extends Model
 {
     use HasFactory;
 
+     //protected $connection = 'fasilitas';
+
     protected $table = 'asrama';
 
     protected $fillable = [

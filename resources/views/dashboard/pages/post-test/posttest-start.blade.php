@@ -12,97 +12,114 @@
             $totalSoal = $pertanyaanList->count();
             $terjawab = $jawabanCollection->count();
             $progress = $totalSoal > 0 ? round(($terjawab / $totalSoal) * 100, 2) : 0;
+
+            $existing = $jawabanCollection->firstWhere('pertanyaan_id', $pertanyaan->id);
+            $existingOpsi = $existing?->opsi_jawaban_id;
         @endphp
 
-        {{-- Timer --}}
-        <p class="text-sm text-gray-600 mb-4">
-            Sisa waktu: <span id="timer"></span>
-        </p>
-
-        {{-- Progress Bar --}}
-        <div class="mb-4">
-            <div class="w-full bg-gray-200 rounded-full h-4">
-                <div class="bg-blue-600 h-4 rounded-full" style="width: {{ $progress }}%;"></div>
+        {{-- Header progress + timer --}}
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+            <div class="text-sm text-slate-600">
+                Terjawab <b>{{ $terjawab }}</b> / {{ $totalSoal }}
             </div>
-            <p class="text-sm mt-1 text-gray-600">
-                Terjawab: {{ $terjawab }} / {{ $totalSoal }}
-            </p>
+
+            <div class="text-sm text-slate-600">
+                Sisa waktu:
+                <span id="timer" class="font-bold text-blue-700"></span>
+            </div>
         </div>
 
-        {{-- Form Jawaban --}}
+        {{-- Progress Bar --}}
+        <div class="mb-5">
+            <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                <div class="bg-blue-600 h-3 rounded-full" style="width: {{ $progress }}%;"></div>
+            </div>
+            <p class="text-xs mt-1 text-slate-500">Progress: {{ $progress }}%</p>
+        </div>
+
         <form id="form-tes"
               action="{{ route('dashboard.posttest.submit', ['percobaan' => $percobaan->id]) }}"
               method="POST">
             @csrf
 
-            {{-- Nomor Soal --}}
-            <div class="mb-4 flex flex-wrap gap-2">
+            {{-- Navigasi nomor soal --}}
+            <div class="mb-5 flex flex-wrap gap-2">
                 @foreach($pertanyaanList as $p)
                     @php
                         $answered = $jawabanCollection->contains('pertanyaan_id', $p->id);
-                        $status = $answered ? 'bg-green-500' : 'bg-red-500';
+                        $isActive = $p->id === $pertanyaan->id;
                     @endphp
                     <button type="submit"
                             name="next_q"
                             value="{{ $loop->index }}"
-                            class="px-3 py-1 rounded text-white {{ $status }}">
-                        {{ $p->nomor }}
+                            class="px-3 py-1.5 rounded text-xs font-semibold border transition
+                                   {{ $isActive ? 'bg-blue-600 text-white border-blue-600' : ($answered ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100') }}">
+                        {{ $p->nomor ?? ($loop->index+1) }}
                     </button>
                 @endforeach
             </div>
 
             {{-- Pertanyaan --}}
-            <p class="text-gray-700 mb-4">
-                {{ $pertanyaan->nomor ?? '?' }}. {{ $pertanyaan->teks_pertanyaan ?? '-' }}
-            </p>
+            <div class="mb-4">
+                <div class="text-sm text-slate-500 mb-1">
+                    Soal {{ $currentQuestionIndex + 1 }} dari {{ $totalSoal }}
+                </div>
+                <div class="text-slate-800 font-semibold text-base md:text-lg">
+                    {{ $pertanyaan->nomor ?? ($currentQuestionIndex+1) }}.
+                    {{ $pertanyaan->teks_pertanyaan ?? '-' }}
+                </div>
+            </div>
 
             {{-- Gambar pertanyaan --}}
             @if(!empty($pertanyaan->gambar))
-                <img src="{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}" 
-                     class="mb-4 rounded shadow cursor-pointer hover:scale-105 transition"
+                <img src="{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}"
+                     class="mb-4 rounded-lg shadow cursor-pointer hover:scale-[1.01] transition"
                      onclick="openImageModal('{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}')">
             @endif
 
-            {{-- Opsi Jawaban --}}
-            <div class="space-y-2 mb-4">
-                @if($pertanyaan->opsiJawabans && $pertanyaan->opsiJawabans->count() > 0)
-                    @foreach($pertanyaan->opsiJawabans as $opsi)
-                        @php
-                            $existing = $jawabanCollection->firstWhere('pertanyaan_id', $pertanyaan->id);
-                            $checked = $existing && ($existing->opsi_jawaban_id ?? 0) == $opsi->id;
-                        @endphp
-                        <label class="block p-2 border rounded hover:bg-gray-100 cursor-pointer">
-                            <input
-                                type="radio"
-                                name="jawaban[{{ $pertanyaan->id }}]"
-                                value="{{ $opsi->id }}"
-                                class="mr-2"
-                                {{ $checked ? 'checked' : '' }}
-                                required
-                            >
+            {{-- Opsi jawaban --}}
+            <div class="space-y-2 mb-6">
+                @forelse($pertanyaan->opsiJawabans ?? [] as $opsi)
+                    @php
+                        $checked = $existingOpsi == $opsi->id;
+                    @endphp
+
+                    <label class="flex items-start gap-3 p-3 border rounded-lg hover:bg-slate-50 cursor-pointer transition">
+                        <input
+                            type="radio"
+                            name="jawaban[{{ $pertanyaan->id }}]"
+                            value="{{ $opsi->id }}"
+                            class="mt-1"
+                            {{ $checked ? 'checked' : '' }}
+                            required
+                        />
+
+                        <div class="flex-1">
                             @if(!empty($opsi->gambar))
-                                <img src="{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}" 
-                                     class="inline-block w-12 h-12 mr-2 rounded align-middle cursor-pointer hover:scale-105 transition"
+                                <img src="{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}"
+                                     class="w-16 h-16 mb-2 rounded cursor-pointer hover:scale-[1.03] transition"
                                      onclick="openImageModal('{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}')">
                             @endif
-                            <span class="align-middle">{{ $opsi->teks_opsi ?? '-' }}</span>
-                        </label>
-                    @endforeach
-                @else
-                    <p class="text-red-500">Belum ada opsi jawaban untuk pertanyaan ini.</p>
-                @endif
+                            <div class="text-slate-700">
+                                {{ $opsi->teks_opsi ?? '-' }}
+                            </div>
+                        </div>
+                    </label>
+                @empty
+                    <p class="text-red-500 text-sm">Belum ada opsi jawaban untuk pertanyaan ini.</p>
+                @endforelse
             </div>
 
             <input type="hidden" name="percobaan_id" value="{{ $percobaan->id }}">
 
-            {{-- Navigasi --}}
+            {{-- Navigasi prev/next --}}
             <div class="flex justify-between">
                 @if($currentQuestionIndex > 0)
                     <button type="submit"
                             name="next_q"
                             value="{{ $currentQuestionIndex - 1 }}"
-                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
-                        Sebelumnya
+                            class="px-4 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition text-sm font-semibold">
+                        ← Sebelumnya
                     </button>
                 @else
                     <span></span>
@@ -111,68 +128,66 @@
                 <button type="submit"
                         name="next_q"
                         value="{{ $currentQuestionIndex + 1 }}"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                    {{ $currentQuestionIndex + 1 == $totalSoal ? 'Selesai' : 'Selanjutnya' }}
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold">
+                    {{ $currentQuestionIndex + 1 == $totalSoal ? 'Selesai' : 'Selanjutnya →' }}
                 </button>
             </div>
         </form>
 
     @else
         {{-- Semua soal selesai --}}
-        <p class="text-gray-500">Semua soal telah selesai.</p>
-        <p class="text-lg font-semibold mt-2">
-            Nilai Anda: {{ $percobaan->skor ?? 0 }} / {{ $totalSoal ?? 0 }}
-            - Status:
-            <span class="{{ ($percobaan->lulus ?? false) ? 'text-green-600' : 'text-red-600' }}">
-                {{ ($percobaan->lulus ?? false) ? 'Lulus' : 'Tidak Lulus' }}
-            </span>
-        </p>
+        <div class="text-center py-6">
+            <div class="text-lg font-semibold text-slate-800">Semua soal telah selesai.</div>
+            <div class="mt-2 text-sm text-slate-600">
+                Nilai Anda:
+                <span class="font-bold text-emerald-700">{{ $percobaan->skor ?? 0 }}</span>
+            </div>
 
-        <a href="{{ route('dashboard.posttest.result', ['percobaan' => $percobaan->id ?? 0]) }}"
-           class="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-           Lihat Hasil Detail
-        </a>
+            <a href="{{ route('dashboard.posttest.result', ['percobaan' => $percobaan->id]) }}"
+               class="mt-4 inline-block px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm font-semibold">
+                Lihat Hasil Detail →
+            </a>
+        </div>
     @endif
 </div>
 
-{{-- Modal Zoom Gambar --}}
-<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50" onclick="closeImageModal()">
-    <div class="relative" onclick="event.stopPropagation()">
-        <button onclick="closeImageModal()" 
-                class="absolute -top-4 -right-4 bg-white text-black rounded-full p-2 shadow hover:bg-gray-200">
+{{-- Modal Zoom --}}
+<div id="imageModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center" onclick="closeImageModal()">
+    <div class="relative max-w-3xl w-full mx-4" onclick="event.stopPropagation()">
+        <button onclick="closeImageModal()"
+                class="absolute -top-4 -right-4 bg-white text-black rounded-full p-2 shadow hover:bg-slate-200">
             ✕
         </button>
-        <img id="modalImage" src="" class="max-w-full max-h-screen rounded shadow-lg">
+        <img id="modalImage" src="" class="max-w-full max-h-screen rounded shadow-lg mx-auto">
     </div>
 </div>
 
-{{-- Timer JS --}}
 <script>
 (function(){
-    let duration = {{ $tes->durasi_menit * 60 }};
+    let duration = {{ (int)($tes->durasi_menit ?? 0) * 60 }};
     const serverStart = new Date("{{ $percobaan->waktu_mulai ?? now() }}").getTime();
-    const nowServer = new Date("{{ now() }}").getTime();
-    let elapsed = Math.floor((nowServer - serverStart) / 1000);
+    const nowServer   = new Date("{{ now() }}").getTime();
+    let elapsed  = Math.floor((nowServer - serverStart) / 1000);
     let remaining = duration - elapsed;
     if (remaining < 0) remaining = 0;
 
     function pad(n){ return n.toString().padStart(2,'0'); }
 
     function updateTimer() {
+        const timerEl = document.getElementById('timer');
+        if (!timerEl) return;
+
         if (remaining <= 0) {
-            document.getElementById('timer').textContent = "00:00:00";
+            timerEl.textContent = "00:00:00";
             clearInterval(interval);
-            let form = document.getElementById("form-tes");
-            if (form) {
-                // auto-submit terakhir → skor dihitung
-                form.submit();
-            }
+            document.getElementById("form-tes")?.submit();
             return;
         }
-        const hours = pad(Math.floor(remaining/3600));
+
+        const hours   = pad(Math.floor(remaining/3600));
         const minutes = pad(Math.floor((remaining%3600)/60));
         const seconds = pad(remaining%60);
-        document.getElementById('timer').textContent = ${hours}:${minutes}:${seconds};
+        timerEl.textContent = `${hours}:${minutes}:${seconds}`;
         remaining--;
     }
 

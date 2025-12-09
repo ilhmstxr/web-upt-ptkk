@@ -30,7 +30,7 @@ class AsramaAllocator
                 ->where('status', '!=', 'Rusak')
                 ->update([
                     'available_beds' => DB::raw('total_beds'),
-                    'status' => 'Tersedia',
+                    'status'         => 'Tersedia',
                 ]);
 
             // 2) lanjut allocate normal
@@ -50,13 +50,20 @@ class AsramaAllocator
         // =========================
         // NORMALISASI JENIS KELAMIN PESERTA
         // =========================
-        $laki = $pesertaList->filter(fn ($p) => $this->normJK($p?->jenis_kelamin) === 'laki-laki')->values();
-        $perem = $pesertaList->filter(fn ($p) => $this->normJK($p?->jenis_kelamin) === 'perempuan')->values();
-        $unknown = $pesertaList->reject(fn ($p) => in_array($this->normJK($p?->jenis_kelamin), ['laki-laki','perempuan'], true))->values();
+        $laki = $pesertaList
+            ->filter(fn ($p) => $this->normJK($p?->jenis_kelamin) === 'laki-laki')
+            ->values();
+
+        $perem = $pesertaList
+            ->filter(fn ($p) => $this->normJK($p?->jenis_kelamin) === 'perempuan')
+            ->values();
+
+        $unknown = $pesertaList
+            ->reject(fn ($p) => in_array($this->normJK($p?->jenis_kelamin), ['laki-laki', 'perempuan'], true))
+            ->values();
 
         // =========================
         // AMBIL KAMAR NON RUSAK & BED POSITIF
-        // (kalau total_beds 0 → lewati)
         // =========================
         $kamarAll = Kamar::with('asrama')
             ->where('status', '!=', 'Rusak')
@@ -73,19 +80,17 @@ class AsramaAllocator
         $count = 0;
 
         // =========================
-        // TAHAP 1:
-        // 1 asrama hanya 1 jenis_kelamin
+        // TAHAP 1: 1 asrama hanya 1 jenis_kelamin
         // =========================
         $asramaLock = collect(); // asrama_id => 'laki-laki' / 'perempuan'
 
-        [$sisaLaki, $t1Laki] = $this->assignStage1($pelatihan, $laki, $kamarAll, 'laki-laki', $asramaLock);
+        [$sisaLaki, $t1Laki]   = $this->assignStage1($pelatihan, $laki,  $kamarAll, 'laki-laki', $asramaLock);
         [$sisaPerem, $t1Perem] = $this->assignStage1($pelatihan, $perem, $kamarAll, 'perempuan', $asramaLock);
+
         $count += $t1Laki + $t1Perem;
 
         // =========================
-        // TAHAP 2:
-        // boleh campur dalam 1 asrama,
-        // tapi kamar tetap 1 jenis_kelamin
+        // TAHAP 2: asrama boleh campur, kamar tetap 1 gender
         // =========================
         $queue2 = $sisaLaki->concat($sisaPerem)->concat($unknown)->values();
         if ($queue2->isNotEmpty()) {
@@ -93,9 +98,7 @@ class AsramaAllocator
         }
 
         // =========================
-        // TAHAP 3:
-        // darurat: kamar besar >= 8 bed
-        // boleh campur dalam 1 kamar
+        // TAHAP 3: darurat kamar besar >= 8 bed boleh campur kamar
         // =========================
         $sisa3 = $this->getUnassigned($pelatihan, $pesertaList);
         if ($sisa3->isNotEmpty()) {
@@ -205,7 +208,7 @@ class AsramaAllocator
     ): int {
         $count = 0;
 
-        $kamarBesar = $kamarAll->filter(fn ($k) => (int)$k->total_beds >= 8);
+        $kamarBesar = $kamarAll->filter(fn ($k) => (int) $k->total_beds >= 8);
 
         foreach ($queue as $p) {
             foreach ($kamarBesar as $kamar) {
@@ -226,19 +229,27 @@ class AsramaAllocator
     }
 
     /**
-     * Cek apakah kamar sudah terisi jenis_kelamin lain dalam pelatihan ini.
+     * ✅ FIX MULTI-DB:
+     * Cek apakah kamar sudah terisi jenis_kelamin lain dalam pelatihan ini
+     * TANPA join tabel peserta (hindari cross-connection).
      */
     protected function roomHasOtherJK(Pelatihan $pelatihan, Kamar $kamar, string $jk): bool
     {
-        $existing = PenempatanAsrama::where('pelatihan_id', $pelatihan->id)
+        $pesertaIds = PenempatanAsrama::where('pelatihan_id', $pelatihan->id)
             ->where('kamar_id', $kamar->id)
-            ->join('peserta', 'penempatan_asrama.peserta_id', '=', 'peserta.id')
-            ->pluck('peserta.jenis_kelamin')
+            ->pluck('peserta_id');
+
+        if ($pesertaIds->isEmpty()) {
+            return false;
+        }
+
+        $existingJK = Peserta::whereIn('id', $pesertaIds)
+            ->pluck('jenis_kelamin')
             ->map(fn ($x) => $this->normJK($x))
             ->filter()
             ->first();
 
-        return $existing && $existing !== $jk;
+        return $existingJK && $existingJK !== $jk;
     }
 
     /**
@@ -270,23 +281,30 @@ class AsramaAllocator
 
     protected function decBed(Kamar $kamar): void
     {
-        $kamar->available_beds = max(0, (int)$kamar->available_beds - 1);
+        $kamar->available_beds = max(0, (int) $kamar->available_beds - 1);
+
         if ($kamar->available_beds === 0) {
             $kamar->status = 'Penuh';
         }
+
         $kamar->save();
     }
 
     /**
-     * Normalisasi jenis_kelamin:
+     * Normalisasi jenis_kelamin.
      */
     protected function normJK(?string $value): ?string
     {
         $v = strtolower(trim($value ?? ''));
         if ($v === '') return null;
 
-        if (in_array($v, ['l', 'laki-laki', 'laki laki', 'pria', 'putra', 'male'], true)) return 'laki-laki';
-        if (in_array($v, ['p', 'perempuan', 'wanita', 'putri', 'female'], true)) return 'perempuan';
+        if (in_array($v, ['l', 'laki-laki', 'laki laki', 'pria', 'putra', 'male'], true)) {
+            return 'laki-laki';
+        }
+
+        if (in_array($v, ['p', 'perempuan', 'wanita', 'putri', 'female'], true)) {
+            return 'perempuan';
+        }
 
         if ($v === 'campur') return null;
 

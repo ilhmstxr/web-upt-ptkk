@@ -389,45 +389,61 @@ class DashboardController extends Controller
                 ->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        $tes = $this->baseTesQuery()
-            ->when(Schema::hasColumn('tes', 'tipe'), fn($q) => $q->where('tipe', 'pre-test'))
+        $pesertaAktif = ($key === 'peserta_id') ? Peserta::find($id) : null;
+        $this->ensureActiveTrainingSession($pesertaAktif);
+
+        $pelatihanId  = session('pelatihan_id');
+        $kompetensiId = session('kompetensi_id');
+
+        if (!$pelatihanId || !$kompetensiId) {
+            return redirect()->route('dashboard.home')
+                ->with('error', 'Pelatihan/kompetensi aktif tidak ditemukan. Login ulang.');
+        }
+
+        // ✅ ambil PRE-TEST hanya yg sesuai pelatihan & kompetensi aktif
+        $tes = Tes::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->where('kompetensi_id', $kompetensiId)
+            ->where('tipe', 'pre-test')
+            ->orderBy('id') // urutan gak ada di tabel tes
             ->get();
 
+        $basePerc = $this->basePercobaanQuery();
+
+        $tesWithStatus = $tes->map(function ($t) use ($basePerc) {
+
+            $latestDone = (clone $basePerc)
+                ->where('tes_id', $t->id)
+                ->whereNotNull('waktu_selesai')
+                ->latest('waktu_selesai')
+                ->first();
+
+            $running = (clone $basePerc)
+                ->where('tes_id', $t->id)
+                ->whereNull('waktu_selesai')
+                ->latest('waktu_mulai')
+                ->first();
+
+            $t->__already_done = (bool) $latestDone;
+            $t->__last_score   = $latestDone?->skor;
+            $t->__running_id   = $running?->id;
+
+            return $t;
+        });
+
         return view('dashboard.pages.pre-test.pretest', [
-            'tes'     => $tes,
-            'peserta' => ($key === 'peserta_id') ? Peserta::find($id) : null,
+            'tes'     => $tesWithStatus,
+            'peserta' => $pesertaAktif,
         ]);
     }
 
-    public function startPreTest()
-    {
-        return $this->startTest('pre', 'Pre-Test', 'dashboard.pretest.show', 'dashboard.pretest.result');
-    }
-
-    public function pretestShow(Tes $tes, Request $request)
-    {
-        return $this->handleTesShow($tes, $request, 'pre-test', 'dashboard.pretest.result');
-    }
-
-    public function pretestSubmit(Request $request, Percobaan $percobaan)
-    {
-        return $this->processTesSubmit($request, $percobaan, 'dashboard.pretest.show', 'dashboard.pretest.result');
-    }
-
-    public function pretestResult(Percobaan $percobaan)
-    {
-        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'peserta']);
-
-        return view('dashboard.pages.tes.result', [
-            'percobaan' => $percobaan,
-            'mode'      => 'pre-test',
-        ]);
-    }
-
-    /* =========================================================
-     * POSTTEST
-     * ========================================================= */
-    public function posttest()
+    /**
+     * START PRETEST:
+     * - Kalau sudah selesai => redirect ke hasil terakhir
+     * - Kalau ada running => lanjutkan
+     * - Kalau belum ada => buat percobaan baru
+     */
+    public function pretestStart(Tes $tes)
     {
         ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
         if (!$key || !$id) {
@@ -435,81 +451,301 @@ class DashboardController extends Controller
                 ->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        $tes = $this->baseTesQuery()
-            ->when(Schema::hasColumn('tes', 'tipe'), fn($q) => $q->where('tipe', 'post-test'))
+        $pesertaAktif = ($key === 'peserta_id') ? Peserta::find($id) : null;
+        $this->ensureActiveTrainingSession($pesertaAktif);
+
+        // SECURITY: tes harus sesuai scope pelatihan peserta
+        $allowedTes = $this->baseTesQuery()
+            ->where('id', $tes->id)
+            ->when(Schema::hasColumn('tes', 'tipe'), fn($q) => $q->where('tipe', 'pre-test'))
+            ->exists();
+
+        if (!$allowedTes) {
+            return redirect()->route('dashboard.pretest.index')
+                ->with('error', 'Tes Pre-Test ini tidak tersedia untuk pelatihan Anda.');
+        }
+
+        $basePerc = $this->basePercobaanQuery()->where('tes_id', $tes->id);
+
+        // kalau sudah pernah selesai => lompat ke hasil
+        $done = (clone $basePerc)
+            ->whereNotNull('waktu_selesai')
+            ->latest('waktu_selesai')
+            ->first();
+
+        if ($done) {
+            return redirect()->route('dashboard.pretest.result', ['percobaan' => $done->id])
+                ->with('success', 'Anda sudah mengerjakan Pre-Test. Berikut hasilnya.');
+        }
+
+        // kalau ada yg sedang berjalan => lanjutkan
+        $running = (clone $basePerc)->whereNull('waktu_selesai')->first();
+        if ($running) {
+            return redirect()->route('dashboard.pretest.show', [
+                'tes'       => $tes->id,
+                'percobaan' => $running->id
+            ]);
+        }
+
+        // buat percobaan baru
+        $data = [
+            'tes_id'      => $tes->id,
+            'waktu_mulai' => now(),
+            $key          => $id,
+        ];
+
+        if (Schema::hasColumn('percobaan', 'pelatihan_id')) {
+            $data['pelatihan_id'] = session('pelatihan_id');
+        }
+
+        if (Schema::hasColumn('percobaan', 'tipe')) {
+            $data['tipe'] = 'pre-test';
+        }
+
+        $percobaan = Percobaan::create($data);
+
+        return redirect()->route('dashboard.pretest.show', [
+            'tes'       => $tes->id,
+            'percobaan' => $percobaan->id
+        ])->with('success', 'Pre-Test dimulai!');
+    }
+
+
+    public function pretestShow(Tes $tes, Request $request)
+    {
+        // SECURITY: tes harus sesuai scope pelatihan peserta
+        $allowedTes = $this->baseTesQuery()
+            ->where('id', $tes->id)
+            ->when(Schema::hasColumn('tes', 'tipe'), fn($q) => $q->where('tipe', 'pre-test'))
+            ->exists();
+
+        if (!$allowedTes) abort(404);
+
+        return $this->handleTesShow($tes, $request, 'pre-test', 'dashboard.pretest.result');
+    }
+
+
+    public function pretestSubmit(Request $request, Percobaan $percobaan)
+    {
+        // SECURITY: percobaan harus milik peserta & scope pelatihan aktif
+        $allowedPerc = $this->basePercobaanQuery()
+            ->where('id', $percobaan->id)
+            ->exists();
+
+        if (!$allowedPerc) abort(403);
+
+        return $this->processTesSubmit($request, $percobaan, 'dashboard.pretest.show', 'dashboard.pretest.result');
+    }
+
+
+    public function pretestResult(Percobaan $percobaan)
+    {
+        // SECURITY: hasil harus milik peserta & scope pelatihan aktif
+        $allowedPerc = $this->basePercobaanQuery()
+            ->where('id', $percobaan->id)
+            ->whereNotNull('waktu_selesai')
+            ->exists();
+
+        if (! $allowedPerc) {
+            abort(403);
+        }
+
+        // ✅ FIX relasi:
+        // JawabanUser -> opsiJawaban (singular)
+        $percobaan->loadMissing([
+            'jawabanUser.opsiJawaban',
+            'tes',
+            'peserta',
+            'pesertaSurvei',
+        ]);
+
+        return view('dashboard.pages.pre-test.pretest-result', [
+            'percobaan' => $percobaan,
+        ]);
+    }
+
+
+    /* =========================================================
+     * POSTTEST
+     * ========================================================= */
+
+        public function posttest()
+    {
+        ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
+        if (!$key || !$id) {
+            return redirect()->route('assessment.login')
+                ->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        $pesertaAktif = ($key === 'peserta_id') ? Peserta::find($id) : null;
+        $this->ensureActiveTrainingSession($pesertaAktif);
+
+        $pelatihanId  = session('pelatihan_id');
+        $kompetensiId = session('kompetensi_id');
+
+        if (!$pelatihanId || !$kompetensiId) {
+            return redirect()->route('dashboard.home')
+                ->with('error', 'Pelatihan/kompetensi aktif tidak ditemukan. Login ulang.');
+        }
+
+        // ✅ ambil POST-TEST hanya yg sesuai pelatihan & kompetensi aktif
+        $tes = Tes::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->where('kompetensi_id', $kompetensiId)
+            ->where('tipe', 'post-test')
+            ->orderBy('id')
             ->get();
 
         $basePerc = $this->basePercobaanQuery();
 
-        $tesWithStatus = $tes->map(function ($t) use ($basePerc) {
-            $latest = (clone $basePerc)->where('tes_id', $t->id)
+        // pretest terakhir untuk improvement
+        $preTes = Tes::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->where('kompetensi_id', $kompetensiId)
+            ->where('tipe', 'pre-test')
+            ->latest('id')
+            ->first();
+
+        $preScore = null;
+        if ($preTes) {
+            $preAttempt = (clone $basePerc)
+                ->where('tes_id', $preTes->id)
                 ->whereNotNull('waktu_selesai')
                 ->latest('waktu_selesai')
                 ->first();
 
-            $t->__already_done = (bool) $latest;
-            $t->__last_score   = $latest?->skor;
+            $preScore = $preAttempt?->skor;
+        }
+
+        $tesWithStatus = $tes->map(function ($t) use ($basePerc, $preScore) {
+
+            $latestDone = (clone $basePerc)
+                ->where('tes_id', $t->id)
+                ->whereNotNull('waktu_selesai')
+                ->latest('waktu_selesai')
+                ->first();
+
+            $running = (clone $basePerc)
+                ->where('tes_id', $t->id)
+                ->whereNull('waktu_selesai')
+                ->latest('waktu_mulai')
+                ->first();
+
+            $t->__already_done = (bool) $latestDone;
+            $t->__last_score   = $latestDone?->skor;
+            $t->__running_id   = $running?->id;
+
+            $t->__pre_score = $preScore;
+
+            if ($preScore !== null && $t->__last_score !== null) {
+                $t->__improvement_points  = round($t->__last_score - $preScore, 2);
+                $t->__improvement_percent = $preScore > 0
+                    ? round((($t->__last_score - $preScore) / $preScore) * 100, 2)
+                    : null;
+            } else {
+                $t->__improvement_points  = null;
+                $t->__improvement_percent = null;
+            }
+
+            $passing = $t->passing_score ?? 70;
+            $t->__above_avg = $t->__last_score !== null
+                ? ($t->__last_score >= $passing)
+                : false;
 
             return $t;
         });
 
         return view('dashboard.pages.post-test.posttest', [
-            'tes'     => $tesWithStatus,
-            'peserta' => ($key === 'peserta_id') ? Peserta::find($id) : null,
+            'tes'      => $tesWithStatus,
+            'preScore' => $preScore,
+            'peserta'  => $pesertaAktif,
         ]);
     }
 
     public function startPostTest()
     {
-        return $this->startTest('post', 'Post-Test', 'dashboard.posttest.show', 'dashboard.posttest.result');
+        return $this->startTest(
+            'post',
+            'Post-Test',
+            'dashboard.posttest.show',
+            'dashboard.posttest.result'
+        );
     }
 
     public function posttestShow(Tes $tes, Request $request)
     {
-        return $this->handleTesShow($tes, $request, 'post-test', 'dashboard.posttest.result');
+        return $this->handleTesShow(
+            $tes,
+            $request,
+            'post-test',
+            'dashboard.posttest.result'
+        );
     }
 
     public function posttestSubmit(Request $request, Percobaan $percobaan)
     {
-        return $this->processTesSubmit($request, $percobaan, 'dashboard.posttest.show', 'dashboard.posttest.result');
+        return $this->processTesSubmit(
+            $request,
+            $percobaan,
+            'dashboard.posttest.show',
+            'dashboard.posttest.result'
+        );
     }
 
     public function posttestResult(Percobaan $percobaan)
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'peserta', 'pesertaSurvei']);
+        // ✅ FIX relasi:
+        $percobaan->loadMissing([
+            'jawabanUser.opsiJawaban',
+            'tes',
+            'peserta',
+            'pesertaSurvei',
+        ]);
+
+        // safety: pastikan hasil itu milik pelatihan aktif user
+        $pelatihanAktif = session('pelatihan_id');
+
+        // pelatihan_id bisa nempel di percobaan atau ambil dari tes
+        $pelatihanPercobaan = $percobaan->pelatihan_id
+            ?? $percobaan->tes?->pelatihan_id;
+
+        if ($pelatihanAktif && $pelatihanPercobaan != $pelatihanAktif) {
+            abort(403, 'Anda tidak berhak melihat hasil ini.');
+        }
 
         $preScore = null;
         $improvementPoints = null;
         $improvementPercent = null;
 
-        $preAttempt = (clone $this->basePercobaanQuery())
-            ->whereNotNull('waktu_selesai')
-            ->where(function ($q) {
-                $q->where('tipe', 'pre-test')
-                  ->orWhere('tipe', 'pre')
-                  ->orWhereNull('tipe');
-            })
-            ->latest('waktu_selesai')
-            ->first();
+        // cari pre-test yang sesuai pelatihan aktif
+        $preTes = $this->getTesByType('pre');
 
-        if ($preAttempt && $preAttempt->skor !== null && $percobaan->skor !== null) {
-            $preScore  = (float) $preAttempt->skor;
-            $postScore = (float) $percobaan->skor;
+        if ($preTes) {
+            $preAttempt = (clone $this->basePercobaanQuery())
+                ->where('tes_id', $preTes->id)
+                ->whereNotNull('waktu_selesai')
+                ->latest('waktu_selesai')
+                ->first();
 
-            $improvementPoints  = $postScore - $preScore;
-            $improvementPercent = $preScore > 0
-                ? round((($postScore - $preScore) / $preScore) * 100, 2)
-                : null;
+            if ($preAttempt && $preAttempt->skor !== null && $percobaan->skor !== null) {
+                $preScore  = (float) $preAttempt->skor;
+                $postScore = (float) $percobaan->skor;
+
+                $improvementPoints  = round($postScore - $preScore, 2);
+                $improvementPercent = $preScore > 0
+                    ? round((($postScore - $preScore) / $preScore) * 100, 2)
+                    : null;
+            }
         }
 
-        return view('dashboard.pages.tes.result', [
+        return view('dashboard.pages.post-test.posttest-result', [
             'percobaan'          => $percobaan,
-            'mode'               => 'post-test',
             'preScore'           => $preScore,
             'improvementPoints'  => $improvementPoints,
             'improvementPercent' => $improvementPercent,
         ]);
     }
+
 
     /* =========================================================
      * HANDLE TES SHOW (PRE/POST/MONEV)
@@ -552,7 +788,7 @@ class DashboardController extends Controller
                 ->with('error', 'Waktu tes sudah habis.');
         }
 
-        $pertanyaanList = $tes->pertanyaan()->with('opsiJawaban')->get();
+        $pertanyaanList = $tes->pertanyaan()->with('opsiJawabans')->get();
         $currentQuestionIndex = (int) $request->query('q', 0);
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
@@ -696,7 +932,7 @@ class DashboardController extends Controller
 
     public function monevResult(Percobaan $percobaan)
     {
-        $percobaan->loadMissing(['jawabanUser.opsiJawaban', 'tes', 'peserta', 'pesertaSurvei']);
+        $percobaan->loadMissing(['jawabanUser.opsiJawabans', 'tes', 'peserta', 'pesertaSurvei']);
 
         return view('dashboard.pages.tes.result', [
             'percobaan' => $percobaan,
@@ -704,117 +940,301 @@ class DashboardController extends Controller
         ]);
     }
 
-    /* =========================================================
-     * MATERI INDEX
-     * ========================================================= */
     public function materi()
     {
         $pelatihanId = session('pelatihan_id');
-        if (!$pelatihanId) {
-            return redirect()->route('dashboard.home')
+
+        if (! $pelatihanId) {
+            return redirect()
+                ->route('dashboard.home')
                 ->with('error', 'Pelatihan aktif tidak ditemukan. Login ulang.');
         }
 
-        $materis = MateriPelatihan::where('pelatihan_id', $pelatihanId)
+        // ✅ ambil real materi
+        $materis = MateriPelatihan::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->where('is_published', true)
             ->orderBy('urutan')
             ->get();
 
-        $pendaftaranId = session('pendaftaran_pelatihan_id');
+        $isDummy = false;
 
-        $doneIds = [];
-        if ($pendaftaranId) {
-            $doneIds = MateriProgress::where('pendaftaran_pelatihan_id', $pendaftaranId)
-                ->where('is_completed', true)
-                ->pluck('materi_id')
-                ->toArray();
+        // ✅ fallback dummy kalau DB kosong
+        if ($materis->isEmpty()) {
+            $isDummy = true;
+            $materis = $this->dummyMateris();
         }
 
-        $materis = $materis->map(function ($m) use ($doneIds) {
+        // ✅ tandai progress selesai
+        $pendaftaranId = session('pendaftaran_pelatihan_id');
+
+        $doneIds = $pendaftaranId
+            ? MateriProgress::query()
+                ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+                ->where('is_completed', true)
+                ->pluck('materi_id')
+                ->all()
+            : [];
+
+        $materis->each(function ($m) use ($doneIds) {
             $m->is_done = in_array($m->id, $doneIds);
-            return $m;
         });
 
         return view('dashboard.pages.materi.materi-index', [
             'materiList' => $materis,
+            'isDummy'    => $isDummy,
         ]);
     }
 
+
     /* =========================================================
-     * MATERI SHOW
+     * MATERI SHOW (REAL + DUMMY)
      * ========================================================= */
-    public function materiShow($materi)
+    public function materiShow(string $materi)
     {
-        $m = $materi instanceof MateriPelatihan
-            ? $materi
-            : MateriPelatihan::where('slug', $materi)
-                ->orWhere('id', $materi)
-                ->firstOrFail();
+        /**
+         * ==========================================================
+         * 1) DUMMY MODE (tanpa DB)
+         * ==========================================================
+         */
+        if (str_starts_with($materi, 'dummy-')) {
 
-        $pendaftaranId = session('pendaftaran_pelatihan_id');
-        $progress = null;
+            // ambil dummy, urutkan supaya sidebar rapi
+            $dummyMateris = $this->dummyMateris()
+                ->sortBy('urutan')
+                ->values();
 
-        if ($pendaftaranId) {
-            $progress = MateriProgress::where('pendaftaran_pelatihan_id', $pendaftaranId)
-                ->where('materi_id', $m->id)
-                ->first();
+            // cari materi aktif dari list yang sudah terurut
+            $m = $dummyMateris->firstWhere('id', $materi);
+            abort_if(! $m, 404);
+
+            // inject is_done default false biar sidebar aman
+            $dummyMateris->each(function ($dm) {
+                $dm->is_done = false;
+            });
+
+            return view('dashboard.pages.materi.materi-show', [
+                'materi'         => $m,
+                'materiProgress' => null,
+                'progress'       => null, // alias aman di blade
+                'relatedMateris' => $dummyMateris,
+                'isDummy'        => true,
+            ]);
         }
+
+        /**
+         * ==========================================================
+         * 2) REAL MODE (ambil dari DB)
+         * slug optional -> hanya dipakai kalau kolomnya ada
+         * ==========================================================
+         */
+        $m = MateriPelatihan::query()
+            ->when(
+                Schema::hasColumn('materi_pelatihan', 'slug'),
+                fn ($q) => $q->where('slug', $materi)
+            )
+            ->orWhere('id', $materi)
+            ->firstOrFail();
+
+        /**
+         * ==========================================================
+         * 3) PROGRESS materi aktif
+         * ==========================================================
+         */
+        $pendaftaranId = session('pendaftaran_pelatihan_id');
+
+        $progress = $pendaftaranId
+            ? MateriProgress::query()
+                ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+                ->where('materi_id', $m->id)
+                ->first()
+            : null;
+
+        /**
+         * ==========================================================
+         * 4) DONE IDS (materi yang sudah selesai)
+         * ==========================================================
+         */
+        $doneIds = $pendaftaranId
+            ? MateriProgress::query()
+                ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+                ->where('is_completed', true)
+                ->pluck('materi_id')
+                ->all()
+            : [];
+
+        /**
+         * ==========================================================
+         * 5) RELATED MATERI + inject is_done
+         * ==========================================================
+         */
+        $relatedMateris = MateriPelatihan::query()
+            ->where('pelatihan_id', $m->pelatihan_id)
+            ->where('is_published', true)
+            ->orderBy('urutan')
+            ->get()
+            ->each(function ($rm) use ($doneIds) {
+                $rm->is_done = in_array($rm->id, $doneIds);
+            });
 
         return view('dashboard.pages.materi.materi-show', [
             'materi'         => $m,
             'materiProgress' => $progress,
-            'relatedMateris' => MateriPelatihan::where('pelatihan_id', $m->pelatihan_id)
-                ->orderBy('urutan')
-                ->get(),
+            'progress'       => $progress, // alias aman
+            'relatedMateris' => $relatedMateris,
+            'isDummy'        => false,
         ]);
     }
 
     /* =========================================================
-     * MATERI COMPLETE
+     * MATERI COMPLETE (REAL + DUMMY)
      * ========================================================= */
-    public function materiComplete(Request $request, $materi)
+   public function materiComplete(Request $request, string $materi)
+{
+    /**
+     * ✅ DUMMY COMPLETE: gak sentuh DB
+     */
+    if (str_starts_with($materi, 'dummy-')) {
+        return redirect()
+            ->route('dashboard.materi.show', $materi)
+            ->with('success', 'Dummy materi ditandai selesai (mode demo).');
+    }
+
+    /**
+     * ✅ Ambil materi (slug optional)
+     */
+    $query = MateriPelatihan::query();
+
+    if (Schema::hasColumn('materi_pelatihan', 'slug')) {
+        $query->where('slug', $materi);
+    }
+
+    $materiModel = $query->orWhere('id', $materi)->firstOrFail();
+
+    /**
+     * ✅ Pastikan peserta login assessment
+     */
+    ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
+
+    if (! $key || ! $id) {
+        return redirect()
+            ->route('assessment.login')
+            ->with('error', 'Silakan login terlebih dahulu.');
+    }
+
+    $pendaftaranId = session('pendaftaran_pelatihan_id');
+
+    if (! $pendaftaranId) {
+        $pendaftaran = PendaftaranPelatihan::query()
+            ->where('peserta_id', $id)
+            ->where('pelatihan_id', $materiModel->pelatihan_id)
+            ->latest('tanggal_pendaftaran')
+            ->first();
+
+        if ($pendaftaran) {
+            $pendaftaranId = $pendaftaran->id;
+            session(['pendaftaran_pelatihan_id' => $pendaftaranId]);
+        }
+    }
+
+    if (! $pendaftaranId) {
+        return redirect()
+            ->route('dashboard.materi.show', $materiModel->slug ?? $materiModel->id)
+            ->with('error', 'Tidak menemukan pendaftaran peserta untuk pelatihan ini.');
+    }
+
+    MateriProgress::updateOrCreate(
+        [
+            'pendaftaran_pelatihan_id' => $pendaftaranId,
+            'materi_id'                => $materiModel->id,
+        ],
+        [
+            'is_completed' => true,
+            'completed_at' => now(),
+        ]
+    );
+
+    return redirect()
+        ->route('dashboard.materi.show', $materiModel->slug ?? $materiModel->id)
+        ->with('success', 'Materi ditandai selesai. Terima kasih.');
+}
+    /* =========================================================
+     * PRIVATE: DUMMY DATA
+     * ========================================================= */
+    private function dummyMateris()
     {
-        $materiModel = $materi instanceof MateriPelatihan
-            ? $materi
-            : MateriPelatihan::findOrFail($materi);
+        $now = now();
 
-        ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
-        if (!$key || !$id) {
-            return redirect()->route('assessment.login')
-                ->with('error', 'Silakan login terlebih dahulu.');
-        }
-
-        $pendaftaranId = session('pendaftaran_pelatihan_id');
-
-        if (!$pendaftaranId) {
-            $pendaftaran = PendaftaranPelatihan::where('peserta_id', $id)
-                ->where('pelatihan_id', $materiModel->pelatihan_id)
-                ->latest('tanggal_pendaftaran')
-                ->first();
-
-            if ($pendaftaran) {
-                $pendaftaranId = $pendaftaran->id;
-                session(['pendaftaran_pelatihan_id' => $pendaftaranId]);
-            }
-        }
-
-        if (!$pendaftaranId) {
-            return redirect()->route('dashboard.materi.show', $materiModel->slug ?? $materiModel->id)
-                ->with('error', 'Tidak menemukan pendaftaran peserta untuk pelatihan ini.');
-        }
-
-        MateriProgress::updateOrCreate(
-            [
-                'pendaftaran_pelatihan_id' => $pendaftaranId,
-                'materi_id'                => $materiModel->id,
+        return collect([
+            (object)[
+                'id' => 'dummy-1',
+                'judul' => 'Pengenalan Keselamatan Kerja',
+                'deskripsi' => 'Materi dasar mengenai aturan keselamatan kerja di workshop.',
+                'tipe' => 'teks',
+                'estimasi_menit' => 15,
+                'urutan' => 1,
+                'kategori' => 'Dasar',
+                'file_path' => null,
+                'video_url' => null,
+                'link_url' => null,
+                'teks' => '<p>Contoh isi materi dummy...</p>',
+                'is_published' => true,
+                'pelatihan_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
-            [
-                'is_completed' => true,
-                'completed_at' => now(),
-            ]
-        );
-
-        return redirect()->route('dashboard.materi.show', $materiModel->slug ?? $materiModel->id)
-            ->with('success', 'Materi ditandai selesai. Terima kasih.');
+            (object)[
+                'id' => 'dummy-2',
+                'judul' => 'Video Teknik Dasar Pengelasan',
+                'deskripsi' => 'Video praktik teknik pengelasan untuk pemula.',
+                'tipe' => 'video',
+                'estimasi_menit' => 20,
+                'urutan' => 2,
+                'kategori' => 'Praktik',
+                'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'file_path' => null,
+                'link_url' => null,
+                'teks' => null,
+                'is_published' => true,
+                'pelatihan_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            (object)[
+                'id' => 'dummy-3',
+                'judul' => 'Modul Mesin Bubut (PDF)',
+                'deskripsi' => 'Dokumen modul lengkap tentang pengoperasian mesin bubut.',
+                'tipe' => 'file',
+                'estimasi_menit' => 30,
+                'urutan' => 3,
+                'kategori' => 'Modul',
+                'file_path' => 'materi/dummy-modul-mesin-bubut.pdf',
+                'video_url' => null,
+                'link_url' => null,
+                'teks' => null,
+                'is_published' => true,
+                'pelatihan_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            (object)[
+                'id' => 'dummy-4',
+                'judul' => 'Referensi External CNC',
+                'deskripsi' => 'Link referensi pembelajaran CNC resmi.',
+                'tipe' => 'link',
+                'estimasi_menit' => 10,
+                'urutan' => 4,
+                'kategori' => 'Referensi',
+                'link_url' => 'https://example.com/referensi-cnc',
+                'file_path' => null,
+                'video_url' => null,
+                'teks' => null,
+                'is_published' => true,
+                'pelatihan_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+        ]);
     }
 
     /* =========================================================
@@ -822,19 +1242,20 @@ class DashboardController extends Controller
      * ========================================================= */
     protected function hitungSkor(Percobaan $percobaan): int
     {
+        // ✅ JawabanUser belongsTo OpsiJawaban (singular)
         $percobaan->loadMissing(['jawabanUser.opsiJawaban']);
+
         $jawabanCollection = $percobaan->jawabanUser ?? collect();
 
         $total = $jawabanCollection->count();
         if ($total === 0) return 0;
 
         $benar = $jawabanCollection
-            ->filter(fn ($j) => ($j->opsiJawaban->apakah_benar ?? false))
+            ->filter(fn ($j) => (bool) optional($j->opsiJawaban)->apakah_benar)
             ->count();
 
         return (int) round(($benar / $total) * 100);
     }
-
     /* =========================================================
      * PROFILE
      * ========================================================= */

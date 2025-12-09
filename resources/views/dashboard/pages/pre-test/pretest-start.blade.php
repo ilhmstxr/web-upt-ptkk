@@ -1,10 +1,13 @@
+{{-- resources/views/dashboard/pages/pre-test/pretest-start.blade.php
+   atau dashboard/pages/tes/do.blade.php kalau kamu pakai satu view untuk pre/post
+--}}
 @extends('dashboard.layouts.main')
 
 @section('title', 'Pre-Test')
 @section('page-title', 'Pre-Test: Soal '.($currentQuestionIndex + 1))
 
 @section('content')
-<div class="bg-white p-6 rounded-xl shadow-md fade-in">
+<div class="bg-white p-6 rounded-2xl shadow-md fade-in">
 
     @if(isset($pertanyaan))
         @php
@@ -12,144 +15,201 @@
             $totalSoal = $pertanyaanList->count();
             $terjawab = $jawabanCollection->count();
             $progress = $totalSoal > 0 ? round(($terjawab / $totalSoal) * 100, 2) : 0;
+
+            $durasiMenit = (int) ($tes->durasi_menit ?? 0);
         @endphp
 
-        {{-- Timer --}}
-        <p class="text-sm text-gray-600 mb-4">
-            Sisa waktu: <span id="timer"></span>
-        </p>
+        {{-- HEADER: Timer + Progress --}}
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
+            @if($durasiMenit > 0)
+                <div class="text-sm text-slate-600">
+                    Sisa waktu: <span id="timer" class="font-semibold text-slate-900"></span>
+                </div>
+            @endif
 
-        {{-- Progress Bar --}}
-        <div class="mb-4">
-            <div class="w-full bg-gray-200 rounded-full h-4">
-                <div class="bg-blue-600 h-4 rounded-full" style="width: {{ $progress }}%;"></div>
+            <div class="w-full md:w-1/2">
+                <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                    <div class="bg-blue-600 h-3 rounded-full transition-all"
+                         style="width: {{ $progress }}%;"></div>
+                </div>
+                <p class="text-xs mt-1 text-slate-500">
+                    Terjawab: {{ $terjawab }} / {{ $totalSoal }} ({{ $progress }}%)
+                </p>
             </div>
-            <p class="text-sm mt-1 text-gray-600">
-                Terjawab: {{ $terjawab }} / {{ $totalSoal }}
-            </p>
         </div>
 
-        {{-- Form Jawaban --}}
+        {{-- FORM --}}
         <form id="form-tes"
               action="{{ route('dashboard.pretest.submit', ['percobaan' => $percobaan->id]) }}"
-              method="POST">
+              method="POST"
+              class="space-y-5">
             @csrf
 
-            {{-- Nomor Soal --}}
-            <div class="mb-4 flex flex-wrap gap-2">
-                @foreach($pertanyaanList as $p)
+            {{-- GRID NOMOR SOAL --}}
+            <div class="flex flex-wrap gap-2">
+                @foreach($pertanyaanList as $idx => $p)
                     @php
                         $answered = $jawabanCollection->contains('pertanyaan_id', $p->id);
-                        $status = $answered ? 'bg-green-500' : 'bg-red-500';
+                        $isActive = $idx === $currentQuestionIndex;
+
+                        $btnClass = $isActive
+                            ? 'bg-blue-600 text-white ring-2 ring-blue-200'
+                            : ($answered
+                                ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200');
                     @endphp
-                    <button type="submit"
-                            name="next_q"
-                            value="{{ $loop->index }}"
-                            class="px-3 py-1 rounded text-white {{ $status }}">
-                        {{ $p->nomor }}
+
+                    <button type="button"
+                            onclick="goToQuestion({{ $idx }})"
+                            class="px-3 py-1 rounded-lg text-sm font-semibold transition {{ $btnClass }}">
+                        {{ $p->nomor ?? ($idx+1) }}
                     </button>
                 @endforeach
             </div>
 
-            {{-- Pertanyaan --}}
-            <p class="text-gray-700 mb-4">
-                {{ $pertanyaan->nomor ?? '?' }}. {{ $pertanyaan->teks_pertanyaan ?? '-' }}
-            </p>
+            {{-- PERTANYAAN --}}
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-4">
+                <div class="text-sm text-slate-500 mb-1">
+                    Soal {{ $currentQuestionIndex + 1 }} dari {{ $totalSoal }}
+                </div>
 
-            {{-- Gambar pertanyaan --}}
-            @if(!empty($pertanyaan->gambar))
-                <img src="{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}" 
-                     class="mb-4 rounded shadow cursor-pointer hover:scale-105 transition"
-                     onclick="openImageModal('{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}')">
-            @endif
+                <div class="text-slate-800 font-medium leading-relaxed">
+                    {{ $pertanyaan->nomor ?? ($currentQuestionIndex+1) }}.
+                    {{ $pertanyaan->teks_pertanyaan ?? '-' }}
+                </div>
 
-            {{-- Opsi Jawaban --}}
-            <div class="space-y-2 mb-4">
+                {{-- Gambar pertanyaan --}}
+                @if(!empty($pertanyaan->gambar))
+                    <div class="mt-3">
+                        <img src="{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}"
+                             alt="Gambar soal"
+                             class="max-h-72 rounded-lg shadow cursor-zoom-in hover:opacity-95 transition"
+                             onclick="openImageModal('{{ asset('images/pertanyaan/'.$pertanyaan->gambar) }}')">
+                    </div>
+                @endif
+            </div>
+
+            {{-- OPSI JAWABAN --}}
+            <div class="space-y-2">
                 @if($pertanyaan->opsiJawabans && $pertanyaan->opsiJawabans->count() > 0)
+                    @php
+                        $existing = $jawabanCollection->firstWhere('pertanyaan_id', $pertanyaan->id);
+                        $existingOpsiId = $existing->opsi_jawaban_id ?? null;
+                    @endphp
+
                     @foreach($pertanyaan->opsiJawabans as $opsi)
                         @php
-                            $existing = $jawabanCollection->firstWhere('pertanyaan_id', $pertanyaan->id);
-                            $checked = $existing && ($existing->opsi_jawaban_id ?? 0) == $opsi->id;
+                            $checked = $existingOpsiId == $opsi->id;
                         @endphp
-                        <label class="block p-2 border rounded hover:bg-gray-100 cursor-pointer">
+
+                        <label class="flex items-center gap-3 p-3 border rounded-xl hover:bg-slate-50 cursor-pointer transition">
                             <input
                                 type="radio"
                                 name="jawaban[{{ $pertanyaan->id }}]"
                                 value="{{ $opsi->id }}"
-                                class="mr-2"
+                                class="h-4 w-4"
                                 {{ $checked ? 'checked' : '' }}
                                 required
                             >
+
                             @if(!empty($opsi->gambar))
-                                <img src="{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}" 
-                                     class="inline-block w-12 h-12 mr-2 rounded align-middle cursor-pointer hover:scale-105 transition"
+                                <img src="{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}"
+                                     alt="Gambar opsi"
+                                     class="w-12 h-12 object-cover rounded cursor-zoom-in hover:opacity-95 transition"
                                      onclick="openImageModal('{{ asset('images/opsi-jawaban/'.$opsi->gambar) }}')">
                             @endif
-                            <span class="align-middle">{{ $opsi->teks_opsi ?? '-' }}</span>
+
+                            <div class="text-slate-800 text-sm leading-relaxed">
+                                {{ $opsi->teks_opsi ?? '-' }}
+                            </div>
                         </label>
                     @endforeach
                 @else
-                    <p class="text-red-500">Belum ada opsi jawaban untuk pertanyaan ini.</p>
+                    <div class="text-red-600 text-sm">
+                        Belum ada opsi jawaban untuk pertanyaan ini.
+                    </div>
                 @endif
             </div>
 
             <input type="hidden" name="percobaan_id" value="{{ $percobaan->id }}">
+            <input type="hidden" id="next_q_input" name="next_q" value="{{ $currentQuestionIndex + 1 }}">
 
-            {{-- Navigasi --}}
-            <div class="flex justify-between">
+            {{-- NAVIGASI --}}
+            <div class="flex items-center justify-between pt-2">
                 @if($currentQuestionIndex > 0)
-                    <button type="submit"
-                            name="next_q"
-                            value="{{ $currentQuestionIndex - 1 }}"
-                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
-                        Sebelumnya
+                    <button type="button"
+                            onclick="goToQuestion({{ $currentQuestionIndex - 1 }})"
+                            class="px-4 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition">
+                        ← Sebelumnya
                     </button>
                 @else
                     <span></span>
                 @endif
 
                 <button type="submit"
-                        name="next_q"
-                        value="{{ $currentQuestionIndex + 1 }}"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                    {{ $currentQuestionIndex + 1 == $totalSoal ? 'Selesai' : 'Selanjutnya' }}
+                        class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                    {{ ($currentQuestionIndex + 1) == $totalSoal ? 'Selesai ✓' : 'Selanjutnya →' }}
                 </button>
             </div>
         </form>
 
     @else
         {{-- Semua soal selesai --}}
-        <p class="text-gray-500">Semua soal telah selesai.</p>
-        <p class="text-lg font-semibold mt-2">
-            Nilai Anda: {{ $percobaan->skor ?? 0 }} / {{ $totalSoal ?? 0 }}
-            - Status:
-            <span class="{{ ($percobaan->lulus ?? false) ? 'text-green-600' : 'text-red-600' }}">
-                {{ ($percobaan->lulus ?? false) ? 'Lulus' : 'Tidak Lulus' }}
-            </span>
-        </p>
+        <div class="text-center py-8">
+            <div class="text-slate-500">Semua soal telah selesai.</div>
+            <div class="text-lg font-semibold mt-2">
+                Nilai Anda: {{ $percobaan->skor ?? 0 }}
+                <span class="{{ ($percobaan->lulus ?? false) ? 'text-emerald-600' : 'text-red-600' }}">
+                    ({{ ($percobaan->lulus ?? false) ? 'Lulus' : 'Tidak Lulus' }})
+                </span>
+            </div>
 
-        <a href="{{ route('dashboard.pretest.result', ['percobaan' => $percobaan->id ?? 0]) }}"
-           class="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-           Lihat Hasil Detail
-        </a>
+            <a href="{{ route('dashboard.pretest.result', ['percobaan' => $percobaan->id ?? 0]) }}"
+               class="mt-4 inline-flex px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
+                Lihat Hasil Detail
+            </a>
+        </div>
     @endif
 </div>
 
-{{-- Modal Zoom Gambar --}}
-<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50" onclick="closeImageModal()">
-    <div class="relative" onclick="event.stopPropagation()">
-        <button onclick="closeImageModal()" 
-                class="absolute -top-4 -right-4 bg-white text-black rounded-full p-2 shadow hover:bg-gray-200">
+{{-- MODAL ZOOM GAMBAR --}}
+<div id="imageModal"
+     class="fixed inset-0 bg-black/75 flex items-center justify-center hidden z-50"
+     onclick="closeImageModal()">
+    <div class="relative max-w-5xl w-full px-4" onclick="event.stopPropagation()">
+        <button onclick="closeImageModal()"
+                class="absolute -top-4 -right-2 bg-white text-black rounded-full p-2 shadow hover:bg-gray-200">
             ✕
         </button>
-        <img id="modalImage" src="" class="max-w-full max-h-screen rounded shadow-lg">
+        <img id="modalImage" src="" class="max-w-full max-h-[90vh] rounded shadow-lg mx-auto">
     </div>
 </div>
 
-{{-- Timer JS --}}
+@push('scripts')
 <script>
+/** pindah nomor soal tanpa double submit */
+function goToQuestion(idx){
+    const nextInput = document.getElementById('next_q_input');
+    nextInput.value = idx;
+    document.getElementById('form-tes').submit();
+}
+
+/** modal gambar */
+function openImageModal(src) {
+    document.getElementById('modalImage').src = src;
+    document.getElementById('imageModal').classList.remove('hidden');
+}
+function closeImageModal() {
+    document.getElementById('imageModal').classList.add('hidden');
+    document.getElementById('modalImage').src = '';
+}
+
+/** timer aman */
 (function(){
-    let duration = {{ $tes->durasi_menit * 60 }};
+    const durasiMenit = {{ (int) ($tes->durasi_menit ?? 0) }};
+    if(durasiMenit <= 0) return;
+
+    let duration = durasiMenit * 60;
     const serverStart = new Date("{{ $percobaan->waktu_mulai ?? now() }}").getTime();
     const nowServer = new Date("{{ now() }}").getTime();
     let elapsed = Math.floor((nowServer - serverStart) / 1000);
@@ -159,34 +219,27 @@
     function pad(n){ return n.toString().padStart(2,'0'); }
 
     function updateTimer() {
+        const el = document.getElementById('timer');
+        if (!el) return;
+
         if (remaining <= 0) {
-            document.getElementById('timer').textContent = "00:00:00";
+            el.textContent = "00:00:00";
             clearInterval(interval);
-            let form = document.getElementById("form-tes");
-            if (form) {
-                // auto-submit terakhir → skor dihitung
-                form.submit();
-            }
+            const form = document.getElementById("form-tes");
+            if (form) form.submit(); // auto-submit
             return;
         }
+
         const hours = pad(Math.floor(remaining/3600));
         const minutes = pad(Math.floor((remaining%3600)/60));
         const seconds = pad(remaining%60);
-        document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}`;
+        el.textContent = `${hours}:${minutes}:${seconds}`;
         remaining--;
     }
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
 })();
-
-function openImageModal(src) {
-    document.getElementById('modalImage').src = src;
-    document.getElementById('imageModal').classList.remove('hidden');
-}
-function closeImageModal() {
-    document.getElementById('imageModal').classList.add('hidden');
-    document.getElementById('modalImage').src = '';
-}
 </script>
+@endpush
 @endsection

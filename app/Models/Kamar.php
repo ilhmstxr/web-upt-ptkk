@@ -10,6 +10,8 @@ class Kamar extends Model
     /** @use HasFactory<\Database\Factories\KamarFactory> */
     use HasFactory;
 
+     //protected $connection = 'fasilitas';
+
     protected $table = 'kamar';
 
     protected $fillable = [

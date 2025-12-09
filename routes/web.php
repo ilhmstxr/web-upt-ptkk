@@ -156,6 +156,7 @@ Route::middleware(['assessment'])->prefix('dashboard')->name('dashboard.')->grou
     Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
     Route::post('/materi/{materi}/complete', [DashboardController::class, 'materiComplete'])->name('materi.complete');
 
+
     // SET PESERTA (optional legacy UI)
     Route::post('/set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
 

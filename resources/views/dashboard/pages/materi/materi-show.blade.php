@@ -6,20 +6,38 @@
 
 @section('content')
 @php
-    $judul   = $materi->judul ?? 'Materi';
-    $tipe    = $materi->tipe ?? 'teks';
+    $judul    = $materi->judul ?? 'Materi';
+    $tipe     = $materi->tipe ?? 'teks';
     $kategori = $materi->kategori ?? null;
-    $durasi  = $materi->estimasi_menit ?? null;
-    $tanggal = optional($materi->created_at)->translatedFormat('d F Y');
+    $durasi   = $materi->estimasi_menit ?? null;
+
+    // aman untuk dummy (created_at bisa null / string)
+    $tanggal = null;
+    if (!empty($materi->created_at) && $materi->created_at instanceof \Carbon\CarbonInterface) {
+        $tanggal = $materi->created_at->translatedFormat('d F Y');
+    }
 
     $isDone = isset($materiProgress) && ($materiProgress->is_completed ?? false);
 
-    // link materi utama
+    // link materi utama (slug optional)
     $materiIdOrSlug = $materi->slug ?? $materi->id;
 
     // related materi aman jadi collection
     $relatedMateris = collect($relatedMateris ?? []);
 @endphp
+
+{{-- NOTIF SUCCESS / ERROR (tetap simple, tidak ubah layout utama) --}}
+@if(session('success'))
+    <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg text-sm">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="mb-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
+        {{ session('error') }}
+    </div>
+@endif
 
 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
@@ -66,7 +84,6 @@
             {{-- VIDEO --}}
             @elseif($tipe === 'video')
                 @if(!empty($materi->video_url))
-                    {{-- tanpa aspect-w plugin, pakai wrapper biasa --}}
                     <div class="w-full overflow-hidden rounded-lg bg-black mb-6" style="aspect-ratio:16/9;">
                         <iframe
                             src="{{ $materi->video_url }}"
@@ -122,25 +139,23 @@
             @endif
         </div>
 
-        {{-- COMPLETE BUTTON --}}
+        {{-- COMPLETE BUTTON (layout sama persis) --}}
         <div class="mt-10 pt-6 border-t border-gray-200 flex justify-end">
             @if($isDone)
-                <button class="px-6 py-3 bg-green-500 text-white font-bold rounded-lg cursor-not-allowed" disabled>
-                    Materi Sudah Selesai
-                </button>
+                {{-- sudah selesai -> tombol merah Review Materi --}}
+                <a href="{{ route('dashboard.materi.show', $materiIdOrSlug) }}"
+                   class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow">
+                    Review Materi
+                </a>
             @else
-                @if(\Illuminate\Support\Facades\Route::has('dashboard.materi.complete'))
-                    <form action="{{ route('dashboard.materi.complete', $materiIdOrSlug) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg">
-                            Tandai Selesai
-                        </button>
-                    </form>
-                @else
-                    <div class="text-sm text-gray-500 italic">
-                        Tombol selesai belum aktif (route belum dibuat).
-                    </div>
-                @endif
+                {{-- belum selesai -> tombol biru Tandai Selesai --}}
+                <form action="{{ route('dashboard.materi.complete', $materiIdOrSlug) }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow">
+                        Tandai Selesai
+                    </button>
+                </form>
             @endif
         </div>
     </div>
@@ -156,12 +171,49 @@
                 @php
                     $relatedIdOrSlug = $related->slug ?? $related->id;
                     $isActive = ($related->id ?? null) === ($materi->id ?? null);
+
+                    // status selesai:
+                    // - materi aktif ikut $isDone
+                    // - selain aktif pakai is_done dari controller
+                    $relatedDone = $isActive ? $isDone : (bool) data_get($related, 'is_done', false);
+
+                    // nomor urut: pakai urutan dari DB kalau ada, fallback iteration
+                    $nomor = data_get($related, 'urutan', $loop->iteration);
                 @endphp
 
-                <li class="{{ $isActive ? 'bg-blue-50 border-l-4 border-blue-500 font-semibold' : '' }}">
+                <li class="
+                    {{ $isActive ? 'bg-blue-50 border-l-4 border-blue-500 font-semibold' : '' }}
+                    {{ (!$isActive && $relatedDone) ? 'bg-emerald-50 border-l-4 border-emerald-500' : '' }}
+                ">
                     <a href="{{ route('dashboard.materi.show', $relatedIdOrSlug) }}"
-                       class="text-blue-600 hover:text-blue-800 block text-sm px-2 py-1 rounded">
-                        {{ $related->judul ?? 'Materi' }}
+                    class="
+                            flex items-center justify-between gap-2
+                            text-sm px-2 py-2 rounded
+                            {{ $relatedDone ? 'text-emerald-700 hover:text-emerald-800 font-semibold' : 'text-blue-600 hover:text-blue-800' }}
+                    ">
+
+                        <div class="flex items-center gap-2 min-w-0">
+                            {{-- sebelum selesai: nomor, sesudah selesai: checklist --}}
+                            @if($relatedDone)
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold">
+                                    ✓
+                                </span>
+                            @else
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                                    {{ $nomor }}
+                                </span>
+                            @endif
+
+                            <span class="truncate">
+                                {{ $related->judul ?? 'Materi' }}
+                            </span>
+                        </div>
+
+                        @if($relatedDone)
+                            <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-[2px] rounded-full">
+                                Selesai
+                            </span>
+                        @endif
                     </a>
                 </li>
             @empty

@@ -61,27 +61,16 @@ class PendaftaranPelatihan extends Model
     {
         return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
-
-    /**
-     * Relasi penempatan asrama untuk pendaftaran ini.
-     * Cocokkan peserta_id dan pelatihan_id.
-     *
-     * Pakai whereColumn supaya aman kalau eager load.
-     */
     public function penempatanAsrama(): HasOne
     {
-        return $this->hasOne(PenempatanAsrama::class, 'peserta_id', 'peserta_id')
-            ->whereColumn('penempatan_asrama.pelatihan_id', 'pendaftaran_pelatihan.pelatihan_id');
+        return $this->hasOne(PenempatanAsrama::class, 'peserta_id', 'peserta_id');
     }
 
-    /**
-     * Helper aman kalau mau ambil penempatan aktif langsung (lazy).
-     */
     public function penempatanAsramaAktif(): ?PenempatanAsrama
     {
-        return PenempatanAsrama::query()
-            ->where('peserta_id', $this->peserta_id)
+        return $this->penempatanAsrama()
             ->where('pelatihan_id', $this->pelatihan_id)
             ->first();
     }
+
 }

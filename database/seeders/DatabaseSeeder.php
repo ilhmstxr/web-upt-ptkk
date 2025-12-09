@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 
 use Illuminate\Database\Seeder;
+use Database\Seeders\AsramaKamarSeeder;
 
 class DatabaseSeeder extends Seeder
 {

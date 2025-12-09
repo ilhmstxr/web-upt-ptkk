@@ -11,6 +11,7 @@ class PenempatanAsrama extends Model
 {
     use HasFactory;
 
+    // protected $connection = 'fasilitas';
     protected $table = 'penempatan_asrama';
 
     protected $fillable = [

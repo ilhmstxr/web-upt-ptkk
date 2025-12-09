@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Pelatihan extends Model
 {
@@ -31,48 +33,55 @@ class Pelatihan extends Model
     ];
 
     protected $casts = [
-        'tanggal_mulai' => 'date',
+        'tanggal_mulai'   => 'date',
         'tanggal_selesai' => 'date',
     ];
 
-    public function instansi()
+    // ======================
+    // RELATIONS
+    // ======================
+
+    public function instansi(): BelongsTo
     {
-        return $this->belongsTo(Instansi::class);
+        return $this->belongsTo(Instansi::class, 'instansi_id', 'id');
     }
 
-    public function peserta()
+    public function peserta(): HasMany
     {
-        return $this->hasMany(Peserta::class);
+        return $this->hasMany(Peserta::class, 'pelatihan_id', 'id');
+        // kalau tabel peserta TIDAK punya pelatihan_id, hapus relasi ini.
     }
 
-    public function tes()
+    public function tes(): HasMany
     {
-        return $this->hasMany(Tes::class);
+        return $this->hasMany(Tes::class, 'pelatihan_id', 'id');
     }
 
-    public function percobaans()
+    public function percobaans(): HasManyThrough
     {
         return $this->hasManyThrough(
             Percobaan::class,
             Tes::class,
-            'pelatihan_id',
-            'tes_id'
+            'pelatihan_id', // FK di tabel tes
+            'tes_id',       // FK di tabel percobaan
+            'id',           // PK pelatihan
+            'id'            // PK tes
         );
     }
 
-    public function kompetensiPelatihan()
+    public function kompetensiPelatihan(): HasMany
     {
-        return $this->hasMany(KompetensiPelatihan::class, 'pelatihan_id');
+        return $this->hasMany(KompetensiPelatihan::class, 'pelatihan_id', 'id');
     }
 
     public function pendaftaranPelatihan()
     {
-        return $this->hasMany(PendaftaranPelatihan::class,'pelatihan_id');
+        return $this->hasMany(PendaftaranPelatihan::class, 'pelatihan_id');
     }
 
-    // ✅ TAMBAHKAN INI
-    public function materiPelatihan()
+
+    public function materiPelatihan(): HasMany
     {
-        return $this->hasMany(\App\Models\MateriPelatihan::class, 'pelatihan_id');
+        return $this->hasMany(MateriPelatihan::class, 'pelatihan_id', 'id');
     }
 }
