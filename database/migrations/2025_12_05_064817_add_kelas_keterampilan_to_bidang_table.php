@@ -8,23 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Tambah kolom hanya kalau BELUM ada
-        if (!Schema::hasColumn('bidang', 'gambar')) {
-            Schema::table('bidang', function (Blueprint $table) {
-                $table->string('gambar')
-                    ->nullable()
-                    ->after('kelas_keterampilan');
-            });
-        }
+        // Dikosongkan.
+        // Dulu: menambah kolom di tabel 'bidang'
+        // Sekarang: tabel 'bidang' sudah diganti penuh menjadi 'kompetensi',
+        // dan kolom 'gambar' sudah didefinisikan di migration create_kompetensi_table.
     }
 
     public function down(): void
     {
-        Schema::table('bidang', function (Blueprint $table) {
-            // Hapus kolom hanya kalau ADA
-            if (Schema::hasColumn('bidang', 'gambar')) {
-                $table->dropColumn('gambar');
-            }
-        });
+        // Dikosongkan juga, karena up() tidak melakukan perubahan apa pun.
     }
 };
+

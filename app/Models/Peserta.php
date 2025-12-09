@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Peserta extends Model
 {
@@ -27,57 +31,48 @@ class Peserta extends Model
 
     protected $casts = [
         'tanggal_lahir' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
     ];
 
-    public function user()
+    // ✅ relasi ke users (bukan ke Pelatihan)
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-
+    // ✅ relasi lampiran PESERTA – pilih salah satu model yang dipakai
+    // Di sini aku pakai LampiranPeserta (sesuai nama tabel migration yang tadi kamu kirim)
     public function lampiran(): HasOne
     {
-        return $this->hasOne(LampiranPeserta::class);
+        return $this->hasOne(LampiranPeserta::class, 'peserta_id');
     }
 
-    public function instansi()
+    public function instansi(): BelongsTo
     {
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
 
-    public function pendaftarans()
+    public function pendaftarans(): HasMany
     {
         return $this->hasMany(PendaftaranPelatihan::class, 'peserta_id');
     }
 
-    public function lampiran()
+    // (opsional) kalau ini mau dipertahankan biar alias dari pendaftarans()
+    public function pendaftaranPelatihan(): HasMany
     {
-        return $this->hasOne(Lampiran::class, 'peserta_id');
+        return $this->hasMany(PendaftaranPelatihan::class, 'peserta_id');
     }
 
-    public function penempatanAsrama()
+    public function penempatanAsrama(): HasManyThrough
     {
         return $this->hasManyThrough(
             PenempatanAsrama::class,
             PendaftaranPelatihan::class,
-            'peserta_id',        
-            'pendaftaran_id',   
-            'id',                
-            'id'               
+            'peserta_id',        // FK di pendaftaran_pelatihan
+            'pendaftaran_id',    // FK di penempatan_asrama
+            'id',                // PK di peserta
+            'id'                 // PK di pendaftaran_pelatihan
         );
     }
-
-    public function pendaftaranPelatihan()
-    {
-        // Terhubung ke PendaftaranPelatihan::class melalui 'peserta_id'
-        return $this->hasMany(PendaftaranPelatihan::class, 'peserta_id');
-    }
-
-    /**
-     * Mendapatkan semua sesi/jadwal (kompetensi_pelatihan) yang pernah diikuti peserta
-     * (melalui tabel pendaftaran_pelatihan).
-     */
-
 }

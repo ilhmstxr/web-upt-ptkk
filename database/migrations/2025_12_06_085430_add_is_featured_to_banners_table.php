@@ -8,17 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('banners', function (Blueprint $table) {
-            $table->boolean('is_featured')
-                  ->default(false)
-                  ->after('is_active');
-        });
+        // Dulu: menambah kolom is_featured ke tabel banners.
+        // Sekarang: kolom is_featured sudah dibuat langsung
+        // di 2025_11_26_105610_create_banners_table,
+        // jadi migration ini tidak perlu melakukan apa pun.
     }
 
     public function down(): void
     {
-        Schema::table('banners', function (Blueprint $table) {
-            $table->dropColumn('is_featured');
-        });
+        // Karena up() tidak mengubah apa-apa, down() juga kosong.
     }
 };

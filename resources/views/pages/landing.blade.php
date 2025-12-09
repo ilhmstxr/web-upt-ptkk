@@ -31,7 +31,7 @@
 use Illuminate\Support\Facades\Storage;
 use App\Models\Banner;
 use App\Models\Berita;
-use App\Models\Bidang;
+use App\Models\Kompetensi;
 use Illuminate\Support\Str;
 
 /* Ambil banners */
@@ -1028,72 +1028,67 @@ $latestBeritas = Berita::query()
       </h2>
     </div>
 
-    {{-- SLIDER --}}
-    @php
-      // Ambil dari DB:
-      // 1 = Kelas Keterampilan & Teknik
-      // 0 = MJC
-      $bidangKeterampilan = Bidang::where('kelas_keterampilan', 1)
-          ->orderBy('nama_bidang')
-          ->get();
+   {{-- SLIDER --}}
+@php
+    // Ambil dari DB:
+    // 1 = Kelas Keterampilan & Teknik
+    // 0 = MJC
+    $kompetensiKeterampilan = Kompetensi::where('kelas_keterampilan', 1)
+        ->orderBy('nama_kompetensi')
+        ->get();
 
-      $bidangMjc = Bidang::where('kelas_keterampilan', 0)
-          ->orderBy('nama_bidang')
-          ->get();
+    $kompetensiMjc = Kompetensi::where('kelas_keterampilan', 0)
+        ->orderBy('nama_kompetensi')
+        ->get();
 
-      // Gabungkan: Keterampilan dulu, baru MJC
-      $bidangItems = $bidangKeterampilan->concat($bidangMjc);
-    @endphp
+    // Gabungkan: Keterampilan dulu, baru MJC
+    $kompetensiItems = $kompetensiKeterampilan->concat($kompetensiMjc);
+@endphp
+
 
     <div class="relative">
       <div id="kompetensi-track"
            class="flex gap-4 md:gap-5 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-1"
            style="scrollbar-width:none;-ms-overflow-style:none;">
 
-        @forelse($bidangItems as $bidang)
-          @php
-            $nama = $bidang->nama_bidang ?? 'Kompetensi';
+       @forelse($kompetensiItems as $komp)
+  @php
+      $nama = $komp->nama_kompetensi ?? 'Kompetensi';
 
-            // Ambil URL gambar:
-            if (!empty($bidang->gambar)) {
-                if (Str::startsWith($bidang->gambar, ['http://', 'https://'])) {
-                    $imgUrl = $bidang->gambar; // sudah full URL
-                } else {
-                    // diasumsikan disimpan di storage public (storage/bidang/xxx)
-                    $imgUrl = Storage::url($bidang->gambar);
-                }
-            } else {
-                // fallback ke gambar default
-                $imgUrl = asset('images/profil/default-bidang.svg');
-            }
-          @endphp
+      // Ambil URL gambar:
+      if (!empty($komp->gambar)) {
+          if (Str::startsWith($komp->gambar, ['http://', 'https://'])) {
+              $imgUrl = $komp->gambar; // sudah full URL
+          } else {
+              // diasumsikan disimpan di storage public (storage/kompetensi/xxx)
+              $imgUrl = Storage::url($komp->gambar);
+          }
+      } else {
+          // fallback ke gambar default
+          $imgUrl = asset('images/profil/default-bidang.svg');
+      }
+  @endphp
 
-          <div class="shrink-0 snap-start relative w-[260px] h-[180px] rounded-lg overflow-hidden group
-                      transition-all duration-300">
-            {{-- Gambar dari DB --}}
-            <img src="{{ $imgUrl }}" alt="{{ $nama }}"
-                 class="w-full h-full object-cover">
+  <div class="shrink-0 snap-start relative w-[260px] h-[180px] rounded-lg overflow-hidden group
+              transition-all duration-300">
+    <img src="{{ $imgUrl }}" alt="{{ $nama }}" class="w-full h-full object-cover">
+    <div class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100 group-hover:opacity-0"
+         style="background: linear-gradient(180deg,
+                 rgba(219,231,247,0.5) 0%,
+                 rgba(21,36,175,0.8) 100%);">
+    </div>
+    <div class="absolute bottom-3 left-0 right-0 z-10 text-center">
+      <h3 class="text-white font-[Montserrat] font-medium text-[16px]">
+        {{ $nama }}
+      </h3>
+    </div>
+  </div>
+@empty
+  <div class="shrink-0 w-full text-center py-10 text-slate-600">
+    Belum ada data kompetensi pelatihan yang tersimpan.
+  </div>
+@endforelse
 
-            {{-- Overlay gradient (menghilang saat hover) --}}
-            <div class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100 group-hover:opacity-0"
-                 style="background: linear-gradient(180deg,
-                         rgba(219,231,247,0.5) 0%,
-                         rgba(21,36,175,0.8) 100%);">
-            </div>
-
-            {{-- Nama kompetensi di tengah bawah --}}
-            <div class="absolute bottom-3 left-0 right-0 z-10 text-center">
-              <h3 class="text-white font-[Montserrat] font-medium text-[16px]">
-                {{ $nama }}
-              </h3>
-            </div>
-          </div>
-        @empty
-          {{-- Fallback kalau belum ada data bidang sama sekali --}}
-          <div class="shrink-0 w-full text-center py-10 text-slate-600">
-            Belum ada data kompetensi pelatihan yang tersimpan.
-          </div>
-        @endforelse
 
       </div>
 

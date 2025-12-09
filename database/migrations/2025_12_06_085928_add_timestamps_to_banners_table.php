@@ -8,16 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('banners', function (Blueprint $table) {
-            // tambahkan kolom timestamps standar Laravel
-            $table->timestamps(); // menambah created_at dan updated_at
-        });
+        // DULU: nambah kolom created_at & updated_at ke tabel banners.
+        // SEKARANG: kolom timestamps SUDAH dibuat langsung
+        // di 2025_11_26_105610_create_banners_table,
+        // jadi migration ini tidak perlu melakukan apa pun.
     }
 
     public function down(): void
     {
-        Schema::table('banners', function (Blueprint $table) {
-            $table->dropColumn(['created_at', 'updated_at']);
-        });
+        // Karena up() tidak melakukan perubahan apa-apa,
+        // down() juga dikosongkan.
     }
 };

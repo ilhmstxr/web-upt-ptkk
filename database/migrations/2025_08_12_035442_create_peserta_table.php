@@ -13,29 +13,28 @@ return new class extends Migration
 
             // Relasi wajib
             $table->foreignId('user_id')
-                  ->constrained('users') // Merujuk ke tabel 'users'
+                  ->constrained('users')
                   ->cascadeOnDelete();
+
             $table->foreignId('instansi_id')
-                  ->constrained('instansi') // Merujuk ke tabel 'instansi'
+                  ->constrained('instansi')
                   ->cascadeOnDelete();
 
             // Relasi opsional: pelatihan_id
             $table->foreignId('pelatihan_id')
                   ->nullable()
-                  // Diperbaiki: Merujuk secara eksplisit ke tabel 'pelatihan' (tunggal)
-                  ->constrained('pelatihan') 
+                  ->constrained('pelatihan')
                   ->nullOnDelete();
-                  
-            // Relasi opsional: bidang_id
+
+            // Relasi opsional: bidang_id (sekarang menunjuk ke tabel kompetensi)
             $table->foreignId('bidang_id')
                   ->nullable()
-                  // Diperbaiki: Merujuk secara eksplisit ke tabel 'bidang' (tunggal)
-                  ->constrained('bidang') 
+                  ->constrained('kompetensi')   // ⬅️ ini yang penting
                   ->nullOnDelete();
 
             $table->string('nama', 150);
             $table->string('nik', 20)->unique();
-            $table->string('jabatan', 150)->nullable(); // Menambahkan Jabatan
+            $table->string('jabatan', 150)->nullable();
             $table->string('tempat_lahir', 100);
             $table->date('tanggal_lahir');
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
@@ -51,3 +50,4 @@ return new class extends Migration
         Schema::dropIfExists('peserta');
     }
 };
+

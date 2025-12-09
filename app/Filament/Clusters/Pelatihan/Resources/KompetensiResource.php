@@ -38,16 +38,16 @@ class KompetensiResource extends Resource
                                             ->label('Nama Kompetensi')
                                             ->required()
                                             ->maxLength(255),
-                                            
+
                                         Forms\Components\TextInput::make('kode')
                                             ->label('Kode Kompetensi')
                                             ->maxLength(255),
-                                            
+
                                         Forms\Components\TextInput::make('kelas_keterampilan')
                                             ->label('Kelas Keterampilan')
                                             ->maxLength(255)
                                             ->columnSpanFull(),
-                                            
+
                                         Forms\Components\Textarea::make('deskripsi')
                                             ->label('Deskripsi')
                                             ->maxLength(65535)
@@ -95,7 +95,7 @@ class KompetensiResource extends Resource
                         ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->nama_kompetensi) . '&size=300&background=random')
                         ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3'])
                         ->disk('public'),
-                    
+
                     Tables\Columns\TextColumn::make('nama_kompetensi')
                         ->weight('bold')
                         ->size('lg')
