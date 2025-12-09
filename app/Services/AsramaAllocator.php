@@ -9,6 +9,7 @@ use App\Models\Pelatihan;
 use App\Models\PenempatanAsrama;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AsramaAllocator
 {
@@ -25,15 +26,25 @@ class AsramaAllocator
             // 0) hapus penempatan lama pelatihan ini
             PenempatanAsrama::where('pelatihan_id', $pelatihan->id)->delete();
 
-            // 1) reset bed kamar (biar hitungan selalu fresh)
-            Kamar::query()
-                ->where('status', '!=', 'Rusak')
-                ->update([
-                    'available_beds' => DB::raw('total_beds'),
-                    'status'         => 'Tersedia',
-                ]);
+            // 1) reset bed kamar (lebih aman terhadap variasi status & kolom NULL)
+            $resetQuery = Kamar::query()
+                ->where(function ($q) {
+                    $q->whereNull('status')
+                      ->orWhereRaw('LOWER(status) != ?', ['rusak']);
+                });
 
-            // 2) lanjut allocate normal
+            $updateData = [
+                'status' => 'Tersedia',
+            ];
+
+            // hanya reset available_beds kalau kolomnya memang ada
+            if (Schema::hasColumn('kamar', 'available_beds')) {
+                $updateData['available_beds'] = DB::raw('total_beds');
+            }
+
+            $resetQuery->update($updateData);
+
+            // 2) lanjut allocate normal dari kondisi fresh
             return $this->allocateFresh($pelatihan, $pesertaList);
         });
     }
@@ -66,15 +77,24 @@ class AsramaAllocator
         // AMBIL KAMAR NON RUSAK & BED POSITIF
         // =========================
         $kamarAll = Kamar::with('asrama')
-            ->where('status', '!=', 'Rusak')
+            ->where(function ($q) {
+                $q->whereNull('status')
+                  ->orWhereRaw('LOWER(status) != ?', ['rusak']);
+            })
             ->where('total_beds', '>', 0)
             ->orderBy('asrama_id')
             ->orderBy('lantai')
             ->orderBy('nomor_kamar')
-            ->get();
+            ->get()
+            ->each(function ($k) {
+                // fallback available_beds kalau null
+                if (is_null($k->available_beds)) {
+                    $k->available_beds = (int) $k->total_beds;
+                }
+            });
 
-        if ($kamarAll->isEmpty()) {
-            return 0; // memang gak ada kamar valid
+        if ($kamarAll->isEmpty() || $pesertaList->isEmpty()) {
+            return 0; // gak ada kamar valid atau peserta kosong
         }
 
         $count = 0;
@@ -109,6 +129,19 @@ class AsramaAllocator
     }
 
     /**
+     * Helper bed aman:
+     * available_beds kalau null -> fallback total_beds
+     */
+    protected function bedsLeft(Kamar $kamar): int
+    {
+        $avail = $kamar->available_beds;
+        if ($avail === null) {
+            $avail = $kamar->total_beds;
+        }
+        return max(0, (int) $avail);
+    }
+
+    /**
      * Stage 1:
      * Lock asrama ke 1 jenis_kelamin.
      */
@@ -134,11 +167,11 @@ class AsramaAllocator
                 if ($jkAsrama && $jkAsrama !== $jk) continue;
 
                 // lock rule: kalau asrama sudah dipakai gender lain → skip tahap 1
-                if ($asramaLock->has($asrama->id) && $asramaLock[$asrama->id] !== $jk) {
+                if ($asramaLock->has($asrama->id) && $asramaLock->get($asrama->id) !== $jk) {
                     continue;
                 }
 
-                if ($kamar->available_beds <= 0) continue;
+                if ($this->bedsLeft($kamar) <= 0) continue;
 
                 // kamar tidak boleh campur dalam tahap ini
                 if ($this->roomHasOtherJK($pelatihan, $kamar, $jk)) continue;
@@ -147,7 +180,7 @@ class AsramaAllocator
                 $this->decBed($kamar);
 
                 // set lock asrama
-                $asramaLock[$asrama->id] = $jk;
+                $asramaLock->put($asrama->id, $jk);
 
                 $assigned = true;
                 $count++;
@@ -178,9 +211,10 @@ class AsramaAllocator
             foreach ($kamarAll as $kamar) {
                 $asrama = $kamar->asrama;
                 if (! $asrama) continue;
-                if ($kamar->available_beds <= 0) continue;
 
-                // kamar tetap gak boleh campur jenis_kelamin
+                if ($this->bedsLeft($kamar) <= 0) continue;
+
+                // kamar tetap gak boleh campur jenis_kelamin (jika jk diketahui)
                 if ($jk && $this->roomHasOtherJK($pelatihan, $kamar, $jk)) {
                     continue;
                 }
@@ -212,7 +246,7 @@ class AsramaAllocator
 
         foreach ($queue as $p) {
             foreach ($kamarBesar as $kamar) {
-                if ($kamar->available_beds <= 0) continue;
+                if ($this->bedsLeft($kamar) <= 0) continue;
 
                 $asrama = $kamar->asrama;
                 if (! $asrama) continue;
@@ -261,7 +295,9 @@ class AsramaAllocator
             ->pluck('peserta_id')
             ->unique();
 
-        return $allPeserta->reject(fn ($p) => $placedIds->contains($p->id))->values();
+        return $allPeserta
+            ->reject(fn ($p) => $placedIds->contains($p->id))
+            ->values();
     }
 
     protected function store(Pelatihan $pelatihan, Peserta $peserta, Asrama $asrama, Kamar $kamar): void
@@ -281,7 +317,7 @@ class AsramaAllocator
 
     protected function decBed(Kamar $kamar): void
     {
-        $kamar->available_beds = max(0, (int) $kamar->available_beds - 1);
+        $kamar->available_beds = max(0, $this->bedsLeft($kamar) - 1);
 
         if ($kamar->available_beds === 0) {
             $kamar->status = 'Penuh';

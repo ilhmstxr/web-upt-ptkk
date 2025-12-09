@@ -12,7 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'assessment' => \App\Http\Middleware\EnsureAssessmentLogin::class,
+            // ✅ alias lama boleh tetap
+            'assessment'        => \App\Http\Middleware\EnsureAssessmentLogin::class,
+
+            // ✅ alias baru untuk auto-isi session pelatihan/kompetensi
+            'training.session'  => \App\Http\Middleware\EnsureActiveTrainingSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

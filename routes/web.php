@@ -63,6 +63,7 @@ Route::view('/masuk', 'pages.masuk')->name('masuk');
 |  B. ASSESSMENT LOGIN (NO REG + TGL LAHIR)
 ====================================================================== */
 Route::middleware(['web', 'guest'])->group(function () {
+
     Route::get('/assessment/login', [AssessmentLoginController::class, 'show'])
         ->name('assessment.login');
 
@@ -70,9 +71,10 @@ Route::middleware(['web', 'guest'])->group(function () {
         ->name('assessment.login.submit');
 });
 
-Route::post('/assessment/logout', [AssessmentLoginController::class, 'logout'])
-    ->middleware(['web'])
-    ->name('assessment.logout');
+    // ✅ Logout hanya untuk peserta assessment yg sedang login
+    Route::post('/assessment/logout', [AssessmentLoginController::class, 'logout'])
+        ->middleware(['web', 'assessment'])  // <-- alias assessment
+        ->name('assessment.logout');
 
 /* ======================================================================
 |  C. HOME redirect
@@ -143,9 +145,13 @@ Route::view('template/instruktur', 'template_surat.instruktur');
 Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 
 /* ======================================================================
-|  E. DASHBOARD PESERTA (protected by middleware assessment)
+|  E. DASHBOARD PESERTA
+|  protected by middleware assessment + training session
 ====================================================================== */
-Route::middleware(['assessment'])->prefix('dashboard')->name('dashboard.')->group(function () {
+Route::middleware(['web', 'assessment', 'training.session'])
+    ->prefix('dashboard')
+    ->name('dashboard.')
+    ->group(function () {
 
     // HOME
     Route::get('/', [DashboardController::class, 'home'])->name('home');
@@ -156,7 +162,6 @@ Route::middleware(['assessment'])->prefix('dashboard')->name('dashboard.')->grou
     Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
     Route::post('/materi/{materi}/complete', [DashboardController::class, 'materiComplete'])->name('materi.complete');
 
-
     // SET PESERTA (optional legacy UI)
     Route::post('/set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
 
@@ -164,8 +169,9 @@ Route::middleware(['assessment'])->prefix('dashboard')->name('dashboard.')->grou
     Route::get('/ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
         ->name('ajax.peserta.instansiByNama');
 
-    // LOGOUT (session for assessment/dashboard)
-    Route::post('/logout', [DashboardController::class, 'logout'])->name('logout');
+    // ⚠️ Dashboard logout ini opsional.
+    // Lebih aman arahkan ke assessment.logout biar satu pintu.
+    Route::post('/logout', [AssessmentLoginController::class, 'logout'])->name('logout');
 
     // PRETEST
     Route::prefix('pretest')->name('pretest.')->group(function () {
@@ -185,7 +191,7 @@ Route::middleware(['assessment'])->prefix('dashboard')->name('dashboard.')->grou
         Route::get('/{tes}', [DashboardController::class, 'posttestShow'])->name('show');
     });
 
-    // SURVEY
+    // SURVEY (kalau masih dipakai)
     Route::get('/survey', [DashboardController::class, 'survey'])->name('survey');
     Route::post('/survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
 
@@ -195,6 +201,8 @@ Route::middleware(['assessment'])->prefix('dashboard')->name('dashboard.')->grou
         Route::get('/{tes}/start', [DashboardController::class, 'monevStart'])->name('start');
         Route::get('/{tes}/begin', [DashboardController::class, 'monevBegin'])->name('begin');
         Route::get('/{tes}', [DashboardController::class, 'monevShow'])->name('show');
+        Route::post('/{percobaan}/submit', [DashboardController::class, 'monevSubmit'])->name('submit');
+        Route::get('/result/{percobaan}', [DashboardController::class, 'monevResult'])->name('result');
     });
 });
 
