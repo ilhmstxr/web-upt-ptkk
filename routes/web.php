@@ -28,25 +28,14 @@ use App\Exports\LampiranSheet;
 |--------------------------------------------------------------------------
 | Web Routes Final + Assessment Token Login
 |--------------------------------------------------------------------------
-|
-| This file contains public routes, dashboard routes (guest-friendly),
-| admin helpers and a small fallback for Filament route name mismatch.
-|
+| Berisi public routes, assessment login, dashboard peserta, export, dll.
 */
 
-/*
-|--------------------------------------------------------------------------
-| Safety fallback for Filament route name missing (workaround)
-|--------------------------------------------------------------------------
-| If Filament expects a named route like `filament.admin.resources.materi-pelatihans.index`
-| but it doesn't exist (due to resource registration or namespace change),
-| this alias prevents RouteNotFoundException on /admin/login.
-| You can remove this when Filament resources are registered properly.
-*/
+/* ======================================================================
+|  SAFETY FALLBACK (Filament route mismatch workaround)
+====================================================================== */
 if (! Route::has('filament.admin.resources.materi-pelatihans.index')) {
     Route::get('/_filament_stub/materi-pelatihans', function () {
-        // Prefer to redirect to Filament's default resource route if present,
-        // otherwise send to dashboard home.
         if (Route::has('filament.resources.materi-pelatihans.index')) {
             return redirect()->route('filament.resources.materi-pelatihans.index');
         }
@@ -67,7 +56,7 @@ Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name(
 Route::view('/berita',  'pages.berita')->name('news');
 Route::view('/panduan', 'pages.panduan')->name('panduan');
 
-// halaman masuk admin/user default (kalau masih dipakai)
+// halaman masuk umum (kalau masih dipakai)
 Route::view('/masuk', 'pages.masuk')->name('masuk');
 
 /* ======================================================================
@@ -154,9 +143,9 @@ Route::view('template/instruktur', 'template_surat.instruktur');
 Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 
 /* ======================================================================
-|  E. DASHBOARD (guest-friendly)
+|  E. DASHBOARD PESERTA (protected by middleware assessment)
 ====================================================================== */
-Route::prefix('dashboard')->name('dashboard.')->group(function () {
+Route::middleware(['assessment'])->prefix('dashboard')->name('dashboard.')->group(function () {
 
     // HOME
     Route::get('/', [DashboardController::class, 'home'])->name('home');
@@ -242,7 +231,7 @@ Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name
 Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
 
 // admin variant to avoid name clashes with public survey routes
-Route::resource('/survey-admin', SurveyController::class)->except(['index','create','store']);
+Route::resource('/survey-admin', SurveyController::class)->except(['index', 'create', 'store']);
 
 /* ======================================================================
 |  J. EXCEL EXPORT & TEST HELPERS
@@ -276,10 +265,10 @@ Route::get('/send', fn () => Mail::to('23082010166@student.upnjatim.ac.id')->sen
 /* ======================================================================
 |  M. DATA PESERTA API (debug)
 ====================================================================== */
-Route::get('/api/peserta', fn () => Peserta::with('lampiran','kompetensi','pelatihan','instansi')->get());
+Route::get('/api/peserta', fn () => Peserta::with('lampiran', 'kompetensi', 'pelatihan', 'instansi')->get());
 
 /* ======================================================================
-|  N. STATISTIK PELATIHAN (user requested)
+|  N. STATISTIK PELATIHAN
 ====================================================================== */
 Route::get('/statistik-pelatihan', [StatistikPelatihanController::class, 'index']);
 Route::get('/api/statistik-pelatihan', [StatistikPelatihanController::class, 'data']);

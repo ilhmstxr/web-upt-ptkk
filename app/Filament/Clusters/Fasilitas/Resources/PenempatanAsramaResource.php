@@ -5,27 +5,23 @@ namespace App\Filament\Clusters\Fasilitas\Resources;
 use App\Filament\Clusters\Fasilitas;
 use App\Filament\Clusters\Fasilitas\Resources\PenempatanAsramaResource\Pages;
 
-use App\Models\PendaftaranPelatihan;   // basis tabel
-use App\Models\PenempatanAsrama;
-use App\Models\Pelatihan;              // ✅ FIX: sebelumnya belum di-import
+use App\Models\PendaftaranPelatihan;
+use App\Models\Pelatihan;
 use App\Services\AsramaAllocator;
 
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\Action as TableAction;
 use Filament\Notifications\Notification;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Schema;
 
 class PenempatanAsramaResource extends Resource
 {
-    // ✅ basis tabel pendaftaran pelatihan
-    protected static ?string $model = PendaftaranPelatihan::class;
-
+    /** Basis list = pendaftaran peserta per pelatihan */
+    protected static ?string $model   = PendaftaranPelatihan::class;
     protected static ?string $cluster = Fasilitas::class;
 
     protected static ?string $navigationIcon   = 'heroicon-o-home-modern';
@@ -39,42 +35,50 @@ class PenempatanAsramaResource extends Resource
     }
 
     /**
-     * ✅ eager load relasi yang dibutuhkan tabel
+     * ✅ Eager load biar tabel cepat & kolom asrama bisa ambil dari relasi.
      */
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->with([
-                'peserta.instansi',
-                'pelatihan',
-            ]);
+        return parent::getEloquentQuery()->with([
+            'peserta.instansi',
+            'pelatihan',
+            'peserta.penempatanAsramas.kamar.asrama', // penting untuk kolom Asrama/Kamar
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-
-                // =========================
-                // DATA REGISTRASI & PESERTA
-                // =========================
+                // KODE REGIS
                 Tables\Columns\TextColumn::make('nomor_registrasi')
                     ->label('Kode Regis')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
+                // NAMA
                 Tables\Columns\TextColumn::make('peserta.nama')
                     ->label('Nama')
                     ->searchable()
+                    ->sortable()
+                    ->wrap(),
+
+                // KELAS (kolom di pendaftaran_pelatihan)
+                Tables\Columns\TextColumn::make('kelas')
+                    ->label('Kelas')
+                    ->badge()
+                    ->color('gray')
                     ->sortable(),
 
+                // ASAL INSTANSI
                 Tables\Columns\TextColumn::make('peserta.instansi.asal_instansi')
-                    ->label('Asal Sekolah')
+                    ->label('Asal Instansi')
                     ->default('-')
                     ->searchable()
                     ->wrap(),
 
+                // JENIS KELAMIN
                 Tables\Columns\TextColumn::make('peserta.jenis_kelamin')
                     ->label('Jenis Kelamin')
                     ->badge()
@@ -86,21 +90,12 @@ class PenempatanAsramaResource extends Resource
                     ->formatStateUsing(fn ($state) => $state ? ucfirst($state) : '-')
                     ->alignCenter(),
 
-                // =========================
-                // DATA PENEMPATAN ASRAMA
-                // =========================
+                // ASRAMA / KAMAR (tanpa query ulang, ambil dari eager load)
                 Tables\Columns\TextColumn::make('ruangan_kamar')
-                    ->label('Ruangan Kamar Asrama')
+                    ->label('Asrama / Kamar')
                     ->getStateUsing(function (PendaftaranPelatihan $record) {
-
-                        $pesertaId   = $record->peserta_id;
-                        $pelatihanId = $record->pelatihan_id;
-
-                        $penempatan = PenempatanAsrama::query()
-                            ->with(['kamar.asrama'])
-                            ->where('peserta_id', $pesertaId)
-                            ->where('pelatihan_id', $pelatihanId)
-                            ->first();
+                        $penempatan = $record->peserta?->penempatanAsramas
+                            ?->firstWhere('pelatihan_id', $record->pelatihan_id);
 
                         if (! $penempatan || ! $penempatan->kamar) {
                             return 'Belum dibagi';
@@ -111,41 +106,39 @@ class PenempatanAsramaResource extends Resource
 
                         return "{$asrama} - Kamar {$kamar}";
                     })
-                    ->wrap()
-                    ->sortable(false),
+                    ->wrap(),
             ])
 
-            // =========================
-            // EMPTY STATE
-            // =========================
-            ->emptyStateHeading('Pilih pelatihan dulu untuk melihat data penempatan.')
-            ->emptyStateDescription('Gunakan filter "Pilih Pelatihan" di atas tabel.')
+            ->emptyStateHeading('Pilih pelatihan dulu untuk melihat penempatan.')
+            ->emptyStateDescription('Gunakan filter "Pilih Pelatihan".')
 
-            // =========================
-            // FILTER PELATIHAN
-            // =========================
+            /**
+             * ✅ Filter utama: tabel kosong sampai pelatihan dipilih
+             */
             ->filters([
                 Tables\Filters\SelectFilter::make('pelatihan_id')
                     ->label('Pilih Pelatihan')
-                    ->relationship('pelatihan', 'nama_pelatihan')
+                    ->relationship('pelatihan', 'nama_pelatihan') // pastikan relasi pelatihan() ada
                     ->searchable()
                     ->preload()
                     ->placeholder('— Pilih pelatihan dulu —')
                     ->query(function (Builder $query, array $data): Builder {
-                        if (empty($data['value'])) {
-                            return $query->whereRaw('1=0'); // kosongkan tabel kalau belum pilih
+                        $pelatihanId = $data['value'] ?? null;
+
+                        if (! $pelatihanId) {
+                            return $query->whereRaw('1=0'); // kosong kalau belum pilih
                         }
 
-                        return $query->where('pelatihan_id', $data['value']);
+                        return $query->where('pelatihan_id', $pelatihanId);
                     }),
             ])
 
-            // =========================
-            // HEADER ACTION OTOMASI
-            // =========================
+            /**
+             * ✅ Otomasi penempatan: pilih pelatihan → reallocate total
+             */
             ->headerActions([
                 TableAction::make('otomasi')
-                    ->label('Jalankan Otomasi Penempatan')
+                    ->label('Otomasi Penempatan')
                     ->icon('heroicon-o-bolt')
                     ->color('success')
                     ->requiresConfirmation()
@@ -171,64 +164,26 @@ class PenempatanAsramaResource extends Resource
                             return;
                         }
 
-                        /**
-                         * ✅ Ambil semua pendaftaran pelatihan tsb
-                         * ✅ Status OPTIONAL + legacy aman:
-                         *    - jika status_pendaftaran ADA → ambil semua kecuali "ditolak"
-                         *      (termasuk null + variasi kapital)
-                         *    - jika status_pendaftaran TIDAK ADA → tidak usah filter status
-                         * ✅ hanya yang BELUM punya penempatan untuk pelatihan ini
-                         */
-                        $pendaftarans = PendaftaranPelatihan::with('peserta')
+                        // ✅ Ambil SEMUA peserta pada pelatihan ini (tanpa filter status)
+                        $peserta = PendaftaranPelatihan::with('peserta')
                             ->where('pelatihan_id', $pelatihanId)
-
-                            ->when(
-                                Schema::hasColumn('pendaftaran_pelatihan', 'status_pendaftaran'),
-                                function ($q) {
-                                    $q->where(function ($qq) {
-                                        $qq->whereNull('status_pendaftaran')
-                                           ->orWhereRaw('LOWER(status_pendaftaran) != ?', ['ditolak']);
-                                    });
-                                }
-                            )
-
-                            ->when(
-                                !Schema::hasColumn('pendaftaran_pelatihan', 'status_pendaftaran')
-                                && Schema::hasColumn('pendaftaran_pelatihan', 'status'),
-                                function ($q) {
-                                    $q->where(function ($qq) {
-                                        $qq->whereNull('status')
-                                           ->orWhereRaw('LOWER(status) != ?', ['ditolak']);
-                                    });
-                                }
-                            )
-
-                            ->whereDoesntHave('peserta.penempatanAsramas', function ($q) use ($pelatihanId) {
-                                $q->where('pelatihan_id', $pelatihanId);
-                            })
-                            ->get();
-
-                        $peserta = $pendaftarans
+                            ->get()
                             ->pluck('peserta')
-                            ->filter()
+                            ->filter()  // buang null kalau data rusak
                             ->values();
 
                         if ($peserta->isEmpty()) {
                             Notification::make()
-                                ->title('Tidak ada peserta yang perlu ditempatkan')
+                                ->title('Tidak ada peserta pada pelatihan ini')
                                 ->warning()
                                 ->send();
                             return;
                         }
 
-                        // ✅ jalankan allocator (return jumlah yg ditempatkan)
-                        $allocatedCount = $allocator->allocate($pelatihan, $peserta);
+                        // ✅ Re-allocate total (hapus lama + reset bed + bagi ulang)
+                        $allocatedCount = $allocator->reallocate($pelatihan, $peserta);
 
-                        /**
-                         * ✅ FIX: jangan resetTable()
-                         * resetTable() akan menghapus filter pelatihan_id → tabel kosong lagi.
-                         * Cukup refresh komponen.
-                         */
+                        // ✅ refresh tanpa hilangin filter
                         $livewire->dispatch('$refresh');
 
                         Notification::make()
@@ -239,8 +194,7 @@ class PenempatanAsramaResource extends Resource
                     }),
             ])
 
-            ->actions([])
-
+            ->actions([]) // read-only
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

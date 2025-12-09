@@ -156,10 +156,10 @@ class PendaftaranResource extends Resource
                 Tables\Filters\SelectFilter::make('status_pendaftaran')
                     ->label('Filter Status')
                     ->options([
-                        'Pending' => 'Pending',
-                        'Verifikasi' => 'Verifikasi',
-                        'Diterima' => 'Diterima',
-                        'Ditolak' => 'Ditolak',
+                        'pending' => 'Pending',
+                        'verifikasi' => 'Verifikasi',
+                        'diterima' => 'Diterima',
+                        'ditolak' => 'Ditolak',
                     ]),
 
                 Tables\Filters\SelectFilter::make('pelatihan')

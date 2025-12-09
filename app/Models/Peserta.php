@@ -65,10 +65,10 @@ class Peserta extends Model
     }
 
     // riwayat penempatan
-    public function penempatanAsramas(): HasMany
-    {
-        return $this->hasMany(PenempatanAsrama::class, 'peserta_id', 'id');
-    }
+   // public function penempatanAsramas(): HasMany
+    //{
+      //  return $this->hasMany(PenempatanAsrama::class, 'peserta_id', 'id');
+    //}
 
     // penempatan terbaru (alias singular)
     public function penempatanAsrama(): HasOne

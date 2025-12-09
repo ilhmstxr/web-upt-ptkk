@@ -60,17 +60,44 @@
         Pre Test, Post Test, Monev
       </p>
 
-      {{-- 🔹 FORM LOGIN --}}
-      <form action="{{ route('dashboard.home') }}" method="GET" class="space-y-4">
+      {{-- ✅ ALERT ERROR / SUCCESS --}}
+      @if (session('error'))
+        <div class="mb-4 rounded-xl bg-red-100 border border-red-300 text-red-700 px-4 py-3 text-sm">
+          {{ session('error') }}
+        </div>
+      @endif
 
-        {{-- Input ID Peserta --}}
+      @if (session('success'))
+        <div class="mb-4 rounded-xl bg-green-100 border border-green-300 text-green-700 px-4 py-3 text-sm">
+          {{ session('success') }}
+        </div>
+      @endif
+
+      {{-- ✅ VALIDATION ERRORS --}}
+      @if ($errors->any())
+        <div class="mb-4 rounded-xl bg-red-100 border border-red-300 text-red-700 px-4 py-3 text-sm space-y-1">
+          @foreach ($errors->all() as $err)
+            <div>- {{ $err }}</div>
+          @endforeach
+        </div>
+      @endif
+
+      {{-- 🔹 FORM LOGIN (SUDAH FIX) --}}
+      <form action="{{ route('assessment.login.submit') }}" method="POST" class="space-y-4">
+        @csrf
+
+        {{-- Input Token / Nomor Registrasi --}}
         <div>
           <label class="block text-[#1A1A1A] text-sm font-medium">ID Peserta</label>
           <input type="text"
-                 name="id_peserta"
+                 name="token"
+                 value="{{ old('token') }}"
                  class="w-full mt-1 rounded-xl border border-gray-300 px-4 py-3 text-sm
                         focus:ring-2 focus:ring-[#1524AF] outline-none"
-                 placeholder="Masukkan ID Peserta">
+                 placeholder="Masukkan ID Peserta / Nomor Registrasi">
+          <p class="text-xs text-gray-500 mt-1">
+            Isi dengan nomor registrasi atau assessment token.
+          </p>
         </div>
 
         {{-- Input Password --}}
@@ -79,15 +106,19 @@
           <div class="relative mt-1">
             <input type="password" id="passwordInput"
                    name="password"
+                   value="{{ old('password') }}"
                    class="w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm
                           focus:ring-2 focus:ring-[#1524AF] outline-none"
-                   placeholder="Masukkan Password">
+                   placeholder="Masukkan Password (ddmmyyyy)">
 
             <button type="button" id="togglePassword"
                     class="absolute right-3 top-3 text-gray-400 hover:text-[#1524AF] transition">
               <span id="eyeIcon" class="material-symbols-rounded text-[22px]">visibility_off</span>
             </button>
           </div>
+          <p class="text-xs text-gray-500 mt-1">
+            Password = tanggal lahir peserta format ddmmyyyy.
+          </p>
         </div>
 
         <hr class="my-4 border-[#B6BBE6]">

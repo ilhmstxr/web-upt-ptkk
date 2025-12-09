@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
@@ -29,7 +30,7 @@ class DashboardController extends Controller
     ];
 
     /* =========================================================
-     * HELPER: peserta aktif dari session (login)
+     * HELPER: peserta aktif dari session (login assessment)
      * return ['key'=>'peserta_id'|'pesertaSurvei_id', 'id'=>int|null]
      * ========================================================= */
     protected function getParticipantKeyAndId(): array
@@ -46,17 +47,18 @@ class DashboardController extends Controller
     }
 
     /* =========================================================
-     * HELPER: pastikan session pelatihan/kompetensi dari pendaftaran
-     * dipanggil di home & start test biar selalu konsisten
+     * HELPER: pastikan session pelatihan/kompetensi dari login
      * ========================================================= */
     protected function ensureActiveTrainingSession(?Peserta $pesertaAktif = null): void
     {
+        // kalau sudah ada dari login assessment => selesai
         if (session('pendaftaran_pelatihan_id') && session('pelatihan_id')) {
             return;
         }
 
+        // fallback safety kalau session ilang
         if ($pesertaAktif) {
-            $pendaftaran = PendaftaranPelatihan::with(['pelatihan','kompetensiPelatihan'])
+            $pendaftaran = PendaftaranPelatihan::with(['pelatihan', 'kompetensiPelatihan'])
                 ->where('peserta_id', $pesertaAktif->id)
                 ->latest('tanggal_pendaftaran')
                 ->first();
@@ -242,13 +244,18 @@ class DashboardController extends Controller
     }
 
     /* =========================================================
-     * HOME DASHBOARD
+     * HOME DASHBOARD (FIX return type)
      * ========================================================= */
-    public function home(): View
+    public function home(): View|RedirectResponse
     {
         ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
 
-        $pesertaAktif = ($key === 'peserta_id' && $id)
+        if (!$key || !$id) {
+            return redirect()->route('assessment.login')
+                ->with('error', 'Silakan login dahulu.');
+        }
+
+        $pesertaAktif = ($key === 'peserta_id')
             ? Peserta::with('instansi:id,asal_instansi,kota')->find($id)
             : null;
 
@@ -256,34 +263,25 @@ class DashboardController extends Controller
 
         $pelatihanId = session('pelatihan_id');
 
-        // peserta dropdown (yang diterima di pelatihan)
-        $peserta = Peserta::query()
-            ->when($pelatihanId, function ($q) use ($pelatihanId) {
-                $q->whereHas('pendaftaranPelatihan', function ($qq) use ($pelatihanId) {
-                    $qq->where('pelatihan_id', $pelatihanId)
-                       ->where('status_pendaftaran', 'Diterima');
-                });
-            })
-            ->with('instansi:id,asal_instansi,kota')
-            ->orderBy('nama')
-            ->get();
-
         // ===== Materi =====
         $materiList = collect();
         $materiDoneCount = 0;
         $totalMateri = 0;
 
-        if ($pelatihanId && class_exists(MateriPelatihan::class)) {
+        if ($pelatihanId) {
             $materiList = MateriPelatihan::where('pelatihan_id', $pelatihanId)
                 ->orderBy('urutan')
-                ->get(['id','pelatihan_id','slug','judul','deskripsi','tipe','estimasi_menit','urutan','created_at']);
+                ->get([
+                    'id','pelatihan_id','judul','deskripsi',
+                    'tipe','estimasi_menit','urutan','created_at'
+                ]);
 
             $totalMateri = $materiList->count();
 
             $pendaftaranId = session('pendaftaran_pelatihan_id');
 
             $doneIds = [];
-            if ($pendaftaranId && class_exists(MateriProgress::class)) {
+            if ($pendaftaranId) {
                 $doneIds = MateriProgress::where('pendaftaran_pelatihan_id', $pendaftaranId)
                     ->where('is_completed', true)
                     ->pluck('materi_id')
@@ -298,7 +296,6 @@ class DashboardController extends Controller
             });
         }
 
-        // Optional tes object untuk blade
         $preTes   = $this->getTesByType('pre');
         $postTes  = $this->getTesByType('post');
         $monevTes = $this->getTesByType('monev');
@@ -306,7 +303,6 @@ class DashboardController extends Controller
         $stats = $this->getTestStats();
 
         return view('dashboard.pages.home', array_merge([
-            'peserta'          => $peserta,
             'pesertaAktif'     => $pesertaAktif,
             'materiList'       => $materiList,
             'materiDoneCount'  => $materiDoneCount,
@@ -318,146 +314,14 @@ class DashboardController extends Controller
     }
 
     /* =========================================================
-     * SET PESERTA (dropdown / input nama) + redirect_to
-     * ========================================================= */
-    public function setPeserta(Request $request)
-    {
-        $validated = $request->validate([
-            'peserta_id'  => ['nullable', 'exists:peserta,id'],
-            'nama'        => ['nullable', 'string', 'max:150'],
-            'redirect_to' => ['nullable', 'in:materi,pretest,posttest,monev'],
-        ]);
-
-        // 1) pilih via peserta_id (dropdown)
-        if ($request->filled('peserta_id')) {
-            $peserta = Peserta::with('instansi:id,asal_instansi,kota')->findOrFail($request->peserta_id);
-
-            session([
-                'peserta_id'    => $peserta->id,
-                'peserta_nama'  => $peserta->nama,
-                'instansi_id'   => optional($peserta->instansi)->id,
-                'instansi_nama' => optional($peserta->instansi)->asal_instansi,
-                'instansi_kota' => optional($peserta->instansi)->kota,
-            ]);
-
-            $this->ensureActiveTrainingSession($peserta);
-
-            $redirectTo = $request->input('redirect_to');
-
-            return match ($redirectTo) {
-                'materi'   => redirect()->route('dashboard.materi.index'),
-                'pretest'  => redirect()->route('dashboard.pretest.index'),
-                'posttest' => redirect()->route('dashboard.posttest.index'),
-                'monev'    => redirect()->route('dashboard.monev.index'),
-                default    => redirect()->route('dashboard.home'),
-            }->with('success', 'Peserta dipilih: ' . $peserta->nama);
-        }
-
-        // 2) fallback via input nama
-        if (!$request->filled('nama')) {
-            return back()->withInput()->with('error', 'Nama atau Peserta wajib diisi.');
-        }
-
-        $nama = mb_strtolower(trim($validated['nama']));
-
-        $matches = Peserta::with('instansi:id,asal_instansi,kota')
-            ->whereRaw('LOWER(nama) = ?', [$nama])
-            ->get();
-
-        if ($matches->isEmpty()) {
-            $like = '%' . str_replace(' ', '%', $nama) . '%';
-            $matches = Peserta::with('instansi:id,asal_instansi,kota')
-                ->whereRaw('LOWER(nama) LIKE ?', [$like])
-                ->orderBy('nama')
-                ->get();
-        }
-
-        if ($matches->isEmpty()) {
-            return back()->withInput()->with('error', 'Peserta tidak ditemukan.');
-        }
-
-        $peserta = $matches->first();
-
-        session([
-            'peserta_id'    => $peserta->id,
-            'peserta_nama'  => $peserta->nama,
-            'instansi_id'   => optional($peserta->instansi)->id,
-            'instansi_nama' => optional($peserta->instansi)->asal_instansi,
-            'instansi_kota' => optional($peserta->instansi)->kota,
-        ]);
-
-        $this->ensureActiveTrainingSession($peserta);
-
-        $redirectTo = $request->input('redirect_to');
-
-        return match ($redirectTo) {
-            'materi'   => redirect()->route('dashboard.materi.index'),
-            'pretest'  => redirect()->route('dashboard.pretest.index'),
-            'posttest' => redirect()->route('dashboard.posttest.index'),
-            'monev'    => redirect()->route('dashboard.monev.index'),
-            default    => redirect()->route('dashboard.home'),
-        }->with('success', 'Peserta dipilih: ' . $peserta->nama);
-    }
-
-    public function lookupInstansiByNama(Request $request)
-    {
-        $nama = mb_strtolower(trim($request->get('nama', '')));
-        if ($nama === '') {
-            return response()->json(['ok' => false, 'message' => 'Nama kosong']);
-        }
-
-        $peserta = Peserta::with('instansi:id,asal_instansi,kota')
-            ->whereRaw('LOWER(nama) = ?', [$nama])
-            ->first();
-
-        if (!$peserta) {
-            $like = '%' . str_replace(' ', '%', $nama) . '%';
-            $peserta = Peserta::with('instansi:id,asal_instansi,kota')
-                ->whereRaw('LOWER(nama) LIKE ?', [$like])
-                ->orderBy('nama')
-                ->first();
-        }
-
-        if (!$peserta) {
-            return response()->json(['ok' => false, 'message' => 'Peserta tidak ditemukan']);
-        }
-
-        return response()->json([
-            'ok' => true,
-            'data' => [
-                'peserta_id' => $peserta->id,
-                'nama'       => $peserta->nama,
-                'instansi'   => optional($peserta->instansi)->asal_instansi,
-                'kota'       => optional($peserta->instansi)->kota,
-            ],
-        ]);
-    }
-
-    /* =========================================================
-     * LOGOUT
-     * ========================================================= */
-    public function logout(Request $request)
-    {
-        $request->session()->forget([
-            'peserta_id', 'pesertaSurvei_id', 'peserta_nama',
-            'pendaftaran_pelatihan_id', 'pelatihan_id', 'kompetensi_id',
-            'instansi_id', 'instansi_nama', 'instansi_kota',
-        ]);
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('dashboard.home')->with('success', 'Logout berhasil.');
-    }
-
-    /* =========================================================
      * START TEST GENERIC
      * ========================================================= */
     protected function startTest(string $typeKey, string $typeLabel, string $showRoute, string $resultRoute)
     {
         ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
         if (!$key || !$id) {
-            return back()->with('error', 'Silakan login terlebih dahulu.');
+            return redirect()->route('assessment.login')
+                ->with('error', 'Silakan login terlebih dahulu.');
         }
 
         $pesertaAktif = ($key === 'peserta_id') ? Peserta::find($id) : null;
@@ -470,7 +334,6 @@ class DashboardController extends Controller
 
         $basePerc = $this->basePercobaanQuery()->where('tes_id', $tes->id);
 
-        // sudah selesai -> tidak boleh ulang, arahkan hasil
         $done = (clone $basePerc)->whereNotNull('waktu_selesai')->exists();
         if ($done) {
             $perc = (clone $basePerc)->whereNotNull('waktu_selesai')
@@ -480,7 +343,6 @@ class DashboardController extends Controller
                 ->with('success', "Anda sudah mengerjakan {$typeLabel}. Berikut hasilnya.");
         }
 
-        // masih running -> lanjutkan
         $running = (clone $basePerc)->whereNull('waktu_selesai')->first();
         if ($running) {
             return redirect()->route($showRoute, [
@@ -489,7 +351,6 @@ class DashboardController extends Controller
             ]);
         }
 
-        // buat baru
         $data = [
             'tes_id'      => $tes->id,
             'waktu_mulai' => now(),
@@ -524,12 +385,12 @@ class DashboardController extends Controller
     {
         ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
         if (!$key || !$id) {
-            return redirect()->route('dashboard.home')
+            return redirect()->route('assessment.login')
                 ->with('error', 'Silakan login terlebih dahulu.');
         }
 
         $tes = $this->baseTesQuery()
-            ->when(Schema::hasColumn('tes', 'tipe'), fn($q) => $q->where('tipe','pre-test'))
+            ->when(Schema::hasColumn('tes', 'tipe'), fn($q) => $q->where('tipe', 'pre-test'))
             ->get();
 
         return view('dashboard.pages.pre-test.pretest', [
@@ -570,12 +431,12 @@ class DashboardController extends Controller
     {
         ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
         if (!$key || !$id) {
-            return redirect()->route('dashboard.home')
+            return redirect()->route('assessment.login')
                 ->with('error', 'Silakan login terlebih dahulu.');
         }
 
         $tes = $this->baseTesQuery()
-            ->when(Schema::hasColumn('tes', 'tipe'), fn($q) => $q->where('tipe','post-test'))
+            ->when(Schema::hasColumn('tes', 'tipe'), fn($q) => $q->where('tipe', 'post-test'))
             ->get();
 
         $basePerc = $this->basePercobaanQuery();
@@ -624,8 +485,8 @@ class DashboardController extends Controller
         $preAttempt = (clone $this->basePercobaanQuery())
             ->whereNotNull('waktu_selesai')
             ->where(function ($q) {
-                $q->where('tipe','pre-test')
-                  ->orWhere('tipe','pre')
+                $q->where('tipe', 'pre-test')
+                  ->orWhere('tipe', 'pre')
                   ->orWhereNull('tipe');
             })
             ->latest('waktu_selesai')
@@ -665,7 +526,6 @@ class DashboardController extends Controller
                     : 'dashboard.pretest.start'
                 );
 
-            // PATCH C: startRoute tanpa param tes id
             return redirect()->route($startRoute)
                 ->with('error', 'Silakan mulai tes terlebih dahulu.');
         }
@@ -769,19 +629,18 @@ class DashboardController extends Controller
     {
         ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
         if (!$key || !$id) {
-            return redirect()->route('dashboard.home')
+            return redirect()->route('assessment.login')
                 ->with('error', 'Silakan login terlebih dahulu.');
         }
 
         return redirect()->route('dashboard.monev.begin', ['tes' => $tes->id]);
     }
 
-    // PATCH D: monevBegin pola done/running/baru
     public function monevBegin(Request $request, $tesId)
     {
         ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
         if (!$key || !$id) {
-            return redirect()->route('dashboard.home')
+            return redirect()->route('assessment.login')
                 ->with('error', 'Silakan login terlebih dahulu.');
         }
 
@@ -825,7 +684,6 @@ class DashboardController extends Controller
         ])->with('success', 'Monev dimulai.');
     }
 
-    // PATCH D: tambahan show/submit/result monev supaya route nyambung
     public function monevShow(Tes $tes, Request $request)
     {
         return $this->handleTesShow($tes, $request, 'survey', 'dashboard.monev.result');
@@ -854,7 +712,7 @@ class DashboardController extends Controller
         $pelatihanId = session('pelatihan_id');
         if (!$pelatihanId) {
             return redirect()->route('dashboard.home')
-                ->with('error', 'Pilih peserta / pelatihan terlebih dahulu.');
+                ->with('error', 'Pelatihan aktif tidak ditemukan. Login ulang.');
         }
 
         $materis = MateriPelatihan::where('pelatihan_id', $pelatihanId)
@@ -864,7 +722,7 @@ class DashboardController extends Controller
         $pendaftaranId = session('pendaftaran_pelatihan_id');
 
         $doneIds = [];
-        if ($pendaftaranId && class_exists(MateriProgress::class)) {
+        if ($pendaftaranId) {
             $doneIds = MateriProgress::where('pendaftaran_pelatihan_id', $pendaftaranId)
                 ->where('is_completed', true)
                 ->pluck('materi_id')
@@ -895,7 +753,7 @@ class DashboardController extends Controller
         $pendaftaranId = session('pendaftaran_pelatihan_id');
         $progress = null;
 
-        if ($pendaftaranId && class_exists(MateriProgress::class)) {
+        if ($pendaftaranId) {
             $progress = MateriProgress::where('pendaftaran_pelatihan_id', $pendaftaranId)
                 ->where('materi_id', $m->id)
                 ->first();
@@ -921,7 +779,7 @@ class DashboardController extends Controller
 
         ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
         if (!$key || !$id) {
-            return redirect()->route('dashboard.home')
+            return redirect()->route('assessment.login')
                 ->with('error', 'Silakan login terlebih dahulu.');
         }
 

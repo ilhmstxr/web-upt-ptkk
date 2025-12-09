@@ -10,38 +10,41 @@ class AsramaKamarSeeder extends Seeder
 {
     public function run(): void
     {
-        // ✅ karena file kamu config/kamar.php
+        // FIX: ambil dari config/kamar.php
         $data = config('kamar', []);
 
         foreach ($data as $namaAsrama => $kamars) {
-
-            $asrama = Asrama::updateOrCreate(
+            $asrama = Asrama::firstOrCreate(
                 ['nama' => $namaAsrama],
                 [
-                    'jenis_kelamin' => 'Campur', // bisa kamu edit manual nanti
+                    'jenis_kelamin' => 'Campur',
                     'alamat' => null,
                 ]
             );
 
             foreach ($kamars as $item) {
-                $no  = (string) $item['no'];
+                $no  = $item['no'];
                 $bed = $item['bed'];
 
-                if ($bed === 'rusak') {
-                    $totalBeds = 0;
-                    $available = 0;
+                $status    = 'Tersedia';
+                $totalBeds = 0;
+                $available = 0;
+
+                if (is_numeric($bed)) {
+                    $totalBeds = (int) $bed;
+                    $available = (int) $bed;
+                    $status    = 'Tersedia';
+                } elseif ($bed === 'rusak') {
                     $status    = 'Rusak';
                 } else {
-                    // ✅ numeric atau null → default 4
-                    $totalBeds = is_numeric($bed) ? (int) $bed : 4;
-                    $available = $totalBeds;
-                    $status    = 'Tersedia';
+                    // null → belum diset, jangan dipakai allocator
+                    $status    = 'Perbaikan';
                 }
 
                 Kamar::updateOrCreate(
                     [
                         'asrama_id'   => $asrama->id,
-                        'nomor_kamar' => $no,
+                        'nomor_kamar' => (string) $no,
                     ],
                     [
                         'lantai'         => 1,

@@ -16,7 +16,6 @@ class MateriPelatihanResource extends Resource
 {
     protected static ?string $model = MateriPelatihan::class;
 
-    // ✅ konsisten kayak TesResource
     protected static ?string $cluster = Evaluasi::class;
 
     protected static ?string $navigationIcon  = 'heroicon-o-book-open';
@@ -56,7 +55,7 @@ class MateriPelatihanResource extends Resource
                             'teks'  => 'Teks',
                         ])
                         ->default('file')
-                        ->live(), // biar visible() langsung update
+                        ->live(),
 
                     Forms\Components\TextInput::make('urutan')
                         ->label('Urutan')
@@ -173,6 +172,7 @@ class MateriPelatihanResource extends Resource
                     ->label('Publish?'),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(), // ✅ tambah view
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -196,6 +196,7 @@ class MateriPelatihanResource extends Resource
         return [
             'index'  => Pages\ListMateriPelatihans::route('/'),
             'create' => Pages\CreateMateriPelatihan::route('/create'),
+            'view'   => Pages\ViewMateriPelatihan::route('/{record}'), // ✅ route view
             'edit'   => Pages\EditMateriPelatihan::route('/{record}/edit'),
         ];
     }

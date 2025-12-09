@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\Log;
 
 class AssessmentLoginController extends Controller
 {
+
     public function show()
     {
-        return view('assessment.login');
+        return view('pages.masuk');
     }
 
     public function submit(Request $request)
