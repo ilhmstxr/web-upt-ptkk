@@ -17,17 +17,17 @@ class BannerResource extends Resource
     protected static ?string $model = Banner::class;
     protected static ?string $cluster = KontenWebsite::class;
     protected static ?string $navigationIcon = 'heroicon-o-photo';
-    protected static ?string $modelLabel = 'Banner Slider';
-    protected static ?string $navigationLabel = 'Banners';
-    protected static ?string $pluralModelLabel = 'Daftar Banners';
+    protected static ?string $modelLabel = 'Banner';
+    protected static ?string $navigationLabel = 'Banner';
+    protected static ?string $pluralModelLabel = 'Banner';
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Detail Banner')
-                    ->description('Atur gambar, teks, dan status banner.')
+                Forms\Components\Section::make('Banner ini akan ditampilkan pada halaman Beranda')
+                    ->description('Usahakan ukuran gambar kurang dari 4mb untuk peforma website')
                     ->columns(2)
                     ->schema([
                         // Upload langsung ke kolom 'image' (sesuai struktur tabel banners)
@@ -39,65 +39,44 @@ class BannerResource extends Resource
                             ->maxSize(4096) // KB
                             ->imageCropAspectRatio('16:9')
                             ->columnSpanFull()
-                            ->helperText('Unggah file gambar (jpg, png, webp).'),
-
-                        Forms\Components\TextInput::make('title')
-                            ->label('Judul/Teks Singkat')
-                            ->maxLength(255)
-                            ->columnSpan(1),
-
-                        Forms\Components\Textarea::make('description')
-                            ->label('Deskripsi Singkat')
-                            ->maxLength(65535)
-                            ->rows(3)
-                            ->columnSpan(1),
+                            ->helperText('Unggah file gambar (jpg, png, webp).')
+                            ->required(),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Aktif')
+                            ->label('Tampilkan Banner')
                             ->required()
                             ->default(true)
                             ->helperText('Nonaktifkan untuk menyembunyikan banner tanpa menghapusnya.'),
-
-                        Forms\Components\TextInput::make('sort_order')
-                            ->label('Urutan Tampil')
-                            ->numeric()
-                            ->minValue(0)
-                            ->default(0)
-                            ->helperText('Angka lebih kecil tampil lebih dulu.'),
+                        
+                        Forms\Components\Toggle::make('is_featured')
+                            ->label('Tampilkan Pertama Kali')
+                            ->default(false)
+                            ->helperText('Banner ini akan ditampilkan pertama kali di beranda.'),
                     ]),
             ]);
-    }
+    }   
 
-    public static function table(Table $table): Table
+    public static function table(Tables\Table $table): Tables\Table
     {
         return $table
             ->columns([
                 // Tampilkan thumbnail dari kolom 'image'
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->size(80)
                     ->disk('public'),
-
-                Tables\Columns\TextColumn::make('title')
-                    ->label('Judul')
-                    ->searchable()
-                    ->limit(50),
 
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Aktif'),
 
-                Tables\Columns\TextColumn::make('sort_order')
-                    ->label('Urutan')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\ToggleColumn::make('is_featured')
+                    ->label('Featured'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
             ])
-            ->defaultSort('sort_order', 'asc')
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Status Aktif')
@@ -112,6 +91,15 @@ class BannerResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if ($data['is_featured'] ?? false) {
+            Banner::query()->update(['is_featured' => false]);
+        }
+
+        return $data;
     }
 
     public static function getRelations(): array

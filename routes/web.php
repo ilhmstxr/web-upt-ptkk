@@ -23,7 +23,6 @@ use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\MateriController;
-use App\Http\Controllers\ExportController;
 use App\Http\Controllers\AssessmentAuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Public\CeritaKamiController;

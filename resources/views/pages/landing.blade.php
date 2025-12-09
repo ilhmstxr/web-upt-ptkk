@@ -34,14 +34,6 @@ use App\Models\Berita;
 use App\Models\Kompetensi;
 use Illuminate\Support\Str;
 
-/* Ambil banners */
-$banners = Banner::query()
-    ->where('is_active', true)
-    ->orderBy('sort_order', 'asc')
-    ->get();
-$realCount = $banners->count() > 0 ? $banners->count() : 3;
-$cloneCount = min(2, $realCount);
-
 /* Ambil 3 berita terbaru */
 $latestBeritas = Berita::query()
     ->where('is_published', true)
@@ -59,239 +51,102 @@ $latestBeritas = Berita::query()
 
 {{-- ================== HERO: Slider Dinamis (tabel banners) ================== --}}
 @php
-  /**
-   * Variabel dari controller:
-   *  - $banners : koleksi Banner (id, image, title, description, is_active, sort_order)
-   */
-
-  $slides = ($banners ?? collect())->values();
-
-  // minimal harus ada 1 banner aktif
-  $slide0 = $slides[0] ?? null;
-
-  if ($slide0) {
-      // kalau cuma ada 1–2 banner, tetap dipaksa jadi 3 slot
-      $slide1 = $slides[1] ?? $slide0;
-      $slide2 = $slides[2] ?? $slide1 ?? $slide0;
-
-      $img = function ($item) {
-          // biasanya field image berisi path relatif seperti "banners/xxx.jpg"
-          return asset('storage/' . $item->image);
-      };
-  }
+  // 1. Gabungkan Featured dan Others menjadi satu koleksi
+    $allBanners = collect();
+    if ($featured) {
+        $allBanners->push($featured);
+    }
+    // Gabung dengan banner lainnya
+    $allBanners = $allBanners->merge($others);
+    $count = $allBanners->count();
 @endphp
 
-@if ($slide0)
+@if($count > 0)
 <header class="w-full bg-[#F1F9FC]">
-  <div class="w-full px-6 md:px-12 lg:px-[80px] py-4 md:py-6">
-    {{-- -mx-* supaya track bisa keluar dari padding container --}}
-    <div id="hero" class="relative -mx-6 md:-mx-12 lg:-mx-[80px]">
+  <div class="w-full py-2">
+    {{-- ========================================== --}}
+    {{-- KONDISI 1: JIKA GAMBAR HANYA SATU (STATIC) --}}
+    {{-- ========================================== --}}
+    @if($count === 1)
+        <div class="relative w-full flex justify-center">
+             {{-- Langsung tampilkan ukuran penuh (mirip state .active) --}}
+             <div class="w-[70%] md:w-[76%] lg:w-[80%]">
+                <div class="w-full h-[40vw] md:h-[340px] lg:h-[450px] max-h-[480px] min-h-[200px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden shadow-lg">
+                    <img
+                      src="{{ Storage::url($allBanners->first()->image) }}"
+                      alt="Featured Banner"
+                      class="w-full h-full object-cover select-none"
+                    >
+                </div>
+             </div>
+        </div>
 
-      {{-- TRACK: slide dengan peek kiri/kanan --}}
-      <div
-        id="hero-track"
-        class="flex items-center gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none py-8"
-        style="scrollbar-width:none;-ms-overflow-style:none;"
-      >
-        {{-- LEFT GUTTER (ruang kosong buat centering) --}}
-        <div
-          aria-hidden="true"
-          class="shrink-0 snap-none pointer-events-none
-                 w-[10%] md:w-[9%] lg:w-[72px] xl:w-[72px]"
-        ></div>
-
-        {{-- ========== CLONES KIRI ========== --}}
-        {{-- index 0: clone(real1) --}}
-        <div
-          class="hero-slide hero-slide-inner clone shrink-0 snap-center
-                 w-[88%] md:w-[88%] lg:w-auto
-                 transition-transform duration-300"
-          data-real="1"
-        >
+    {{-- ========================================== --}}
+    {{-- KONDISI 2: JIKA GAMBAR BANYAK (SLIDER)     --}}
+    {{-- ========================================== --}}
+    @else
+        <div id="hero" class="relative">
+          {{-- TRACK --}}
           <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
+            id="hero-track"
+            class="flex items-center gap-2 md:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none py-2"
+            style="scrollbar-width:none;-ms-overflow-style:none;"
           >
-            <img
-              src="{{ $img($slide1) }}"
-              alt="{{ $slide1->title ?? 'Slide 2' }}"
-              class="w-full h-full object-cover select-none"
-              draggable="false"
-            >
+            <div aria-hidden="true" class="shrink-0 snap-none pointer-events-none w-[15%] md:w-[12%] lg:w-[10%]"></div>
+
+            {{-- CLONES KIRI --}}
+            @if($count >= 2)
+                @foreach($allBanners->slice(-2) as $index => $banner)
+                    <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="{{ $count - 2 + $loop->index }}">
+                      <div class="w-full h-[40vw] md:h-[340px] lg:h-[450px] max-h-[480px] min-h-[200px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
+                        <img src="{{ Storage::url($banner->image) }}" class="w-full h-full object-cover select-none" draggable="false">
+                      </div>
+                    </div>
+                @endforeach
+            @endif
+
+            {{-- REAL SLIDES --}}
+            @foreach($allBanners as $index => $banner)
+                <div class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="{{ $index }}">
+                  <div class="w-full h-[40vw] md:h-[340px] lg:h-[450px] max-h-[480px] min-h-[200px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
+                    <img src="{{ Storage::url($banner->image) }}" class="w-full h-full object-cover select-none" draggable="false">
+                  </div>
+                </div>
+            @endforeach
+
+            {{-- CLONES KANAN --}}
+            @if($count >= 2)
+                @foreach($allBanners->slice(0, 2) as $index => $banner)
+                    <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="{{ $index }}">
+                      <div class="w-full h-[40vw] md:h-[340px] lg:h-[450px] max-h-[480px] min-h-[200px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
+                        <img src="{{ Storage::url($banner->image) }}" class="w-full h-full object-cover select-none" draggable="false">
+                      </div>
+                    </div>
+                @endforeach
+            @endif
+
+            <div aria-hidden="true" class="shrink-0 snap-none pointer-events-none w-[15%] md:w-[12%] lg:w-[10%]"></div>
+          </div>
+
+          {{-- CONTROLS --}}
+          <div class="mt-4 flex items-center justify-center gap-4">
+            <button id="hero-prev" class="w-9 h-9 grid place-items-center rounded-full border-2 border-gray-300 text-gray-600 hover:[bg-white/60] hover:border-[#1524AF] hover:text-[#1524AF] transition-colors">
+              <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" /></svg>
+            </button>
+            <div id="hero-dots" class="flex items-center gap-3">
+                @foreach($allBanners as $index => $banner)
+                  <button class="w-2.5 h-2.5 rounded-full {{ $index === 0 ? 'bg-[#1524AF]' : 'bg-gray-300' }} transition-colors"></button>
+                @endforeach
+            </div>
+            <button id="hero-next" class="w-9 h-9 grid place-items-center rounded-full border-2 border-gray-300 text-gray-600 hover:bg-white/60 hover:border-[#1524AF] hover:text-[#1524AF] transition-colors">
+              <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="m8.59 16.59 1.41 1.41 6-6-6-6L8.59 6.41 13.17 11z" /></svg>
+            </button>
           </div>
         </div>
-
-        {{-- index 1: clone(real2) --}}
-        <div
-          class="hero-slide hero-slide-inner clone shrink-0 snap-center
-                 w-[88%] md:w-[88%] lg:w-auto
-                 transition-transform duration-300"
-          data-real="2"
-        >
-          <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
-          >
-            <img
-              src="{{ $img($slide2) }}"
-              alt="{{ $slide2->title ?? 'Slide 3' }}"
-              class="w-full h-full object-cover select-none"
-              draggable="false"
-            >
-          </div>
-        </div>
-
-        {{-- ========== SLIDE ASLI (real 0,1,2) ========== --}}
-        {{-- index 2: real0 --}}
-        <div
-          class="hero-slide hero-slide-inner shrink-0 snap-center
-                 w-[88%] md:w-[88%] lg:w-auto
-                 transition-transform duration-300"
-          data-real="0"
-        >
-          <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
-          >
-            <img
-              src="{{ $img($slide0) }}"
-              alt="{{ $slide0->title ?? 'Slide 1' }}"
-              class="w-full h-full object-cover select-none"
-              draggable="false"
-            >
-          </div>
-        </div>
-
-        {{-- index 3: real1 --}}
-        <div
-          class="hero-slide hero-slide-inner shrink-0 snap-center
-                 w-[88%] md:w-[88%] lg:w-auto
-                 transition-transform duration-300"
-          data-real="1"
-        >
-          <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
-          >
-            <img
-              src="{{ $img($slide1) }}"
-              alt="{{ $slide1->title ?? 'Slide 2' }}"
-              class="w-full h-full object-cover select-none"
-              draggable="false"
-            >
-          </div>
-        </div>
-
-        {{-- index 4: real2 --}}
-        <div
-          class="hero-slide hero-slide-inner shrink-0 snap-center
-                 w-[88%] md:w-[88%] lg:w-auto
-                 transition-transform duration-300"
-          data-real="2"
-        >
-          <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
-          >
-            <img
-              src="{{ $img($slide2) }}"
-              alt="{{ $slide2->title ?? 'Slide 3' }}"
-              class="w-full h-full object-cover select-none"
-              draggable="false"
-            >
-          </div>
-        </div>
-
-        {{-- ========== CLONES KANAN ========== --}}
-        {{-- index 5: clone(real0) --}}
-        <div
-          class="hero-slide hero-slide-inner clone shrink-0 snap-center
-                 w-[88%] md:w-[88%] lg:w-auto
-                 transition-transform duration-300"
-          data-real="0"
-        >
-          <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
-          >
-            <img
-              src="{{ $img($slide0) }}"
-              alt="{{ $slide0->title ?? 'Slide 1' }}"
-              class="w-full h-full object-cover select-none"
-              draggable="false"
-            >
-          </div>
-        </div>
-
-        {{-- index 6: clone(real1) --}}
-        <div
-          class="hero-slide hero-slide-inner clone shrink-0 snap-center
-                 w-[88%] md:w-[88%] lg:w-auto
-                 transition-transform duration-300"
-          data-real="1"
-        >
-          <div
-            class="w-full h-[46vw] md:h-[420px] lg:h-[520px] max-h-[560px] min-h-[220px]
-                   rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden"
-          >
-            <img
-              src="{{ $img($slide1) }}"
-              alt="{{ $slide1->title ?? 'Slide 2' }}"
-              class="w-full h-full object-cover select-none"
-              draggable="false"
-            >
-          </div>
-        </div>
-
-        {{-- RIGHT GUTTER --}}
-        <div
-          aria-hidden="true"
-          class="shrink-0 snap-none pointer-events-none
-                 w-[10%] md:w-[9%] lg:w-[72px] xl:w-[72px]"
-        ></div>
-      </div>
-
-      {{-- Controls + dots --}}
-      <div class="mt-4 flex items-center justify-center gap-4">
-        <button
-          id="hero-prev"
-          class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors"
-          aria-label="Sebelumnya"
-        >
-          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor">
-            <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-          </svg>
-        </button>
-
-        <div id="hero-dots" class="flex items-center gap-3">
-          <button
-            class="w-2.5 h-2.5 rounded-full bg-[#1524AF] transition-colors"
-            aria-label="Slide 1"
-          ></button>
-          <button
-            class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors"
-            aria-label="Slide 2"
-          ></button>
-          <button
-            class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors"
-            aria-label="Slide 3"
-          ></button>
-        </div>
-
-        <button
-          id="hero-next"
-          class="w-9 h-9 grid place-items-center rounded-full border border-gray-300 text-gray-600 hover:bg-white/60 transition-colors"
-          aria-label="Berikutnya"
-        >
-          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor">
-            <path d="m8.59 16.59 1.41 1.41 6-6-6-6L8.59 6.41 13.17 11z" />
-          </svg>
-        </button>
-      </div>
-
-    </div>
+    @endif
   </div>
 </header>
+@endif
 
 <style>
   .no-scrollbar::-webkit-scrollbar {
@@ -308,42 +163,49 @@ $latestBeritas = Berita::query()
     transform: scale(1);
     opacity: 1;
   }
-
-  /* ✅ Di desktop:
-       - lebar slide utama = min(1200px, 100% - 144px)
-       - 144px = 2 * 72px gutter kiri/kanan
-       -> jarak ke cuplikan selalu konstan meski window dibesarkan / dikecilkan */
- @media (min-width: 1024px) {
-  .hero-slide-inner {
-    /* max 1120px, dan sisakan ±48px peek di kanan–kiri */
-    width: min(1120px, calc(100% - 240px));
-  }
-}
-
 </style>
 
 <script>
   (function () {
     const track = document.getElementById('hero-track');
+    
+    // Jika tidak ada track (misal data kosong), hentikan script
+    if (!track) return;
+
     const slides = Array.from(track.querySelectorAll('.hero-slide'));
     const dots = Array.from(document.getElementById('hero-dots').children);
     const prev = document.getElementById('hero-prev');
     const next = document.getElementById('hero-next');
 
-    const FIRST_REAL = 2; // real0
-    const LAST_REAL = 4;  // real2
-    const LEFT_CLONE_BEFORE_FIRST = 1; // clone real2
-    const RIGHT_CLONE_AFTER_LAST = 5;  // clone real0
-    const REAL_COUNT = 3;
-    const ANIM = 300, BUF = 40;
+    // KONFIGURASI DINAMIS DARI BLADE
+    const REAL_COUNT = {{ $count }}; 
+    // Kita menambahkan 2 clone di kiri, jadi slide "Real" pertama ada di index 2
+    const CLONES_LEFT_COUNT = 2; 
+    
+    const FIRST_REAL = CLONES_LEFT_COUNT; 
+    const LAST_REAL = FIRST_REAL + REAL_COUNT - 1;
+    
+    // Identifikasi index clone untuk swapping
+    // Clone kiri (sebelum real pertama) adalah clone dari index terakhir
+    const LEFT_CLONE_BEFORE_FIRST = FIRST_REAL - 1; 
+    // Clone kanan (setelah real terakhir) adalah clone dari index 0
+    const RIGHT_CLONE_AFTER_LAST = LAST_REAL + 1; 
+
+    const ANIM = 300,
+      BUF = 40; 
 
     let currentIndex = FIRST_REAL;
     let isTransitioning = false;
 
-    const realOf = (idx) =>
-      idx >= FIRST_REAL && idx <= LAST_REAL
-        ? idx - FIRST_REAL
-        : parseInt(slides[idx].dataset.real, 10);
+    // ===== Util dasar =====
+    const realOf = (idx) => {
+        // Jika index berada di dalam range Real, kembalikan index relatif terhadap 0
+        if (idx >= FIRST_REAL && idx <= LAST_REAL) {
+            return idx - FIRST_REAL;
+        }
+        // Jika clone, ambil dari data-real attribute
+        return parseInt(slides[idx].dataset.real, 10);
+    };
 
     const setDots = (r) =>
       dots.forEach((d, i) => {
@@ -367,13 +229,15 @@ $latestBeritas = Berita::query()
 
     function smoothScrollToIndex(idx, cb) {
       const prevSnap = track.style.scrollSnapType;
-      track.style.scrollSnapType = 'none';
+      track.style.scrollSnapType = 'none'; 
 
       const target = centerOffset(idx);
 
       track.scrollTo({ left: target, behavior: 'smooth' });
 
-      const t0 = performance.now(), MAX = ANIM + 300, EPS = 1;
+      const t0 = performance.now(),
+        MAX = ANIM + 300,
+        EPS = 1;
 
       function tick() {
         const atTarget = Math.abs(track.scrollLeft - target) <= EPS;
@@ -402,8 +266,10 @@ $latestBeritas = Berita::query()
       track.style.scrollBehavior = 'auto';
       track.style.scrollSnapType = 'none';
 
-      const delta = centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
-      track.scrollLeft += delta;
+      const delta =
+        centerOffset(toRealIdx) - centerOffset(fromCloneIdx);
+
+      track.scrollLeft += delta; 
 
       track.style.scrollBehavior = prevBehavior || '';
       track.style.scrollSnapType = prevSnap || '';
@@ -413,15 +279,17 @@ $latestBeritas = Berita::query()
       setDots(realOf(currentIndex));
     }
 
+    // ===== Panah NEXT =====
     function goNext() {
       if (isTransitioning) return;
       isTransitioning = true;
 
       if (currentIndex === LAST_REAL) {
-        setActive(FIRST_REAL);
+        // Loncat ke clone kanan (yang merepresentasikan Real 0)
+        setActive(FIRST_REAL); // Set visual aktif ke tujuan agar smooth
         setDots(0);
 
-        const cloneIdx = RIGHT_CLONE_AFTER_LAST;
+        const cloneIdx = RIGHT_CLONE_AFTER_LAST; 
 
         smoothScrollToIndex(cloneIdx, () => {
           rafSwap(() => {
@@ -441,15 +309,17 @@ $latestBeritas = Berita::query()
       }
     }
 
+    // ===== Panah PREV =====
     function goPrev() {
       if (isTransitioning) return;
       isTransitioning = true;
 
       if (currentIndex === FIRST_REAL) {
+        // Loncat ke clone kiri (yang merepresentasikan Real Terakhir)
         setActive(LAST_REAL);
-        setDots(2);
+        setDots(REAL_COUNT - 1); // Dot terakhir
 
-        const cloneIdx = LEFT_CLONE_BEFORE_FIRST;
+        const cloneIdx = LEFT_CLONE_BEFORE_FIRST; 
 
         smoothScrollToIndex(cloneIdx, () => {
           rafSwap(() => {
@@ -482,6 +352,7 @@ $latestBeritas = Berita::query()
       tick();
     }
 
+    // Event Listener untuk Dots
     dots.forEach((d, targetReal) => {
       d.addEventListener('click', () => {
         if (isTransitioning) return;
@@ -489,6 +360,7 @@ $latestBeritas = Berita::query()
         const curReal = realOf(currentIndex);
         if (targetReal === curReal) return;
 
+        // Logika jarak terpendek (wrap around)
         const r = (targetReal - curReal + REAL_COUNT) % REAL_COUNT;
         const l = (curReal - targetReal + REAL_COUNT) % REAL_COUNT;
 
@@ -497,6 +369,7 @@ $latestBeritas = Berita::query()
       });
     });
 
+    // ===== Swipe Manual Handling =====
     let debounce = null;
 
     track.addEventListener(
@@ -508,7 +381,8 @@ $latestBeritas = Berita::query()
 
         debounce = setTimeout(() => {
           const mid = track.scrollLeft + track.clientWidth / 2;
-          let nearest = currentIndex, best = Infinity;
+          let nearest = currentIndex,
+            best = Infinity;
 
           for (let i = 0; i < slides.length; i++) {
             const center =
@@ -522,9 +396,19 @@ $latestBeritas = Berita::query()
           }
 
           if (nearest < FIRST_REAL) {
-            rafSwap(() => seamlessSwapByDelta(nearest, LAST_REAL));
+            // Jika user scroll mentok kiri ke clone -> swap ke real kanan
+            // Kita harus mencari index REAL yang sesuai dengan clone ini
+            // Clone kiri index X merepresentasikan REAL index Y
+            const realIdx = parseInt(slides[nearest].dataset.real, 10);
+            const targetIndexInDOM = FIRST_REAL + realIdx;
+
+            rafSwap(() => seamlessSwapByDelta(nearest, targetIndexInDOM));
           } else if (nearest > LAST_REAL) {
-            rafSwap(() => seamlessSwapByDelta(nearest, FIRST_REAL));
+            // Jika user scroll mentok kanan ke clone -> swap ke real kiri
+             const realIdx = parseInt(slides[nearest].dataset.real, 10);
+             const targetIndexInDOM = FIRST_REAL + realIdx;
+
+            rafSwap(() => seamlessSwapByDelta(nearest, targetIndexInDOM));
           } else {
             currentIndex = nearest;
             setActive(currentIndex);
@@ -535,15 +419,46 @@ $latestBeritas = Berita::query()
       { passive: true }
     );
 
+    // Init awal
     scrollToIndex(FIRST_REAL, false);
     setActive(FIRST_REAL);
     setDots(0);
 
+    // Event tombol
     next.addEventListener('click', goNext);
     prev.addEventListener('click', goPrev);
+
+    // ==========================================
+    // FITUR AUTO PLAY (Ganti Otomatis)
+    // ==========================================
+    const AUTO_PLAY_DELAY = 8000;
+    let autoPlayTimer;
+
+    function startAutoPlay() {
+      // Hapus timer lama biar gak numpuk
+      stopAutoPlay();
+      
+      // Jalankan timer baru
+      autoPlayTimer = setInterval(() => {
+        // Hanya pindah jika sedang tidak ada animasi transisi
+        if (!isTransitioning) {
+            goNext();
+        }
+      }, AUTO_PLAY_DELAY);
+    }
+
+    function stopAutoPlay() {
+      clearInterval(autoPlayTimer);
+    }
+
+    // 1. Jalankan auto play saat halaman dimuat
+    startAutoPlay();
+
+    // (Opsional) Untuk HP: berhenti saat disentuh
+    track.addEventListener('touchstart', stopAutoPlay, { passive: true });
+    track.addEventListener('touchend', startAutoPlay, { passive: true });
   })();
 </script>
-@endif
 
 {{-- SECTION: Cerita Kami (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
@@ -628,23 +543,18 @@ $latestBeritas = Berita::query()
 
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="relative">
-
       {{-- BG oval lebih tinggi sedikit --}}
       <div class="relative bg-[#DBE7F7] rounded-full overflow-hidden
                   h-[54px] md:h-[58px] lg:h-[62px] flex items-center">
-
         {{-- Viewport --}}
         <div class="relative w-full overflow-hidden">
-
           {{-- TRACK --}}
           <div class="jatim-marquee flex w-[200%] items-center
                       animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
-
             {{-- Bagian 1 --}}
             <div class="flex w-1/2 items-center justify-between
                         px-6 md:px-10 lg:px-16
                         gap-4 md:gap-6 lg:gap-8">
-
               <img src="{{ asset('images/icons/cetar.svg') }}"
                    class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Cetar">
               <img src="{{ asset('images/icons/dindik.svg') }}"
@@ -655,15 +565,12 @@ $latestBeritas = Berita::query()
                    class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Berakhlak">
               <img src="{{ asset('images/icons/optimis.svg') }}"
                    class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Optimis">
-
             </div>
-
             {{-- Bagian 2 (duplikat) --}}
             <div class="flex w-1/2 items-center justify-between
                         px-6 md:px-10 lg:px-16
                         gap-4 md:gap-6 lg:gap-8"
                  aria-hidden="true">
-
               <img src="{{ asset('images/icons/cetar.svg') }}"
                    class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/dindik.svg') }}"
@@ -674,24 +581,17 @@ $latestBeritas = Berita::query()
                    class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/optimis.svg') }}"
                    class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
-
             </div>
-
           </div>
-
           {{-- Fade kiri–kanan --}}
           <div class="pointer-events-none absolute inset-0
                       [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
           </div>
-
         </div>
-
       </div>
-
     </div>
   </div>
 </section>
-{{-- /SECTION --}}
 
 {{-- SECTION: Berita Terbaru (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">

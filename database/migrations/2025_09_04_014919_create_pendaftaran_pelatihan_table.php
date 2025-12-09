@@ -24,17 +24,21 @@ return new class extends Migration
             
             $table->string('kelas')->nullable();
 
-            // IMPROVE: menambahkan kompetensi id 
-            // $table->foreignId('kompetensi_id')->constrained('kompetensi')->cascadeOnDelete();
-            $table->Integer('nilai_pre_test')->default(0);
-            $table->Integer('nilai_post_test')->default(0);
-            $table->Integer('nilai_praktek')->default(0);
-            $table->Integer('rata_rata')->default(0);
-            $table->Integer('nilai_survey')->default(0);
-            $table->Enum('status', ['Lulus', 'Tidak Lulus', 'Belum Lulus'])->default('Belum Lulus');
-            $table->Enum('status_pendaftaran', ['Pending', 'Diterima', 'Ditolak'])->default('Pending');
-            $table->String('nomor_registrasi')->unique();
-            $table->timestamp('tanggal_pendaftaran');
+            // --- TAMBAHAN TOKEN DI SINI ---
+            $table->string('assessment_token', 60)->nullable()->unique();
+            $table->timestamp('token_expires_at')->nullable();
+            $table->index('assessment_token');
+            // ------------------------------
+
+            $table->integer('nilai_pre_test')->default(0);
+            $table->integer('nilai_post_test')->default(0);
+            $table->integer('nilai_praktek')->default(0);
+            $table->integer('rata_rata')->default(0);
+            $table->integer('nilai_survey')->default(0);
+            $table->enum('status', ['Lulus', 'Tidak Lulus', 'Belum Lulus'])->default('Belum Lulus');
+            $table->enum('status_pendaftaran', ['Pending', 'Verifikasi', 'Diterima', 'Ditolak'])->default('Pending');
+            $table->string('nomor_registrasi')->unique();
+            $table->timestamp('tanggal_pendaftaran')->nullable();
             $table->timestamps();
         });
     }

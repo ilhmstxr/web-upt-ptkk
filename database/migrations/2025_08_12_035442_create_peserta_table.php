@@ -26,10 +26,11 @@ return new class extends Migration
                   ->constrained('pelatihan')
                   ->nullOnDelete();
 
-            // Relasi opsional: bidang_id (sekarang menunjuk ke tabel kompetensi)
+            // Relasi opsional: bidang_id
             $table->foreignId('bidang_id')
                   ->nullable()
-                  ->constrained('kompetensi')   // ⬅️ ini yang penting
+                  // Diperbaiki: Merujuk secara eksplisit ke tabel 'bidang' (tunggal)
+                  ->constrained('bidang')
                   ->nullOnDelete();
 
             $table->string('nama', 150);

@@ -32,17 +32,19 @@
 
             {{-- Sosmed (tetap kuning) --}}
             <div class="flex items-center gap-3 mt-4 sm:mt-6">
-              <a href="#"
-                 class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-md border-2 border-[#F2C94C]
-                        text-[#F2C94C] hover:bg-[#F2C94C] hover:text-[#0E2A7B] transition">
+              <a href="https://www.instagram.com/uptptkk.jatim/"
+                 class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center  border-2 border-[#F2C94C]
+                        text-[#F2C94C] hover:bg-[#F2C94C] hover:text-[#0E2A7B] transition "
+                        aria-label="Instagram" target="_blank">
                 <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                   <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5a5 5 0 100 10 5 5 0 000-10zm6-1a1 1 0 100 2 1 1 0 000-2zm-6 3a3 3 0 110 6 3 3 0 010-6z"/>
                 </svg>
               </a>
 
-              <a href="#"
-                 class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-md border-2 border-[#F2C94C]
-                        text-[#F2C94C] hover:bg-[#F2C94C] hover:text-[#0E2A7B] transition">
+              <a href="https://www.youtube.com/@uptptkkjatim1707"
+                 class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center  border-2 border-[#F2C94C]
+                        text-[#F2C94C] hover:bg-[#F2C94C] hover:text-[#0E2A7B] transition"
+                        aria-label="Instagram" target="_blank">
                 <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                   <path d="M23.5 6.2c-.2-1.1-1.2-2-2.3-2.2C18.7 3.5 12 3.5 12 3.5s-6.7 0-9.2.5C1.7 4.3.7 5.1.5 6.2 0 8.1 0 12 0 12s0 3.9.5 5.8c.2 1.1 1.2 2 2.3 2.2 2.5.5 9.2.5 9.2.5s6.7 0 9.2-.5c1.1-.2 2-1.1 2.3-2.2.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.8 15.5V8.5L16 12l-6.2 3.5z"/>
                 </svg>
@@ -119,30 +121,48 @@
           Tautan Terkait
         </h3>
         <div class="space-y-3 font-[Montserrat] font-medium">
-          <a href="#" class="flex items-center gap-2 group">
+          <a href="{{ url('/cerita-kami') }}" class="flex items-center gap-2 group">
             <svg class="w-4 h-4 text-[#FFFFFF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
             <span class="text-[13px] sm:text-[14px] text-[#FFFFFF] group-hover:text-[#F2C94C] transition">
-              Tentang Kami
+              Cerita Kami
             </span>
           </a>
 
-          <a href="#" class="flex items-center gap-2 group">
+          <a href="{{ url('/program-pelatihan') }}" class="flex items-center gap-2 group">
             <svg class="w-4 h-4 text-[#FFFFFF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
             <span class="text-[13px] sm:text-[14px] text-[#FFFFFF] group-hover:text-[#F2C94C] transition">
-              FAQ
+              Program Pelatihan
             </span>
           </a>
 
-          <a href="#" class="flex items-center gap-2 group">
+          <a href="{{ url('/kompetensi-pelatihan') }}" class="flex items-center gap-2 group">
             <svg class="w-4 h-4 text-[#FFFFFF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
             <span class="text-[13px] sm:text-[14px] text-[#FFFFFF] group-hover:text-[#F2C94C] transition">
-              Portal Alumni
+              Kompetensi Pelatihan
+            </span>
+          </a>
+
+          <a href="{{ url('/berita') }}" class="flex items-center gap-2 group">
+            <svg class="w-4 h-4 text-[#FFFFFF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="text-[13px] sm:text-[14px] text-[#FFFFFF] group-hover:text-[#F2C94C] transition">
+              Berita
+            </span>
+          </a>
+
+          <a href="{{ url('/panduan') }}" class="flex items-center gap-2 group">
+            <svg class="w-4 h-4 text-[#FFFFFF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="text-[13px] sm:text-[14px] text-[#FFFFFF] group-hover:text-[#F2C94C] transition">
+              Panduan
             </span>
           </a>
         </div>
