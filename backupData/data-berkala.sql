@@ -17570,7 +17570,7 @@ INSERT IGNORE INTO
   `percobaan` (
     `id`,
     `peserta_id`,
-    `pesertaSurvei_id`,
+    `peserta_id`,
     `tes_id`,
     `waktu_mulai`,
     `waktu_selesai`,
@@ -22773,7 +22773,7 @@ INSERT IGNORE INTO
   `percobaan` (
     `id`,
     `peserta_id`,
-    `pesertaSurvei_id`,
+    `peserta_id`,
     `tes_id`,
     `waktu_mulai`,
     `waktu_selesai`,
@@ -23245,7 +23245,7 @@ VALUES
 --   `percobaan` (
 --     `id`,
 --     `peserta_id`,
---     `pesertaSurvei_id`,
+--     `peserta_id`,
 --     `tes_id`,
 --     `waktu_mulai`,
 --     `waktu_selesai`,
@@ -23259,7 +23259,7 @@ VALUES
 --   (
 --     2, -- --> ini id percobaan, jangan dirubah!
 --     8, -- --> hasil pencocokkan pesertaSurvei dengan peserta, contoh: "RYNDI MEGA HERAWATI"
---     3, -- --> ini pesertaSurvei_id, jangan dirubah!
+--     3, -- --> ini peserta_id, jangan dirubah!
 --     5, -- --> ini tes_id, jangan dirubah!
 --     '2025-08-29 07:44:17',
 --     '2025-08-29 07:44:17',
