@@ -11158,13 +11158,13 @@ INSERT INTO `pendaftaran_pelatihan` (`id`, `peserta_id`, `pelatihan_id`, `kompet
 (223, 236, 2, 5, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '2-VDGR-030', '2025-09-18 06:34:10', '2025-09-18 14:14:49', '2025-09-18 14:14:49'),
 (224, 238, 2, 5, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '2-VDGR-031', '2025-09-18 06:43:59', '2025-09-18 14:14:49', '2025-09-18 14:14:49'),
 (225, 239, 2, 5, 'X', 0, 0, 0, 0, 0, 'Belum Lulus', '2-VDGR-032', '2025-09-18 06:45:21', '2025-09-18 14:14:49', '2025-09-18 14:14:49'),
-(226, 240, 2, 5, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '2-VDGR-033', '2025-09-18 13:42:14', '2025-09-18 14:14:49', '2025-09-18 14:14:49');
+(226, 240, 2, 2, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '2-TTBS-001', '2025-09-18 13:42:14', '2025-09-18 14:14:49', '2025-09-18 14:14:49');
 
 --
 -- Dumping data for table `percobaan`
 --
 
-INSERT INTO `percobaan` (`id`, `peserta_id`, `peserta_id`, `tes_id`, `tipe`, `waktu_mulai`, `waktu_selesai`, `skor`, `lulus`, `pesan_kesan`, `created_at`, `updated_at`) VALUES
+INSERT INTO `percobaan` (`id`, `peserta_id`, `peserta_survei_id`, `tes_id`, `tipe`, `waktu_mulai`, `waktu_selesai`, `skor`, `lulus`, `pesan_kesan`, `created_at`, `updated_at`) VALUES
 (2, 8, 3, 5, 'survey', '2025-10-09 13:40:53', '2025-08-28 17:44:17', NULL, 0, NULL, '2025-08-28 17:44:17', '2025-08-28 17:44:17'),
 (3, 24, 4, 5, 'survey', '2025-10-09 13:40:53', '2025-08-28 17:46:23', NULL, 0, NULL, '2025-08-28 17:46:23', '2025-08-28 17:46:23'),
 (4, 33, 6, 5, 'survey', '2025-10-09 13:40:53', '2025-08-28 17:50:30', NULL, 0, NULL, '2025-08-28 17:50:30', '2025-08-28 17:50:30'),
@@ -11533,7 +11533,7 @@ INSERT INTO `percobaan` (`id`, `peserta_id`, `peserta_id`, `tes_id`, `tipe`, `wa
 (411, 215, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:55:04', '0.00', 0, NULL, '2025-09-25 17:55:04', '2025-09-25 17:55:04'),
 (412, 181, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:55:04', '0.00', 0, NULL, '2025-09-25 17:55:04', '2025-09-25 17:55:04'),
 (413, 78, NULL, 7, 'post-test', '2025-09-25 17:56:54', '2025-09-25 17:56:54', '100.00', 1, NULL, '2025-09-25 17:55:06', '2025-09-25 17:56:54');
-INSERT INTO `percobaan` (`id`, `peserta_id`, `peserta_id`, `tes_id`, `tipe`, `waktu_mulai`, `waktu_selesai`, `skor`, `lulus`, `pesan_kesan`, `created_at`, `updated_at`) VALUES
+INSERT INTO `percobaan` (`id`, `peserta_id`, `peserta_survei_id`, `tes_id`, `tipe`, `waktu_mulai`, `waktu_selesai`, `skor`, `lulus`, `pesan_kesan`, `created_at`, `updated_at`) VALUES
 (414, 203, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:55:07', '0.00', 0, NULL, '2025-09-25 17:55:07', '2025-09-25 17:55:07'),
 (416, 183, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:56:04', '0.00', 0, NULL, '2025-09-25 17:56:04', '2025-09-25 17:56:04'),
 (417, 178, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:56:52', '0.00', 0, NULL, '2025-09-25 17:56:52', '2025-09-25 17:56:52'),
@@ -12196,10 +12196,7 @@ INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `kompetensi_id`, `pelatih
 -- (42, 'Pretest tata kecantikan reguler teknik 2 siswa','pretest', 'pre-test', 3, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 -- (43, 'Pretest tata pendingin dan tata udara reguler teknik 2 siswa','pretest', 'pre-test', 4, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 
-(103, 'Survei Kepuasan Pelatihan', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 2, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
-
-
-
+(103, 'Survei Kepuasan Pelatihan', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 (9, 'Survei Kepuasan Pelatihan - MTU', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 2, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 (10, 'Survei Monev Akselerasi Guru','survei aksel guru', 'survei', NULL, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 (11, 'Survei Monev Akselerasi Teknik Guru','survei aksel teknik guru', 'survei', NULL, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),

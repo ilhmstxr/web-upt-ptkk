@@ -38,6 +38,11 @@ class Tes extends Model
 
     public function pertanyaan()
     {
+        // Fix: Pakai One-to-Many langsung karena data soal ada di tabel pertanyaan.
+        // Pivot (many-to-many) diabaikan dulu karena kosong.
+        return $this->hasMany(Pertanyaan::class, 'tes_id');
+
+        /*
         if (Schema::hasTable('tes_pertanyaan')) {
             return $this->belongsToMany(
                     Pertanyaan::class,
@@ -47,8 +52,7 @@ class Tes extends Model
                 )
                 ->withTimestamps();
         }
-
-        return $this->hasMany(Pertanyaan::class, 'tes_id');
+        */
     }
 
     // (Opsional) Relasi ke Percobaan / hasil tes peserta

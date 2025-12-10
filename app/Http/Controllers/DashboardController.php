@@ -73,82 +73,90 @@ class DashboardController extends Controller
         }
 
         return ['key' => null, 'id' => null];
+    }
+
+
+    protected function requireLogin(): array|RedirectResponse
+    {
+        ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
+
+        if (!$key || !$id) {
+            return redirect()->route('assessment.login')
+                ->with('error', 'Silakan login terlebih dahulu.');
         }
 
+        return ['key' => $key, 'id' => $id];
+    }
 
-        protected function requireLogin(): array|RedirectResponse
-        {
-            ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
-
-            if (!$key || !$id) {
-                return redirect()->route('assessment.login')
-                    ->with('error', 'Silakan login terlebih dahulu.');
-            }
-
-            return ['key' => $key, 'id' => $id];
-        }
-
-        /* =======================
+    /* =======================
         * HELPER: set training session (legacy compat)
         * Sekarang sebenarnya sudah dijamin middleware training.session,
         * tapi ini dipertahankan biar gak ada kode lain yang rusak.
         * ======================= */
-        protected function ensureActiveTrainingSession(?Peserta $pesertaAktif = null): void
-        {
-            if (!$pesertaAktif) {
-                Log::debug('[ensureActiveTrainingSession] no pesertaAktif');
-                return;
-            }
-
-            // Hapus dulu keys lama biar gak ada sisa
-            session()->forget(['pendaftaran_pelatihan_id', 'pelatihan_id', 'kompetensi_id']);
-
-            // CARI PENDAFTARAN TERBARU
-            $pendaftaran = PendaftaranPelatihan::with(['pelatihan', 'kompetensiPelatihan'])
-                ->where('peserta_id', $pesertaAktif->id)
-                ->latest('tanggal_pendaftaran')
-                ->first();
-
-            if ($pendaftaran) {
-                session([
-                    'pendaftaran_pelatihan_id' => $pendaftaran->id,
-                    'pelatihan_id'             => $pendaftaran->pelatihan_id,
-                    'kompetensi_id'            => $pendaftaran->kompetensi_id,
-                ]);
-
-                Log::debug('[ensureActiveTrainingSession] source=pendaftaran', [
-                    'peserta_id' => $pesertaAktif->id,
-                    'pendaftaran_id' => $pendaftaran->id,
-                    'pelatihan_id' => $pendaftaran->pelatihan_id,
-                    'kompetensi_id' => $pendaftaran->kompetensi_id,
-                ]);
-                return;
-            }
-
-            // FALLBACK -> gunakan kolom di tabel peserta jika ada
-            if (!empty($pesertaAktif->pelatihan_id) || !empty($pesertaAktif->kompetensi_id)) {
-                session([
-                    'pelatihan_id'  => $pesertaAktif->pelatihan_id,
-                    'kompetensi_id' => $pesertaAktif->kompetensi_id,
-                ]);
-
-                Log::debug('[ensureActiveTrainingSession] source=peserta', [
-                    'peserta_id' => $pesertaAktif->id,
-                    'pelatihan_id' => $pesertaAktif->pelatihan_id,
-                    'kompetensi_id' => $pesertaAktif->kompetensi_id,
-                ]);
-                return;
-            }
-
-            // Kalau tidak ditemukan apa-apa, biarkan session kosong dan log
-            Log::debug('[ensureActiveTrainingSession] source=none - no pendaftaran, no peserta assignment', [
-                'peserta_id' => $pesertaAktif->id
-            ]);
+    protected function ensureActiveTrainingSession(?Peserta $pesertaAktif = null): void
+    {
+        if (!$pesertaAktif) {
+            Log::debug('[ensureActiveTrainingSession] no pesertaAktif');
+            return;
         }
+
+        // Hapus dulu keys lama biar gak ada sisa
+        session()->forget(['pendaftaran_pelatihan_id', 'pelatihan_id', 'kompetensi_id']);
+
+        // CARI PENDAFTARAN TERBARU
+        $pendaftaran = PendaftaranPelatihan::with(['pelatihan', 'kompetensiPelatihan'])
+            ->where('peserta_id', $pesertaAktif->id)
+            ->latest('tanggal_pendaftaran')
+            ->first();
+
+        if ($pendaftaran) {
+            session([
+                'pendaftaran_pelatihan_id' => $pendaftaran->id,
+                'pelatihan_id'             => $pendaftaran->pelatihan_id,
+                'kompetensi_id'            => $pendaftaran->kompetensi_id,
+            ]);
+
+            Log::debug('[ensureActiveTrainingSession] source=pendaftaran', [
+                'peserta_id' => $pesertaAktif->id,
+                'pendaftaran_id' => $pendaftaran->id,
+                'pelatihan_id' => $pendaftaran->pelatihan_id,
+                'kompetensi_id' => $pendaftaran->kompetensi_id,
+            ]);
+            return;
+        }
+
+        // FALLBACK -> gunakan kolom di tabel peserta jika ada
+        if (!empty($pesertaAktif->pelatihan_id) || !empty($pesertaAktif->kompetensi_id)) {
+            session([
+                'pelatihan_id'  => $pesertaAktif->pelatihan_id,
+                'kompetensi_id' => $pesertaAktif->kompetensi_id,
+            ]);
+
+            Log::debug('[ensureActiveTrainingSession] source=peserta', [
+                'peserta_id' => $pesertaAktif->id,
+                'pelatihan_id' => $pesertaAktif->pelatihan_id,
+                'kompetensi_id' => $pesertaAktif->kompetensi_id,
+            ]);
+            return;
+        }
+
+        // Kalau tidak ditemukan apa-apa, biarkan session kosong dan log
+        Log::debug('[ensureActiveTrainingSession] source=none - no pendaftaran, no peserta assignment', [
+            'peserta_id' => $pesertaAktif->id
+        ]);
+    }
 
     /* =======================
      * base tes query scope
      * ======================= */
+    /**
+     * Scope query tes berdasarkan sesi login (Pelatihan & Kompetensi).
+     * 
+     * Logic Flow:
+     * 1. Ambil ID Pelatihan & Kompetensi dari Session (set di ensureActiveTrainingSession).
+     * 2. Filter data Tes yang cocok dengan ID tersebut.
+     * 3. Hasilnya: Peserta hanya melihat soal sesuai pendaftarannya.
+     */
     protected function baseTesQuery()
     {
         $pelatihanId = session('pelatihan_id');
@@ -159,6 +167,7 @@ class DashboardController extends Controller
                 $pelatihanId && Schema::hasColumn('tes', 'pelatihan_id'),
                 fn($q) => $q->where('pelatihan_id', $pelatihanId)
             )
+            // KUNCI: Filter soal berdasarkan Kompetensi ID dari pendaftaran peserta
             ->when(
                 $kompetensiId && Schema::hasColumn('tes', 'kompetensi_id'),
                 fn($q) => $q->where('kompetensi_id', $kompetensiId)
@@ -251,9 +260,9 @@ class DashboardController extends Controller
 
             $doneIds = $pendaftaranId
                 ? MateriProgress::where('pendaftaran_pelatihan_id', $pendaftaranId)
-                    ->where('is_completed', true)
-                    ->pluck('materi_id')
-                    ->toArray()
+                ->where('is_completed', true)
+                ->pluck('materi_id')
+                ->toArray()
                 : [];
 
             $materiDoneCount = count($doneIds);
@@ -308,11 +317,13 @@ class DashboardController extends Controller
         $monevTes = $this->getTesByType('monev');
         $basePerc = $this->basePercobaanQuery();
 
-        foreach ([
-            'pre' => $preTes,
-            'post' => $postTes,
-            'monev' => $monevTes
-        ] as $k => $t) {
+        foreach (
+            [
+                'pre' => $preTes,
+                'post' => $postTes,
+                'monev' => $monevTes
+            ] as $k => $t
+        ) {
             if (!$t)
                 continue;
 
@@ -822,9 +833,14 @@ class DashboardController extends Controller
                 ->with('error', 'Silakan mulai tes terlebih dahulu.');
         }
 
-        $percobaan = $this->basePercobaanQuery()
-            ->where('id', $percobaanId)
-            ->firstOrFail();
+        $percobaan = Percobaan::findOrFail($percobaanId);
+
+        // 1. Cek Ownership (Relaxed Scope)
+        ['key' => $key, 'id' => $userId] = $this->getParticipantKeyAndId();
+
+        if ($percobaan->{$key} != $userId) {
+            abort(403, 'Akses ditolak.');
+        }
 
         // pastikan percobaan milik tes yang sama
         if ((int) $percobaan->tes_id !== (int) $tes->id) {
@@ -871,6 +887,14 @@ class DashboardController extends Controller
         $pertanyaan = $pertanyaanList->get($currentQuestionIndex);
 
         if (!$pertanyaan) {
+            // Fix Loop: Kalau pertanyaan tidak ada (index over atau kosong),
+            // anggap selesai.
+            if (!$percobaan->waktu_selesai) {
+                $percobaan->waktu_selesai = now();
+                $percobaan->skor = $this->hitungSkor($percobaan);
+                $percobaan->lulus = $percobaan->skor >= ($tes->passing_score ?? 70);
+                $percobaan->save();
+            }
             return redirect()->route($resultRouteName, ['percobaan' => $percobaan->id]);
         }
 
@@ -897,12 +921,11 @@ class DashboardController extends Controller
         string $showRouteName,
         string $resultRouteName
     ) {
-        $allowedPerc = $this->basePercobaanQuery()
-            ->where('id', $percobaan->id)
-            ->exists();
-
-        if (!$allowedPerc)
-            abort(403);
+        // 1. Cek Ownership
+        ['key' => $key, 'id' => $userId] = $this->getParticipantKeyAndId();
+        if ($percobaan->{$key} != $userId) {
+            abort(403, 'Akses ditolak.');
+        }
 
         // ✅ bedain survey (likert) vs pilihan ganda
         if (($percobaan->tipe ?? null) === 'survey') {
@@ -915,7 +938,6 @@ class DashboardController extends Controller
                     ['nilai_jawaban' => (int) $val]
                 );
             }
-
         } else {
 
             $data = $request->input('jawaban', []);
@@ -952,13 +974,17 @@ class DashboardController extends Controller
      * ========================================================= */
     protected function showResult(Percobaan $percobaan, string $viewPath, string $mode = null)
     {
-        $allowedPerc = $this->basePercobaanQuery()
-            ->where('id', $percobaan->id)
-            ->whereNotNull('waktu_selesai')
-            ->exists();
+        // 1. Cek Ownership (Peserta ID)
+        ['key' => $key, 'id' => $userId] = $this->getParticipantKeyAndId();
 
-        if (!$allowedPerc)
-            abort(403);
+        if ($percobaan->{$key} != $userId) {
+            abort(403, 'Anda tidak memiliki akses ke hasil tes ini.');
+        }
+
+        // 2. Cek apakah sudah selesai
+        if (!$percobaan->waktu_selesai) {
+            abort(403, 'Tes belum diselesaikan.');
+        }
 
         $percobaan->loadMissing([
             'jawabanUser.opsiJawaban',
@@ -1030,10 +1056,10 @@ class DashboardController extends Controller
 
         $doneIds = $pendaftaranId
             ? MateriProgress::query()
-                ->where('pendaftaran_pelatihan_id', $pendaftaranId)
-                ->where('is_completed', true)
-                ->pluck('materi_id')
-                ->all()
+            ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+            ->where('is_completed', true)
+            ->pluck('materi_id')
+            ->all()
             : [];
 
         $materis->each(function ($m) use ($doneIds) {
@@ -1082,17 +1108,17 @@ class DashboardController extends Controller
 
         $progress = $pendaftaranId
             ? MateriProgress::query()
-                ->where('pendaftaran_pelatihan_id', $pendaftaranId)
-                ->where('materi_id', $m->id)
-                ->first()
+            ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+            ->where('materi_id', $m->id)
+            ->first()
             : null;
 
         $doneIds = $pendaftaranId
             ? MateriProgress::query()
-                ->where('pendaftaran_pelatihan_id', $pendaftaranId)
-                ->where('is_completed', true)
-                ->pluck('materi_id')
-                ->all()
+            ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+            ->where('is_completed', true)
+            ->pluck('materi_id')
+            ->all()
             : [];
 
         $relatedMateris = MateriPelatihan::query()
