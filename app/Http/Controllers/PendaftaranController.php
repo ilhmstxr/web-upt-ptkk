@@ -36,31 +36,37 @@ class PendaftaranController extends Controller
     public function index()
     {
         // Data master untuk form (dropdown)
-        // $kompetensi  = Kompetensi::all();
         $cabangDinas = CabangDinas::all();
 
-        // Ambil SATU pelatihan aktif dengan status 'Aktif'
+        // Coba ambil SATU pelatihan aktif dengan status 'Aktif'
         $pelatihan = Pelatihan::with(['kompetensiPelatihan.kompetensi', 'kompetensiPelatihan.instrukturs'])
             ->where('status', 'Aktif')
             ->orderBy('tanggal_mulai', 'asc')
             ->first();
 
-        if (!$pelatihan) {
-            // Option A: Redirect home with message
-            // return redirect('/')->with('error', 'Saat ini belum ada pendaftaran pelatihan yang dibuka.');
+        // Jika ada pelatihan aktif, ambil kompetensi untuk pelatihan tersebut
+        if ($pelatihan) {
+            $kompetensi = KompetensiPelatihan::where('pelatihan_id', $pelatihan->id)->get();
+            // Tidak perlu koleksi pelatihan lain, beri null atau kosong
+            $pelatihans = null;
+        } else {
+            // Tidak ada pelatihan aktif → fallback ambil semua pelatihan (mis. untuk pilihan manual)
+            $pelatihans = Pelatihan::orderBy('tanggal_mulai', 'asc')->get();
 
-            // Option B: Return specific view (make sure to create it or handle in current view)
-            // For now, let's return a simple view or the same view with a flag, 
-            // but the view expects $pelatihan object. 
-            // So simplest is to abort or show a specific "Closed" view.
-            return view('pages.pendaftaran-tutup');
+            // Ambil kompetensi berdasarkan pelatihan pertama (jika ada)
+            $firstPel = $pelatihans->first();
+            $kompetensi = $firstPel
+                ? KompetensiPelatihan::where('pelatihan_id', $firstPel->id)->get()
+                : collect();
         }
 
-        $kompetensi  = KompetensiPelatihan::where('pelatihan_id', $pelatihan->id)->get();
-        // return $kompetensi; 
-        return view('pages.daftar', compact('kompetensi', 'cabangDinas', 'pelatihan'));
+        // Supaya view lebih mudah menangani, kirim variabel:
+        // - $pelatihan (single model aktif) atau null
+        // - $pelatihans (collection jika tidak ada pelatihan aktif, atau null)
+        // - $kompetensi (collection, mungkin kosong)
+        // - $cabangDinas
+        return view('pages.daftar', compact('pelatihan', 'pelatihans', 'kompetensi', 'cabangDinas'));
     }
-
 
 
     /**

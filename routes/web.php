@@ -108,8 +108,6 @@ Route::get('/daftar', [PendaftaranController::class, 'index'])
 
 Route::resource('pendaftaran', PendaftaranController::class);
 
-
-
 Route::get('pendaftaran/selesai/{id}', [PendaftaranController::class, 'selesai'])
     ->name('pendaftaran.selesai');
 

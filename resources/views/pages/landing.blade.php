@@ -1009,7 +1009,6 @@ $latestBeritas = Berita::query()
   </div>
 @endforelse
 
-
       </div>
 
       {{-- BUTTONS & CTA sejajar di bawah slider --}}
@@ -1494,6 +1493,7 @@ $latestBeritas = Berita::query()
 
 })();
 </script>
+
 
 
 {{-- SECTION: Panduan Pelatihan (Full-width image + gradient overlay) --}}
