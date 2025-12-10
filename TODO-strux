@@ -749,3 +749,10 @@ Saat user menekan tombol **Submit**:
     <form action="{{ route('pendaftaran.store') }}" method="POST" ...>
     ```
 3.  **Controller Processing**: Method `store()` di Controller menerima semua data, melakukan validasi server-side, menyimpan ke database (transaksi), dan me-redirect ke halaman sukses (`pendaftaran.selesai`).
+
+
+instansi
+user
+peserta
+lampiranpeserta
+pendaftaranpelatihan

@@ -35,7 +35,7 @@ return new class extends Migration
 
             $table->string('nama', 150);
             $table->string('nik', 20)->unique();
-            $table->string('jabatan', 150)->nullable();
+            // $table->string('jabatan', 150)->nullable();
             $table->string('tempat_lahir', 100);
             $table->date('tanggal_lahir');
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);

@@ -45,6 +45,17 @@ class PendaftaranController extends Controller
             ->orderBy('tanggal_mulai', 'asc')
             ->first();
 
+        if (!$pelatihan) {
+            // Option A: Redirect home with message
+            // return redirect('/')->with('error', 'Saat ini belum ada pendaftaran pelatihan yang dibuka.');
+
+            // Option B: Return specific view (make sure to create it or handle in current view)
+            // For now, let's return a simple view or the same view with a flag, 
+            // but the view expects $pelatihan object. 
+            // So simplest is to abort or show a specific "Closed" view.
+            return view('pages.pendaftaran-tutup');
+        }
+
         $kompetensi  = KompetensiPelatihan::where('pelatihan_id', $pelatihan->id)->get();
         // return $kompetensi; 
         return view('pages.daftar', compact('kompetensi', 'cabangDinas', 'pelatihan'));
@@ -111,6 +122,7 @@ class PendaftaranController extends Controller
                         'cabangDinas_id'  => $validatedData['cabangDinas_id'],
                     ]
                 );
+                // dump('Instansi created/found:', $instansi);
 
                 // User
                 $user = User::firstOrCreate(
@@ -120,6 +132,7 @@ class PendaftaranController extends Controller
                         'password' => Hash::make(
                             Carbon::parse($validatedData['tanggal_lahir'])->format('dmY')
                         ),
+                        'phone' => $validatedData['no_hp']
                     ]
                 );
 
@@ -127,12 +140,21 @@ class PendaftaranController extends Controller
                     $user->name = $validatedData['nama'];
                     $user->save();
                 }
+                // dump('User created/found:', $user);
+
+
+                // [FIX] Ambil real kompetensi_id dari tabel pivot
+                $kpId = $validatedData['kompetensi_keahlian']; // Ini adalah ID dari tabel kompetensi_pelatihan (pivot)
+                $kp   = KompetensiPelatihan::findOrFail($kpId);
+                $realKompetensiId = $kp->kompetensi_id;
+
 
                 // Peserta
-                $peserta = Peserta::create([
+                $pesertaData = [
                     'pelatihan_id'  => $validatedData['pelatihan_id'],
                     'instansi_id'   => $instansi->id,
                     'user_id'       => $user->id,
+                    'kompetensi_id' => $kpId,
                     'nama'          => $validatedData['nama'],
                     'nik'           => $validatedData['nik'],
                     'tempat_lahir'  => $validatedData['tempat_lahir'],
@@ -141,10 +163,16 @@ class PendaftaranController extends Controller
                     'agama'         => $validatedData['agama'],
                     'alamat'        => $validatedData['alamat'],
                     'no_hp'         => $validatedData['no_hp'],
-                ]);
+                ];
+
+                $peserta = Peserta::updateOrCreate(
+                    ['nik' => $validatedData['nik']],
+                    $pesertaData
+                );
+                // dump('Peserta created/updated:', $peserta);
 
                 // Hitung nomor token
-                ['nomor' => $nomorReg, 'urutan' => $urutKompetensi] = $this->generateToken($validatedData['pelatihan_id'], $validatedData['kompetensi_keahlian']);
+                ['nomor' => $nomorReg, 'urutan' => $urutKompetensi] = $this->generateToken($validatedData['pelatihan_id'], $realKompetensiId);
 
                 // Lampiran
                 $lampiranData = [
@@ -168,26 +196,51 @@ class PendaftaranController extends Controller
                     }
                 }
 
-                LampiranPeserta::create($lampiranData);
-
                 // Create Pendaftaran
-                PendaftaranPelatihan::create([
-                    'peserta_id'            => $peserta->id,
-                    'pelatihan_id'          => $validatedData['pelatihan_id'],
-                    'kompetensi_id'         => $validatedData['kompetensi_keahlian'],
-                    'urutan_per_kompetensi' => $urutKompetensi,
-                    'nomor_registrasi'      => $nomorReg,
-                    'tanggal_pendaftaran'   => now(),
-                    'kelas'                 => $validatedData['kelas'],
-                    // Optional: set initial status / token if needed
-                    'status_pendaftaran'    => 'menunggu_verifikasi',
-                    'assessment_token'      => $this->generateUniqueAssessmentToken($validatedData['nama'], $validatedData['pelatihan_id']),
-                    'token_expires_at'      => now()->addMonths(3),
-                ]);
+                $pendaftaranData = [
+                    'peserta_id'              => $peserta->id,
+                    'pelatihan_id'            => $validatedData['pelatihan_id'],
+                    'kompetensi_pelatihan_id' => $kpId,
+                    'kompetensi_id'           => $realKompetensiId,
+                    'kelas'                   => $validatedData['kelas'],
 
-                return PendaftaranPelatihan::with('peserta', 'pelatihan', 'kompetensi')
-                    ->latest('id')
-                    ->first();
+                    // Column Defaults (Values not from form)
+                    'nilai_pre_test'          => 0,
+                    'nilai_post_test'         => 0,
+                    'nilai_praktek'           => 0,
+                    'rata_rata'               => 0,
+                    'nilai_survey'            => 0,
+                    'status'                  => 'Belum Lulus', // Default status
+
+                    'status_pendaftaran'      => 'pending',
+                    'nomor_registrasi'        => $nomorReg,
+                    'tanggal_pendaftaran'     => now(),
+                    'assessment_token'        => $this->generateUniqueAssessmentToken($validatedData['nama'], $validatedData['pelatihan_id']),
+                    'token_expires_at'        => now()->addMonths(3),
+                ];
+
+                // Gunakan updateOrCreate atau firstOrCreate untuk menghindari duplikasi saat testing
+                $pendaftaranFinal = PendaftaranPelatihan::updateOrCreate(
+                    [
+                        'peserta_id'   => $peserta->id,
+                        'pelatihan_id' => $validatedData['pelatihan_id'],
+                    ],
+                    $pendaftaranData
+                );
+
+                $lampiran = LampiranPeserta::updateOrCreate(
+                    ['peserta_id' => $peserta->id],
+                    $lampiranData
+                );
+                // dump('LampiranPeserta created/updated:', $lampiran);
+
+                // dump('PendaftaranPelatihan created:', $pendaftaranFinal);
+
+                // dd('STOP: Cek output dump di atas untuk memastikan semua data created');
+
+                // return PendaftaranPelatihan::with('peserta', 'pelatihan', 'kompetensi')
+                //     ->latest('id')
+                //     ->first();
             });
 
             return redirect()

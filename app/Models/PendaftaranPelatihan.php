@@ -24,8 +24,8 @@ class PendaftaranPelatihan extends Model
         'kelas',
 
         // Urutan / grouping
-        'urutan_per_bidang',
-        'urutan_per_kompetensi',
+        // 'urutan_per_bidang',
+        // 'urutan_per_kompetensi',
 
         // Status
         'status',

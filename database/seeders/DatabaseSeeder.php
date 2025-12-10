@@ -16,9 +16,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+          User::create([
+            'name' => 'Admin',
+            'email' => 'admin@admin.com',
+            'password' => bcrypt('admin'),
+        ]);
+        
         $this->call([
-            AsramaKamarSeeder::class,
-            AdminUserSeeder::class,
+            // AsramaKamarSeeder::class,
+            // AdminUserSeeder::class,
             // PelatihanSeeder::class,
             // CabangDinasSeeder::class,
             // PelatihanSeeder::class,
@@ -28,11 +34,7 @@ class DatabaseSeeder extends Seeder
             // ProductionSeeder::class,
         ]);
 
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('admin'),
-        ]);
+      
         // User::create([
         //     'name' => 'Admin UPT',
         //     'email' => 'admin@upt.com',
