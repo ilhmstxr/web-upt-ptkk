@@ -654,19 +654,22 @@ nambah data pretest, posttest, monev
 export full pelatihan
 export per pelatihan
 
-
 # Alur Pendaftaran (Controller ke View)
 
 Berikut adalah penjelasan alur data dari `PendaftaranController` hingga tertampil di `daftar.blade.php`:
 
 ## 1. Route Definition (`routes/web.php`)
+
 Ketika user mengakses URL `/daftar`:
+
 ```php
 Route::get('/daftar', [PendaftaranController::class, 'index'])->name('pendaftaran.daftar');
 ```
+
 Request diarahkan ke method `index` pada `PendaftaranController`.
 
 ## 2. Controller Logic (`app/Http/Controllers/PendaftaranController.php`)
+
 Method `index()` bertugas menyiapkan data yang dibutuhkan oleh form pendaftaran.
 
 ```php
@@ -691,10 +694,13 @@ public function index()
 ```
 
 ## 3. View Logic (`resources/views/pages/daftar.blade.php`)
+
 View menerima variabel `$kompetensi`, `$cabangDinas`, dan `$pelatihan`.
 
 ### A. Pengecekan Pelatihan Aktif
+
 View mengecek apakah ada pelatihan yang tersedia:
+
 ```blade
 @php
   $adaPelatihanAktif = isset($pelatihan) && $pelatihan !== null;
@@ -709,16 +715,20 @@ View mengecek apakah ada pelatihan yang tersedia:
 ```
 
 ### B. Penggunaan Data di Form
+
 Jika ada pelatihan aktif, data digunakan di dalam form:
 
 1.  **ID Pelatihan (Hidden Input)**:
+
     ```blade
     <input type="hidden" name="pelatihan_id" value="{{ $pelatihan->id }}">
     ```
+
     Disimpan agar saat submit, sistem tahu user mendaftar ke pelatihan mana.
 
 2.  **Dropdown Kompetensi**:
     Looping variabel `$kompetensi` untuk mengisi opsi select box.
+
     ```blade
     <select name="kompetensi_keahlian" ...>
         @foreach ($kompetensi as $b)
@@ -729,6 +739,7 @@ Jika ada pelatihan aktif, data digunakan di dalam form:
 
 3.  **Dropdown Cabang Dinas**:
     Looping variabel `$cabangDinas`.
+
     ```blade
     <select name="cabangDinas_id" ...>
         @foreach ($cabangDinas as $cb)
@@ -741,6 +752,7 @@ Jika ada pelatihan aktif, data digunakan di dalam form:
     Menampilkan detail pelatihan seperti tanggal mulai/selesai dan lokasi menggunakan data dari `$pelatihan`.
 
 ## 4. Form Submission (Client-Side ke Server-Side)
+
 Saat user menekan tombol **Submit**:
 
 1.  **Validasi JavaScript**: Script di bagian bawah view memvalidasi input per langkah (wizard step 1, 2, 3).
@@ -750,9 +762,107 @@ Saat user menekan tombol **Submit**:
     ```
 3.  **Controller Processing**: Method `store()` di Controller menerima semua data, melakukan validasi server-side, menyimpan ke database (transaksi), dan me-redirect ke halaman sukses (`pendaftaran.selesai`).
 
-
 instansi
 user
 peserta
 lampiranpeserta
 pendaftaranpelatihan
+
+assesment
+
+Route::view('/masuk', 'pages.masuk')->name('masuk');
+masuk blade
+home blade
+posttest blade
+posttest start
+posttest result
+pretest blade
+pretest start
+pretest result
+materi blade
+dashboardcontroller
+
+=================================================================
+ALUR SYSTEM CBT (COMPUTER BASED TEST)
+=================================================================
+(Tracing dari DashboardController, Views, & Routes + Konfirmasi User)
+
+0. REGISTRASI & PENENTUAN SCOPE (Hulu)
+
+    - Peserta melakukan registrasi -> Data masuk ke tabel `peserta` & `pendaftaran_pelatihan`.
+    - Di `pendaftaran_pelatihan`, tersimpan `kompetensi_id` (dari `kompetensi_pelatihan`).
+    - KUNCI: Kolom `kompetensi_id` di `pendaftaran_pelatihan` ini yang menentukan soal mana yang akan muncul nanti (Pre/Post Test).
+
+1. LOGIN PESERTA
+
+    - URL: /masuk (view: pages.masuk)
+    - Form submit ke: route('assessment.login.submit')
+    - Controller: AssessmentLoginController@submit
+    - Logic: Cek token/password -> Set Session (peserta_id / pesertaSurvei_id) -> Redirect ke /dashboard
+
+2. DASHBOARD HOME (Penentuan Soal)
+
+    - URL: /dashboard (view: dashboard.pages.home)
+    - Controller: DashboardController@home
+    - Logic:
+        - `requireLogin()`: memastikan sesi login ada.
+        - `ensureActiveTrainingSession()`:
+          -> Cek tabel `pendaftaran_pelatihan` berdasarkan peserta yang login.
+          -> Ambil `pelatihan_id` & `kompetensi_id` dari pendaftaran tsb.
+          -> Simpan ke SESSION.
+        - Filter Soal: Saat user klik Pre/Post Test, sistem otomatis memfilter soal yang `kompetensi_id`-nya COCOK dengan yang ada di session (hasil pendaftaran tadi).
+
+3. POST-TEST FLOW (Studi Kasus)
+   A. Index Post-Test
+
+    - URL: /dashboard/posttest (view: dashboard.pages.post-test.posttest)
+    - Controller: DashboardController@posttest
+    - Logic:
+        - Load tes tipe 'post-test'.
+        - Filter: Hanya tampilkan tes yang `kompetensi_id`-nya sama dengan sesi peserta.
+        - Cek Percobaan (history):
+            - Jika DONE (waktu_selesai != null) -> Tampil nilai & tombol "Lihat Hasil".
+            - Jika RUNNING (waktu_selesai == null) -> Tombol "Lanjutkan".
+            - Jika NEW -> Tombol "Mulai".
+
+    B. Memulai Tes (Start)
+
+    - Action: Klik "Mulai" -> route('dashboard.posttest.start', $tes->id)
+    - Controller: DashboardController@posttestStart -> method startByTes()
+    - Logic:
+        - Buat record tabel `percobaan` baru (waktu_mulai = NOW).
+        - Redirect ke halaman pengerjaan (Exam View).
+
+    C. Pengerjaan Soal (Exam View)
+
+    - URL: /dashboard/posttest/{tes}?percobaan={id} (view: dashboard.pages.post-test.posttest-start)
+    - Controller: DashboardController@posttestShow
+    - Fitur View:
+        - Timer hitung mundur (durasi_menit).
+        - List Nomor Soal.
+        - Anti-Cheat (blur/resize detection).
+    - Action: Submit jawaban / Pindah soal -> POST ke route('dashboard.posttest.submit')
+
+    D. Submit & Selesai
+
+    - Controller: DashboardController@posttestSubmit
+    - Logic:
+        - Simpan jawaban opsi yang dipilih ke `jawaban_users`.
+        - Jika tombol "Selesai" -> update `waktu_selesai` di tabel `percobaan`, hitung skor.
+        - Redirect ke Result.
+
+    E. Result (Hasil)
+
+    - URL: /dashboard/posttest/result/{percobaan} (view: dashboard.pages.post-test.posttest-result)
+    - Controller: DashboardController@posttestResult
+    - Logic: Tampilkan skor, kategori nilai, status lulus/tidak, & improvement dari Pre-Test.
+
+4. MATERI FLOW
+    - Index: /dashboard/materi (dashboard.pages.materi.materi-index)
+    - Show: /dashboard/materi/{slug} (dashboard.pages.materi.materi-show)
+    - Logic:
+        - Menampilkan konten berdasarkan tipe (Video/PDF/Teks/Link).
+        - Tombol "Tandai Selesai" -> POST route('dashboard.materi.complete').
+        - Sidebar "Materi Terkait" untuk navigasi cepat.
+
+Catatan Arsip: Flow ini otomatis tercatat agar tidak lupa saat development fitur berikutnya.

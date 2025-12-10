@@ -11158,7 +11158,7 @@ INSERT INTO `pendaftaran_pelatihan` (`id`, `peserta_id`, `pelatihan_id`, `kompet
 (223, 236, 2, 5, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '2-VDGR-030', '2025-09-18 06:34:10', '2025-09-18 14:14:49', '2025-09-18 14:14:49'),
 (224, 238, 2, 5, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '2-VDGR-031', '2025-09-18 06:43:59', '2025-09-18 14:14:49', '2025-09-18 14:14:49'),
 (225, 239, 2, 5, 'X', 0, 0, 0, 0, 0, 'Belum Lulus', '2-VDGR-032', '2025-09-18 06:45:21', '2025-09-18 14:14:49', '2025-09-18 14:14:49'),
-(226, 240, 2, 5, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '2-VDGR-033', '2025-09-18 13:42:14', '2025-09-18 14:14:49', '2025-09-18 14:14:49');
+(226, 240, 2, 2, 'XI', 0, 0, 0, 0, 0, 'Belum Lulus', '2-TTBS-001', '2025-09-18 13:42:14', '2025-09-18 14:14:49', '2025-09-18 14:14:49');
 
 --
 -- Dumping data for table `percobaan`
@@ -12196,10 +12196,7 @@ INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `kompetensi_id`, `pelatih
 -- (42, 'Pretest tata kecantikan reguler teknik 2 siswa','pretest', 'pre-test', 3, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 -- (43, 'Pretest tata pendingin dan tata udara reguler teknik 2 siswa','pretest', 'pre-test', 4, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 
-(103, 'Survei Kepuasan Pelatihan', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 2, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
-
-
-
+(103, 'Survei Kepuasan Pelatihan', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 1, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 (9, 'Survei Kepuasan Pelatihan - MTU', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 2, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 (10, 'Survei Monev Akselerasi Guru','survei aksel guru', 'survei', NULL, 3, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
 (11, 'Survei Monev Akselerasi Teknik Guru','survei aksel teknik guru', 'survei', NULL, 4, NULL, '2025-09-09 21:19:53', '2025-09-09 21:19:53'),
