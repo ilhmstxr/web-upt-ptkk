@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Schema;
 
 class Tes extends Model
 {
@@ -35,9 +36,18 @@ class Tes extends Model
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
-    // Relasi ke Pertanyaan
     public function pertanyaan()
     {
+        if (Schema::hasTable('tes_pertanyaan')) {
+            return $this->belongsToMany(
+                    Pertanyaan::class,
+                    'tes_pertanyaan',
+                    'tes_id',
+                    'pertanyaan_id'
+                )
+                ->withTimestamps();
+        }
+
         return $this->hasMany(Pertanyaan::class, 'tes_id');
     }
 

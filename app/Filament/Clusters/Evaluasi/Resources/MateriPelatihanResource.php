@@ -10,12 +10,10 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class MateriPelatihanResource extends Resource
 {
     protected static ?string $model = MateriPelatihan::class;
-
     protected static ?string $cluster = Evaluasi::class;
 
     protected static ?string $navigationIcon  = 'heroicon-o-book-open';
@@ -28,16 +26,23 @@ class MateriPelatihanResource extends Resource
         return $form->schema([
             Forms\Components\Section::make('Informasi Materi')
                 ->schema([
+                    // ✅ Pelatihan tetap ada, default query boleh, tapi admin bebas ubah
                     Forms\Components\Select::make('pelatihan_id')
                         ->label('Pelatihan')
                         ->relationship('pelatihan', 'nama_pelatihan')
                         ->searchable()
                         ->preload()
                         ->required()
-                        ->default(request()->query('pelatihan_id'))
-                        ->disabled(fn (?string $operation)
-                            => $operation === 'edit' || request()->has('pelatihan_id')
-                        ),
+                        ->default(request()->query('pelatihan_id')),
+
+                    // ✅ Tambahkan Kompetensi (admin bebas pilih)
+                    Forms\Components\Select::make('kompetensi_id')
+                        ->label('Kompetensi')
+                        ->relationship('kompetensi', 'nama_kompetensi') // sesuaikan nama kolomnya kalau beda
+                        ->searchable()
+                        ->preload()
+                        ->nullable()
+                        ->default(request()->query('kompetensi_id')),
 
                     Forms\Components\TextInput::make('judul')
                         ->label('Judul Materi')
@@ -128,6 +133,13 @@ class MateriPelatihanResource extends Resource
                     ->searchable()
                     ->sortable(),
 
+                // ✅ tampilkan bidang kompetensi di tabel
+                Tables\Columns\TextColumn::make('kompetensi.nama_kompetensi')
+                    ->label('Kompetensi')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('tipe')
                     ->label('Tipe')
                     ->badge()
@@ -160,6 +172,10 @@ class MateriPelatihanResource extends Resource
                 Tables\Filters\SelectFilter::make('pelatihan')
                     ->relationship('pelatihan', 'nama_pelatihan'),
 
+                // ✅ filter kompetensi juga
+                Tables\Filters\SelectFilter::make('kompetensi')
+                    ->relationship('kompetensi', 'nama_kompetensi'),
+
                 Tables\Filters\SelectFilter::make('tipe')
                     ->options([
                         'video' => 'Video',
@@ -172,7 +188,7 @@ class MateriPelatihanResource extends Resource
                     ->label('Publish?'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(), // ✅ tambah view
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -186,9 +202,7 @@ class MateriPelatihanResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -196,7 +210,7 @@ class MateriPelatihanResource extends Resource
         return [
             'index'  => Pages\ListMateriPelatihans::route('/'),
             'create' => Pages\CreateMateriPelatihan::route('/create'),
-            'view'   => Pages\ViewMateriPelatihan::route('/{record}'), // ✅ route view
+            'view'   => Pages\ViewMateriPelatihan::route('/{record}'),
             'edit'   => Pages\EditMateriPelatihan::route('/{record}/edit'),
         ];
     }

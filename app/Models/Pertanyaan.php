@@ -49,11 +49,16 @@ class Pertanyaan extends Model
         return $this->belongsTo(Tes::class, 'tes_id');
     }
 
-    // Opsi jawaban milik pertanyaan ini
+    // Opsi jawaban milik pertanyaan ini (relasi utama)
     public function opsiJawabans()
     {
         return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id')
             ->orderBy('id');
+    }
+
+    public function opsiJawaban()
+    {
+        return $this->opsiJawabans();
     }
 
     // Relasi pivot ke template (kalau pertanyaan ini adalah "turunan" dari template)
@@ -102,11 +107,6 @@ class Pertanyaan extends Model
         return $this->gambar ? asset('storage/' . $this->gambar) : null;
     }
 
-    /**
-     * Ambil opsi jawaban final:
-     * - Kalau pertanyaan ini punya opsi sendiri → pakai itu
-     * - Kalau kosong → fallback ke opsi dari pertanyaan template pertama
-     */
     public function getOpsiJawabansAttribute()
     {
         // Ambil opsi milik sendiri (relasi sudah di-load oleh with())
@@ -126,10 +126,6 @@ class Pertanyaan extends Model
         return optional($template)->getRelationValue('opsiJawabans') ?? collect();
     }
 
-    /**
-     * Hitung skor (persentase benar) dari jumlah benar & total.
-     * Dipakai kalau kamu mau hitung manual di luar model percobaan.
-     */
     public function hitungSkor(?int $jumlahBenar, ?int $jumlahTotal): int
     {
         $benar = max(0, (int) ($jumlahBenar ?? 0));
@@ -145,12 +141,6 @@ class Pertanyaan extends Model
     // ---------------------------------
     // ANALISIS KESUKARAN SOAL
     // ---------------------------------
-
-    /**
-     * Indeks kesukaran (P) 0–1
-     * P = jumlah jawaban benar / total jawaban
-     * null kalau belum ada data jawaban.
-     */
     public function getIndeksKesukaranAttribute(): ?float
     {
         $total = $this->jawabanUsers()->count();
@@ -168,14 +158,6 @@ class Pertanyaan extends Model
 
         return round($benar / $total, 2);
     }
-
-    /**
-     * Kategori kesukaran: Mudah / Sedang / Sulit / Belum Ada Data
-     * Berdasarkan indeks kesukaran:
-     * - P <= 0.30 → Sulit
-     * - 0.30 < P <= 0.70 → Sedang
-     * - P > 0.70 → Mudah
-     */
     public function getKategoriKesukaranAttribute(): string
     {
         $p = $this->indeks_kesukaran;

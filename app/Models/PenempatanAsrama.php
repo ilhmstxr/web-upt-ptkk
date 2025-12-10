@@ -9,7 +9,12 @@ class PenempatanAsrama extends Model
     protected $table = 'penempatan_asrama';
 
     protected $fillable = [
-        'pendaftaran_id', 'kamar_id', 'bed_no'
+        'peserta_id',
+        'asrama_id',
+        'kamar_id',
+        'pendaftaran_id',
+        'pendaftaran_pelatihan_id',
+        'pelatihan_id',
     ];
 
     public function kamar()
@@ -21,4 +26,13 @@ class PenempatanAsrama extends Model
     {
         return $this->belongsTo(PendaftaranPelatihan::class, 'pendaftaran_id');
     }
+
+    public function penempatanAsramaAktif()
+    {
+        return $this->penempatanAsrama()
+            ->with('kamar.asrama')
+            ->latest()
+            ->first();
+    }
+
 }

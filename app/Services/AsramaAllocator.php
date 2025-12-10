@@ -7,6 +7,7 @@ use App\Models\Kamar;
 use App\Models\PenempatanAsrama;
 use App\Models\PendaftaranPelatihan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AsramaAllocator
 {
@@ -74,6 +75,10 @@ class AsramaAllocator
                 ->orderBy('id')
                 ->get();
 
+            $hasPendaftaranId    = Schema::hasColumn('penempatan_asrama', 'pendaftaran_id');
+            $hasPendaftaranPelId = Schema::hasColumn('penempatan_asrama', 'pendaftaran_pelatihan_id');
+            $hasPesertaId        = Schema::hasColumn('penempatan_asrama', 'peserta_id');
+
             $result = [
                 'ok' => 0,
                 'skipped_already_assigned' => 0,
@@ -83,8 +88,16 @@ class AsramaAllocator
 
             foreach ($pendaftaranList as $pend) {
 
-                // skip kalau sudah ditempatkan
-                if (PenempatanAsrama::where('pendaftaran_pelatihan_id', $pend->id)->exists()) {
+                $already = false;
+                if ($hasPendaftaranId) {
+                    $already = PenempatanAsrama::where('pendaftaran_id', $pend->id)->exists();
+                } elseif ($hasPendaftaranPelId) {
+                    $already = PenempatanAsrama::where('pendaftaran_pelatihan_id', $pend->id)->exists();
+                } elseif ($hasPesertaId) {
+                    $already = PenempatanAsrama::where('peserta_id', $pend->peserta_id)->exists();
+                }
+
+                if ($already) {
                     $result['skipped_already_assigned']++;
                     continue;
                 }
@@ -117,10 +130,44 @@ class AsramaAllocator
                     continue;
                 }
 
-                PenempatanAsrama::create([
-                    'pendaftaran_pelatihan_id' => $pend->id,
-                    'kamar_id'                 => $kamar->id,
-                ]);
+                $payload = [
+    'pelatihan_id' => $pelatihanId,
+    'kamar_id'     => $kamar->id,
+    'asrama_id'    => $kamar->asrama_id, // ✅ ini wajib biar gak error
+];
+
+// kalau kolom peserta_id ada → isi dari peserta yang bener
+if ($hasPesertaId) {
+    $payload['peserta_id'] = $pend->peserta_id ?? ($pend->peserta->id ?? null);
+}
+
+// kalau kolom pendaftaran_id ada → isi
+if ($hasPendaftaranId) {
+    $payload['pendaftaran_id'] = $pend->id;
+}
+
+// kalau kolom pendaftaran_pelatihan_id ada → isi juga
+if ($hasPendaftaranPelId) {
+    $payload['pendaftaran_pelatihan_id'] = $pend->id;
+}
+
+// fallback adaptif pakai $fk (kalau masih kamu pakai)
+if (!empty($fk)) {
+    if ($fk === 'peserta_id') {
+        $payload['peserta_id'] = $payload['peserta_id']
+            ?? ($pend->peserta_id ?? ($pend->peserta->id ?? null));
+    } else {
+        $payload[$fk] = $pend->id;
+    }
+}
+
+if ($hasPesertaId && empty($payload['peserta_id'])) {
+    throw new \Exception("peserta_id tidak ditemukan untuk pendaftaran id {$pend->id}");
+}
+
+PenempatanAsrama::create($payload);
+
+
 
                 $kamar->decrement('available_beds');
 
@@ -138,7 +185,7 @@ class AsramaAllocator
     public function getPenempatanByPendaftaran(int $pendaftaranId)
     {
         return PenempatanAsrama::with('kamar.asrama')
-            ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+            ->where('pendaftaran_id', $pendaftaranId)
             ->first();
     }
 }

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class AssessmentLoginController extends Controller
 {
-
     public function show()
     {
         return view('pages.masuk');
@@ -35,12 +34,12 @@ class AssessmentLoginController extends Controller
             ->first();
 
         if (!$reg) {
-            Log::warning('LOGIN FAIL: token tidak ketemu', ['token'=>$token]);
+            Log::warning('LOGIN FAIL: token tidak ketemu', ['token' => $token]);
             return back()->with('error', 'Nomor registrasi tidak ditemukan.');
         }
 
         if (!$reg->peserta) {
-            Log::warning('LOGIN FAIL: peserta relasi null', ['reg_id'=>$reg->id]);
+            Log::warning('LOGIN FAIL: peserta relasi null', ['reg_id' => $reg->id]);
             return back()->with('error', 'Data peserta tidak ditemukan (relasi kosong).');
         }
 
@@ -48,7 +47,7 @@ class AssessmentLoginController extends Controller
 
         // 2) cek tanggal lahir peserta
         if (!$peserta->tanggal_lahir) {
-            Log::warning('LOGIN FAIL: tanggal lahir kosong', ['peserta_id'=>$peserta->id]);
+            Log::warning('LOGIN FAIL: tanggal lahir kosong', ['peserta_id' => $peserta->id]);
             return back()->with('error', 'Tanggal lahir peserta belum diisi admin.');
         }
 
@@ -64,12 +63,19 @@ class AssessmentLoginController extends Controller
             return back()->with('error', 'Password salah. Gunakan format ddmmyyyy.');
         }
 
-        // 3) bersihkan session lama
-        $request->session()->flush();
+        /**
+         * 3) bersihkan session lama (VERSI AMAN)
+         * - jangan flush() karena bisa bikin session request berikutnya kosong lagi
+         */
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         $request->session()->regenerate();
 
-        // 4) set session baru (dashboard pakai peserta_id)
-        session([
+        /**
+         * 4) set session baru (dashboard pakai peserta_id)
+         * - pakai put() supaya jelas nempel di session yang baru diregenerate
+         */
+        $request->session()->put([
             'peserta_id'               => $peserta->id,
             'pendaftaran_pelatihan_id' => $reg->id,
             'pelatihan_id'             => $reg->pelatihan_id,
@@ -80,7 +86,10 @@ class AssessmentLoginController extends Controller
             'instansi_kota' => optional($peserta->instansi)->kota,
         ]);
 
-        Log::info('LOGIN OK', ['peserta_id'=>$peserta->id, 'reg_id'=>$reg->id]);
+        Log::info('LOGIN OK', [
+            'peserta_id' => $peserta->id,
+            'reg_id'     => $reg->id
+        ]);
 
         return redirect()->route('dashboard.home')
             ->with('success', 'Login berhasil. Selamat mengerjakan!');
@@ -88,6 +97,7 @@ class AssessmentLoginController extends Controller
 
     public function logout(Request $request)
     {
+        // logout aman: boleh flush karena memang mau bersih total
         $request->session()->flush();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

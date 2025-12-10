@@ -19,7 +19,6 @@
     @if(!empty($percobaan))
         @php
             use App\Models\Percobaan;
-            use App\Models\Tes;
 
             $namaPeserta =
                 $percobaan->pesertaSurvei?->nama
@@ -55,7 +54,7 @@
 
             $preScore = $preAttempt?->skor;
 
-            // Improvement
+            // Improvement (TETAP SAMA)
             $improvementPoints  = null;
             $improvementPercent = null;
 
@@ -66,7 +65,7 @@
                 }
             }
 
-            // Kategori nilai (ubah batas sesuai kebijakan kamu)
+            // Kategori nilai (TETAP)
             $kategori = match (true) {
                 $skor >= 85 => 'Sangat Baik',
                 $skor >= 70 => 'Baik',
@@ -82,6 +81,24 @@
             };
 
             $improveClass = ($improvementPoints ?? 0) >= 0 ? 'text-emerald-700' : 'text-red-600';
+
+            // Amankan waktu (string/Carbon)
+            $mulaiRaw = $percobaan->waktu_mulai ?? null;
+            $selesaiRaw = $percobaan->waktu_selesai ?? null;
+
+            $mulai = $mulaiRaw
+                ? ( $mulaiRaw instanceof \Carbon\Carbon
+                    ? $mulaiRaw
+                    : \Illuminate\Support\Carbon::parse($mulaiRaw)
+                  )
+                : null;
+
+            $selesai = $selesaiRaw
+                ? ( $selesaiRaw instanceof \Carbon\Carbon
+                    ? $selesaiRaw
+                    : \Illuminate\Support\Carbon::parse($selesaiRaw)
+                  )
+                : null;
         @endphp
 
         {{-- Nama --}}
@@ -94,8 +111,7 @@
 
         {{-- Ringkasan Hasil --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-
-            {{-- Skor Post-Test --}}
+            {{-- Skor --}}
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
                 <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                     Skor Post-Test
@@ -121,7 +137,7 @@
                 </div>
             </div>
 
-            {{-- Status Lulus --}}
+            {{-- Status --}}
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
                 <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                     Status
@@ -135,7 +151,7 @@
             </div>
         </div>
 
-        {{-- Perkembangan dari Pre-Test --}}
+        {{-- Perkembangan --}}
         <div class="p-4 rounded-xl border border-slate-100 bg-white mb-6">
             <div class="text-sm font-semibold text-slate-800 mb-3">
                 Perkembangan dari Pre-Test
@@ -187,13 +203,13 @@
             <div class="p-4 bg-white rounded-xl border border-slate-100">
                 <div class="text-xs font-semibold text-slate-500">Waktu Mulai</div>
                 <div class="text-sm text-slate-800 mt-1">
-                    {{ $percobaan->waktu_mulai?->format('d M Y, H:i') ?? '-' }}
+                    {{ $mulai?->format('d M Y, H:i') ?? '-' }}
                 </div>
             </div>
             <div class="p-4 bg-white rounded-xl border border-slate-100">
                 <div class="text-xs font-semibold text-slate-500">Waktu Selesai</div>
                 <div class="text-sm text-slate-800 mt-1">
-                    {{ $percobaan->waktu_selesai?->format('d M Y, H:i') ?? 'Belum selesai' }}
+                    {{ $selesai?->format('d M Y, H:i') ?? 'Belum selesai' }}
                 </div>
             </div>
         </div>

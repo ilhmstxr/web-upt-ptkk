@@ -1,12 +1,28 @@
+{{-- resources/views/dashboard/pages/post-test/posttest.blade.php --}}
 @extends('dashboard.layouts.main')
 
 @section('title', 'Post-Test')
 @section('page-title', 'Post-Test')
 
 @section('content')
+@php
+    $tesFiltered = $tes->filter(function($t){
+        $okPelatihan  = !session('pelatihan_id') || $t->pelatihan_id == session('pelatihan_id');
+
+        $okKompetensi = !session('kompetensi_id')
+            || $t->kompetensi_id == session('kompetensi_id');
+
+        $okTipe = ($t->tipe ?? null) === 'post-test';
+
+        return $okPelatihan && $okKompetensi && $okTipe;
+    });
+
+    $t = $tesFiltered->first();
+@endphp
+
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    @forelse($tes as $t)
+    @if($t)
         <div class="p-6 bg-white rounded-xl shadow-md hover:shadow-xl transition card-hover">
 
             <div class="flex justify-between items-start gap-4">
@@ -32,6 +48,10 @@
                     <span class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700">
                         {{ ucfirst($t->sub_tipe) }}
                     </span>
+                @else
+                    <span class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700">
+                        Post-Test
+                    </span>
                 @endif
             </div>
 
@@ -55,6 +75,7 @@
                             <span class="font-bold text-blue-700">{{ $t->__pre_score ?? '-' }}</span>
                         </div>
 
+                        {{-- improvement tetap dipakai --}}
                         @if($t->__improvement_points !== null)
                             <div class="text-sm">
                                 Peningkatan:
@@ -113,12 +134,13 @@
 
             </div>
         </div>
-    @empty
-        <div class="col-span-full p-6 bg-white rounded-xl shadow-sm">
-            <p class="text-gray-500 mb-2">Tidak ada Post-Test untuk pelatihan Anda.</p>
+
+    @else
+        <div class="col-span-full p-6 bg-white rounded-xl shadow-sm text-center">
+            <p class="text-gray-500 mb-2">Tidak ada Post-Test untuk pelatihan/kompetensi Anda.</p>
             <p class="text-gray-500 text-sm">Silakan hubungi admin jika seharusnya ada tes.</p>
         </div>
-    @endforelse
+    @endif
 
 </div>
 @endsection

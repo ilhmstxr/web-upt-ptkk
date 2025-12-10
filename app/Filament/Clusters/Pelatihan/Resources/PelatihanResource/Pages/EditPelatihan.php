@@ -7,10 +7,6 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Str;
 
-use App\Services\AsramaAllocator;
-use App\Models\Pelatihan;
-use App\Models\Peserta;
-
 class EditPelatihan extends EditRecord
 {
     protected static string $resource = PelatihanResource::class;
@@ -52,25 +48,12 @@ class EditPelatihan extends EditRecord
 
     /**
      * Header Action:
-     * - Delete
-     * - Otomasi Asrama
+     * - Delete saja (otomasi asrama dihapus biar tidak dobel)
      */
     protected function getHeaderActions(): array
     {
         return [
             Actions\DeleteAction::make(),
-
-            Actions\Action::make('otomasiAsrama')
-                ->label('Otomasi Penempatan Asrama')
-                ->icon('heroicon-o-bolt')
-                ->color('success')
-                ->requiresConfirmation()
-                ->modalHeading('Jalankan Otomasi Penempatan Asrama')
-                ->modalSubheading('Sistem akan membagi peserta ke kamar asrama sesuai aturan kapasitas & jenis kelamin.')
-                ->modalButton('Jalankan Otomasi')
-                ->action(function (AsramaAllocator $allocator) {
-                    $this->jalankanOtomasi($this->record->id, $allocator);
-                }),
         ];
     }
 
@@ -117,21 +100,5 @@ class EditPelatihan extends EditRecord
                 );
             }
         }
-    }
-
-    /**
-     * Jalankan otomasi penempatan asrama.
-     */
-    public function jalankanOtomasi(int $pelatihanId, AsramaAllocator $allocator): void
-    {
-        $pelatihan = Pelatihan::findOrFail($pelatihanId);
-
-        $peserta = Peserta::where('pelatihan_id', $pelatihan->id)
-            ->whereDoesntHave('penempatanAsrama')
-            ->get();
-
-        $allocator->allocate($pelatihan, $peserta);
-
-        $this->notify('success', 'Otomasi penempatan kamar asrama berhasil dijalankan.');
     }
 }

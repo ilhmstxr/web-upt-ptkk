@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login Assessment Peserta</title>
 
+  {{-- CSRF meta (opsional tapi aman kalau nanti pakai AJAX) --}}
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
   {{-- Tailwind --}}
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -15,15 +18,12 @@
 
   <style>
     body{
-      background-color: #1524AF; /* sementara, nanti diganti ke background landing */
+      background-color: #1524AF;
       font-family: 'Montserrat', sans-serif;
     }
-
-    /* 🔹 Biar class font-volkhov beneran pakai font Volkhov */
     .font-volkhov{
       font-family: 'Volkhov', serif;
     }
-
     .material-symbols-rounded {
       font-variation-settings:
         'FILL' 0,
@@ -31,8 +31,6 @@
         'GRAD' 0,
         'opsz' 24;
     }
-
-    /* Stroke kuning + fill biru */
     .judul-stroke {
       color: #1524AF;
       -webkit-text-stroke: 1.3px #FFDE59;
@@ -43,10 +41,10 @@
 
 <body class="min-h-screen relative">
 
-  {{-- 🔹 Background Blur --}}
+  {{-- Background Blur --}}
   <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
 
-  {{-- 🔹 Card Login Popup --}}
+  {{-- Card Login Popup --}}
   <div class="fixed inset-0 flex justify-center items-start md:items-center p-4 overflow-y-auto">
     <div class="relative bg-[#F1F9FC] w-full max-w-[440px]
                 rounded-2xl shadow-xl border-[4px] border-[#B6BBE6]
@@ -60,7 +58,7 @@
         Pre Test, Post Test, Monev
       </p>
 
-      {{-- ✅ ALERT ERROR / SUCCESS --}}
+      {{-- ALERT ERROR / SUCCESS --}}
       @if (session('error'))
         <div class="mb-4 rounded-xl bg-red-100 border border-red-300 text-red-700 px-4 py-3 text-sm">
           {{ session('error') }}
@@ -73,7 +71,7 @@
         </div>
       @endif
 
-      {{-- ✅ VALIDATION ERRORS --}}
+      {{-- VALIDATION ERRORS --}}
       @if ($errors->any())
         <div class="mb-4 rounded-xl bg-red-100 border border-red-300 text-red-700 px-4 py-3 text-sm space-y-1">
           @foreach ($errors->all() as $err)
@@ -82,7 +80,7 @@
         </div>
       @endif
 
-      {{-- 🔹 FORM LOGIN (SUDAH FIX) --}}
+      {{-- FORM LOGIN --}}
       <form action="{{ route('assessment.login.submit') }}" method="POST" class="space-y-4">
         @csrf
 
@@ -92,6 +90,7 @@
           <input type="text"
                  name="token"
                  value="{{ old('token') }}"
+                 autocomplete="off"
                  class="w-full mt-1 rounded-xl border border-gray-300 px-4 py-3 text-sm
                         focus:ring-2 focus:ring-[#1524AF] outline-none"
                  placeholder="Masukkan ID Peserta / Nomor Registrasi">
@@ -107,6 +106,7 @@
             <input type="password" id="passwordInput"
                    name="password"
                    value="{{ old('password') }}"
+                   autocomplete="off"
                    class="w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm
                           focus:ring-2 focus:ring-[#1524AF] outline-none"
                    placeholder="Masukkan Password (ddmmyyyy)">
@@ -125,8 +125,6 @@
 
         {{-- Tombol --}}
         <div class="flex justify-center gap-3 sm:gap-4 mt-2 w-full">
-
-          {{-- Tombol Kembali --}}
           <button type="button"
                   onclick="window.history.back()"
                   class="px-6 py-2 rounded-xl bg-[#F1F9FC] text-[#1524AF]
@@ -136,7 +134,6 @@
             Kembali
           </button>
 
-          {{-- Tombol Login --}}
           <button type="submit"
                   class="px-6 py-2 rounded-xl bg-[#1524AF] text-white
                          text-sm font-medium hover:bg-[#0E1A82] transition
@@ -145,15 +142,13 @@
             <span>Login</span>
             <span class="material-symbols-rounded text-[18px]">arrow_forward</span>
           </button>
-
         </div>
-
       </form>
 
     </div>
   </div>
 
-  {{-- 🔹 Script Toggle Password --}}
+  {{-- Script Toggle Password --}}
   <script>
     const togglePassword = document.getElementById("togglePassword");
     const passwordInput = document.getElementById("passwordInput");
@@ -161,7 +156,6 @@
 
     togglePassword.addEventListener("click", () => {
       const isHidden = passwordInput.type === "password";
-
       passwordInput.type = isHidden ? "text" : "password";
       eyeIcon.textContent = isHidden ? "visibility" : "visibility_off";
     });

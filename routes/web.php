@@ -61,8 +61,9 @@ Route::view('/masuk', 'pages.masuk')->name('masuk');
 
 /* ======================================================================
 |  B. ASSESSMENT LOGIN (NO REG + TGL LAHIR)
+|  
 ====================================================================== */
-Route::middleware(['web', 'guest'])->group(function () {
+Route::middleware(['web'])->group(function () {
 
     Route::get('/assessment/login', [AssessmentLoginController::class, 'show'])
         ->name('assessment.login');
@@ -71,10 +72,11 @@ Route::middleware(['web', 'guest'])->group(function () {
         ->name('assessment.login.submit');
 });
 
-    // ✅ Logout hanya untuk peserta assessment yg sedang login
-    Route::post('/assessment/logout', [AssessmentLoginController::class, 'logout'])
-        ->middleware(['web', 'assessment'])  // <-- alias assessment
-        ->name('assessment.logout');
+
+// ✅ Logout hanya untuk peserta assessment yg sedang login
+Route::post('/assessment/logout', [AssessmentLoginController::class, 'logout'])
+    ->middleware(['web', 'assessment'])  // <-- alias assessment
+    ->name('assessment.logout');
 
 /* ======================================================================
 |  C. HOME redirect
