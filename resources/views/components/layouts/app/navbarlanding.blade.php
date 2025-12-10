@@ -1,18 +1,43 @@
-{{-- resources/views/components/layouts/app/navbarlanding.blade.php --}}
 @php use Illuminate\Support\Facades\Route; @endphp
 @php
-  $items = [
-    ['label' => 'Beranda', 'name' => 'home', 'fallback' => url('/'), 'path' => ''],
+$items = [
+  [
+    'label'    => 'Beranda',
+    // HAPUS 'name' supaya tidak pakai route()
+    // 'name'  => 'home',   // <-- ini JANGAN ADA
+    'fallback' => url('/'), // langsung ke '/'
+    'path'     => '',
+  ],
 
     // Profil dropdown
     ['label' => 'Profil', 'group' => 'profile', 'children' => [
-      ['label' => 'Cerita Kami',           'name' => 'story',      'fallback' => url('/cerita-kami'),            'path' => 'cerita-kami'],
-      ['label' => 'Program Pelatihan',     'name' => 'programs',   'fallback' => url('/program-pelatihan'),      'path' => 'program-pelatihan'],
-      ['label' => 'Kompetensi Pelatihan',  'name' => 'kompetensi', 'fallback' => url('/kompetensi-pelatihan'),   'path' => 'kompetensi-pelatihan'],
+      ['label' => 'Cerita Kami',
+        'name'     => 'story',
+        'fallback' => url('/cerita-kami'),
+        'path'     => 'cerita-kami',
+      ],
+      ['label' => 'Program Pelatihan',
+        'name'     => 'programs',
+        'fallback' => url('/program-pelatihan'),
+        'path'     => 'program-pelatihan',
+      ],
+      ['label' => 'Kompetensi Pelatihan',
+        'name'     => 'kompetensi',
+        'fallback' => url('/kompetensi-pelatihan'), // URL aslinya
+        'path'     => 'kompetensi-pelatihan',
+      ],
     ]],
 
-    ['label' => 'Berita',   'name' => 'news',    'fallback' => url('/berita'),   'path' => 'berita'],
-    ['label' => 'Panduan',  'name' => 'panduan', 'fallback' => url('/panduan'),  'path' => 'panduan'],
+    ['label' => 'Berita',
+      'name'     => 'news',
+      'fallback' => url('/berita'),
+      'path'     => 'berita',
+    ],
+    ['label' => 'Panduan',
+      'name'     => 'panduan',
+      'fallback' => url('/panduan'),
+      'path'     => 'panduan',
+    ],
   ];
 
   // resolver active + href
@@ -28,22 +53,38 @@
             ? url()->current() === url('/')
             : (request()->is($it['path']) || request()->is($it['path'].'/*'))));
 
-    return ['label' => $it['label'], 'href' => $href, 'active' => $isActive];
+    return [
+      'label'  => $it['label'],
+      'href'   => $href,
+      'active' => $isActive,
+    ];
   };
 
-  $nav = []; $profile = ['children' => [], 'active' => false];
+  $nav = [];
+  $profile = ['children' => [], 'active' => false];
+
   foreach ($items as $it) {
     if (($it['group'] ?? null) === 'profile') {
       $children = array_map($resolve, $it['children']);
-      $profile  = ['label' => 'Profil', 'children' => $children, 'active' => collect($children)->contains(fn($c) => $c['active'])];
+      $profile  = [
+        'label'    => 'Profil',
+        'children' => $children,
+        'active'   => collect($children)->contains(fn($c) => $c['active']),
+      ];
     } else {
       $nav[] = $resolve($it);
     }
   }
-  $beranda   = collect($nav)->firstWhere('label', 'Beranda');
-  $others    = collect($nav)->reject(fn($i) => $i['label'] === 'Beranda')->values();
-  $loginHref  = Route::has('masuk') ? route('masuk') : url('/masuk');
-  $daftarHref = Route::has('pendaftaran.index') ? route('pendaftaran.index') : url('/pendaftaran');
+
+  $beranda = collect($nav)->firstWhere('label', 'Beranda');
+  $others  = collect($nav)->reject(fn($i) => $i['label'] === 'Beranda')->values();
+
+  // ========== HREF TOMBOL ==========
+   // Masuk -> login peserta
+    $loginHref = Route::has('masuk') ? route('masuk') : url('/masuk');
+
+    // Daftar -> selalu ke /daftar (halaman daftar.blade.php)
+    $daftarHref = url('/daftar'); // atau route('pendaftaran.daftar')
 @endphp
 
 <header id="siteHeader"
@@ -53,7 +94,7 @@
     <div class="h-[56px] md:h-[64px] lg:h-[72px] flex items-center justify-between gap-3 md:gap-4">
 
       {{-- KIRI: Logo + identitas --}}
-      <a href="{{ Route::has('home') ? route('home') : url('/') }}"
+      <a href="{{ Route::has('landing') ? route('landing') : url('/') }}"
          class="flex items-center gap-2 md:gap-3 flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1524AF]/30 rounded">
         <img src="{{ asset('images/logo-provinsi-jawa-timur.png') }}"
              alt="Logo Provinsi Jawa Timur"
@@ -135,14 +176,14 @@
             Masuk
           </a>
           <a href="{{ $daftarHref }}"
-             class="inline-flex items-center justify-center h-8 md:h-9 lg:h-10 px-4 lg:px-5 rounded-xl
-                    bg-[#1524AF] hover:opacity-90 text-white font-[Montserrat]
-                    text-[13px] md:text-[14px] lg:text-[16px] gap-2 transition">
-            Daftar
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
+   class="inline-flex items-center justify-center h-8 md:h-9 lg:h-10 px-4 lg:px-5 rounded-xl
+          bg-[#1524AF] hover:opacity-90 text-white font-[Montserrat]
+          text-[13px] md:text-[14px] lg:text-[16px] gap-2 transition">
+  Daftar
+  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</a>
         </div>
       </div>
 
@@ -242,23 +283,38 @@
       document.body.classList.toggle('overflow-hidden', willOpen);
     }
     navBtn && navBtn.addEventListener('click', () => toggleDrawer());
-    if (navDrawer) navDrawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleDrawer(false)));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !navDrawer.classList.contains('hidden')) toggleDrawer(false); }, { passive: true });
+    if (navDrawer) {
+      navDrawer.querySelectorAll('a').forEach(a =>
+        a.addEventListener('click', () => toggleDrawer(false))
+      );
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && navDrawer && !navDrawer.classList.contains('hidden')) {
+        toggleDrawer(false);
+      }
+    }, { passive: true });
 
     // Shadow saat scroll
     function onScroll(){
-      if (window.scrollY > 4) header.classList.add('shadow-[0_6px_20px_rgba(0,0,0,.08)]');
-      else header.classList.remove('shadow-[0_6px_20px_rgba(0,0,0,.08)]');
+      if (window.scrollY > 4)
+        header.classList.add('shadow-[0_6px_20px_rgba(0,0,0,.08)]');
+      else
+        header.classList.remove('shadow-[0_6px_20px_rgba(0,0,0,.08)]');
     }
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
 
     // CSS var --header-h untuk offset sticky lain
     function setHeaderH(){
+      if (!header) return;
       document.documentElement.style.setProperty('--header-h', header.getBoundingClientRect().height + 'px');
     }
     setHeaderH();
-    new ResizeObserver(setHeaderH).observe(header);
+    if (window.ResizeObserver) {
+      new ResizeObserver(setHeaderH).observe(header);
+    } else {
+      window.addEventListener('resize', setHeaderH, { passive: true });
+    }
 
     // Dropdown Profil (desktop/tablet)
     const btnProfil   = document.getElementById('btnProfil');
@@ -266,10 +322,10 @@
     const chevProfil  = document.getElementById('chevronProfil');
 
     function setProfilOpen(open) {
-      if (!btnProfil || !panelProfil || !chevProfil) return;
+      if (!btnProfil || !panelProfil) return;
       panelProfil.classList.toggle('hidden', !open);
       btnProfil.setAttribute('aria-expanded', String(open));
-      chevProfil.classList.toggle('rotate-180', open);
+      chevProfil && chevProfil.classList.toggle('rotate-180', open);
     }
     setProfilOpen(false);
 
@@ -281,9 +337,13 @@
 
     document.addEventListener('click', (e) => {
       if (!panelProfil || panelProfil.classList.contains('hidden')) return;
-      if (!panelProfil.contains(e.target) && !btnProfil.contains(e.target)) setProfilOpen(false);
+      if (!panelProfil.contains(e.target) && !btnProfil.contains(e.target)) {
+        setProfilOpen(false);
+      }
     });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setProfilOpen(false); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setProfilOpen(false);
+    });
     window.addEventListener('resize', () => setProfilOpen(false));
   })();
 </script>

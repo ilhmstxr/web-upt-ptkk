@@ -340,5 +340,6 @@
             </div>
         </aside>
     </div>
+
 </div>
 @endsection

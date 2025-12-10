@@ -15,6 +15,7 @@ class Asrama extends Model
 {
     use HasFactory;
 
+    // Ditambahkan: Menentukan nama tabel secara eksplisit (dari snippet Anda)
     protected $table = 'asrama';
 
     protected $fillable = [

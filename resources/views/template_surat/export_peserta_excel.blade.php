@@ -24,9 +24,9 @@
                 <td style="border: 1px solid #000000; text-align: center;">{{ $item->kelas ?? '-' }}</td>
                 <td style="border: 1px solid #000000;">{{ $item->peserta->instansi->cabangDinas->nama ?? '-' }}</td>
                 <td style="border: 1px solid #000000;">{{ $item->pelatihan->jenis_program ?? '-' }}</td>
-                <td style="border: 1px solid #000000;">{{ $item->kompetensi->nama_kompetensi ?? '-' }}</td>
+                <td style="border: 1px solid #000000;">{{ $item->kompetensi->nama_kompetensi ?? $item->kompetensiPelatihan->kompetensi->nama_kompetensi ?? '-' }}</td>
                 <td style="border: 1px solid #000000;">{{ $item->pelatihan->angkatan ?? '-' }}</td>
-                <td style="border: 1px solid #000000; text-align: center;">{{ $item->peserta->no_hp ?? '-' }}</td>
+                <td style="border: 1px solid #000000; text-align: center; mso-number-format:'\@';">{{ $item->peserta->no_hp ?? '-' }}</td>
                 <td style="border: 1px solid #000000; text-align: center;">
                     @php
                         $path = null;

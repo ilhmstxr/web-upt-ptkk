@@ -6,24 +6,55 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('banners', function (Blueprint $table) {
-            $table->id();
-            $table->string('image');
-            $table->string('title')->nullable();
-            $table->text('description')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->integer('sort_order')->default(0);
+        // 1) Buat tabel lengkap jika belum ada
+        if (! Schema::hasTable('banners')) {
+            Schema::create('banners', function (Blueprint $table) {
+                $table->id();
+                // PERBAIKAN: Tambahkan ->nullable() di kolom image
+                $table->string('image')->nullable();
+
+                $table->string('title')->nullable();
+                $table->text('description')->nullable();
+
+                $table->boolean('is_active')->default(true);
+                $table->boolean('is_featured')->default(false);
+                $table->integer('sort_order')->default(0);
+
+                // Menggunakan timestamps() bawaan lebih disarankan
+                $table->timestamps();
+            });
+
+            return;
+        }
+
+        // 2) Jika tabel sudah ada (bagian ALTER TABLE)
+        Schema::table('banners', function (Blueprint $table) {
+
+            // PERBAIKAN: Pastikan 'image' bisa diubah menjadi nullable jika sebelumnya NOT NULL
+            if (Schema::hasColumn('banners', 'image')) {
+                // Catatan: Ini memerlukan package doctrine/dbal jika Anda belum menginstalnya
+                $table->string('image')->nullable()->change();
+            }
+
+            // ... (Kode untuk is_featured dan kolom lain yang hilang)
+
+            if (! Schema::hasColumn('banners', 'is_featured')) {
+                $table->boolean('is_featured')->default(false)->after('is_active');
+            }
+
+            // Tambahan lainnya yang Anda masukkan sudah cukup defensif.
+
+            if (! Schema::hasColumn('banners', 'created_at')) {
+                $table->timestamp('created_at')->nullable();
+            }
+            if (! Schema::hasColumn('banners', 'updated_at')) {
+                $table->timestamp('updated_at')->nullable();
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('banners');

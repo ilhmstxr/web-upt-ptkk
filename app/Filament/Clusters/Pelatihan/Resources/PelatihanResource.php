@@ -4,17 +4,15 @@ namespace App\Filament\Clusters\Pelatihan\Resources;
 
 use App\Filament\Clusters\Pelatihan;
 use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Pages;
-use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\RelationManagers;
 use App\Models\Pelatihan as PelatihanModel;
+use App\Models\Bidang;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class PelatihanResource extends Resource
+final class PelatihanResource extends Resource
 {
     protected static ?string $model = PelatihanModel::class;
 
@@ -22,9 +20,14 @@ class PelatihanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    // Hide from sidebar navigation (accessed via tabs only)
+    /**
+     * Resource tidak tampil di sidebar, diakses via cluster/tabs.
+     */
     protected static bool $shouldRegisterNavigation = false;
 
+    /**
+     * Form (Wizard) untuk create / edit.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -89,9 +92,10 @@ class PelatihanResource extends Resource
                                 ->label('Jadwal Kompetensi')
                                 ->schema([
                                     Forms\Components\Select::make('kompetensi_id')
-                                        ->relationship('kompetensi', 'nama_kompetensi') // This works for options, but we manage saving manually
-                                        ->required()
                                         ->label('Materi / Kompetensi')
+                                        ->options(\App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
+                                        ->searchable()
+                                        ->required()
                                         ->columnSpan(2),
                                     
                                     Forms\Components\Select::make('instruktur_id')
@@ -141,21 +145,36 @@ class PelatihanResource extends Resource
         ];
     }
 
+    /**
+     * Table listing di resource index.
+     */
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('gambar')
+                    ->label('Cover')
+                    ->square()
+                    ->size(60)
+                    ->defaultImageUrl('https://via.placeholder.com/150'),
+
                 Tables\Columns\TextColumn::make('nama_pelatihan')
                     ->label('Nama Pelatihan')
                     ->searchable()
                     ->sortable()
                     ->wrap()
-                    ->limit(100)
+                    ->limit(60)
                     ->tooltip(fn ($record) => $record->nama_pelatihan)
-                    ->description(fn ($record) => $record->jenis_program . ' • Angkatan ' . $record->angkatan)
+                    ->description(fn ($record) =>
+                        trim((string) ($record->jenis_program ?? '')) !== ''
+                            ? ($record->jenis_program . ' • Angkatan ' . ($record->angkatan ?? '—'))
+                            : ('Angkatan ' . ($record->angkatan ?? '—'))
+                    )
                     ->weight('medium'),
 
+                // Status dengan warna badge
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'aktif' => 'success',
@@ -165,17 +184,23 @@ class PelatihanResource extends Resource
                     })
                     ->alignCenter(),
 
+                // Hitungan peserta (counts)
                 Tables\Columns\TextColumn::make('pendaftaran_pelatihan_count')
-                    ->counts('pendaftaranPelatihan')
                     ->label('Total Peserta')
+                    ->counts('pendaftaranPelatihan')
                     ->sortable()
                     ->alignCenter(),
 
+                // Tanggal mulai (dengan deskripsi tanggal selesai bila ada)
                 Tables\Columns\TextColumn::make('tanggal_mulai')
                     ->label('Jadwal')
                     ->date('d M Y')
                     ->sortable()
-                    ->description(fn ($record) => $record->tanggal_selesai ? 'S/d ' . $record->tanggal_selesai->format('d M Y') : null),
+                    ->description(fn ($record) =>
+                        $record->tanggal_selesai
+                            ? 'S/d ' . $record->tanggal_selesai->format('d M Y')
+                            : null
+                    ),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -197,13 +222,21 @@ class PelatihanResource extends Resource
             ]);
     }
 
+    /**
+     * Relations (RelationManagers) — tambahkan bila perlu.
+     *
+     * @return array<string>
+     */
     public static function getRelations(): array
     {
         return [
-            //
+            // e.g. RelationManagers\PendafataranPelatihansRelationManager::class,
         ];
     }
 
+    /**
+     * Halaman CRUD untuk resource ini.
+     */
     public static function getPages(): array
     {
         return [

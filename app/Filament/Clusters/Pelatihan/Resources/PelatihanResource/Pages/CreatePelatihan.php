@@ -34,24 +34,12 @@ class CreatePelatihan extends CreateRecord
                     // Add other fields if present in schema
                 ];
 
+                // Create ONE record per item
+                $kompetensiPelatihan = $this->record->kompetensiPelatihan()->create($commonData);
+
+                // Attach instructors via Pivot
                 if (!empty($instructorIds) && is_array($instructorIds)) {
-                    foreach ($instructorIds as $instructorId) {
-                        $this->record->kompetensiPelatihan()->create(array_merge($commonData, [
-                            'instruktur_id' => $instructorId,
-                        ]));
-                    }
-                } else {
-                     // If no instructor selected, or single value (edge case)
-                     // But we enforced required and array.
-                     // Just in case:
-                     if (!empty($item['instruktur_id']) && !is_array($item['instruktur_id'])) {
-                         $this->record->kompetensiPelatihan()->create(array_merge($commonData, [
-                            'instruktur_id' => $item['instruktur_id'],
-                        ]));
-                     } else {
-                         // Should not happen if required, but if it does, create without instructor?
-                         // Schema says required.
-                     }
+                     $kompetensiPelatihan->instrukturs()->attach($instructorIds);
                 }
             }
         }

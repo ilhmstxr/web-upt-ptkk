@@ -48,7 +48,7 @@
                     Instruktur
                 </button>
 
-                {{-- ✅ TAB: MATERI (BARU - SEJAJAR) --}}
+                {{-- TAB: MATERI (BARU) --}}
                 <button
                     @click="activeTab = 'materi'"
                     :class="{
@@ -115,9 +115,11 @@
                                     <div class="flex items-center gap-2 mt-1">
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
                                             Mentor:
-                                            {{ !empty($kompetensi->nama_instruktur)
-                                                ? $kompetensi->nama_instruktur
-                                                : ($kompetensi->instruktur->nama ?? 'Belum ditentukan') }}
+                                            @if($kompetensi->instrukturs->count() > 0)
+                                                {{ $kompetensi->instrukturs->pluck('nama')->join(', ') }}
+                                            @else
+                                                Belum ditentukan
+                                            @endif
                                         </p>
                                     </div>
                                 </div>
@@ -155,7 +157,7 @@
         </div>
 
         {{-- =========================================================
-            CONTENT 3: INSTRUKTUR
+            CONTENT 3: INSTRUKTUR (MULTI)
         ========================================================= --}}
         <div
             x-show="activeTab === 'admin'"
@@ -170,15 +172,15 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($record->kompetensiPelatihan as $kompetensi)
-                    @if($kompetensi->nama_instruktur || $kompetensi->instruktur)
+                    @foreach($kompetensi->instrukturs as $instruktur)
                         <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:shadow-md transition-shadow relative group">
                             <div class="flex items-center gap-4 mb-4">
                                 <div class="w-14 h-14 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-500 dark:text-gray-400">
-                                    {{ substr($kompetensi->nama_instruktur ?? $kompetensi->instruktur->nama ?? 'IN', 0, 2) }}
+                                    {{ substr($instruktur->nama ?? 'IN', 0, 2) }}
                                 </div>
                                 <div>
                                     <h4 class="font-bold text-gray-900 dark:text-white">
-                                        {{ $kompetensi->nama_instruktur ?? $kompetensi->instruktur->nama ?? '-' }}
+                                        {{ $instruktur->nama ?? '-' }}
                                     </h4>
                                     <p class="text-xs text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full w-fit mt-1">
                                         {{ $kompetensi->kompetensi->nama_kompetensi ?? 'Kompetensi' }}
@@ -187,21 +189,21 @@
                             </div>
 
                             <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                @if($kompetensi->instruktur && $kompetensi->instruktur->user)
+                                @if($instruktur->user)
                                     <div class="flex items-center gap-2">
                                         <x-heroicon-o-envelope class="w-4 h-4 text-gray-400" />
-                                        {{ $kompetensi->instruktur->user->email ?? '-' }}
+                                        {{ $instruktur->user->email ?? '-' }}
                                     </div>
                                 @endif
                             </div>
                         </div>
-                    @endif
+                    @endforeach
                 @endforeach
             </div>
         </div>
 
         {{-- =========================================================
-            ✅ CONTENT 4: MATERI (BARU)
+            CONTENT 4: MATERI (BARU)
         ========================================================= --}}
         <div
             x-show="activeTab === 'materi'"
@@ -232,15 +234,21 @@
 
         {{-- =========================================================
             CONTENT 6: HASIL TES / SURVEY
+            - UI lengkap versi 1
+            - + chart livewire versi 2
         ========================================================= --}}
         <div
             x-show="activeTab === 'hasil'"
             class="p-6 bg-white dark:bg-gray-800 min-h-[400px]"
         >
+            @php
+                $evalData = $this->getEvaluationData();
+            @endphp
+
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h3 class="text-lg font-bold text-gray-800 dark:text-white">
-                        Laporan Hasil Evaluasi Batch 5
+                        Laporan Hasil Evaluasi {{ $record->nama_pelatihan }}
                     </h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">
                         Rekapitulasi nilai pretest, posttest, dan survey kepuasan.
@@ -248,12 +256,92 @@
                 </div>
             </div>
 
-            <div class="text-center text-gray-500 dark:text-gray-400 py-10">
-                <div class="grid grid-cols-1 gap-6">
-                    @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\JawabanAkumulatifChart::class, ['record' => $record])
-                    @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\JawabanPerKategoriChart::class, ['record' => $record])
-                    @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\PiePerPertanyaanWidget::class, ['record' => $record])
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- CHART 1: Rata-rata Pretest vs Posttest -->
+                <div class="bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl p-6 border border-blue-100 dark:border-blue-800">
+                    <h4 class="text-sm font-bold text-blue-900 dark:text-blue-100 mb-6">Rata-rata Pretest vs Posttest</h4>
+                    <div class="flex items-end justify-center gap-8 h-32 mb-4 px-8">
+                        <!-- Pretest Bar -->
+                        <div class="w-full flex flex-col justify-end items-center gap-2 group">
+                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300">{{ $evalData['avgPretest'] }}</span>
+                            <div class="w-full bg-blue-300 dark:bg-blue-500 rounded-t-lg transition-all group-hover:bg-blue-400" style="height: {{ min(100, max(10, ($evalData['avgPretest']/100)*100)) }}%;"></div>
+                            <span class="text-xs font-medium text-gray-500">Pretest</span>
+                        </div>
+                        <!-- Posttest Bar -->
+                        <div class="w-full flex flex-col justify-end items-center gap-2 group">
+                            <span class="text-sm font-bold text-blue-700 dark:text-blue-300">{{ $evalData['avgPosttest'] }}</span>
+                            <div class="w-full bg-blue-600 dark:bg-blue-400 rounded-t-lg transition-all group-hover:bg-blue-500 shadow-lg shadow-blue-600/20" style="height: {{ min(100, max(10, ($evalData['avgPosttest']/100)*100)) }}%;"></div>
+                            <span class="text-xs font-medium text-gray-500">Posttest</span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-100 dark:bg-blue-800/50 rounded-lg py-2 px-4 text-center">
+                        <span class="text-xs font-bold text-blue-700 dark:text-blue-300">Kenaikan +{{ $evalData['improvement'] }}</span>
+                    </div>
                 </div>
+
+                <!-- CHART 2: Tingkat Kepuasan (CSAT) -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center text-center">
+                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">Tingkat Kepuasan (CSAT)</h4>
+                    <div class="relative w-32 h-32 flex items-center justify-center">
+                        <div class="w-full h-full rounded-full border-8 border-gray-100 dark:border-gray-700"></div>
+                        <div class="absolute w-full h-full rounded-full border-8 border-green-500 border-t-transparent border-l-transparent transform -rotate-45" style="clip-path: circle(50%);"></div>
+                        <div class="absolute inset-0 flex items-center justify-center flex-col">
+                            <span class="text-4xl font-black text-gray-800 dark:text-white">{{ $evalData['csat'] }}</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-1 text-yellow-400 mt-2 mb-1">
+                        @for($i=1; $i<=5; $i++)
+                            <x-heroicon-s-star class="w-4 h-4 {{ $i <= round($evalData['csat']) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' }}" />
+                        @endfor
+                    </div>
+                    <span class="text-xs text-gray-400">Dari {{ $evalData['respondents'] }} Responden</span>
+                </div>
+            </div>
+
+            <!-- TABLE: Rincian per Kompetensi -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white">Rincian Nilai per Kompetensi</h4>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-gray-700/50 dark:text-gray-400">
+                            <tr>
+                                <th class="px-6 py-3 font-medium">Nama Kompetensi</th>
+                                <th class="px-6 py-3 font-medium text-center">Avg Pretest</th>
+                                <th class="px-6 py-3 font-medium text-center">Avg Posttest</th>
+                                <th class="px-6 py-3 font-medium text-center">Kepuasan</th>
+                                <th class="px-6 py-3 font-medium text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                            @forelse($evalData['competencies'] as $comp)
+                                <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $comp['name'] }}</td>
+                                    <td class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ $comp['pretest'] }}</td>
+                                    <td class="px-6 py-4 text-center font-bold text-blue-600 dark:text-blue-400">{{ $comp['posttest'] }}</td>
+                                    <td class="px-6 py-4 text-center text-orange-500 font-bold">{{ $comp['kepuasan'] }}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $comp['status_color'] }}-100 text-{{ $comp['status_color'] }}-800 dark:bg-{{ $comp['status_color'] }}-900/30 dark:text-{{ $comp['status_color'] }}-400 border border-{{ $comp['status_color'] }}-200 dark:border-{{ $comp['status_color'] }}-800">
+                                            {{ $comp['status'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-400">Belum ada data kompetensi.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- CHART LIVEWIRE (versi 2) --}}
+            <div class="grid grid-cols-1 gap-6">
+                @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\JawabanAkumulatifChart::class, ['record' => $record])
+                @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\JawabanPerKategoriChart::class, ['record' => $record])
+                @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\PiePerPertanyaanWidget::class, ['record' => $record])
             </div>
         </div>
 

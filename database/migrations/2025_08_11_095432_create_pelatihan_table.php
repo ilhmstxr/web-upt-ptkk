@@ -11,16 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Diperbaiki: Menggunakan nama tabel tunggal 'pelatihan' 
+        // agar sesuai dengan $table->constrained('pelatihan') di tabel 'peserta'.
         Schema::create('pelatihan', function (Blueprint $table) {
             $table->id();
+
+            // Relasi instansi
             $table->foreignId('instansi_id')
                   ->nullable()
                   ->constrained('instansi')
-                  ->onUpdate('cascade')
-                  ->onDelete('set null'); // Relasi ke tabel instansi
+                  ->nullOnDelete()
+                  ->cascadeOnUpdate();
 
-            $table->Integer('angkatan')->nullable();
-            $table->enum('jenis_program',['reguler','akselerasi','mtu'])->default('reguler');
+            // Atribut pelatihan
+            $table->integer('angkatan')->nullable();
+            $table->enum('jenis_program', ['reguler','akselerasi','mtu'])
+                  ->default('reguler');
+
+            // Relasi ke asrama
+            $table->foreignId('asrama_id')
+                  ->nullable()
+                  ->constrained('asrama')
+                  ->nullOnDelete()
+                  ->cascadeOnUpdate();
+
+            // Field utama
             $table->string('nama_pelatihan');
             $table->string('slug')->nullable()->unique();
             $table->string('gambar')->nullable();
@@ -42,6 +57,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Diperbaiki: Menghapus tabel tunggal 'pelatihan'
         Schema::dropIfExists('pelatihan');
     }
 };

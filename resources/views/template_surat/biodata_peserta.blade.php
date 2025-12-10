@@ -4,10 +4,13 @@
     <meta charset="utf-8">
     <title>Biodata Peserta Massal</title>
     <style>
+        @page {
+            margin: 2cm;
+        }
         body {
             font-family: 'Arial', sans-serif;
             font-size: 12pt;
-            margin: 2cm;
+            margin: 0;
         }
         .page-break {
             page-break-after: always;

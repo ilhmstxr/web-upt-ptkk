@@ -62,8 +62,8 @@ class KompetensiPelatihan extends Model
         );
     }
 
-    public function instruktur()
+    public function instrukturs()
     {
-        return $this->belongsTo(Instruktur::class);
+        return $this->belongsToMany(Instruktur::class, 'kompetensi_pelatihan_instruktur');
     }
 }

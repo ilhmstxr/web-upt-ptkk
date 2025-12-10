@@ -38,6 +38,7 @@ return [
             'report' => false,
         ],
 
+        // NOTE ini nanti diganti ketika deploy
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

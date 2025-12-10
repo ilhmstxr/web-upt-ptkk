@@ -14,6 +14,7 @@ class PendaftaranPelatihan extends Model
     protected $table = 'pendaftaran_pelatihan';
 
     protected $fillable = [
+        // Identitas & Relasi
         'peserta_id',
         'pelatihan_id',
         'kompetensi_id',
@@ -21,21 +22,32 @@ class PendaftaranPelatihan extends Model
         'nomor_registrasi',
         'tanggal_pendaftaran',
         'kelas',
+
+        // Urutan / grouping
+        'urutan_per_bidang',
         'urutan_per_kompetensi',
+
+        // Status
+        'status',
+        'status_pendaftaran',
+
+        // Token assessment
+        'assessment_token',
+        'assessment_token_sent_at',
+        'token_expires_at',
+
+        // Nilai & Survey
         'nilai_pre_test',
         'nilai_post_test',
         'nilai_praktek',
         'rata_rata',
         'nilai_survey',
-        'status',
-        'status_pendaftaran',
-        'assessment_token',
-        'assessment_token_sent_at',
     ];
 
     protected $casts = [
-        'tanggal_pendaftaran'      => 'date',
+        'tanggal_pendaftaran'      => 'datetime',
         'assessment_token_sent_at' => 'datetime',
+        'token_expires_at'         => 'datetime',
     ];
 
     // ======================
@@ -61,6 +73,11 @@ class PendaftaranPelatihan extends Model
     {
         return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
+
+    // ======================
+    // RELASI ASRAMA
+    // ======================
+
     public function penempatanAsrama(): HasOne
     {
         return $this->hasOne(PenempatanAsrama::class, 'peserta_id', 'peserta_id');
@@ -71,7 +88,6 @@ class PendaftaranPelatihan extends Model
         return $this->penempatanAsrama()
             ->where('pelatihan_id', $this->pelatihan_id)
             ->latest()
-            ->first(); 
+            ->first();
     }
-
 }

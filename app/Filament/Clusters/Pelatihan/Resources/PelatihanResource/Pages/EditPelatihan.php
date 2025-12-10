@@ -18,11 +18,14 @@ class EditPelatihan extends EditRecord
 
     /**
      * Saat form edit dibuka:
-     * - ambil relasi kompetensiPelatihan
+     * - ambil relasi kompetensiPelatihan (+ instrukturs bila ada pivot)
      * - grupkan jadi kompetensi_items untuk repeater
      */
     protected function mutateFormDataBeforeFill(array $data): array
     {
+        // Pastikan relasi ter-load (pivot instrukturs dipakai di versi baru)
+        $this->record->load('kompetensiPelatihan.instrukturs');
+
         $relatedRecords = $this->record->kompetensiPelatihan;
 
         $grouped = $relatedRecords->groupBy(function ($item) {
@@ -32,12 +35,30 @@ class EditPelatihan extends EditRecord
         $items = [];
         foreach ($grouped as $group) {
             $first = $group->first();
-            $instructorIds = $group->pluck('instruktur_id')->filter()->values()->toArray();
+
+            $instructorIds = [];
+
+            foreach ($group as $recordItem) {
+                // 1) Ambil dari pivot relasi instrukturs (versi baru)
+                if ($recordItem->relationLoaded('instrukturs') || method_exists($recordItem, 'instrukturs')) {
+                    try {
+                        $pivotIds = $recordItem->instrukturs?->pluck('id')->toArray() ?? [];
+                        $instructorIds = array_merge($instructorIds, $pivotIds);
+                    } catch (\Throwable $e) {
+                        // kalau relasi tidak valid, skip
+                    }
+                }
+
+                // 2) Fallback legacy: kolom instruktur_id (versi lama)
+                if (!empty($recordItem->instruktur_id)) {
+                    $instructorIds[] = $recordItem->instruktur_id;
+                }
+            }
 
             $items[] = [
                 'kompetensi_id' => $first->kompetensi_id,
                 'lokasi'        => $first->lokasi,
-                'instruktur_id' => $instructorIds,
+                'instruktur_id' => array_values(array_unique(array_filter($instructorIds))),
             ];
         }
 
@@ -48,7 +69,7 @@ class EditPelatihan extends EditRecord
 
     /**
      * Header Action:
-     * - Delete saja (otomasi asrama dihapus biar tidak dobel)
+     * - Delete saja
      */
     protected function getHeaderActions(): array
     {
@@ -61,9 +82,12 @@ class EditPelatihan extends EditRecord
      * Setelah disimpan:
      * - hapus jadwal kompetensi lama
      * - buat ulang dari repeater kompetensi_items
+     * - support multi instruktur via pivot (versi baru)
+     * - fallback single instruktur via kolom instruktur_id (versi lama)
      */
     protected function afterSave(): void
     {
+        // Hapus semua record lama
         $this->record->kompetensiPelatihan()->delete();
 
         $data = $this->data;
@@ -80,24 +104,38 @@ class EditPelatihan extends EditRecord
                 'lokasi'        => $item['lokasi'] ?? 'UPT-PTKK',
             ];
 
-            // multi instruktur
-            if (!empty($instructorIds) && is_array($instructorIds)) {
-                foreach ($instructorIds as $instructorId) {
-                    $this->record->kompetensiPelatihan()->create(
-                        array_merge($commonData, [
-                            'instruktur_id' => $instructorId,
-                        ])
-                    );
+            // Buat SATU record per item repeater (versi baru)
+            $kompetensiPelatihan = $this->record
+                ->kompetensiPelatihan()
+                ->create($commonData);
+
+            /**
+             * Multi instruktur (pivot):
+             * instruktur_id berupa array -> attach ke pivot
+             */
+            if (is_array($instructorIds) && !empty($instructorIds)) {
+                // kalau ada relasi instrukturs() gunakan pivot
+                if (method_exists($kompetensiPelatihan, 'instrukturs')) {
+                    $kompetensiPelatihan->instrukturs()->attach($instructorIds);
+                } else {
+                    // fallback kalau belum ada pivot: simpan satu-satu ke kolom legacy
+                    foreach ($instructorIds as $iid) {
+                        $this->record->kompetensiPelatihan()->create(
+                            array_merge($commonData, ['instruktur_id' => $iid])
+                        );
+                    }
                 }
             }
 
-            // single instruktur
+            /**
+             * Single instruktur (legacy):
+             * instruktur_id bukan array -> simpan ke kolom instruktur_id
+             */
             if (!is_array($instructorIds) && !empty($instructorIds)) {
-                $this->record->kompetensiPelatihan()->create(
-                    array_merge($commonData, [
-                        'instruktur_id' => $instructorIds,
-                    ])
-                );
+                // update record yang barusan dibuat
+                $kompetensiPelatihan->update([
+                    'instruktur_id' => $instructorIds,
+                ]);
             }
         }
     }

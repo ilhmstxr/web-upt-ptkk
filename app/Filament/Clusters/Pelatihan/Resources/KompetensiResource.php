@@ -11,18 +11,16 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class KompetensiResource extends Resource
 {
-    protected static ?string $model = \App\Models\Kompetensi::class;
+    protected static ?string $model = Kompetensi::class;
 
     protected static ?string $cluster = Pelatihan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    
-    // Hide from sidebar navigation (accessed via tabs only)
+
+    // Hide from sidebar navigation (akses via tab cluster saja)
     protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
@@ -30,6 +28,7 @@ class KompetensiResource extends Resource
         return $form
             ->columns(3)
             ->schema([
+                // ==================== KOLOM KIRI ====================
                 Forms\Components\Group::make()
                     ->schema([
                         Forms\Components\Section::make('Informasi Kompetensi')
@@ -40,16 +39,21 @@ class KompetensiResource extends Resource
                                             ->label('Nama Kompetensi')
                                             ->required()
                                             ->maxLength(255),
-                                            
+
                                         Forms\Components\TextInput::make('kode')
                                             ->label('Kode Kompetensi')
                                             ->maxLength(255),
-                                            
-                                        Forms\Components\TextInput::make('kelas_keterampilan')
-                                            ->label('Kelas Keterampilan')
-                                            ->maxLength(255)
+
+                                        Forms\Components\Select::make('kelas_keterampilan')
+                                            ->label('Kelompok')
+                                            ->options([
+                                                1 => 'Kelas Keterampilan & Teknik',
+                                                0 => 'Milenial Job Center',
+                                            ])
+                                            ->required()
+                                            ->native(false)
                                             ->columnSpanFull(),
-                                            
+
                                         Forms\Components\Textarea::make('deskripsi')
                                             ->label('Deskripsi')
                                             ->maxLength(65535)
@@ -57,8 +61,10 @@ class KompetensiResource extends Resource
                                             ->columnSpanFull(),
                                     ]),
                             ]),
-                    ])->columnSpan(['lg' => 2]),
+                    ])
+                    ->columnSpan(['lg' => 2]),
 
+                // ==================== KOLOM KANAN ====================
                 Forms\Components\Group::make()
                     ->schema([
                         Forms\Components\Section::make('Media')
@@ -77,7 +83,8 @@ class KompetensiResource extends Resource
                                     ->visibility('public')
                                     ->disk('public'),
                             ]),
-                    ])->columnSpan(['lg' => 1]),
+                    ])
+                    ->columnSpan(['lg' => 1]),
             ]);
     }
 
@@ -90,30 +97,35 @@ class KompetensiResource extends Resource
             ])
             ->columns([
                 Tables\Columns\Layout\Stack::make([
-                    // Image at top
                     Tables\Columns\ImageColumn::make('gambar')
+                        ->disk('public')
                         ->height(150)
-                        ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->nama_kompetensi) . '&size=300&background=random')
-                        ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3'])
-                        ->disk('public'),
-                    
+                        ->defaultImageUrl(fn ($record) =>
+                            'https://ui-avatars.com/api/?name=' . urlencode($record->nama_kompetensi) . '&size=300&background=random'
+                        )
+                        ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3']),
+
                     Tables\Columns\TextColumn::make('nama_kompetensi')
                         ->weight('bold')
                         ->size('lg')
                         ->icon('heroicon-o-academic-cap')
                         ->color('primary')
                         ->extraAttributes(['class' => 'mb-2']),
-                    
+
                     Tables\Columns\TextColumn::make('kelas_keterampilan')
-                        ->icon('heroicon-o-tag')
-                        ->size('sm')
-                        ->color('gray'),
+                        ->label('Kelompok')
+                        ->formatStateUsing(fn ($state) => $state
+                            ? 'Kelas Keterampilan & Teknik'
+                            : 'Milenial Job Center'
+                        )
+                        ->badge()
+                        ->color(fn ($state) => $state ? 'success' : 'warning'),
 
                     Tables\Columns\TextColumn::make('deskripsi')
                         ->limit(100)
                         ->color('gray')
                         ->size('sm'),
-                    
+
                     Tables\Columns\Layout\Split::make([
                         Tables\Columns\TextColumn::make('created_at')
                             ->date()
@@ -150,9 +162,9 @@ class KompetensiResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListKompetensi::route('/'),
+            'index'  => Pages\ListKompetensi::route('/'),
             'create' => Pages\CreateKompetensi::route('/create'),
-            'edit' => Pages\EditKompetensi::route('/{record}/edit'),
+            'edit'   => Pages\EditKompetensi::route('/{record}/edit'),
         ];
     }
 }

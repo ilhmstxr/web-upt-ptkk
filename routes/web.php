@@ -6,18 +6,29 @@ use Illuminate\Support\Facades\App;
 use Livewire\Volt\Volt;
 use Maatwebsite\Excel\Facades\Excel;
 
+// --- CONTROLLERS ---
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\Public\CeritaKamiController;
+use App\Http\Controllers\Public\PelatihanController as PublicPelatihanController;
+use App\Http\Controllers\PelatihanDetailController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
-use App\Http\Controllers\TesRekapDownloadController;
+use App\Http\Controllers\MateriController;
+use App\Http\Controllers\BeritaController;
+use App\Http\Controllers\KompetensiController;
+use App\Http\Controllers\KontenProgramPelatihanController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AssessmentLoginController;     // token login flow
+use App\Http\Controllers\AssessmentAuthController;      // optional assessment dashboard flow
 use App\Http\Controllers\ExportController;
-use App\Http\Controllers\AssessmentLoginController;
+use App\Http\Controllers\TesRekapDownloadController;
 use App\Http\Controllers\AsramaOtomasiController;
-use App\Http\Controllers\PelatihanDetailController;
 use App\Http\Controllers\StatistikPelatihanController;
 
+// --- MODELS & OTHERS ---
 use App\Models\Peserta;
 use App\Mail\TestMail;
 use App\Exports\PesertaExport;
@@ -26,9 +37,8 @@ use App\Exports\LampiranSheet;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes Final + Assessment Token Login
+| routes/web.php (FINAL GABUNGAN)
 |--------------------------------------------------------------------------
-| Berisi public routes, assessment login, dashboard peserta, export, dll.
 */
 
 /* ======================================================================
@@ -44,42 +54,30 @@ if (! Route::has('filament.admin.resources.materi-pelatihans.index')) {
 }
 
 /* ======================================================================
-|  A. BERANDA & HOME
+|  A. PUBLIC: LANDING & PROFIL & STATIS
 ====================================================================== */
-Route::get('/', fn () => view('pages.landing'))->name('landing');
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
-// PROFIL
-Route::view('/cerita-kami',          'pages.profil.cerita-kami')->name('story');
-Route::view('/program-pelatihan',    'pages.profil.program-pelatihan')->name('programs');
-Route::view('/kompetensi-pelatihan', 'pages.profil.kompetensi-pelatihan')->name('kompetensi');
+// Profil / Cerita Kami (public)
+Route::get('/cerita-kami', [CeritaKamiController::class, 'index'])->name('cerita-kami');
+Route::get('/story', fn () => redirect()->route('cerita-kami'))->name('story'); // alias lama
 
-Route::view('/berita',  'pages.berita')->name('news');
+// Program Pelatihan & Kompetensi Pelatihan (profil public)
+Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'index'])->name('programs');
+Route::get('/profil/kompetensi-pelatihan', [KompetensiController::class, 'index'])->name('kompetensi');
+Route::redirect('/kompetensi-pelatihan', '/profil/kompetensi-pelatihan', 301);
+
+// Berita (controller)
+Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
+Route::get('/berita/{slug}', [BeritaController::class, 'show'])->name('berita.show');
 Route::view('/panduan', 'pages.panduan')->name('panduan');
+Route::view('/kontak-kami', 'pages.kontak')->name('kontak');
 
-// halaman masuk umum (kalau masih dipakai)
+// Halaman Masuk umum kalau masih dipakai
 Route::view('/masuk', 'pages.masuk')->name('masuk');
 
 /* ======================================================================
-|  B. ASSESSMENT LOGIN (NO REG + TGL LAHIR)
-|  
-====================================================================== */
-Route::middleware(['web'])->group(function () {
-
-    Route::get('/assessment/login', [AssessmentLoginController::class, 'show'])
-        ->name('assessment.login');
-
-    Route::post('/assessment/login', [AssessmentLoginController::class, 'submit'])
-        ->name('assessment.login.submit');
-});
-
-
-// ✅ Logout hanya untuk peserta assessment yg sedang login
-Route::post('/assessment/logout', [AssessmentLoginController::class, 'logout'])
-    ->middleware(['web', 'assessment'])  // <-- alias assessment
-    ->name('assessment.logout');
-
-/* ======================================================================
-|  C. HOME redirect
+|  B. HOME redirect (legacy)
 ====================================================================== */
 Route::get('/home', function () {
     if (auth()->check()) {
@@ -89,21 +87,38 @@ Route::get('/home', function () {
 })->name('home');
 
 /* ======================================================================
-|  D. PENDAFTARAN
+|  C. PELATIHAN PUBLIC (INDEX & DETAIL)
 ====================================================================== */
+Route::get('/pelatihan', [PublicPelatihanController::class, 'index'])
+    ->name('pelatihan.index');
+
+Route::get('/pelatihan/{slug}', [PelatihanDetailController::class, 'show'])
+    ->name('pelatihan.show');
+
+// alias kompatibilitas lama
+Route::get('/detail-pelatihan/{slug}', fn ($slug) =>
+    redirect()->route('pelatihan.show', $slug)
+)->name('detail-pelatihan');
+
+/* ======================================================================
+|  D. PENDAFTARAN PUBLIC + EXPORT
+====================================================================== */
+Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])
+    ->name('pendaftaran.daftar');
+
 Route::resource('pendaftaran', PendaftaranController::class);
 
 Route::get('pendaftaran/selesai/{id}', [PendaftaranController::class, 'selesai'])
     ->name('pendaftaran.selesai');
 
-Route::get('pendaftaran-testing', [PendaftaranController::class, 'testing'])
+Route::get('pendaftaran/testing', [PendaftaranController::class, 'testing'])
     ->name('pendaftaran.testing');
 
 Route::get('pendaftaran/download-file', [PendaftaranController::class, 'download_file'])
-    ->name('pendaftaran.download');
+    ->name('pendaftaran.download_file');
 
-Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])
-    ->name('pendaftaran.daftar');
+Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])
+    ->name('pendaftaran.generateMassal');
 
 Route::get('pendaftaran-baru', fn () => view('registration-form-new'))
     ->name('pendaftaran.baru');
@@ -114,9 +129,7 @@ Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'dow
 Route::get('peserta/download-bulk', [PendaftaranController::class, 'downloadBulk'])
     ->name('peserta.download-bulk');
 
-Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])
-    ->name('pendaftaran.generateMassal');
-
+// export pendaftaran
 Route::get('/exports/pendaftaran/{pelatihan}/bulk', [PendaftaranController::class, 'exportBulk'])
     ->name('exports.pendaftaran.bulk');
 
@@ -126,15 +139,7 @@ Route::get('/exports/pendaftaran/{pelatihan}/sample', [PendaftaranController::cl
 Route::get('/exports/pendaftaran/single/{pendaftaran}', [PendaftaranController::class, 'exportSingle'])
     ->name('exports.pendaftaran.single');
 
-// Export laporan pelatihan (PDF)
-Route::middleware(['auth'])->get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
-    ->name('export.report.pelatihan');
-
-// Export jawaban survei (PDF)
-Route::middleware(['auth'])->get('/reports/jawaban-survei/pdf/{pelatihanId}', [ExportController::class, 'pdfView'])
-    ->name('reports.jawaban-survei.pdf');
-
-// Step pendaftaran statis
+// Step wizard statis
 Route::prefix('pendaftaran/step')->group(function () {
     Route::view('1', 'peserta.pendaftaran.bio-peserta');
     Route::view('2', 'peserta.pendaftaran.bio-sekolah');
@@ -142,62 +147,104 @@ Route::prefix('pendaftaran/step')->group(function () {
     Route::view('4', 'peserta.pendaftaran.selesai');
 });
 
-// Template surat
 Route::view('template/instruktur', 'template_surat.instruktur');
 Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 
 /* ======================================================================
-|  E. DASHBOARD PESERTA
-|  protected by middleware assessment + training session
+|  E. SURVEY PUBLIC + SURVEY ADMIN
+====================================================================== */
+Route::prefix('survey')->name('survey.')->group(function () {
+    Route::get('/', [SurveyController::class, 'index'])->name('index');
+    Route::get('/create', [SurveyController::class, 'create'])->name('create');
+    Route::post('/', [SurveyController::class, 'store'])->name('store');
+
+    // resource tambahan selain index/create/store
+    Route::resource('/', SurveyController::class)->except(['index', 'create', 'store']);
+
+    Route::get('/complete', [SurveyController::class, 'complete'])->name('complete');
+    Route::post('/start', [SurveyController::class, 'start'])->name('start');
+    Route::post('/check-credentials', [SurveyController::class, 'checkCredentials'])->name('checkCredentials');
+
+    Route::get('/{peserta}/{order}', [SurveyController::class, 'show'])->name('step');
+    Route::post('/{peserta}/{order}', [SurveyController::class, 'update'])->name('update');
+});
+
+// admin variant supaya ga bentrok dengan public
+Route::resource('/survey-admin', SurveyController::class)
+    ->except(['index', 'create', 'store']);
+
+/* ======================================================================
+|  F. ASSESSMENT (TOKEN LOGIN)
+====================================================================== */
+Route::middleware(['web'])->group(function () {
+    Route::get('/assessment/login', [AssessmentLoginController::class, 'show'])
+        ->name('assessment.login');
+
+    Route::post('/assessment/login', [AssessmentLoginController::class, 'submit'])
+        ->name('assessment.login.submit');
+});
+
+Route::post('/assessment/logout', [AssessmentLoginController::class, 'logout'])
+    ->middleware(['web', 'assessment'])
+    ->name('assessment.logout');
+
+// optional dashboard assessment kalau dipakai
+Route::get('/assessment/dashboard', [AssessmentAuthController::class, 'dashboard'])
+    ->middleware(['web', 'assessment'])
+    ->name('assessment.dashboard');
+
+/* ======================================================================
+|  G. DASHBOARD PESERTA
+|  (assessment + training.session)
 ====================================================================== */
 Route::middleware(['web', 'assessment', 'training.session'])
     ->prefix('dashboard')
     ->name('dashboard.')
     ->group(function () {
 
-    // HOME
     Route::get('/', [DashboardController::class, 'home'])->name('home');
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 
-    // MATERI
+    // Materi
     Route::get('/materi', [DashboardController::class, 'materi'])->name('materi.index');
     Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
     Route::post('/materi/{materi}/complete', [DashboardController::class, 'materiComplete'])->name('materi.complete');
 
-    // SET PESERTA (optional legacy UI)
+    // set/unset peserta (legacy UI)
     Route::post('/set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
+    Route::post('/unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
 
     // AJAX helper
     Route::get('/ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
         ->name('ajax.peserta.instansiByNama');
 
-    // ⚠️ Dashboard logout ini opsional.
-    // Lebih aman arahkan ke assessment.logout biar satu pintu.
+    // logout dashboard -> satu pintu dengan assessment logout
     Route::post('/logout', [AssessmentLoginController::class, 'logout'])->name('logout');
 
-    // PRETEST
+    // Pretest
     Route::prefix('pretest')->name('pretest.')->group(function () {
         Route::get('/', [DashboardController::class, 'pretest'])->name('index');
-        Route::get('/result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
-        Route::post('/{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
-        Route::get('/{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
-        Route::get('/{tes}', [DashboardController::class, 'pretestShow'])->name('show');
+        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
+        Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
+        Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
+        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
     });
 
-    // POSTTEST
+    // Posttest
     Route::prefix('posttest')->name('posttest.')->group(function () {
         Route::get('/', [DashboardController::class, 'posttest'])->name('index');
-        Route::get('/result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
-        Route::post('/{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
-        Route::get('/{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
-        Route::get('/{tes}', [DashboardController::class, 'posttestShow'])->name('show');
+        Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
+        Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
+        Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
+        Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
     });
 
-    // SURVEY (kalau masih dipakai)
-    Route::get('/survey', [DashboardController::class, 'survey'])->name('survey');
-    Route::post('/survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
+    // Survey internal dashboard
+    Route::get('survey', [DashboardController::class, 'survey'])->name('survey');
+    Route::post('survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
 
-    // MONEV
+    // Monev (jika dipakai)
     Route::prefix('monev')->name('monev.')->group(function () {
         Route::get('/', [DashboardController::class, 'monev'])->name('index');
         Route::get('/{tes}/start', [DashboardController::class, 'monevStart'])->name('start');
@@ -209,59 +256,48 @@ Route::middleware(['web', 'assessment', 'training.session'])
 });
 
 /* ======================================================================
-|  F. UPLOAD admin
-====================================================================== */
-Route::post('/admin/uploads', [UploadController::class, 'store'])
-    ->middleware(['web', 'auth'])
-    ->name('admin.uploads.store');
-
-/* ======================================================================
-|  G. PERTANYAAN
-====================================================================== */
-Route::resource('pertanyaan', PertanyaanController::class);
-
-/* ======================================================================
-|  H. DETAIL PELATIHAN
-====================================================================== */
-Route::get('/pelatihan/{slug}', [PelatihanDetailController::class, 'show'])
-    ->name('detail-pelatihan');
-
-/* ======================================================================
-|  I. SURVEY / MONEV PUBLIC
-====================================================================== */
-Route::get('/survey', [SurveyController::class, 'index'])->name('survey.index');
-Route::get('/survey/create', [SurveyController::class, 'create'])->name('survey.create');
-Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
-
-Route::get('/complete', [SurveyController::class, 'complete'])->name('survey.complete');
-Route::post('/start', [SurveyController::class, 'start'])->name('survey.start');
-Route::post('/survey/check-credentials', [SurveyController::class, 'checkCredentials'])
-    ->name('survey.checkCredentials');
-
-Route::get('/survey/{peserta}/{order}', [SurveyController::class, 'show'])->name('survey.step');
-Route::post('/survey/{peserta}/{order}', [SurveyController::class, 'update'])->name('survey.update');
-
-// admin variant to avoid name clashes with public survey routes
-Route::resource('/survey-admin', SurveyController::class)->except(['index', 'create', 'store']);
-
-/* ======================================================================
-|  J. EXCEL EXPORT & TEST HELPERS
-====================================================================== */
-Route::get('/test-peserta', fn () => dd((new PesertaSheet(null))->collection()->take(5)));
-Route::get('/test-lampiran', fn () => dd((new LampiranSheet(null))->collection()->take(5)));
-
-Route::get('/export-peserta', fn () => Excel::download(new PesertaExport(), 'peserta.xlsx'))
-    ->name('export.peserta');
-
-// Rekap nilai tes
-Route::get('/admin/tes/{tes}/rekap-download', [TesRekapDownloadController::class, 'download'])
-    ->middleware(['web', 'auth'])
-    ->name('tes.rekap.download');
-
-/* ======================================================================
-|  K. SETTINGS (Volt)
+|  H. ADMIN / AUTH UTILITIES (auth)
 ====================================================================== */
 Route::middleware(['auth'])->group(function () {
+
+    // Admin dashboard token management
+    Route::get('/admin/dashboard', [AdminController::class, 'showTokenManagement'])
+        ->name('admin.dashboard');
+
+    // Token generate/download
+    Route::post('/admin/tokens/generate', [PendaftaranController::class, 'generateTokenMassal'])
+        ->name('admin.generate.tokens');
+
+    Route::get('/admin/tokens/download', [PendaftaranController::class, 'downloadTokenAssessment'])
+        ->name('admin.download.tokens');
+
+    // Upload admin
+    Route::post('/admin/uploads', [UploadController::class, 'store'])
+        ->name('admin.uploads.store');
+
+    // Pertanyaan CRUD
+    Route::resource('pertanyaan', PertanyaanController::class);
+
+    // Materi CRUD (admin)
+    Route::resource('materi', MateriController::class);
+
+    // Export laporan pelatihan
+    Route::get('/export/report/pelatihan/{pelatihanId}', [ExportController::class, 'generateReportPdf'])
+        ->name('export.report.pelatihan');
+
+    // Export jawaban survei
+    Route::get('/reports/jawaban-survei/pdf/{pelatihanId}', [ExportController::class, 'pdfView'])
+        ->name('reports.jawaban-survei.pdf');
+
+    // Rekap nilai tes
+    Route::get('/admin/tes/{tes}/rekap-download', [TesRekapDownloadController::class, 'download'])
+        ->name('tes.rekap.download');
+
+    // Asrama otomasi
+    Route::post('/otomasi-asrama/{pelatihan}', [AsramaOtomasiController::class, 'jalankanOtomasi'])
+        ->name('otomasi.asrama');
+
+    // Volt settings
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
@@ -269,33 +305,39 @@ Route::middleware(['auth'])->group(function () {
 });
 
 /* ======================================================================
-|  L. MAIL TESTING
-====================================================================== */
-Route::get('/send', fn () => Mail::to('23082010166@student.upnjatim.ac.id')->send(new TestMail()));
-
-/* ======================================================================
-|  M. DATA PESERTA API (debug)
-====================================================================== */
-Route::get('/api/peserta', fn () => Peserta::with('lampiran', 'kompetensi', 'pelatihan', 'instansi')->get());
-
-/* ======================================================================
-|  N. STATISTIK PELATIHAN
+|  I. STATISTIK PELATIHAN
 ====================================================================== */
 Route::get('/statistik-pelatihan', [StatistikPelatihanController::class, 'index']);
 Route::get('/api/statistik-pelatihan', [StatistikPelatihanController::class, 'data']);
 
 /* ======================================================================
-|  O. TESTING / SANDBOX LOCAL
+|  J. EXPORT / TEST HELPERS / DEBUG
+====================================================================== */
+Route::get('/test-peserta', fn () => dd((new PesertaSheet(null))->collection()->take(5)));
+Route::get('/test-lampiran', fn () => dd((new LampiranSheet(null))->collection()->take(5)));
+Route::get('/export-peserta', fn () => Excel::download(new PesertaExport(), 'peserta.xlsx'))
+    ->name('export.peserta');
+
+Route::get('/send', fn () => Mail::to('23082010166@student.upnjatim.ac.id')->send(new TestMail()));
+
+// debug API peserta
+Route::get('/api/peserta', fn () => Peserta::with('lampiran', 'kompetensi', 'pelatihan', 'instansi')->get());
+
+Route::get('/cek_icon', fn () => view('cek_icon'));
+Route::get('test-pdf', fn () => view('test-pdf'));
+
+/* ======================================================================
+|  K. AUTH ROUTES
 ====================================================================== */
 require __DIR__ . '/auth.php';
 
-Route::get('test-pdf', fn () => view('test-pdf'));
-
-Route::post('/otomasi-asrama/{pelatihan}', [AsramaOtomasiController::class, 'jalankanOtomasi'])
-    ->name('otomasi.asrama');
-
+/* ======================================================================
+|  L. LOCAL SANDBOX / TESTING
+====================================================================== */
 if (App::isLocal()) {
-    require_once __DIR__ . '/sandbox.php';
+    if (file_exists(__DIR__ . '/sandbox.php')) {
+        require_once __DIR__ . '/sandbox.php';
+    }
 
     Route::get('/test', function () {
         $result = countKompetensi();

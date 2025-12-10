@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
 use ZipArchive;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -103,8 +102,13 @@ class PendaftaranController extends Controller
         switch ($currentStep) {
             case 1:
                 $cabangDinas = CabangDinas::all();
-                $pelatihan = Pelatihan::all();
-                return view('peserta.pendaftaran.bio-peserta', compact('currentStep', 'allowedStep', 'formData', 'cabangDinas'));
+                $pelatihan   = Pelatihan::all();
+
+                return view(
+                    'peserta.pendaftaran.bio-peserta',
+                    compact('currentStep', 'allowedStep', 'formData', 'cabangDinas')
+                );
+
             case 2:
                 $pelatihan = Pelatihan::where('status', 'aktif')->get();
                 $kompetensi = Kompetensi::all();
@@ -113,31 +117,212 @@ class PendaftaranController extends Controller
                 return view('peserta.pendaftaran.bio-sekolah', compact('currentStep', 'allowedStep', 'formData', 'pelatihan', 'kompetensi', 'cabangDinas'));
             case 3:
                 $pelatihanId = $formData['pelatihan_id'] ?? null;
-                // return $pelatihanId;
-                // Ambil data pelatihan spesifik beserta lampiran wajibnya
-                $pelatihan = Pelatihan::find($pelatihanId);
-                // return $pelatihan;
-                return view('peserta.pendaftaran.lampiran', compact('currentStep', 'allowedStep', 'formData', 'pelatihan'));
+                $pelatihan   = $pelatihanId ? Pelatihan::find($pelatihanId) : null;
+
+                return view(
+                    'peserta.pendaftaran.lampiran',
+                    compact('currentStep', 'allowedStep', 'formData', 'pelatihan')
+                );
+
+            default:
+                return redirect()->route('pendaftaran.create', ['step' => $allowedStep])
+                    ->with('error', 'Step tidak valid.');
         }
     }
 
+    /**
+     * store => stepwise handler (1,2,3)
+     */
     public function store(Request $request)
     {
-        // 1. Validasi Semua Data Sekaligus
+        $currentStep = (int) $request->input('current_step', 1);
+        $formData    = $request->session()->get('pendaftaran_data', []);
+
+        // STEP 1: biodata
+        if ($currentStep === 1) {
+            $validatedData = $request->validate([
+                'nama'          => 'required|string|max:150',
+                'nik'           => 'required|string|digits:16|max:20|unique:peserta,nik',
+                'no_hp'         => 'required|string|max:20',
+                'email'         => 'required|email|max:255|unique:users,email',
+                'tempat_lahir'  => 'required|string|max:100',
+                'tanggal_lahir' => 'required|date',
+                'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+                'agama'         => 'required|string|max:50',
+                'alamat'        => 'required|string',
+            ]);
+
+            $request->session()->put('pendaftaran_data', array_merge($formData, $validatedData));
+            $request->session()->put('pendaftaran_step', 2);
+
+            return redirect()->route('pendaftaran.create', ['step' => 2]);
+        }
+
+        // STEP 2: instansi / sekolah
+        if ($currentStep === 2) {
+            $validatedData = $request->validate([
+                'asal_instansi'    => 'required|string|max:255',
+                'alamat_instansi'  => 'required|string',
+                'kota'             => 'required|string|max:100',
+                'kota_id'          => 'required|integer',
+                'bidang_keahlian'  => 'required|string|max:255',
+                'kelas'            => 'required|string|max:100',
+                'cabangDinas_id'   => 'required|string|max:255',
+                'pelatihan_id'     => 'required|string',
+            ]);
+
+            $validatedData['asal_instansi'] = $this->normalizeAsalInstansi($validatedData['asal_instansi']);
+
+            $request->session()->put('pendaftaran_data', array_merge($formData, $validatedData));
+            $request->session()->put('pendaftaran_step', 3);
+
+            return redirect()->route('pendaftaran.create', ['step' => 3]);
+        }
+
+        // STEP 3: lampiran + final commit
+        if ($currentStep === 3) {
+            $validatedData = $request->validate([
+                'fc_ktp'           => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'fc_ijazah'        => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'fc_surat_tugas'   => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'fc_surat_sehat'   => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'pas_foto'         => 'required|file|mimes:jpg,jpeg,png|max:2048',
+                'nomor_surat_tugas'=> 'nullable|string|max:100',
+            ]);
+
+            $allData     = array_merge($formData, $validatedData);
+            $pendaftaran = null;
+
+            DB::transaction(function () use ($allData, $request, &$pendaftaran) {
+                // Instansi
+                $instansi = Instansi::firstOrCreate(
+                    [
+                        'asal_instansi'   => $allData['asal_instansi'],
+                        'alamat_instansi' => $allData['alamat_instansi'],
+                        'kota'            => $allData['kota'],
+                        'kota_id'         => $allData['kota_id'],
+                    ],
+                    [
+                        'bidang_keahlian' => $allData['bidang_keahlian'],
+                        'cabangDinas_id'  => $allData['cabangDinas_id'],
+                    ]
+                );
+
+                // User
+                $passwordDob = Carbon::parse($allData['tanggal_lahir'])->format('dmY');
+                $user = User::firstOrCreate(
+                    ['email' => $allData['email']],
+                    [
+                        'name'     => $allData['nama'],
+                        'password' => Hash::make($passwordDob),
+                    ]
+                );
+
+                if ($user->wasRecentlyCreated === false && $user->name !== $allData['nama']) {
+                    $user->name = $allData['nama'];
+                    $user->save();
+                }
+
+                // Peserta
+                $peserta = Peserta::create([
+                    'pelatihan_id'  => $allData['pelatihan_id'],
+                    'instansi_id'   => $instansi->id,
+                    'bidang_id'     => $allData['bidang_keahlian'],
+                    'user_id'       => $user->id,
+                    'nama'          => $allData['nama'],
+                    'nik'           => $allData['nik'],
+                    'tempat_lahir'  => $allData['tempat_lahir'],
+                    'tanggal_lahir' => $allData['tanggal_lahir'],
+                    'jenis_kelamin' => $allData['jenis_kelamin'],
+                    'agama'         => $allData['agama'],
+                    'alamat'        => $allData['alamat'],
+                    'no_hp'         => $allData['no_hp'],
+                ]);
+
+                // Nomor registrasi & urutan
+                ['nomor' => $nomorReg, 'urutan' => $urutBidang] =
+                    $this->generateToken($allData['pelatihan_id'], $allData['bidang_keahlian']);
+
+                // Generate assessment token unik
+                $assessmentToken =
+                    $this->generateUniqueAssessmentToken($allData['nama'], $allData['pelatihan_id']);
+
+                // Upload lampiran
+                $lampiranData = [
+                    'peserta_id'     => $peserta->id,
+                    'no_surat_tugas' => $allData['nomor_surat_tugas'] ?? null,
+                ];
+
+                $fileFields = ['fc_ktp', 'fc_ijazah', 'fc_surat_tugas', 'fc_surat_sehat', 'pas_foto'];
+
+                foreach ($fileFields as $field) {
+                    if ($request->hasFile($field)) {
+                        $file     = $request->file($field);
+                        $fileName = $peserta->id . '_' . $peserta->bidang_id . '_' . $peserta->instansi_id
+                            . '_' . $field . '.' . $file->extension();
+
+                        $targetDirectory = public_path(self::LAMPIRAN_DESTINATION);
+                        if (! File::isDirectory($targetDirectory)) {
+                            File::makeDirectory($targetDirectory, 0755, true);
+                        }
+
+                        $file->move($targetDirectory, $fileName);
+                        $lampiranData[$field] = self::LAMPIRAN_DESTINATION . '/' . $fileName;
+                    }
+                }
+
+                Lampiran::create($lampiranData);
+
+                // Simpan pendaftaran
+                $pendaftaran = PendaftaranPelatihan::create([
+                    'peserta_id'          => $peserta->id,
+                    'pelatihan_id'        => $allData['pelatihan_id'],
+                    'bidang_id'           => $allData['bidang_keahlian'],
+                    'urutan_per_bidang'   => $urutBidang,
+                    'nomor_registrasi'    => $nomorReg,
+                    'tanggal_pendaftaran' => now(),
+                    'kelas'               => $allData['kelas'],
+                    'status_pendaftaran'  => 'menunggu_verifikasi',
+                    'assessment_token'    => $assessmentToken,
+                    'token_expires_at'    => now()->addMonths(3),
+                ]);
+            });
+
+            if ($pendaftaran) {
+                $pendaftaran->load('peserta', 'pelatihan', 'bidang');
+            }
+
+            $request->session()->forget('pendaftaran_data');
+            $request->session()->forget('pendaftaran_step');
+
+            return redirect()
+                ->route('pendaftaran.selesai', ['id' => $pendaftaran->id])
+                ->with('pendaftaran', $pendaftaran);
+        }
+
+        return back()->with('error', 'Step pendaftaran tidak dikenali.');
+    }
+
+    /**
+     * Alternatif: endpoint yang menerima seluruh data sekaligus (legacy / form non-wizard)
+     * Nama method: storeComplete
+     */
+    public function storeComplete(Request $request)
+    {
         $validatedData = $request->validate([
             // Step 1: Data Diri
-            'nama' => 'required|string|max:150',
-            'nik' => 'required|string|digits:16|max:20|unique:peserta,nik',
-            'no_hp' => 'required|string|max:20',
-            'email' => 'required|email|max:255|unique:users,email',
-            'tempat_lahir' => 'required|string|max:100',
+            'nama'          => 'required|string|max:150',
+            'nik'           => 'required|string|digits:16|max:20|unique:peserta,nik',
+            'no_hp'         => 'required|string|max:20',
+            'email'         => 'required|email|max:255|unique:users,email',
+            'tempat_lahir'  => 'required|string|max:100',
             'tanggal_lahir' => 'required|date',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'agama' => 'required|string|max:50',
-            'alamat' => 'required|string',
+            'agama'         => 'required|string|max:50',
+            'alamat'        => 'required|string',
 
             // Step 2: Data Instansi
-            'asal_instansi' => 'required|string|max:255',
+            'asal_instansi'   => 'required|string|max:255',
             'alamat_instansi' => 'required|string',
             'kota' => 'required|string|max:100',
             'kota_id' => 'required|integer',
@@ -147,25 +332,25 @@ class PendaftaranController extends Controller
             'pelatihan_id' => 'required|string', // Hidden input
 
             // Step 3: Lampiran
-            'fc_ktp' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'fc_ijazah' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'fc_surat_tugas' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'fc_surat_sehat' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'pas_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'nomor_surat_tugas' => 'nullable|string|max:100',
+            'fc_ktp'           => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'fc_ijazah'        => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'fc_surat_tugas'   => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'fc_surat_sehat'   => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'pas_foto'         => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'nomor_surat_tugas'=> 'nullable|string|max:100',
         ]);
 
-        $validatedData['asal_instansi'] = $this->normalizeAsalInstansi($validatedData['asal_instansi']);
+        $validatedData['asal_instansi'] =
+            $this->normalizeAsalInstansi($validatedData['asal_instansi']);
 
-        // 2. Simpan ke DB dalam transaction
         $pendaftaran = DB::transaction(function () use ($validatedData, $request) {
-            // A. Instansi
+            // Instansi
             $instansi = Instansi::firstOrCreate(
                 [
-                    'asal_instansi'     => $validatedData['asal_instansi'],
-                    'alamat_instansi'   => $validatedData['alamat_instansi'],
-                    'kota'              => $validatedData['kota'],
-                    'kota_id'           => $validatedData['kota_id'],
+                    'asal_instansi'   => $validatedData['asal_instansi'],
+                    'alamat_instansi' => $validatedData['alamat_instansi'],
+                    'kota'            => $validatedData['kota'],
+                    'kota_id'         => $validatedData['kota_id'],
                 ],
                 [
                     'kompetensi_keahlian' => $validatedData['kompetensi_keahlian'],
@@ -173,12 +358,14 @@ class PendaftaranController extends Controller
                 ]
             );
 
-            // B. User
+            // User
             $user = User::firstOrCreate(
                 ['email' => $validatedData['email']],
                 [
                     'name'     => $validatedData['nama'],
-                    'password' => Hash::make(Carbon::parse($validatedData['tanggal_lahir'])->format('dmY')),
+                    'password' => Hash::make(
+                        Carbon::parse($validatedData['tanggal_lahir'])->format('dmY')
+                    ),
                 ]
             );
 
@@ -187,7 +374,7 @@ class PendaftaranController extends Controller
                 $user->save();
             }
 
-            // C. Peserta
+            // Peserta
             $peserta = Peserta::create([
                 'pelatihan_id'  => $validatedData['pelatihan_id'],
                 'instansi_id'   => $instansi->id,
@@ -206,10 +393,10 @@ class PendaftaranController extends Controller
             // D. Generate Token
             ['nomor' => $nomorReg, 'urutan' => $urutKompetensi] = $this->generateToken($validatedData['pelatihan_id'], $validatedData['kompetensi_keahlian']);
 
-            // E. Lampiran
+            // Lampiran
             $lampiranData = [
-                'peserta_id'      => $peserta->id,
-                'no_surat_tugas'  => $validatedData['nomor_surat_tugas'] ?? null,
+                'peserta_id'     => $peserta->id,
+                'no_surat_tugas' => $validatedData['nomor_surat_tugas'] ?? null,
             ];
 
             $fileFields = ['fc_ktp', 'fc_ijazah', 'fc_surat_tugas', 'fc_surat_sehat', 'pas_foto'];
@@ -233,7 +420,6 @@ class PendaftaranController extends Controller
 
             Lampiran::create($lampiranData);
 
-            // F. PendaftaranPelatihan
             PendaftaranPelatihan::create([
                 'peserta_id'            => $peserta->id,
                 'pelatihan_id'          => $validatedData['pelatihan_id'],
@@ -249,19 +435,16 @@ class PendaftaranController extends Controller
                 ->first();
         });
 
-        // Hapus session jika ada
-        $request->session()->forget('pendaftaran_data');
-        $request->session()->forget('pendaftaran_step');
-
         return redirect()
             ->route('pendaftaran.selesai', ['id' => $pendaftaran->id])
             ->with('pendaftaran', $pendaftaran);
     }
 
-    // public function selesai(int $id)
+    /**
+     * Halaman selesai / receipt
+     */
     public function selesai(int $id)
     {
-        // return $id;
         $pendaftaran = session('pendaftaran');
 
         // Kalau tidak ada (misal user reload / akses ulang lewat URL), ambil dari DB
@@ -270,9 +453,113 @@ class PendaftaranController extends Controller
                 ->findOrFail($id);
         }
 
-        // return $pendaftaran;
         return view('peserta.pendaftaran.selesai', compact('pendaftaran'));
     }
+
+    // =======================================================
+    // # ADMIN UTILITIES (TOKEN GENERATION & EXPORT)
+    // =======================================================
+
+    /**
+     * Generate token assessment unik untuk satu nama + pelatihan
+     */
+    private function generateUniqueAssessmentToken($nama, $pelatihanId)
+    {
+        $namaDepan = Str::upper(Str::slug(explode(' ', $nama)[0] ?? '', ''));
+        $namaClean = substr($namaDepan, 0, 5);
+        $tahun     = date('Y');
+        $random    = Str::upper(Str::random(4));
+
+        $token = sprintf('%s-%s-%s-%s', $namaClean, $pelatihanId, $tahun, $random);
+
+        while (PendaftaranPelatihan::where('assessment_token', $token)->exists()) {
+            $random = Str::upper(Str::random(4));
+            $token  = sprintf('%s-%s-%s-%s', $namaClean, $pelatihanId, $tahun, $random);
+        }
+
+        return $token;
+    }
+
+    /**
+     * Generate token massal (admin)
+     */
+    public function generateTokenMassal()
+    {
+        $pendaftarans = PendaftaranPelatihan::with('peserta')
+            ->whereNull('assessment_token')
+            ->get();
+
+        $count = 0;
+        $total = $pendaftarans->count();
+
+        DB::transaction(function () use ($pendaftarans, &$count) {
+            foreach ($pendaftarans as $pendaftaran) {
+                if ($pendaftaran->peserta && $pendaftaran->pelatihan_id) {
+                    $assessmentToken = $this->generateUniqueAssessmentToken(
+                        $pendaftaran->peserta->nama,
+                        $pendaftaran->pelatihan_id
+                    );
+
+                    $pendaftaran->assessment_token = $assessmentToken;
+                    $pendaftaran->token_expires_at = now()->addMonths(3);
+                    $pendaftaran->save();
+                    $count++;
+                }
+            }
+        });
+
+        if ($count > 0) {
+            return back()->with('success', "Berhasil men-generate {$count} token dari {$total} pendaftaran.");
+        }
+
+        return back()->with('error', 'Tidak ada pendaftaran baru yang perlu di-generate tokennya.');
+    }
+
+    /**
+     * Download token assessment (fallback: return JSON)
+     */
+    public function downloadTokenAssessment(Request $request)
+    {
+        if (! auth()->check()) {
+            return back()->with('error', 'Akses ditolak.');
+        }
+
+        $pendaftarans = PendaftaranPelatihan::with('peserta.user', 'pelatihan', 'bidang')
+            ->whereNotNull('assessment_token')
+            ->orderBy('pelatihan_id')
+            ->get();
+
+        if ($pendaftarans->isEmpty()) {
+            return back()->with('error', 'Tidak ada Token Assessment yang terdaftar untuk di download.');
+        }
+
+        $exportData = $pendaftarans->map(function ($p) {
+            $tanggalLahir = $p->peserta->tanggal_lahir ?? null;
+            $password     = $tanggalLahir
+                ? Carbon::parse($tanggalLahir)->format('dmY')
+                : 'N/A';
+
+            return [
+                'ID Pendaftaran'       => $p->id,
+                'Nomor Registrasi'     => $p->nomor_registrasi,
+                'Nama Peserta'         => $p->peserta->nama ?? 'N/A',
+                'Email'                => $p->peserta->user->email ?? 'N/A',
+                'Pelatihan'            => $p->pelatihan->nama_pelatihan ?? 'N/A',
+                'Bidang'               => $p->bidang->nama ?? 'N/A',
+                'ASSESSMENT TOKEN'     => $p->assessment_token,
+                'PASSWORD (DOB)'       => $password,
+                'Token Berlaku Hingga' => $p->token_expires_at
+                    ? Carbon::parse($p->token_expires_at)->format('d-m-Y')
+                    : 'N/A',
+            ];
+        });
+
+        return response()->json($exportData->toArray(), 200);
+    }
+
+    // =======================================================
+    // # EXPORT / DOWNLOAD / PDF / ZIP UTILITIES
+    // =======================================================
 
     public function generateMassal()
     {
@@ -280,15 +567,19 @@ class PendaftaranController extends Controller
         $instruktur = Instruktur::with(['kompetensi', 'pelatihan'])->get();
         $pdf = Pdf::loadView('Instruktur.cetak_massal', ['Instruktur' => $instruktur])
             ->setPaper('A4', 'portrait');
+
         $fileName = 'Biodata_Instruktur_Massal_' . Carbon::now()->format('Y-m-d') . '.pdf';
+
         return $pdf->stream($fileName);
     }
 
     public function download_file(Request $request): BinaryFileResponse
     {
         $request->validate(['path' => 'required|string']);
+
         $filePath = $request->input('path');
-        abort_if(!Storage::disk('public')->exists($filePath), 404, 'File not found.');
+
+        abort_if(! Storage::disk('public')->exists($filePath), 404, 'File not found.');
 
         return response()->download(storage_path('app/public/' . $filePath));
     }
@@ -296,21 +587,34 @@ class PendaftaranController extends Controller
     public function download(Peserta $peserta)
     {
         $lampiran = $peserta->lampiran;
-        if (!$lampiran) {
+
+        if (! $lampiran) {
             return back()->with('error', 'Peserta tidak memiliki lampiran.');
         }
 
-        $filesToZip = [$lampiran->pas_foto, $lampiran->fc_ktp, $lampiran->fc_ijazah, $lampiran->fc_surat_sehat, $lampiran->fc_surat_tugas];
+        $filesToZip = [
+            $lampiran->pas_foto,
+            $lampiran->fc_ktp,
+            $lampiran->fc_ijazah,
+            $lampiran->fc_surat_sehat,
+            $lampiran->fc_surat_tugas,
+        ];
+
         $zipFileName = 'lampiran-' . Str::slug($peserta->nama) . '.zip';
-        $zipPath = storage_path('app/temp/' . $zipFileName);
+        $zipPath     = storage_path('app/temp/' . $zipFileName);
 
         $zip = new ZipArchive;
-        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
             foreach ($filesToZip as $filePath) {
                 if ($filePath && Storage::disk('public')->exists($filePath)) {
-                    $zip->addFile(storage_path('app/public/' . $filePath), basename($filePath));
+                    $zip->addFile(
+                        storage_path('app/public/' . $filePath),
+                        basename($filePath)
+                    );
                 }
             }
+
             $zip->close();
         } else {
             return back()->with('error', 'Gagal membuat file ZIP.');
@@ -322,17 +626,16 @@ class PendaftaranController extends Controller
     public function downloadBulk(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'integer|exists:peserta,id',
-            'excelFileName' => 'required|string'
+            'ids'          => 'required|array',
+            'ids.*'        => 'integer|exists:peserta,id',
+            'excelFileName'=> 'required|string',
         ]);
 
-        $ids = $request->input('ids');
+        $ids      = $request->input('ids');
         $fileName = $request->input('excelFileName') . '.xlsx';
 
         return Excel::download(new PesertaExport($ids), $fileName);
     }
-
 
     public function exportBulk(Pelatihan $pelatihan)
     {
@@ -345,16 +648,19 @@ class PendaftaranController extends Controller
         }
 
         $tmpDir = storage_path('app/tmp/exports');
-        if (! is_dir($tmpDir)) @mkdir($tmpDir, 0775, true);
+        if (! is_dir($tmpDir)) {
+            @mkdir($tmpDir, 0775, true);
+        }
 
         $zipPath = $tmpDir . '/pendaftaran-' . now()->format('Ymd-His') . '.zip';
-        $zip = new \ZipArchive();
-        $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $zip     = new ZipArchive();
+        $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         foreach ($pendaftarans as $pendaftaran) {
             $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
             $zip->addFile($pdfPath, basename($pdfPath));
         }
+
         $zip->close();
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
@@ -368,6 +674,7 @@ class PendaftaranController extends Controller
             ->firstOrFail();
 
         $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
+
         return response()->download($pdfPath)->deleteFileAfterSend(true);
     }
 
@@ -375,6 +682,7 @@ class PendaftaranController extends Controller
     {
         $pendaftaran->loadMissing(['peserta', 'pelatihan', 'kompetensi']);
         $pdfPath = $this->generatePendaftaranPdf($pendaftaran);
+
         return response()->download($pdfPath)->deleteFileAfterSend(true);
     }
 
@@ -392,7 +700,6 @@ class PendaftaranController extends Controller
         $pl = $pendaftaran->pelatihan;
         $k = $pendaftaran->kompetensi;
 
-        // isi placeholder sesuai template
         $tp->setValue('nama', $p->nama ?? '');
         $tp->setValue('tempat_lahir', $p->tempat_lahir ?? '');
         $tp->setValue('tanggal_lahir', optional($p->tanggal_lahir)->format('d-m-Y') ?? '');
@@ -406,62 +713,50 @@ class PendaftaranController extends Controller
         $tp->setValue('nama_kompetensi', $k->nama_kompetensi ?? ''); // Template variable might still be 'nama_kompetensi'
         $tp->setValue('nama_kompetensi', $k->nama_kompetensi ?? '');
         $tp->setValue('judul', $pl->nama_pelatihan ?? '');
-        $tp->setValue('tanggal_kegiatan', optional($pl->tanggal_mulai)?->translatedFormat('d F Y') ?? '');
+        $tp->setValue(
+            'tanggal_kegiatan',
+            optional($pl->tanggal_mulai)?->translatedFormat('d F Y') ?? ''
+        );
 
         $tmp = storage_path('app/tmp/exports');
-        if (!is_dir($tmp)) @mkdir($tmp, 0775, true);
+        if (! is_dir($tmp)) {
+            @mkdir($tmp, 0775, true);
+        }
 
         $base = Str::slug(($p->nama ?? 'peserta') . '-' . ($pl->nama_pelatihan ?? 'pelatihan'));
         $docx = "$tmp/$base.docx";
         $pdf  = "$tmp/$base.pdf";
 
-        // simpan DOCX hasil merge
         $tp->saveAs($docx);
 
-        // load DOCX → render ke PDF
         $phpWord = IOFactory::load($docx);
-        $writer  = IOFactory::createWriter($phpWord, 'PDF'); // ← akan pakai DomPDF karena sudah diset di AppServiceProvider
+        $writer  = IOFactory::createWriter($phpWord, 'PDF');
         $writer->save($pdf);
-        try {
-            $writer->save($pdf);
-        } finally {
-            // pastikan semua handle/stream dilepas sebelum unlink
-            unset($writer, $phpWord);
-            gc_collect_cycles();   // bantu bebaskan resource di Windows
-        }
 
-        // 2) Hapus DOCX dengan retry (atasi "Resource temporarily unavailable")
-        function safeUnlink(string $path, int $retries = 10, int $sleepMs = 250): void
-        {
-            if (!file_exists($path)) return;
+        unset($writer, $phpWord);
+        gc_collect_cycles();
 
-            for ($i = 0; $i < $retries; $i++) {
-                if (@unlink($path)) {
-                    return; // sukses
-                }
-                clearstatcache(true, $path);
-                gc_collect_cycles();
-                usleep($sleepMs * 1000); // tunggu sebentar biar lock lepas
-            }
-
-            throw new \RuntimeException("Gagal unlink: {$path} setelah {$retries} percobaan");
-        }
-
-        safeUnlink($docx);
+        $this->safeUnlink($docx);
 
         return $pdf;
     }
+
     public function testing()
     {
         $peserta = Peserta::with('instansi', 'lampiran')->get();
+
         return view('admin.testing', compact('peserta'));
     }
 
-    // Placeholder methods
+    // Placeholder CRUD methods (boleh diimplementasi nanti)
     public function show(string $id) {}
     public function edit(string $id) {}
     public function update(Request $request, string $id) {}
     public function destroy(string $id) {}
+
+    // =======================================================
+    // # HELPERS
+    // =======================================================
 
     private function normalizeAsalInstansi(?string $value): ?string
     {
@@ -484,35 +779,51 @@ class PendaftaranController extends Controller
             $kompetensi     = Kompetensi::findOrFail($kompetensiId);
             $kodeKompetensi = $kompetensi->kode ?? $this->akronim($kompetensi->nama_kompetensi);
 
-            // [Langkah 2] Kunci semua baris yang relevan
-            // Proses lain yang mencoba mengakses baris ini akan disuruh MENUNGGU
             PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
                 ->where('kompetensi_id', $kompetensiId)
                 ->select('id')
                 ->lockForUpdate()
                 ->get();
 
-
-            // [Langkah 3] Hitung jumlah pendaftar
-            // Karena proses lain menunggu, hitungan ini DIJAMIN akurat
             $jumlah = PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
                 ->where('kompetensi_id', $kompetensiId)
                 ->count();
 
-            // [Langkah 4] Buat nomor unik yang sudah pasti aman
             $nextUrut = $jumlah + 1;
             $nomor    = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeKompetensi), $nextUrut);
 
             return ['nomor' => $nomor, 'urutan' => $nextUrut];
-        }, 3); // Coba ulang 3 kali jika terjadi deadlock
+        }, 3);
     }
-
 
     private function akronim(string $nama): string
     {
-        $words = preg_split('/\s+/', trim($nama));
-        $akronim = collect($words)->map(fn($w) => \Illuminate\Support\Str::substr($w, 0, 1))->implode('');
+        $words   = preg_split('/\s+/', trim($nama));
+        $akronim = collect($words)
+            ->map(fn ($w) => Str::substr($w, 0, 1))
+            ->implode('');
+
         $akronim = preg_replace('/[^A-Za-z0-9]/', '', $akronim) ?: 'BDG';
+
         return strtoupper($akronim);
+    }
+
+    private function safeUnlink(string $path, int $retries = 10, int $sleepMs = 250): void
+    {
+        if (! file_exists($path)) {
+            return;
+        }
+
+        for ($i = 0; $i < $retries; $i++) {
+            if (@unlink($path)) {
+                return;
+            }
+
+            clearstatcache(true, $path);
+            gc_collect_cycles();
+            usleep($sleepMs * 1000);
+        }
+
+        throw new \RuntimeException("Gagal unlink: {$path} setelah {$retries} percobaan");
     }
 }
