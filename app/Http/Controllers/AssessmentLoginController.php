@@ -67,7 +67,6 @@ class AssessmentLoginController extends Controller
          * 3) bersihkan session lama (VERSI AMAN)
          * - jangan flush() karena bisa bikin session request berikutnya kosong lagi
          */
-        $request->session()->invalidate();
         $request->session()->regenerateToken();
         $request->session()->regenerate();
 
@@ -99,7 +98,6 @@ class AssessmentLoginController extends Controller
     {
         // logout aman: boleh flush karena memang mau bersih total
         $request->session()->flush();
-        $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('dashboard.home')

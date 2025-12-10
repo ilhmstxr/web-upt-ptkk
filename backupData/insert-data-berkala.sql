@@ -11164,7 +11164,7 @@ INSERT INTO `pendaftaran_pelatihan` (`id`, `peserta_id`, `pelatihan_id`, `kompet
 -- Dumping data for table `percobaan`
 --
 
-INSERT INTO `percobaan` (`id`, `peserta_id`, `pesertaSurvei_id`, `tes_id`, `tipe`, `waktu_mulai`, `waktu_selesai`, `skor`, `lulus`, `pesan_kesan`, `created_at`, `updated_at`) VALUES
+INSERT INTO `percobaan` (`id`, `peserta_id`, `peserta_id`, `tes_id`, `tipe`, `waktu_mulai`, `waktu_selesai`, `skor`, `lulus`, `pesan_kesan`, `created_at`, `updated_at`) VALUES
 (2, 8, 3, 5, 'survey', '2025-10-09 13:40:53', '2025-08-28 17:44:17', NULL, 0, NULL, '2025-08-28 17:44:17', '2025-08-28 17:44:17'),
 (3, 24, 4, 5, 'survey', '2025-10-09 13:40:53', '2025-08-28 17:46:23', NULL, 0, NULL, '2025-08-28 17:46:23', '2025-08-28 17:46:23'),
 (4, 33, 6, 5, 'survey', '2025-10-09 13:40:53', '2025-08-28 17:50:30', NULL, 0, NULL, '2025-08-28 17:50:30', '2025-08-28 17:50:30'),
@@ -11533,7 +11533,7 @@ INSERT INTO `percobaan` (`id`, `peserta_id`, `pesertaSurvei_id`, `tes_id`, `tipe
 (411, 215, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:55:04', '0.00', 0, NULL, '2025-09-25 17:55:04', '2025-09-25 17:55:04'),
 (412, 181, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:55:04', '0.00', 0, NULL, '2025-09-25 17:55:04', '2025-09-25 17:55:04'),
 (413, 78, NULL, 7, 'post-test', '2025-09-25 17:56:54', '2025-09-25 17:56:54', '100.00', 1, NULL, '2025-09-25 17:55:06', '2025-09-25 17:56:54');
-INSERT INTO `percobaan` (`id`, `peserta_id`, `pesertaSurvei_id`, `tes_id`, `tipe`, `waktu_mulai`, `waktu_selesai`, `skor`, `lulus`, `pesan_kesan`, `created_at`, `updated_at`) VALUES
+INSERT INTO `percobaan` (`id`, `peserta_id`, `peserta_id`, `tes_id`, `tipe`, `waktu_mulai`, `waktu_selesai`, `skor`, `lulus`, `pesan_kesan`, `created_at`, `updated_at`) VALUES
 (414, 203, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:55:07', '0.00', 0, NULL, '2025-09-25 17:55:07', '2025-09-25 17:55:07'),
 (416, 183, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:56:04', '0.00', 0, NULL, '2025-09-25 17:56:04', '2025-09-25 17:56:04'),
 (417, 178, NULL, 9, 'survey', '2025-10-09 13:40:53', '2025-09-25 17:56:52', '0.00', 0, NULL, '2025-09-25 17:56:52', '2025-09-25 17:56:52'),

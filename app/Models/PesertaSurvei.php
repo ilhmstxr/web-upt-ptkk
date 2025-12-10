@@ -23,7 +23,7 @@ class PesertaSurvei extends Model
      */
     public function jawabanUsers()
     {
-        return $this->hasMany(JawabanUser::class, 'pesertaSurvei_id');
+        return $this->hasMany(JawabanUser::class, 'peserta_survei_id');
     }
 
     /**
@@ -31,7 +31,7 @@ class PesertaSurvei extends Model
      */
     public function percobaan()
     {
-        return $this->hasMany(Percobaan::class, 'pesertaSurvei_id');
+        return $this->hasMany(Percobaan::class, 'peserta_survei_id');
     }
 
     /**
