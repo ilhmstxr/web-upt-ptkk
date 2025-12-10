@@ -6,15 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateCeritaKamisTable extends Migration
 {
-    public function up()
-    {
+    public function up(): void
+    {   
         Schema::create('cerita_kamis', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->nullable();
+            $table->string('image');
             $table->string('slug')->nullable()->unique();
-            $table->text('excerpt')->nullable();
-            $table->longText('content')->nullable();
-            $table->boolean('is_published')->default(true);
+            $table->longText('content');
             $table->timestamps();
         });
     }

@@ -26,32 +26,19 @@ class CeritaKamiResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make('Konten Cerita Kami')
-                ->columns(2)
                 ->schema([
-                    Forms\Components\TextInput::make('title')
-                        ->label('Judul internal')
-                        ->helperText('Hanya untuk admin, di landing heading tetap teks statis.')
-                        ->maxLength(150)
-                        ->required(),
-
-                    Forms\Components\Toggle::make('is_published')
-                        ->label('Tampilkan di landing?')
-                        ->default(true),
-
                     Forms\Components\FileUpload::make('image')
-                        ->label('Foto utama (landing)')
+                        ->label('Foto utama')
                         ->image()
                         ->directory('cerita-kami')
                         ->imageEditor()
-                        ->imagePreviewHeight('200')
-                        ->columnSpanFull(),
+                        ->columnSpanFull()
+                        ->required(),
 
-                    Forms\Components\Textarea::make('excerpt')
-                        ->label('Paragraf pendek untuk Landing')
-                        ->rows(4)
+                    Forms\Components\RichEditor::make('content')
+                        ->label('Isi Cerita / Deskripsi')
+                        ->required()
                         ->columnSpanFull(),
-
-                    // ✅ RichEditor "Konten lengkap (opsional)" DIHAPUS
                 ]),
         ]);
     }
@@ -60,14 +47,15 @@ class CeritaKamiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
-                    ->label('Judul')
-                    ->searchable()
-                    ->sortable(),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Foto')
+                    ->circular(),
 
-                Tables\Columns\IconColumn::make('is_published')
-                    ->label('Tayang')
-                    ->boolean(),
+                Tables\Columns\TextColumn::make('content')
+                    ->label('Isi Ringkas')
+                    ->limit(50)
+                    ->html() // Render HTML dari RichEditor
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')

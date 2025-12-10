@@ -360,26 +360,6 @@ section + section {
       {{-- KOLOM KIRI: FOTO + NAMA --}}
       <div class="relative flex flex-col items-center lg:items-start h-full w-fit">
 
-        @php
-          $defaultFoto = asset('images/profil/Kepala-UPT.svg');
-          $fotoUrl = $defaultFoto;
-
-          if (!empty($kepala->foto)) {
-              $raw = ltrim($kepala->foto, '/');
-
-              if (\Illuminate\Support\Str::startsWith($raw, ['http://', 'https://'])) {
-                  // kalau yang disimpan sudah full URL
-                  $fotoUrl = $raw;
-              } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($raw)) {
-                  // kalau file ada di storage/public
-                  $fotoUrl = \Illuminate\Support\Facades\Storage::url($raw);
-              } elseif (file_exists(public_path($raw))) {
-                  // kalau file ada di public langsung
-                  $fotoUrl = asset($raw);
-              }
-          }
-        @endphp
-
         {{-- WRAPPER FOTO --}}
         <div class="relative mx-auto lg:mx-0
             w-full
@@ -389,27 +369,24 @@ section + section {
             flex justify-center md:justify-center
             md:mt-16 lg:mt-0">
 
-          {{-- background gradient --}}
           <div class="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#B5CDEE] to-[#1524AF]"></div>
 
-          {{-- FOTO DINAMIS --}}
-          <img src="{{ $fotoUrl }}"
-               alt="Kepala UPT PTKK"
-               class="absolute bottom-0 left-1/2 -translate-x-1/2
-                      h-[260px]
-                      sm:h-[300px]
-                      md:h-[420px]
-                      lg:h-[540px]
-                      w-auto object-contain drop-shadow-md z-10"
-               loading="lazy"
-               decoding="async" />
+          @if($kepala->foto)
+            <img src="{{ asset('storage/'.$kepala->foto) }}"
+                alt="Foto Kepala UPT"
+                class="absolute bottom-0 left-1/2 -translate-x-1/2
+                        h-[260px] sm:h-[320px] md:h-[400px] lg:h-[500px]
+                        w-auto object-contain drop-shadow-md z-10"
+                loading="lazy"
+                decoding="async" />
+          @endif
         </div>
 
         {{-- NAMA (HP & TABLET) --}}
         <div class="block lg:hidden text-center mt-4">
           <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1524AF]
                      text-[19px] md:text-[20px] tracking-tight stroke-yellow">
-            {{ $kepala->nama_kepala_upt ?? 'Kepala UPT PTKK' }}
+            {{ $kepala->nama_kepala_upt }}
           </h3>
           <p class="mt-1 font-[Volkhov] text-[#861D23]
                     text-[13px] md:text-[14px]">
@@ -422,20 +399,14 @@ section + section {
       {{-- KOLOM KANAN: TEKS SAMBUTAN --}}
       <div class="w-full h-full flex flex-col lg:pt-[8px] lg:-mt-[6px]">
 
-        @if(!empty($kepala->sambutan))
-          <p class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
-            {!! nl2br(e($kepala->sambutan)) !!}
-          </p>
-        @else
-          <p class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-7 text-justify">
-            Sambutan Kepala UPT akan diperbarui melalui sistem.
-          </p>
-        @endif
+        <div class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-1.6 text-justify prose max-w-none">
+          {!! $kepala->sambutan !!}
+        </div>
 
         {{-- NAMA (DESKTOP) --}}
         <div class="hidden lg:block">
           <h3 class="mt-[25px] font-[Volkhov] font-bold text-[#1E3A8A] text-[22px] tracking-tight stroke-yellow">
-            {{ $kepala->nama_kepala_upt ?? 'Kepala UPT PTKK' }}
+            {{ $kepala->nama_kepala_upt }}
           </h3>
           <p class="mt-1 font-[Volkhov] text-[#861D23] text-[20px]">
             Kepala UPT. PTKK
@@ -448,7 +419,6 @@ section + section {
   </div>
 </section>
 @endif
-
 
  {{-- SECTION: Visi, Misi, Motto, Sasaran --}}
 <section class="section-compact relative bg-[#F1F9FC]">

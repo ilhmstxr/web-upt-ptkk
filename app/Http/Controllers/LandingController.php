@@ -105,11 +105,11 @@ class LandingController extends Controller
 
         // 5) CERITA KAMI (INI YANG DIPAKAI SECTION CERITA KAMI DI LANDING)
         try {
-            $cerita = Cache::remember('cerita_kami', 3600, fn () =>
-                CeritaKami::where('is_published', true)->latest()->first()
-            );
+            $cerita = CeritaKami::latest()->first();
+            
         } catch (Throwable $e) {
             Log::error("Gagal memuat Cerita Kami: " . $e->getMessage());
+            $cerita = null;
         }
 
         // 6) SOROTAN PELATIHAN

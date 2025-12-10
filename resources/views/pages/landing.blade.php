@@ -70,7 +70,7 @@ $latestBeritas = Berita::query()
     @if($count === 1)
         <div class="relative w-full flex justify-center">
              {{-- Langsung tampilkan ukuran penuh (mirip state .active) --}}
-             <div class="w-[70%] md:w-[76%] lg:w-[80%]">
+             <div class="w-[87%] md:w-[87%] lg:w-[87%]">
                 <div class="w-full h-[40vw] md:h-[340px] lg:h-[450px] max-h-[480px] min-h-[200px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden shadow-lg">
                     <img
                       src="{{ Storage::url($allBanners->first()->image) }}"
@@ -89,15 +89,15 @@ $latestBeritas = Berita::query()
           {{-- TRACK --}}
           <div
             id="hero-track"
-            class="flex items-center gap-2 md:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none py-2"
+            class="flex items-center overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar select-none py-2"
             style="scrollbar-width:none;-ms-overflow-style:none;"
           >
-            <div aria-hidden="true" class="shrink-0 snap-none pointer-events-none w-[15%] md:w-[12%] lg:w-[10%]"></div>
+            <div aria-hidden="true" class="shrink-0 snap-none pointer-events-none w-[10%] md:w-[12.5%] lg:w-[15%]"></div>
 
             {{-- CLONES KIRI --}}
             @if($count >= 2)
                 @foreach($allBanners->slice(-2) as $index => $banner)
-                    <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="{{ $count - 2 + $loop->index }}">
+                    <div class="hero-slide clone shrink-0 snap-center w-[87%] md:w-[87%] lg:w-[87%] transition-transform duration-300" data-real="{{ $count - 2 + $loop->index }}">
                       <div class="w-full h-[40vw] md:h-[340px] lg:h-[450px] max-h-[480px] min-h-[200px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
                         <img src="{{ Storage::url($banner->image) }}" class="w-full h-full object-cover select-none" draggable="false">
                       </div>
@@ -107,7 +107,7 @@ $latestBeritas = Berita::query()
 
             {{-- REAL SLIDES --}}
             @foreach($allBanners as $index => $banner)
-                <div class="hero-slide shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="{{ $index }}">
+                <div class="hero-slide shrink-0 snap-center w-[87%] md:w-[87%] lg:w-[87%] transition-transform duration-300" data-real="{{ $index }}">
                   <div class="w-full h-[40vw] md:h-[340px] lg:h-[450px] max-h-[480px] min-h-[200px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
                     <img src="{{ Storage::url($banner->image) }}" class="w-full h-full object-cover select-none" draggable="false">
                   </div>
@@ -117,7 +117,7 @@ $latestBeritas = Berita::query()
             {{-- CLONES KANAN --}}
             @if($count >= 2)
                 @foreach($allBanners->slice(0, 2) as $index => $banner)
-                    <div class="hero-slide clone shrink-0 snap-center w-[70%] md:w-[76%] lg:w-[80%] transition-transform duration-300" data-real="{{ $index }}">
+                    <div class="hero-slide clone shrink-0 snap-center w-[87%] md:w-[87%] lg:w-[87%] transition-transform duration-300" data-real="{{ $index }}">
                       <div class="w-full h-[40vw] md:h-[340px] lg:h-[450px] max-h-[480px] min-h-[200px] rounded-2xl border-[2.5px] md:border-[3px] border-[#1524AF] overflow-hidden">
                         <img src="{{ Storage::url($banner->image) }}" class="w-full h-full object-cover select-none" draggable="false">
                       </div>
@@ -129,7 +129,7 @@ $latestBeritas = Berita::query()
           </div>
 
           {{-- CONTROLS --}}
-          <div class="mt-4 flex items-center justify-center gap-4">
+          <div class="mt-4 flex items-center justify-center gap-8 md:gap-12">
             <button id="hero-prev" class="w-9 h-9 grid place-items-center rounded-full border-2 border-gray-300 text-gray-600 hover:[bg-white/60] hover:border-[#1524AF] hover:text-[#1524AF] transition-colors">
               <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" /></svg>
             </button>
@@ -154,7 +154,7 @@ $latestBeritas = Berita::query()
   }
 
   .hero-slide {
-    transform: scale(0.85);
+    transform: scale(0.90);
     opacity: 0.5;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
@@ -463,12 +463,13 @@ $latestBeritas = Berita::query()
 {{-- SECTION: Cerita Kami (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start md:items-center">
+    <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16">
       {{-- Kolom Kiri: Foto --}}
-      <div class="w-full flex justify-center md:justify-start md:pl-2 lg:pl-4">
-        <div class="rounded-2xl overflow-hidden shadow-xl ring-2 ring-[#1524AF] max-w-[420px] md:max-w-[480px] lg:max-w-[520px]">
+      <div class="shrink-0 flex justify-center md:justify-start">
+        <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF] 
+                    w-[300px] md:w-[360px] lg:w-[400px] aspect-[3/2] bg-slate-200">
           @if(!empty($cerita) && $cerita->image_url)
-            <img src="{{ $cerita->image_url }}" alt="{{ $cerita->title ?? 'Cerita Kami' }}" class="w-full h-auto object-cover" />
+            <img src="{{ $cerita->image_url }}" alt="{{ $cerita->title ?? 'Cerita Kami' }}" class="absolute inset-0 w-full h-full object-cover" />
           @else
             {{-- fallback static --}}
             <img src="{{ asset('images/cerita-kami.svg') }}" alt="Kegiatan UPT PTKK" class="w-full h-auto object-cover" />
@@ -477,34 +478,36 @@ $latestBeritas = Berita::query()
       </div>
 
       {{-- Kolom Kanan: Teks --}}
-      <div class="flex flex-col">
+      <div class="flex-1 flex flex-col w-full items-center md:items-start">
         {{-- Badge Cerita Kami --}}
-        <div class="inline-flex self-start items-center justify-center mb-[20px] px-2 py-2 bg-[#F3E8E9] rounded-md">
-          <span class="font-['Volkhov'] font-bold text-[#861D23] text-[22px] md:text-[24px] leading-none">Cerita Kami</span>
+        <div class="w-full flex mb-[15px] justify-center md:justify-start">
+          <span class="inline-flex items-center
+                    px-0 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
+                    font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+                    Cerita Kami</span>
         </div>
 
        {{-- Heading (tetap / statis) --}}
-<h2 class="mb-[20px] md:mb-[24px] font-['Volkhov'] font-bold text-[24px] md:text-[30px] lg:text-[34px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch]">
-  UPT Pengembangan Teknis Dan Keterampilan Kejuruan
-</h2>
+          <h2 class="mb-[15px] font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch] text-center md:text-left">
+            UPT Pengembangan Teknis Dan Keterampilan Kejuruan
+          </h2>
 
 
-        {{-- Excerpt / Content ringkas --}}
-      <p class="mb-[24px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-7 text-[14px] md:text-[15px] lg:text-[16px] text-justify">
-  @if(!empty($cerita) && !empty($cerita->excerpt))
-    {{ $cerita->excerpt }}
-  @elseif(!empty($cerita) && !empty($cerita->content))
-    {{ \Illuminate\Support\Str::limit(strip_tags($cerita->content), 320) }}
-  @else
-    Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi
-    memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung
-    oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi,
-    UPT PTKK terus memperkuat posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata.
-    Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada
-    kemajuan pendidikan di Jawa Timur.
-  @endif
-</p>
-
+                  {{-- Excerpt / Content ringkas --}}
+                <p class="mb-[15px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-snug text-[14px] md:text-[15px] lg:text-[16px] text-justify">
+            @if(!empty($cerita) && !empty($cerita->excerpt))
+              {{ $cerita->excerpt }}
+            @elseif(!empty($cerita) && !empty($cerita->content))
+              {{ strip_tags($cerita->content) }}
+            @else
+              Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi
+              memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung
+              oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi,
+              UPT PTKK terus memperkuat posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata.
+              Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada
+              kemajuan pendidikan di Jawa Timur.
+            @endif
+          </p>
 
         {{-- Tombol: ke halaman cerita lengkap (jika ada slug / route) --}}
         @php
@@ -524,9 +527,21 @@ $latestBeritas = Berita::query()
           }
         @endphp
 
-        <a href="{{ $ceritaUrl }}" class="inline-flex items-center justify-center gap-2 w-max px-5 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 rounded-xl bg-[#1524AF] text-white font-['Montserrat'] font-medium text-[14px] sm:text-[16px] md:text-[18px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+        <a href="{{ $ceritaUrl }}" 
+          class=" inline-flex items-center justify-center gap-2 w-max 
+                  px-4 py-1 
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                  text-[14px] md:text-[15px] lg:text-[16px] 
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+          
           <span class="leading-none">Cari tahu lebih</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M19 12l-4-4m0 8l4-4" /></svg>
+          
+          {{-- Ikon diperbesar responsif (w-4 sm:w-5 md:w-6) --}}
+          <svg xmlns="http://www.w3.org/2000/svg" 
+              class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" 
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+          </svg>
         </a>
       </div>
     </div>
@@ -535,7 +550,7 @@ $latestBeritas = Berita::query()
 {{-- /SECTION: Cerita Kami --}}
 
 {{-- SECTION: Jatim Bangkit (oval slim, bigger icons, tighter gap) --}}
-<section class="relative bg-[#F1F9FC] py-4 md:py-6">
+<section class="relative bg-[#F1F9FC]">
   <style>
     @keyframes jatim-scroll-x {
       from { transform: translateX(0); }
