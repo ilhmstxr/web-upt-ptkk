@@ -653,3 +653,99 @@ nambah data pretest, posttest, monev
 
 export full pelatihan
 export per pelatihan
+
+
+# Alur Pendaftaran (Controller ke View)
+
+Berikut adalah penjelasan alur data dari `PendaftaranController` hingga tertampil di `daftar.blade.php`:
+
+## 1. Route Definition (`routes/web.php`)
+Ketika user mengakses URL `/daftar`:
+```php
+Route::get('/daftar', [PendaftaranController::class, 'index'])->name('pendaftaran.daftar');
+```
+Request diarahkan ke method `index` pada `PendaftaranController`.
+
+## 2. Controller Logic (`app/Http/Controllers/PendaftaranController.php`)
+Method `index()` bertugas menyiapkan data yang dibutuhkan oleh form pendaftaran.
+
+```php
+public function index()
+{
+    // 1. Mengambil Data Master untuk Dropdown
+    $kompetensi  = Kompetensi::all();   // Untuk pilihan "Kompetensi Keahlian"
+    $cabangDinas = CabangDinas::all();  // Untuk pilihan "Cabang Dinas"
+
+    // 2. Mengambil Satu Pelatihan Aktif
+    // Logic: Status 'Pendaftaran Buka' DAN tanggal selesai belum lewat.
+    // Diambil yang tanggal mulainya paling dekat (orderBy asc).
+    $pelatihan = Pelatihan::wi\th(['kompetensiPelatihan.kompetensi', 'kompetensiPelatihan.instruktur'])
+        ->where('status', 'Pendaftaran Buka')
+        ->whereDate('tanggal_selesai', '>=', now())
+        ->orderBy('tanggal_mulai', 'asc')
+        ->first();
+
+    // 3. Mengirim Data ke View
+    return view('pages.daftar', compact('kompetensi', 'cabangDinas', 'pelatihan'));
+}
+```
+
+## 3. View Logic (`resources/views/pages/daftar.blade.php`)
+View menerima variabel `$kompetensi`, `$cabangDinas`, dan `$pelatihan`.
+
+### A. Pengecekan Pelatihan Aktif
+View mengecek apakah ada pelatihan yang tersedia:
+```blade
+@php
+  $adaPelatihanAktif = isset($pelatihan) && $pelatihan !== null;
+@endphp
+
+@if (! $adaPelatihanAktif)
+  <!-- TAMPILAN JIKA TIDAK ADA PELATIHAN -->
+  <!-- Menampilkan pesan "Saat ini belum ada program pelatihan..." -->
+@else
+  <!-- TAMPILAN FORM PENDAFTARAN -->
+@endif
+```
+
+### B. Penggunaan Data di Form
+Jika ada pelatihan aktif, data digunakan di dalam form:
+
+1.  **ID Pelatihan (Hidden Input)**:
+    ```blade
+    <input type="hidden" name="pelatihan_id" value="{{ $pelatihan->id }}">
+    ```
+    Disimpan agar saat submit, sistem tahu user mendaftar ke pelatihan mana.
+
+2.  **Dropdown Kompetensi**:
+    Looping variabel `$kompetensi` untuk mengisi opsi select box.
+    ```blade
+    <select name="kompetensi_keahlian" ...>
+        @foreach ($kompetensi as $b)
+            <option value="{{ $b->id }}">{{ $b->nama_kompetensi }}</option>
+        @endforeach
+    </select>
+    ```
+
+3.  **Dropdown Cabang Dinas**:
+    Looping variabel `$cabangDinas`.
+    ```blade
+    <select name="cabangDinas_id" ...>
+        @foreach ($cabangDinas as $cb)
+            <option value="{{ $cb->id }}">{{ $cb->nama }}</option>
+        @endforeach
+    </select>
+    ```
+
+4.  **Informasi Pelatihan (Accordion)**:
+    Menampilkan detail pelatihan seperti tanggal mulai/selesai dan lokasi menggunakan data dari `$pelatihan`.
+
+## 4. Form Submission (Client-Side ke Server-Side)
+Saat user menekan tombol **Submit**:
+
+1.  **Validasi JavaScript**: Script di bagian bawah view memvalidasi input per langkah (wizard step 1, 2, 3).
+2.  **Post Request**: Jika valid, form dikirim via POST ke route `pendaftaran.store`.
+    ```blade
+    <form action="{{ route('pendaftaran.store') }}" method="POST" ...>
+    ```
+3.  **Controller Processing**: Method `store()` di Controller menerima semua data, melakukan validasi server-side, menyimpan ke database (transaksi), dan me-redirect ke halaman sukses (`pendaftaran.selesai`).

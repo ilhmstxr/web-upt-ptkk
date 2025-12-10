@@ -39,6 +39,33 @@ class Pelatihan extends Model
         'tanggal_selesai' => 'date',
     ];
 
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            $model->updateStatusBasedOnDate();
+        });
+    }
+
+    public function updateStatusBasedOnDate()
+    {
+        // Jika tanggal tidak lengkap, jangan diubah otomatis (atau set ke draft/belum dimulai?)
+        if (! $this->tanggal_mulai || ! $this->tanggal_selesai) {
+            return;
+        }
+
+        $now = now()->startOfDay();
+        $start = $this->tanggal_mulai instanceof \Carbon\Carbon ? $this->tanggal_mulai->startOfDay() : \Carbon\Carbon::parse($this->tanggal_mulai)->startOfDay();
+        $end = $this->tanggal_selesai instanceof \Carbon\Carbon ? $this->tanggal_selesai->endOfDay() : \Carbon\Carbon::parse($this->tanggal_selesai)->endOfDay();
+
+        if ($now->lt($start)) {
+            $this->status = 'belum dimulai';
+        } elseif ($now->between($start, $end)) {
+            $this->status = 'aktif';
+        } else {
+            $this->status = 'selesai';
+        }
+    }
+
     // ======================
     // RELATIONS
     // ======================
@@ -95,13 +122,7 @@ class Pelatihan extends Model
         return $this->hasMany(MateriPelatihan::class, 'pelatihan_id', 'id');
     }
 
-    /**
-     * Semua sesi/jadwal BidangPelatihan di bawah pelatihan ini.
-     */
-    public function bidangPelatihan(): HasMany
-    {
-        return $this->hasMany(BidangPelatihan::class, 'pelatihan_id', 'id');
-    }
+
 
     // ======================
     // ACCESSORS / ATTRIBUTES

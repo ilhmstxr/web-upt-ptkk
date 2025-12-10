@@ -51,7 +51,7 @@ final class PelatihanResource extends Resource
                                         ->required()
                                         ->maxLength(255)
                                         ->columnSpanFull(),
-                                    
+
                                     Forms\Components\Select::make('jenis_program')
                                         ->options([
                                             'reguler' => 'Reguler',
@@ -68,18 +68,26 @@ final class PelatihanResource extends Resource
                                         ])
                                         ->required()
                                         ->default('belum dimulai'),
-                                    
+
                                     Forms\Components\TextInput::make('angkatan')
                                         ->label('Angkatan')
                                         ->numeric()
                                         ->default(1)
                                         ->required(),
-                                    
+
                                     Forms\Components\DatePicker::make('tanggal_mulai')
-                                        ->required(),
-                                    
+                                        ->required()
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
+                                            self::updateStatus($get, $set);
+                                        }),
+
                                     Forms\Components\DatePicker::make('tanggal_selesai')
-                                        ->required(),
+                                        ->required()
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
+                                            self::updateStatus($get, $set);
+                                        }),
                                 ]),
                         ]),
                 ]),
@@ -97,7 +105,7 @@ final class PelatihanResource extends Resource
                                         ->searchable()
                                         ->required()
                                         ->columnSpan(2),
-                                    
+
                                     Forms\Components\Select::make('instruktur_id')
                                         ->label('Nama Instruktur')
                                         ->options(\App\Models\Instruktur::pluck('nama', 'id'))
@@ -116,7 +124,7 @@ final class PelatihanResource extends Resource
                                         ->createOptionUsing(function (array $data) {
                                             return \App\Models\Instruktur::create($data)->id;
                                         }),
-                                    
+
                                     Forms\Components\TextInput::make('lokasi')
                                         ->label('Lokasi / Ruangan')
                                         ->default('UPT-PTKK'),
@@ -124,7 +132,7 @@ final class PelatihanResource extends Resource
                                 ->columns(2)
                                 ->defaultItems(1)
                                 ->addActionLabel('Tambah Sesi')
-                                ->itemLabel(fn (array $state): ?string => \App\Models\Kompetensi::find($state['kompetensi_id'] ?? null)?->nama_kompetensi),
+                                ->itemLabel(fn(array $state): ?string => \App\Models\Kompetensi::find($state['kompetensi_id'] ?? null)?->nama_kompetensi),
                         ]),
                 ]),
             Forms\Components\Wizard\Step::make('Konten Halaman Pendaftaran')
@@ -164,8 +172,9 @@ final class PelatihanResource extends Resource
                     ->sortable()
                     ->wrap()
                     ->limit(60)
-                    ->tooltip(fn ($record) => $record->nama_pelatihan)
-                    ->description(fn ($record) =>
+                    ->tooltip(fn($record) => $record->nama_pelatihan)
+                    ->description(
+                        fn($record) =>
                         trim((string) ($record->jenis_program ?? '')) !== ''
                             ? ($record->jenis_program . ' • Angkatan ' . ($record->angkatan ?? '—'))
                             : ('Angkatan ' . ($record->angkatan ?? '—'))
@@ -176,7 +185,7 @@ final class PelatihanResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'aktif' => 'success',
                         'belum dimulai' => 'info',
                         'selesai' => 'gray',
@@ -196,7 +205,8 @@ final class PelatihanResource extends Resource
                     ->label('Jadwal')
                     ->date('d M Y')
                     ->sortable()
-                    ->description(fn ($record) =>
+                    ->description(
+                        fn($record) =>
                         $record->tanggal_selesai
                             ? 'S/d ' . $record->tanggal_selesai->format('d M Y')
                             : null
@@ -247,5 +257,26 @@ final class PelatihanResource extends Resource
             'view-kompetensi' => Pages\ViewKompetensiPelatihan::route('/{record}/kompetensi/{kompetensi_id}'),
             'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/kompetensi/{kompetensi_id}/monev'),
         ];
+    }
+    public static function updateStatus(Forms\Get $get, Forms\Set $set)
+    {
+        $mulai = $get('tanggal_mulai');
+        $selesai = $get('tanggal_selesai');
+
+        if (! $mulai || ! $selesai) {
+            return;
+        }
+
+        $now = now()->startOfDay();
+        $start = \Carbon\Carbon::parse($mulai)->startOfDay();
+        $end = \Carbon\Carbon::parse($selesai)->endOfDay();
+
+        if ($now->lt($start)) {
+            $set('status', 'belum dimulai');
+        } elseif ($now->between($start, $end)) {
+            $set('status', 'aktif');
+        } else {
+            $set('status', 'selesai');
+        }
     }
 }

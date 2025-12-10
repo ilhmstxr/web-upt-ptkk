@@ -97,7 +97,7 @@ class ViewKompetensiPelatihan extends Page
 
     public function getInstructorsProperty()
     {
-        return KompetensiPelatihan::with('instruktur')
+        return KompetensiPelatihan::with('instrukturs')
             ->where('pelatihan_id', $this->record->id)
             ->where('kompetensi_id', $this->kompetensiPelatihan->kompetensi_id)
             ->get();

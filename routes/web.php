@@ -103,10 +103,12 @@ Route::get('/detail-pelatihan/{slug}', fn ($slug) =>
 /* ======================================================================
 |  D. PENDAFTARAN PUBLIC + EXPORT
 ====================================================================== */
-Route::get('/daftar', [PendaftaranController::class, 'showDaftar'])
+Route::get('/daftar', [PendaftaranController::class, 'index'])
     ->name('pendaftaran.daftar');
 
 Route::resource('pendaftaran', PendaftaranController::class);
+
+
 
 Route::get('pendaftaran/selesai/{id}', [PendaftaranController::class, 'selesai'])
     ->name('pendaftaran.selesai');
@@ -292,6 +294,19 @@ Route::middleware(['auth'])->group(function () {
     // Rekap nilai tes
     Route::get('/admin/tes/{tes}/rekap-download', [TesRekapDownloadController::class, 'download'])
         ->name('tes.rekap.download');
+    
+    // Export Data Pelatihan (Template Surat)
+    Route::get('/export/template/rekap-pelatihan/{pelatihanId}', [ExportController::class, 'rekapPelatihan'])
+        ->name('export.template.rekap-pelatihan');
+    
+    Route::get('/export/template/peserta-excel/{pelatihanId}', [ExportController::class, 'pesertaExcel'])
+        ->name('export.template.peserta-excel');
+
+    Route::get('/export/template/daftar-instruktur/{pelatihanId}', [ExportController::class, 'daftarInstruktur'])
+        ->name('export.template.daftar-instruktur');
+
+    Route::get('/export/template/biodata-peserta/{pelatihanId}', [ExportController::class, 'biodataPeserta'])
+        ->name('export.template.biodata-peserta');
 
     // Asrama otomasi
     Route::post('/otomasi-asrama/{pelatihan}', [AsramaOtomasiController::class, 'jalankanOtomasi'])

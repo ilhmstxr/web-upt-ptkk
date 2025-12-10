@@ -10927,7 +10927,7 @@ INSERT INTO `opsi_jawaban` (`id`, `pertanyaan_id`, `teks_opsi`, `gambar`, `apaka
 
 INSERT INTO `pelatihan` (`id`, `instansi_id`, `angkatan`, `jenis_program`,`nama_pelatihan`,  `slug`, `gambar`, `status`, `tanggal_mulai`, `tanggal_selesai`, `deskripsi`, `jumlah_peserta`, `sasaran`, `created_at`, `updated_at`) VALUES
 (1, NULL, 2, 'reguler','Kegiatan Pengembangan dan Pelatihan bidang Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. II(Teknik & Keterampilan)  Tahun 2025', NULL, NULL, 'selesai', '2025-08-25', '2025-08-30', NULL, NULL, NULL, NULL, NULL),
-(2, NULL, 2, 'mtu','Kegiatan Pelatihan bidang Vokasi bagi Siswa SMK / SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan II  Tahun 2025', NULL, NULL, 'aktif', '2025-09-22', '2025-09-27', NULL, NULL, NULL, NULL, NULL),
+(2, NULL, 2, 'mtu','Kegiatan Pelatihan bidang Vokasi bagi Siswa SMK / SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan II  Tahun 2025', NULL, NULL, 'selesai', '2025-09-22', '2025-09-27', NULL, NULL, NULL, NULL, NULL),
 (3, NULL, 1,'akselerasi', 'Pengembangan bidang bagi Guru SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI bertaraf Nasional Tahun 2025',  NULL, NULL, 'selesai', '2025-02-19', '2025-02-25', NULL, NULL, 'guru', NULL, NULL),
 (4, NULL, 1,'mtu', 'Pengembangan bidang Vokasi bagi Siswa SMK/SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan I Tahun 2025', NULL, NULL, 'selesai', '2025-03-10', '2025-03-15', NULL, NULL, 'siswa', NULL, NULL),
 (5, NULL, 1,'reguler', 'Pengembangan dan peningkatan bidang Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. I (Teknik & Keterampilan) Th. 2025', NULL, NULL, 'selesai', '2025-04-21', '2025-04-26', NULL, NULL, 'siswa', NULL, NULL),
