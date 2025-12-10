@@ -13,7 +13,7 @@ class Percobaan extends Model
 
     protected $fillable = [
         'peserta_id',
-        'pesertaSurvei_id',
+        'peserta_survei_id',
         'pelatihan_id',
         'tes_id',
         'tipe',
@@ -57,7 +57,7 @@ class Percobaan extends Model
 
     public function pesertaSurvei()
     {
-        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'pesertaSurvei_id');
+        return $this->belongsTo(\App\Models\PesertaSurvei::class, 'peserta_survei_id');
     }
 
     public function pelatihan()

@@ -129,7 +129,6 @@ class DashboardController2 extends Controller
     public function logout(Request $request)
     {
         $request->session()->forget('peserta_id');
-        $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('dashboard.home')->with('success', 'Logout berhasil.');

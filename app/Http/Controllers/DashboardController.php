@@ -61,62 +61,90 @@ class DashboardController extends Controller
             return ['key' => 'peserta_id', 'id' => (int) session('peserta_id')];
         }
 
-        if (session()->has('pesertaSurvei_id')) {
-            return ['key' => 'pesertaSurvei_id', 'id' => (int) session('pesertaSurvei_id')];
+        $surveySessionId =
+            session('pesertaSurvei_id')
+            ?? session('peserta_Survey_id');
+
+        if ($surveySessionId) {
+            return [
+                'key' => 'peserta_survei_id',  // ✅ selalu kolom DB
+                'id'  => (int) $surveySessionId
+            ];
         }
 
         return ['key' => null, 'id' => null];
-    }
-
-    protected function requireLogin(): array|RedirectResponse
-    {
-        ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
-
-        if (!$key || !$id) {
-            return redirect()->route('assessment.login')
-                ->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        return ['key' => $key, 'id' => $id];
-    }
 
-    /* =======================
-     * HELPER: set training session (legacy compat)
-     * Sekarang sebenarnya sudah dijamin middleware training.session,
-     * tapi ini dipertahankan biar gak ada kode lain yang rusak.
-     * ======================= */
-    protected function ensureActiveTrainingSession(?Peserta $pesertaAktif = null): void
-    {
-        if (!$pesertaAktif)
-            return;
+        protected function requireLogin(): array|RedirectResponse
+        {
+            ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
 
-        // ✅ cuma nambah ini (sesuai permintaanmu)
-        session([
-            'kompetensi_id' => $pesertaAktif->kompetensi_id,
-            'pelatihan_id' => $pesertaAktif->pelatihan_id,
-        ]);
+            if (!$key || !$id) {
+                return redirect()->route('assessment.login')
+                    ->with('error', 'Silakan login terlebih dahulu.');
+            }
 
-        if (
-            session('pendaftaran_pelatihan_id') &&
-            session('pelatihan_id') &&
-            session('kompetensi_id')
-        ) {
-            return;
+            return ['key' => $key, 'id' => $id];
         }
 
-        $pendaftaran = PendaftaranPelatihan::with(['pelatihan', 'kompetensiPelatihan'])
-            ->where('peserta_id', $pesertaAktif->id)
-            ->latest('tanggal_pendaftaran')
-            ->first();
+        /* =======================
+        * HELPER: set training session (legacy compat)
+        * Sekarang sebenarnya sudah dijamin middleware training.session,
+        * tapi ini dipertahankan biar gak ada kode lain yang rusak.
+        * ======================= */
+        protected function ensureActiveTrainingSession(?Peserta $pesertaAktif = null): void
+        {
+            if (!$pesertaAktif) {
+                Log::debug('[ensureActiveTrainingSession] no pesertaAktif');
+                return;
+            }
 
-        if ($pendaftaran) {
-            session([
-                'pendaftaran_pelatihan_id' => $pendaftaran->id,
-                'pelatihan_id' => $pendaftaran->pelatihan_id,
-                'kompetensi_id' => $pendaftaran->kompetensi_id,
+            // Hapus dulu keys lama biar gak ada sisa
+            session()->forget(['pendaftaran_pelatihan_id', 'pelatihan_id', 'kompetensi_id']);
+
+            // CARI PENDAFTARAN TERBARU
+            $pendaftaran = PendaftaranPelatihan::with(['pelatihan', 'kompetensiPelatihan'])
+                ->where('peserta_id', $pesertaAktif->id)
+                ->latest('tanggal_pendaftaran')
+                ->first();
+
+            if ($pendaftaran) {
+                session([
+                    'pendaftaran_pelatihan_id' => $pendaftaran->id,
+                    'pelatihan_id'             => $pendaftaran->pelatihan_id,
+                    'kompetensi_id'            => $pendaftaran->kompetensi_id,
+                ]);
+
+                Log::debug('[ensureActiveTrainingSession] source=pendaftaran', [
+                    'peserta_id' => $pesertaAktif->id,
+                    'pendaftaran_id' => $pendaftaran->id,
+                    'pelatihan_id' => $pendaftaran->pelatihan_id,
+                    'kompetensi_id' => $pendaftaran->kompetensi_id,
+                ]);
+                return;
+            }
+
+            // FALLBACK -> gunakan kolom di tabel peserta jika ada
+            if (!empty($pesertaAktif->pelatihan_id) || !empty($pesertaAktif->kompetensi_id)) {
+                session([
+                    'pelatihan_id'  => $pesertaAktif->pelatihan_id,
+                    'kompetensi_id' => $pesertaAktif->kompetensi_id,
+                ]);
+
+                Log::debug('[ensureActiveTrainingSession] source=peserta', [
+                    'peserta_id' => $pesertaAktif->id,
+                    'pelatihan_id' => $pesertaAktif->pelatihan_id,
+                    'kompetensi_id' => $pesertaAktif->kompetensi_id,
+                ]);
+                return;
+            }
+
+            // Kalau tidak ditemukan apa-apa, biarkan session kosong dan log
+            Log::debug('[ensureActiveTrainingSession] source=none - no pendaftaran, no peserta assignment', [
+                'peserta_id' => $pesertaAktif->id
             ]);
         }
-    }
 
     /* =======================
      * base tes query scope
@@ -392,21 +420,15 @@ class DashboardController extends Controller
         $login = $this->requireLogin();
         if ($login instanceof RedirectResponse)
             return $login;
+
         ['key' => $key, 'id' => $id] = $login;
 
         $pesertaAktif = ($key === 'peserta_id') ? Peserta::find($id) : null;
 
+        // ✅ CUKUP SEKALI, biarkan fungsi ini yang atur pelatihan_id & kompetensi_id di session
         $this->ensureActiveTrainingSession($pesertaAktif);
 
-        if ($pesertaAktif) {
-            session([
-                'kompetensi_id' => $pesertaAktif->kompetensi_id,
-                'pelatihan_id' => $pesertaAktif->pelatihan_id,
-            ]);
-        }
-        $this->ensureActiveTrainingSession($pesertaAktif);
-
-        // Ambil semua tes pre-test sesuai filter base query kamu
+        // ✅ Tes pre-test sudah otomatis ter-filter oleh pelatihan & kompetensi dari session
         $tes = (clone $this->baseTesQuery())
             ->where('tipe', 'pre-test')
             ->get();
@@ -444,6 +466,7 @@ class DashboardController extends Controller
             'peserta' => $pesertaAktif,
         ]);
     }
+
 
     public function pretestStart(Tes $tes)
     {

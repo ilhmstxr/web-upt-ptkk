@@ -11,37 +11,39 @@ return new class extends Migration
         Schema::create('peserta', function (Blueprint $table) {
             $table->id();
 
-            // Relasi wajib
             $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->cascadeOnDelete();
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('instansi_id')
-                  ->constrained('instansi')
-                  ->cascadeOnDelete();
+                ->constrained('instansi')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
-            // Relasi opsional: pelatihan_id
+            // tetap ada karena dipakai guard lama
             $table->foreignId('pelatihan_id')
-                  ->nullable()
-                  ->constrained('pelatihan')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('pelatihan')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
 
-            // Relasi opsional: kompetensi_id
             $table->foreignId('kompetensi_id')
-                  ->nullable()
-                  // Diperbaiki: Merujuk secara eksplisit ke tabel 'kompetensi' (tunggal)
-                  ->constrained('kompetensi')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('kompetensi')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
 
             $table->string('nama', 150);
             $table->string('nik', 20)->unique();
-            // $table->string('jabatan', 150)->nullable();
+            $table->string('jabatan', 150)->nullable();
             $table->string('tempat_lahir', 100);
             $table->date('tanggal_lahir');
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
             $table->string('agama', 50);
             $table->text('alamat');
             $table->string('no_hp', 20);
+
             $table->timestamps();
         });
     }
@@ -51,4 +53,3 @@ return new class extends Migration
         Schema::dropIfExists('peserta');
     }
 };
-
