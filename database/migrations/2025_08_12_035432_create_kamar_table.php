@@ -11,22 +11,27 @@ return new class extends Migration
         Schema::create('kamar', function (Blueprint $table) {
             $table->id();
 
+            // FK ke pelatihan (parent)
             $table->foreignId('pelatihan_id')
                 ->constrained('pelatihan')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
+            // FK ke asrama (parent)
             $table->foreignId('asrama_id')
                 ->constrained('asrama')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->string('nomor_kamar');
 
-            // ✅ Atas / Bawah saja
+            // Atas / Bawah saja
             $table->enum('lantai', ['atas', 'bawah'])
                 ->default('bawah');
 
             $table->integer('total_beds')->default(0);
             $table->integer('available_beds')->default(0);
+
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();
