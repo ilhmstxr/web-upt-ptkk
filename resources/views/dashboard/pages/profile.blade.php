@@ -99,14 +99,16 @@
                 <div>
                     <dt class="font-semibold text-slate-500 text-xs uppercase tracking-wide">Pelatihan</dt>
                     <dd class="mt-0.5">
-                        {{ optional($pendaftaranAktif->pelatihan)->nama ?? '-' }}
+                        {{-- ambil dari model Pelatihan: kolom nama_pelatihan --}}
+                        {{ optional($pendaftaranAktif->pelatihan)->nama_pelatihan ?? '-' }}
                     </dd>
                 </div>
 
                 <div>
                     <dt class="font-semibold text-slate-500 text-xs uppercase tracking-wide">Kompetensi</dt>
                     <dd class="mt-0.5">
-                        {{ optional($pendaftaranAktif->kompetensi)->nama ?? '-' }}
+                        {{-- lewat KompetensiPelatihan -> kompetensi -> nama_kompetensi --}}
+                        {{ optional(optional($pendaftaranAktif->kompetensiPelatihan)->kompetensi)->nama_kompetensi ?? '-' }}
                     </dd>
                 </div>
 
