@@ -1019,12 +1019,47 @@ class DashboardController extends Controller
     }
 
     /* =========================================================
-     * PROFILE
-     * ========================================================= */
-    public function profile(): View
+    * PROFILE
+    * ========================================================= */
+    public function profile(): View|RedirectResponse
     {
-        return view('dashboard.pages.profile');
+        // Kalau di project ini login peserta pakai session (bukan Auth),
+        // kita ikuti pola yang sama seperti home(), pretest(), dll.
+        $login = $this->requireLogin();
+        if ($login instanceof RedirectResponse) {
+            return $login;
+        }
+
+        ['key' => $key, 'id' => $id] = $login;
+
+        // Peserta aktif dari session
+        $peserta = $key === 'peserta_id'
+            ? Peserta::with(['instansi', 'user'])->find($id)
+            : null;
+
+        // Set training session (pelatihan_id, kompetensi_id, dll)
+        $this->ensureActiveTrainingSession($peserta);
+
+        // Pendaftaran pelatihan aktif (terbaru)
+        $pendaftaranAktif = null;
+
+        if ($peserta) {
+            $pendaftaranAktif = PendaftaranPelatihan::with(['pelatihan', 'kompetensi'])
+                ->where('peserta_id', $peserta->id)
+                ->orderByDesc('tanggal_pendaftaran')
+                ->first();
+        }
+
+        // Untuk header layout (dipakai di blade: $pesertaAktif->nama)
+        $pesertaAktif = $peserta;
+
+        return view('dashboard.pages.profile', [
+            'peserta'          => $peserta,
+            'pendaftaranAktif' => $pendaftaranAktif,
+            'pesertaAktif'     => $pesertaAktif,
+        ]);
     }
+
 
     /* =========================================================
      * MATERI (GABUNGAN FIX)
