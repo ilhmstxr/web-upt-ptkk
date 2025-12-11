@@ -1209,12 +1209,12 @@ $latestBeritas = Berita::query()
   // =========================
   const dummyData = {
     pelatihans: [
-      { id: 1, nama: 'Teknik Pengelasan', warna: '#1524AF', warna_inactive: '#000000' },
-      { id: 2, nama: 'Teknik Mesin Bubut', warna: '#1524AF', warna_inactive: '#000000' },
-      { id: 3, nama: 'Teknik Mesin CNC', warna: '#1524AF', warna_inactive: '#000000' },
-      { id: 4, nama: 'Teknik Elektro', warna: '#1524AF', warna_inactive: '#000000' },
+      { id: 1, nama: 'Tata Boga', warna: '#1524AF', warna_inactive: '#000000' },
+      { id: 2, nama: 'Teknik Pendingin dan Tata Udara', warna: '#1524AF', warna_inactive: '#000000' },
+      { id: 3, nama: 'Tata Busana', warna: '#1524AF', warna_inactive: '#000000' },
+      { id: 4, nama: 'Kecantikan', warna: '#1524AF', warna_inactive: '#000000' },
     ],
-    labels: ['Teknik Pengelasan', 'Teknik Mesin Bubut', 'Teknik Mesin CNC', 'Teknik Elektro'],
+    labels: ['Tata Boga', 'Teknik Pendingin dan Tata Udara', 'Tata Busana', 'Kecantikan'],
     datasets: {
       pre:     [8, 22, 12, 29],
       post:    [24, 53, 75, 94],
