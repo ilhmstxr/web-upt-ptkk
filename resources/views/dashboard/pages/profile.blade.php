@@ -41,15 +41,12 @@
                     <dd class="mt-0.5">{{ $peserta->agama }}</dd>
                 </div>
 
-                <div>
-                    <dt class="font-semibold text-slate-500 text-xs uppercase tracking-wide">Jabatan</dt>
-                    <dd class="mt-0.5">{{ $peserta->jabatan ?? '-' }}</dd>
-                </div>
+                {{-- JABATAN DIHAPUS --}}
 
                 <div>
                     <dt class="font-semibold text-slate-500 text-xs uppercase tracking-wide">Instansi</dt>
                     <dd class="mt-0.5">
-                        {{ optional($peserta->instansi)->nama ?? '-' }}
+                        {{ optional($peserta->instansi)->asal_instansi ?? '-' }}
                     </dd>
                 </div>
 
