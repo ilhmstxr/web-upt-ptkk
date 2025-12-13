@@ -29,7 +29,7 @@
                 <div class="min-w-0">
                     <h3 class="font-bold text-lg mb-2 truncate">{{ $t->judul }}</h3>
                     <p class="text-gray-600 mb-3">
-                        {{ \Illuminate\Support\Str::limit($t->deskripsi ?? '-', 140) }}
+                        {!! \Illuminate\Support\Str::limit($t->deskripsi ?? '-', 140) !!}
                     </p>
 
                     <div class="text-sm text-gray-500 space-y-1">
