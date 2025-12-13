@@ -289,7 +289,7 @@
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 class="font-bold text-gray-800 mb-4">Akumulasi Survei Peserta</h3>
                     <div class="relative h-64">
-                        <canvas id="surveyChart"></canvas>
+                        <canvas id="surveiChart"></canvas>
                     </div>
                 </div>
 
@@ -469,8 +469,8 @@
         });
 
         // Chart: Akumulasi Survei (Bar Chart Horizontal)
-        const ctxSurvey = document.getElementById('surveyChart').getContext('2d');
-        new Chart(ctxSurvey, {
+        const ctxSurvei = document.getElementById('surveiChart').getContext('2d');
+        new Chart(ctxSurvei, {
             type: 'bar',
             data: {
                 labels: ['Sangat Puas', 'Puas', 'Cukup', 'Kurang'],

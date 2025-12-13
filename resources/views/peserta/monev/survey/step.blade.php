@@ -17,7 +17,7 @@
         </div>
     </header>
 
-    @include('peserta.monev.survey.partials.participant_info', ['peserta' => $peserta])
+    @include('peserta.monev.survei.partials.participant_info', ['peserta' => $peserta])
 
     <div class="bg-blue-50 border border-blue-200 rounded-t-lg p-4 text-sm text-gray-700">
         📌 <em>Silakan isi semua pertanyaan berikut sesuai dengan persepsi Anda.</em>
@@ -25,11 +25,11 @@
 
     {{--
         PERUBAHAN UTAMA:
-        1. 'action' sekarang mengarah ke route 'survey.store'.
+        1. 'action' sekarang mengarah ke route 'survei.store'.
         2. @method('PUT') dihapus karena kita menggunakan metode POST.
         3. Menambahkan hidden input untuk 'peserta_id' dan 'tes_id'.
     --}}
-    <form action="{{ route('survey.store') }}" method="POST">
+    <form action="{{ route('survei.store') }}" method="POST">
         @csrf
 
         <input type="hidden" name="peserta_id" value="{{ $peserta->id }}">
@@ -56,7 +56,7 @@
 
                     {{-- 2. Loop untuk setiap PERTANYAAN di dalam grup saat ini --}}
                     @foreach ($group['pertanyaan'] as $question)
-                        @include('peserta.monev.survey.partials.question_card', [
+                        @include('peserta.monev.survei.partials.question_card', [
                             'question' => $question,
                             'loop' => $loop,
                         ])

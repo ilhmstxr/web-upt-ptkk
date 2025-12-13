@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Survey;
+use App\Models\Survei;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSurveyRequest extends FormRequest
+class StoreSurveiRequest extends FormRequest
 {
     public function authorize()
     {
@@ -14,7 +14,7 @@ class StoreSurveyRequest extends FormRequest
 
     public function rules()
     {
-        $section = Survey::where('order', $this->route('order'))->firstOrFail();
+        $section = Survei::where('order', $this->route('order'))->firstOrFail();
         $questionIds = $section->pertanyaan()->pluck('id')->toArray();
 
         $rules = [

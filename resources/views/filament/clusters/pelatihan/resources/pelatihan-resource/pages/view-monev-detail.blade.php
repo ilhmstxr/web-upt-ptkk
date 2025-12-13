@@ -1,7 +1,7 @@
 <x-filament-panels::page>
-    @if(empty($surveyData))
+    @if(empty($surveiData))
         <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-200 text-center">
-            <p class="text-gray-500">Belum ada data survey untuk kompetensi ini.</p>
+            <p class="text-gray-500">Belum ada data survei untuk kompetensi ini.</p>
         </div>
     @else
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,7 +25,7 @@
                         data: {
                             labels: ['Sangat Memuaskan', 'Memuaskan', 'Kurang Memuaskan', 'Tidak Memuaskan'],
                             datasets: [{
-                                data: {{ json_encode($surveyData['total_distribution']) }},
+                                data: {{ json_encode($surveiData['total_distribution']) }},
                                 backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444'],
                                 borderWidth: 0,
                                 hoverOffset: 4
@@ -46,10 +46,10 @@
                     new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: {!! json_encode(array_keys($surveyData['category_stats'])) !!},
+                            labels: {!! json_encode(array_keys($surveiData['category_stats'])) !!},
                             datasets: [{
                                 label: 'Nilai Rata-rata (Maks 4.0)',
-                                data: {!! json_encode(array_values($surveyData['category_stats'])) !!},
+                                data: {!! json_encode(array_values($surveiData['category_stats'])) !!},
                                 backgroundColor: ['#60A5FA', '#FBBF24', '#A78BFA', '#34D399', '#F472B6'],
                                 borderRadius: 6,
                                 barThickness: 40
@@ -68,7 +68,7 @@
                     });
                 },
                 renderQuestionCharts() {
-                    const questions = {!! json_encode($surveyData['question_stats']->flatten(1)) !!};
+                    const questions = {!! json_encode($surveiData['question_stats']->flatten(1)) !!};
                     questions.forEach(q => {
                         const ctx = document.getElementById('chart-q-' + q.id);
                         if (ctx) {
@@ -111,11 +111,11 @@
                         <div class="text-center md:text-left border-b md:border-b-0 md:border-r border-gray-100 pb-6 md:pb-0">
                             <p class="text-sm text-gray-500 mb-1">Indeks Kepuasan Rata-rata (IKM)</p>
                             <div class="flex items-end justify-center md:justify-start gap-2">
-                                <span class="text-5xl font-bold text-gray-900">{{ $surveyData['ikm'] }}</span>
+                                <span class="text-5xl font-bold text-gray-900">{{ $surveiData['ikm'] }}</span>
                                 <span class="text-lg text-gray-400 font-medium mb-1">/ 100</span>
                             </div>
                             <div class="mt-3 inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
-                                Kategori: {{ $surveyData['ikm_category'] }}
+                                Kategori: {{ $surveiData['ikm_category'] }}
                             </div>
                         </div>
 
@@ -128,9 +128,9 @@
                                 @php
                                     $labels = ['Sangat Memuaskan', 'Memuaskan', 'Kurang Memuaskan', 'Tidak Memuaskan'];
                                     $colors = ['bg-green-500', 'bg-blue-500', 'bg-yellow-500', 'bg-red-500'];
-                                    $totalResp = array_sum($surveyData['total_distribution']);
+                                    $totalResp = array_sum($surveiData['total_distribution']);
                                 @endphp
-                                @foreach($surveyData['total_distribution'] as $index => $val)
+                                @foreach($surveiData['total_distribution'] as $index => $val)
                                     <div>
                                         <div class="text-xs text-gray-500">{{ $labels[$index] }}</div>
                                         <div class="font-bold text-lg text-gray-800">{{ $totalResp > 0 ? round(($val / $totalResp) * 100) : 0 }}%</div>
@@ -165,7 +165,7 @@
                         Detail Jawaban Per Pertanyaan
                     </h2>
 
-                    @foreach($surveyData['question_stats'] as $category => $questions)
+                    @foreach($surveiData['question_stats'] as $category => $questions)
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
                             <div class="bg-gray-50 px-6 py-3 border-b border-gray-200">
                                 <h3 class="font-bold text-gray-700 text-sm uppercase tracking-wider">{{ $loop->iteration }}. {{ $category }}</h3>

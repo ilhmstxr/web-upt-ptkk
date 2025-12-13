@@ -5,7 +5,7 @@ namespace App\Filament\Widgets\Dashboard;
 use App\Models\JawabanUser;
 use Filament\Widgets\ChartWidget;
 
-class SurveyChart extends ChartWidget
+class SurveiChart extends ChartWidget
 {
     protected static ?string $heading = 'Chart Kepuasan Peserta';
 

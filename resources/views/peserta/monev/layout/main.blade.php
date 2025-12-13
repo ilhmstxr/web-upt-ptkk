@@ -174,7 +174,7 @@
                             <span class="w-5 h-5 mr-3 flex items-center justify-center text-lg leading-none">
                                 📊
                             </span>
-                            <span>Monev / Survey</span>
+                            <span>Monev / Survei</span>
                         </a>
                     </li>
 

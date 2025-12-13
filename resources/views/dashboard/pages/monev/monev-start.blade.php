@@ -1,7 +1,7 @@
 {{-- resources/views/dashboard/pages/monev/monev-start.blade.php --}}
 @extends('dashboard.layouts.main')
 
-@section('title', 'Monev / Survey')
+@section('title', 'Monev / Survei')
 @section('page-title', 'Monev: Soal '.($currentQuestionIndex + 1))
 
 @section('content')
@@ -151,7 +151,7 @@
     {{-- Semua soal selesai --}}
     <div class="text-center py-8 space-y-3">
         <div class="text-slate-700 text-lg font-semibold">Terima kasih! 🎉</div>
-        <div class="text-slate-500 text-sm">Survey sudah selesai diisi.</div>
+        <div class="text-slate-500 text-sm">Survei sudah selesai diisi.</div>
 
         <a href="{{ route('dashboard.monev.result', ['percobaan' => $percobaan->id ?? 0]) }}"
             class="mt-2 inline-flex px-5 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">

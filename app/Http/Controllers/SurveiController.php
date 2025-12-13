@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StartSurveyRequest;
+use App\Http\Requests\StartSurveiRequest;
 use App\Http\Requests\StoreParticipantRequest;
-use App\Http\Requests\StoreSurveyRequest;
+use App\Http\Requests\StoreSurveiRequest;
 use App\Models\Kompetensi;
-use App\Models\Survey;
+use App\Models\Survei;
 use App\Models\Jawaban;
 use App\Models\JawabanUser;
 use App\Models\Kuis;
@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class SurveyController extends Controller
+class SurveiController extends Controller
 {
     /**
      * Menampilkan halaman awal (form pendaftaran).
@@ -38,7 +38,7 @@ class SurveyController extends Controller
         $kompetensi = Kompetensi::all();
         // return $kompetensi;
         // return $tes;
-        return view('peserta.monev.survey.start', compact('tes', 'pelatihan', 'kompetensi'));
+        return view('peserta.monev.survei.start', compact('tes', 'pelatihan', 'kompetensi'));
     }
 
     /**
@@ -156,16 +156,16 @@ class SurveyController extends Controller
         // IMPROVE: untuk menyimpan datanya di
 
 
-        // 4. Redirect ke route 'survey.show' dengan parameter yang sesuai
+        // 4. Redirect ke route 'survei.show' dengan parameter yang sesuai
         //    Hanya kirim 'peserta' dan 'order' karena hanya itu yang ada di URI route.
-        // return redirect()->route('survey.show', [
+        // return redirect()->route('survei.show', [
         //     'peserta' => $peserta->id,
         //     'order'   => $validated['tes_id'],
         // 'peserta' => $peserta->id,
         // 'order'   => $validated['tes_id'],
         // ]);
     }
-    // app/Http/Controllers/SurveyController.php
+    // app/Http/Controllers/SurveiController.php
 
     // Laravel akan otomatis mencari Peserta berdasarkan ID yang ada di URL
     // public function show(PesertaSurvei $peserta, $order, Request $request)
@@ -222,7 +222,7 @@ class SurveyController extends Controller
         // return $questions;
         // return $groupedQuestions;
         // Langkah 4: Tampilkan view dengan data yang sudah disiapkan
-        return view('peserta.monev.survey.step', [
+        return view('peserta.monev.survei.step', [
             'peserta'   => $peserta,
             'section'   => $section,
             // 'questions' => $questions,
@@ -257,10 +257,10 @@ class SurveyController extends Controller
 
     //     // Jika user mencoba mengakses halaman yang tidak ada, arahkan ke halaman selesai
     //     if (!$questionForCurrentPage) {
-    //         return redirect()->route('survey.complete'); // Buat route ini nanti
+    //         return redirect()->route('survei.complete'); // Buat route ini nanti
     //     }
 
-    //     return view('peserta.monev.survey.step', [
+    //     return view('peserta.monev.survei.step', [
     //         'peserta'     => $peserta,
     //         'tes'        => $tes,
     //         'questions'   => $questionForCurrentPage,
@@ -396,7 +396,7 @@ class SurveyController extends Controller
             DB::commit();
 
             // 7. Arahkan ke halaman selesai
-            return redirect()->route('survey.complete')
+            return redirect()->route('survei.complete')
                 ->with('success', 'Terima kasih, survei Anda berhasil disimpan.');
         } catch (\Exception $e) {
             // Jika terjadi error, batalkan semua perubahan
@@ -417,7 +417,7 @@ class SurveyController extends Controller
      */
     public function complete()
     {
-        return view('peserta.monev.survey.complete');
+        return view('peserta.monev.survei.complete');
     }
 
     /**

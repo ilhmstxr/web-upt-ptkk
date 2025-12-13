@@ -214,7 +214,7 @@ class PendaftaranController extends Controller
                     'nilai_post_test'         => 0,
                     'nilai_praktek'           => 0,
                     'rata_rata'               => 0,
-                    'nilai_survey'            => 0,
+                    'nilai_survei'            => 0,
                     'status'                  => 'Belum Lulus',
 
                     'status_pendaftaran'      => 'pending',

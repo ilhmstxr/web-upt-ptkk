@@ -200,9 +200,9 @@
                     {{-- <button onclick="switchTab('asrama')" id="tab-asrama" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
                         <i class="fa-solid fa-bed mr-2"></i>Asrama
                    </button> --}}
-                   <!-- NEW TAB: HASIL TES / SURVEY -->
+                   <!-- NEW TAB: HASIL TES / SURVEI -->
                    {{-- <button onclick="switchTab('hasil')" id="tab-hasil" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                        <i class="fa-solid fa-chart-pie mr-2"></i>Hasil Tes & Survey
+                        <i class="fa-solid fa-chart-pie mr-2"></i>Hasil Tes & Survei
                    </button> --}}
                 </nav>
             </div>
@@ -324,7 +324,7 @@
                 <div class="text-gray-500 text-center py-10">Fitur Asrama belum aktif.</div>
             </div>
 
-            <!-- CONTENT 6: HASIL TES / SURVEY -->
+            <!-- CONTENT 6: HASIL TES / SURVEI -->
             <div id="content-hasil" class="tab-content p-6 bg-white min-h-[400px]">
                 <div class="text-gray-500 text-center py-10">Belum ada hasil tes.</div>
             </div>

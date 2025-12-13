@@ -25,9 +25,9 @@
                         'icon' => 'heroicon-o-clipboard-document-check',
                         'color' => 'success',
                     ],
-                    'survey' => [
-                        'label' => 'Survey',
-                        'description' => 'Lihat hasil laporan survey kepuasan.',
+                    'survei' => [
+                        'label' => 'Survei',
+                        'description' => 'Lihat hasil laporan survei kepuasan.',
                         'icon' => 'heroicon-o-chart-pie',
                         'color' => 'primary',
                     ],

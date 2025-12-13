@@ -155,10 +155,10 @@ class ViewPelatihan extends ViewRecord
             $improvement = (($avgPosttest - $avgPretest) / $avgPretest) * 100;
         }
 
-        // 2. CSAT (Survey)
-        // Assuming 'nilai_survey' is 1-5 or similar scale.
-        $avgCsat = $pendaftaran->avg('nilai_survey') ?? 0;
-        $respondentsCount = $pendaftaran->whereNotNull('nilai_survey')->count();
+        // 2. CSAT (Survei)
+        // Assuming 'nilai_survei' is 1-5 or similar scale.
+        $avgCsat = $pendaftaran->avg('nilai_survei') ?? 0;
+        $respondentsCount = $pendaftaran->whereNotNull('nilai_survei')->count();
         
         // 3. Graduation Projection (REMOVED)
         // Logic removed as per user request to hide the card.
@@ -209,7 +209,7 @@ class ViewPelatihan extends ViewRecord
              } else {
                  $pre = $sessionRegistrations->avg('nilai_pre_test') ?? 0;
                  $post = $sessionRegistrations->avg('nilai_post_test') ?? 0;
-                 $sat = $sessionRegistrations->avg('nilai_survey') ?? 0; // CSAT per competency?
+                 $sat = $sessionRegistrations->avg('nilai_survei') ?? 0; // CSAT per competency?
              }
              
              $competencyStats[] = [

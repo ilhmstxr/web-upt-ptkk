@@ -23,7 +23,7 @@
         <div class="border-b border-gray-200 dark:border-gray-700 px-6 overflow-x-auto">
             <nav class="-mb-px flex space-x-8">
                 <button @click="activeTab = 'evaluasi'" :class="{ 'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'evaluasi', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': activeTab !== 'evaluasi' }" class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center">
-                    <x-heroicon-o-chart-pie class="w-4 h-4 mr-2" />Hasil Tes & Survey
+                    <x-heroicon-o-chart-pie class="w-4 h-4 mr-2" />Hasil Tes & Survei
                 </button>
                 <button @click="activeTab = 'peserta'" :class="{ 'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'peserta', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': activeTab !== 'peserta' }" class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center">
                     <x-heroicon-o-users class="w-4 h-4 mr-2" />Data Peserta (32)
@@ -34,7 +34,7 @@
             </nav>
         </div>
 
-        <!-- TAB CONTENT: HASIL TES & SURVEY (STATS) -->
+        <!-- TAB CONTENT: HASIL TES & SURVEI (STATS) -->
         <div x-show="activeTab === 'evaluasi'" class="p-6 bg-gray-50/50 dark:bg-gray-900/50">
 
             <div class="flex justify-between items-center mb-6">
@@ -120,11 +120,11 @@
                     </div>
                 </div>
 
-                <!-- 3. MONEV STATS (SURVEY) -->
+                <!-- 3. MONEV STATS (SURVEI) -->
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <h3 class="font-bold text-gray-800 dark:text-white text-lg">Survey Monev</h3>
+                            <h3 class="font-bold text-gray-800 dark:text-white text-lg">Survei Monev</h3>
                             <p class="text-xs text-gray-500 dark:text-gray-400">Kepuasan Peserta</p>
                         </div>
                         <span class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide">Aktif</span>
@@ -153,7 +153,7 @@
                 </div>
             </div>
 
-            <!-- B. Action List (Detail Tugas & Survey) -->
+            <!-- B. Action List (Detail Tugas & Survei) -->
             <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-between items-center">
                     <h3 class="font-bold text-gray-800 dark:text-white">Daftar Tes & Kuesioner</h3>

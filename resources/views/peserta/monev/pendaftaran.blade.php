@@ -15,7 +15,7 @@
 <!-- Form Section -->
 <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8 max-w-xl mx-auto">
     <form action="" method="POST" class="space-y-6">
-    {{-- <form action="{{ route('survey.store') }}" method="POST" class="space-y-6"> --}}
+    {{-- <form action="{{ route('survei.store') }}" method="POST" class="space-y-6"> --}}
         @csrf
         
         <!-- Nama Lengkap -->
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const nameInput = document.getElementById('nama');
     const statusIcon = document.getElementById('email-status-icon');
     const statusMessage = document.getElementById('email-status-message');
-    const checkEmailUrl = "{{ route('survey.checkEmail') }}";
+    const checkEmailUrl = "{{ route('survei.checkEmail') }}";
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     let debounceTimeout;

@@ -40,7 +40,7 @@ class PiePerPertanyaanWidget extends Widget
         $rows = $this->normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId);
 
         // Build Category Map
-        // We assume 'survei' type for now as this widget is for survey report
+        // We assume 'survei' type for now as this widget is for survei report
         $mapKategori = $this->buildKategoriMap($pelatihanId, 'survei');
 
         $answersByQuestion = [];

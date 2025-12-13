@@ -1,14 +1,14 @@
 {{-- resources/views/dashboard/pages/monev/monev-result.blade.php --}}
 @extends('dashboard.layouts.main')
 
-@section('title', 'Hasil Monev / Survey')
-@section('page-title', 'Hasil Monev / Survey')
+@section('title', 'Hasil Monev / Survei')
+@section('page-title', 'Hasil Monev / Survei')
 
 @section('content')
 <div class="bg-white p-6 rounded-2xl shadow-md fade-in max-w-4xl mx-auto">
 
     <div class="flex items-center justify-between mb-5">
-        <h2 class="font-bold text-xl text-slate-800">Hasil Monev / Survey</h2>
+        <h2 class="font-bold text-xl text-slate-800">Hasil Monev / Survei</h2>
 
         <a href="{{ route('dashboard.monev.index') }}"
            class="text-sm text-blue-600 font-semibold hover:underline">
@@ -46,7 +46,7 @@
         {{-- Ringkasan --}}
         <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-xl mb-6">
             <div class="text-sm text-indigo-800 font-semibold">
-                🎯 Terima kasih sudah mengisi survey!
+                🎯 Terima kasih sudah mengisi survei!
             </div>
             <div class="text-xs text-indigo-700 mt-1">
                 @if($avg !== null)

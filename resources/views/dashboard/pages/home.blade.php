@@ -250,7 +250,7 @@
                     <li>Kerjakan materi secara berurutan sampai statusnya <b>selesai</b>.</li>
                     <li>Pre-Test sebaiknya dikerjakan sebelum mulai materi utama.</li>
                     <li>Post-Test hanya bisa dikerjakan <b>sekali</b> setelah materi selesai.</li>
-                    <li>Monev/Survey wajib diisi untuk rekap evaluasi pelatihan.</li>
+                    <li>Monev/Survei wajib diisi untuk rekap evaluasi pelatihan.</li>
                 </ul>
             </section>
         </main>

@@ -154,7 +154,7 @@
                             </a>
                         </li>
 
-                        {{-- Monev / Survey (✅ route diperbaiki jadi monev.index) --}}
+                        {{-- Monev / Survei (✅ route diperbaiki jadi monev.index) --}}
                         <li>
                             <a href="{{ route('dashboard.monev.index') }}"
                                class="flex items-center p-2.5 rounded-lg font-medium
@@ -162,7 +162,7 @@
                                 <span class="w-5 h-5 mr-3 flex items-center justify-center text-lg leading-none">
                                     📊
                                 </span>
-                                <span>Monev / Survey</span>
+                                <span>Monev / Survei</span>
                             </a>
                         </li>
 

@@ -19,35 +19,35 @@ class ViewMonevDetail extends Page
 
     public Pelatihan $record;
     public KompetensiPelatihan $kompetensiPelatihan;
-    public $surveyData = [];
+    public $surveiData = [];
 
     public function mount(Pelatihan $record, $kompetensi_id): void
     {
         $this->record = $record;
         $this->kompetensiPelatihan = KompetensiPelatihan::findOrFail($kompetensi_id);
         
-        $this->prepareSurveyData();
+        $this->prepareSurveiData();
     }
 
     public function getTitle(): string | Htmlable
     {
-        return 'Analisis Hasil Survey Monev - ' . ($this->kompetensiPelatihan->kompetensi->nama_kompetensi ?? 'Detail Kompetensi');
+        return 'Analisis Hasil Survei Monev - ' . ($this->kompetensiPelatihan->kompetensi->nama_kompetensi ?? 'Detail Kompetensi');
     }
 
-    protected function prepareSurveyData()
+    protected function prepareSurveiData()
     {
-        // 1. Get Survey Tests
-        $surveyTesIds = Tes::where('pelatihan_id', $this->record->id)
+        // 1. Get Survei Tests
+        $surveiTesIds = Tes::where('pelatihan_id', $this->record->id)
             ->where('kompetensi_id', $this->kompetensiPelatihan->kompetensi_id)
-            ->where('tipe', 'survey')
+            ->where('tipe', 'survei')
             ->pluck('id');
 
-        if ($surveyTesIds->isEmpty()) {
+        if ($surveiTesIds->isEmpty()) {
             return;
         }
 
         // 2. Get Questions
-        $questions = Pertanyaan::whereIn('tes_id', $surveyTesIds)
+        $questions = Pertanyaan::whereIn('tes_id', $surveiTesIds)
             ->with(['opsiJawabans'])
             ->get();
 
@@ -129,7 +129,7 @@ class ViewMonevDetail extends Page
             ];
         }
 
-        $this->surveyData = [
+        $this->surveiData = [
             'ikm' => number_format($ikm, 2),
             'ikm_category' => $ikm >= 80 ? 'SANGAT BAIK' : ($ikm >= 60 ? 'BAIK' : 'KURANG'),
             'total_distribution' => array_values($distribution),
