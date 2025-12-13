@@ -76,7 +76,9 @@
         <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 space-y-2">
             <div class="text-slate-800 font-semibold leading-relaxed text-base">
                 {{ ($currentQuestionIndex + 1) }}.
-                {{ $pertanyaan->teks_pertanyaan ?? '-' }}
+                @php($plain = trim(strip_tags($pertanyaan->teks_pertanyaan ?? '')))
+                {!! $plain !== '' ? $pertanyaan->teks_pertanyaan : '-' !!}
+
             </div>
 
             {{-- Gambar pertanyaan --}}
