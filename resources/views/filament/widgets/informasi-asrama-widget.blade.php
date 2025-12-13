@@ -1,16 +1,29 @@
 <x-filament-widgets::widget>
     <x-filament::section>
-        {{-- Menggunakan x-data dengan data inisial yang diambil dari PHP --}}
+        {{-- Hapus inisialisasi variabel di x-data agar tidak ada error 'Undefined variable'. 
+             Data kini diakses melalui $wire --}}
         <div 
             class="flex flex-col" 
             x-data="{
                 chart: null,
-                male: {{ $male }},
-                female: {{ $female }},
-                empty: {{ $empty }},
                 
                 init() {
-                    // Cek apakah Chart.js sudah dimuat sebelum membuat chart
+                    // 🔥 Watcher: Membuat ulang chart jika data Livewire berubah (untuk robust data real-time)
+                    this.$watch('$wire.male', () => this.createChart());
+                    this.$watch('$wire.female', () => this.createChart());
+                    this.$watch('$wire.empty', () => this.createChart());
+                    
+                    // Panggil saat inisialisasi pertama kali
+                    this.createChart();
+                },
+                
+                createChart() {
+                    // Cek apakah data sudah dimuat oleh Livewire
+                    if (this.$wire.male === undefined) {
+                        return;
+                    }
+
+                    // Cek apakah Chart.js sudah dimuat
                     if (typeof Chart === 'undefined') {
                         console.error('Chart.js library is not loaded.');
                         return;
@@ -27,8 +40,8 @@
                         data: {
                             labels: ['Laki-laki', 'Perempuan', 'Kosong'],
                             datasets: [{
-                                // Menggunakan variabel Alpine
-                                data: [this.male, this.female, this.empty], 
+                                // 🔥 KOREKSI UTAMA: Mengakses data dari properti Livewire $wire
+                                data: [this.$wire.male, this.$wire.female, this.$wire.empty], 
                                 backgroundColor: [
                                     '#3b82f6', // Blue
                                     '#ec4899', // Pink
