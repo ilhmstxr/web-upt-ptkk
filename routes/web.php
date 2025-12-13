@@ -27,6 +27,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\TesRekapDownloadController;
 use App\Http\Controllers\AsramaOtomasiController;
 use App\Http\Controllers\StatistikPelatihanController;
+use App\Http\Controllers\TokenController;
 
 // --- MODELS & OTHERS ---
 use App\Models\Peserta;
@@ -330,6 +331,8 @@ Route::get('/test-peserta', fn () => dd((new PesertaSheet(null))->collection()->
 Route::get('/test-lampiran', fn () => dd((new LampiranSheet(null))->collection()->take(5)));
 Route::get('/export-peserta', fn () => Excel::download(new PesertaExport(), 'peserta.xlsx'))
     ->name('export.peserta');
+Route::get('/admin/download-tokens', [TokenController::class, 'download'])
+    ->name('admin.download.tokens');
 
 Route::get('/send', fn () => Mail::to('23082010166@student.upnjatim.ac.id')->send(new TestMail()));
 
