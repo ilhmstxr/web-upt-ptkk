@@ -1,19 +1,17 @@
 <x-filament-widgets::widget>
     <x-filament::section>
-        {{-- Hapus inisialisasi variabel di x-data agar tidak ada error 'Undefined variable'. 
-             Data kini diakses melalui $wire --}}
+        {{-- Hapus inisialisasi variabel di x-data (sudah dilakukan) --}}
         <div 
             class="flex flex-col" 
             x-data="{
                 chart: null,
                 
                 init() {
-                    // 🔥 Watcher: Membuat ulang chart jika data Livewire berubah (untuk robust data real-time)
+                    // Watcher: Membuat ulang chart jika data Livewire berubah (untuk robust data real-time)
                     this.$watch('$wire.male', () => this.createChart());
                     this.$watch('$wire.female', () => this.createChart());
                     this.$watch('$wire.empty', () => this.createChart());
                     
-                    // Panggil saat inisialisasi pertama kali
                     this.createChart();
                 },
                 
@@ -23,7 +21,6 @@
                         return;
                     }
 
-                    // Cek apakah Chart.js sudah dimuat
                     if (typeof Chart === 'undefined') {
                         console.error('Chart.js library is not loaded.');
                         return;
@@ -40,7 +37,7 @@
                         data: {
                             labels: ['Laki-laki', 'Perempuan', 'Kosong'],
                             datasets: [{
-                                // 🔥 KOREKSI UTAMA: Mengakses data dari properti Livewire $wire
+                                // Akses data di Alpine melalui $wire (sudah benar)
                                 data: [this.$wire.male, this.$wire.female, this.$wire.empty], 
                                 backgroundColor: [
                                     '#3b82f6', // Blue
@@ -67,22 +64,22 @@
                     });
                 }
             }"
-            x-init="init()" {{-- Memanggil init() setelah komponen Alpine siap --}}
+            x-init="init()"
         >
             <div class="mb-6 flex justify-between items-start">
                 <div>
                     <h3 class="font-bold text-gray-800 text-lg dark:text-white">Ketersediaan Asrama</h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Real-time status okupansi kamar.</p>
                 </div>
-                <div class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-medium max-w-[150px] truncate" title="{{ $activeTrainingName }}">
-                    {{ $activeTrainingName }}
+                <div class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-medium max-w-[150px] truncate" title="{{ $this->activeTrainingName }}">
+                    {{ $this->activeTrainingName }}
                 </div>
             </div>
 
             <div class="relative h-48 mb-6">
                 <canvas x-ref="canvas"></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span class="text-4xl font-bold text-gray-800 dark:text-white">{{ $percent }}%</span>
+                    <span class="text-4xl font-bold text-gray-800 dark:text-white">{{ $this->percent }}%</span>
                     <span class="text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Terisi</span>
                 </div>
             </div>
@@ -93,21 +90,21 @@
                         <span class="w-3 h-3 rounded-full bg-blue-500"></span>
                         <span class="text-gray-600 dark:text-gray-300">Laki-laki</span>
                     </div>
-                    <span class="font-bold text-gray-800 dark:text-white">{{ $male }} Org</span>
+                    <span class="font-bold text-gray-800 dark:text-white">{{ $this->male }} Org</span>
                 </div>
                 <div class="flex items-center justify-between text-sm">
                     <div class="flex items-center gap-2">
                         <span class="w-3 h-3 rounded-full bg-pink-500"></span>
                         <span class="text-gray-600 dark:text-gray-300">Perempuan</span>
                     </div>
-                    <span class="font-bold text-gray-800 dark:text-white">{{ $female }} Org</span>
+                    <span class="font-bold text-gray-800 dark:text-white">{{ $this->female }} Org</span>
                 </div>
                 <div class="flex items-center justify-between text-sm">
                     <div class="flex items-center gap-2">
                         <span class="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-700"></span>
                         <span class="text-gray-600 dark:text-gray-300">Kosong</span>
                     </div>
-                    <span class="font-bold text-green-600 dark:text-green-400">{{ $empty }} Bed</span>
+                    <span class="font-bold text-green-600 dark:text-green-400">{{ $this->empty }} Bed</span>
                 </div>
             </div>
         </div>
