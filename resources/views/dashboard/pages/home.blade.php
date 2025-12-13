@@ -75,7 +75,7 @@
 
                     <a href="{{ route('dashboard.posttest.index') }}"
                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm border bg-white hover:bg-slate-50 text-slate-700 border-slate-200">
-                        ✅ Post-Test
+                        📝 Post-Test
                     </a>
 
                     <a href="{{ route('dashboard.monev.index') }}"
