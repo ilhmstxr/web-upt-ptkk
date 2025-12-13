@@ -10,15 +10,17 @@ class InformasiAsramaWidget extends Widget
     protected int | string | array $columnSpan = 1;
     protected static string $view = 'filament.widgets.informasi-asrama-widget';
 
+    // 🔥🔥 KOREKSI UTAMA: Menonaktifkan lazy loading agar data segera tersedia di view 🔥🔥
+    protected static bool $isLazy = false;
+
     protected function getViewData(): array
     {
-        // 1. Pelatihan Aktif (Cari yang status aktif dan tanggal masuk range)
+        // 1. Pelatihan Aktif
         $activeTraining = \App\Models\Pelatihan::where('status', 'aktif')
              ->latest('tanggal_mulai')
              ->first();
 
         // 2. Penghuni Aktif (Occupancy)
-        // Panggilan ke penghuniAktif() diasumsikan sebagai Query Scope
         $placements = \App\Models\PenempatanAsrama::penghuniAktif()
             ->with(['pendaftaranPelatihan.peserta'])
             ->get();
@@ -40,7 +42,7 @@ class InformasiAsramaWidget extends Widget
         // 3. Kapasitas Total
         $totalCapacity = \App\Models\Kamar::sum('total_beds');
         
-        // Hitung Kamar Kosong (pastikan hasilnya tidak negatif)
+        // Hitung Kamar Kosong
         $empty = $totalCapacity - $occupied;
         if ($empty < 0) $empty = 0;
         
