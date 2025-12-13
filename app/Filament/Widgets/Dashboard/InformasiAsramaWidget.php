@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Filament\Widgets\Dashboard;
+namespace App\Filament\Widgets\Dashboard; 
 
 use Filament\Widgets\Widget;
 use App\Models\Pelatihan;
 use App\Models\PenempatanAsrama;
 use App\Models\Kamar;
-use Illuminate\Support\Collection;
 
 class InformasiAsramaWidget extends Widget
 {
@@ -14,22 +13,25 @@ class InformasiAsramaWidget extends Widget
     protected int | string | array $columnSpan = 1;
     protected static string $view = 'filament.widgets.informasi-asrama-widget';
 
-    // 🔥 KOREKSI 1: Definisikan data sebagai Properti Livewire Publik
-    // Ini adalah solusi paling robust untuk menghindari 'Undefined variable' di view.
+    // Properti Livewire yang tetap public (untuk reaktivitas chart)
     public int $male = 0;
     public int $female = 0;
     public int $empty = 0;
     public int $percent = 0;
-    public string $activeTrainingName = 'Memuat Data...';
     
-    // Tetap statis untuk properti kelas induk
+    // Properti private untuk nilai non-reaktif (Dikirim via getViewData untuk menghindari error Livewire)
+    private string $currentTrainingNameValue = 'Memuat Data...';
+
     protected static bool $isLazy = false; 
 
     public function mount(): void
     {
+        // 1. Pelatihan Aktif (untuk judul widget)
         $activeTraining = Pelatihan::where('status', 'aktif')
              ->latest('tanggal_mulai')
              ->first();
+
+        // 2. Penghuni Aktif (Occupancy)
         $placements = PenempatanAsrama::query()
             ->penghuniAktif()
             ->with(['pendaftaranPelatihan.peserta'])
@@ -59,11 +61,18 @@ class InformasiAsramaWidget extends Widget
         // Hitung Persentase
         $this->percent = $totalCapacity > 0 ? round(($occupied / $totalCapacity) * 100) : 0;
 
-        $this->activeTrainingName = $activeTraining ? $activeTraining->nama_pelatihan : 'Tidak ada pelatihan aktif';
+        // Set nilai ke properti private
+        $this->currentTrainingNameValue = $activeTraining ? $activeTraining->nama_pelatihan : 'Tidak ada pelatihan aktif';
     }
 
+    /**
+     * Mengirim variabel non-reaktif ke view Blade.
+     */
     protected function getViewData(): array
     {
-        return [];
+        return [
+            // Variabel $currentTrainingName akan tersedia di Blade tanpa $this->
+            'currentTrainingName' => $this->currentTrainingNameValue,
+        ];
     }
 }

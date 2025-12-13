@@ -1,13 +1,12 @@
 <x-filament-widgets::widget>
     <x-filament::section>
-        {{-- Hapus inisialisasi variabel di x-data (sudah dilakukan) --}}
         <div 
             class="flex flex-col" 
             x-data="{
                 chart: null,
                 
                 init() {
-                    // Watcher: Membuat ulang chart jika data Livewire berubah (untuk robust data real-time)
+                    // Watcher: Alpine menggunakan $wire untuk melacak perubahan data Livewire
                     this.$watch('$wire.male', () => this.createChart());
                     this.$watch('$wire.female', () => this.createChart());
                     this.$watch('$wire.empty', () => this.createChart());
@@ -37,7 +36,7 @@
                         data: {
                             labels: ['Laki-laki', 'Perempuan', 'Kosong'],
                             datasets: [{
-                                // Akses data di Alpine melalui $wire (sudah benar)
+                                // Akses data di Alpine melalui $wire
                                 data: [this.$wire.male, this.$wire.female, this.$wire.empty], 
                                 backgroundColor: [
                                     '#3b82f6', // Blue
@@ -53,12 +52,8 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    enabled: true
-                                }
+                                legend: { display: false },
+                                tooltip: { enabled: true }
                             }
                         }
                     });
@@ -71,8 +66,8 @@
                     <h3 class="font-bold text-gray-800 text-lg dark:text-white">Ketersediaan Asrama</h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Real-time status okupansi kamar.</p>
                 </div>
-                <div class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-medium max-w-[150px] truncate" title="{{ $this->activeTrainingName }}">
-                    {{ $this->activeTrainingName }}
+                <div class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-medium max-w-[150px] truncate" title="{{ $currentTrainingName }}">
+                    {{ $currentTrainingName }}
                 </div>
             </div>
 
