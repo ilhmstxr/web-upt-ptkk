@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Filament\Widgets\Dashboard; // Sesuaikan namespace jika Anda mengubah path folder
 
 use Filament\Widgets\Widget;
 
@@ -18,28 +18,33 @@ class InformasiAsramaWidget extends Widget
              ->first();
 
         // 2. Penghuni Aktif (Occupancy)
-        // Gunakan scopePenghuniAktif dari model PenempatanAsrama
+        // Panggilan ke penghuniAktif() diasumsikan sebagai Query Scope
         $placements = \App\Models\PenempatanAsrama::penghuniAktif()
             ->with(['pendaftaranPelatihan.peserta'])
             ->get();
 
         $occupied = $placements->count();
+        
+        // Filter Laki-laki
         $male = $placements->filter(function ($placement) {
             $jk = $placement->pendaftaranPelatihan?->peserta?->jenis_kelamin;
             return in_array($jk, ['Laki-laki', 'L', 'Pria']);
         })->count();
         
+        // Filter Perempuan
         $female = $placements->filter(function ($placement) {
             $jk = $placement->pendaftaranPelatihan?->peserta?->jenis_kelamin;
             return in_array($jk, ['Perempuan', 'P', 'Wanita']);
         })->count();
         
-        // 3. Kapasitas
+        // 3. Kapasitas Total
         $totalCapacity = \App\Models\Kamar::sum('total_beds');
+        
+        // Hitung Kamar Kosong (pastikan hasilnya tidak negatif)
         $empty = $totalCapacity - $occupied;
         if ($empty < 0) $empty = 0;
         
-        // Percent
+        // Hitung Persentase
         $percent = $totalCapacity > 0 ? round(($occupied / $totalCapacity) * 100) : 0;
 
         return [
