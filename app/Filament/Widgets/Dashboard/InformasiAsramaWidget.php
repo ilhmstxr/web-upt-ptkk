@@ -24,7 +24,7 @@ class InformasiAsramaWidget extends Widget
     // Properti private untuk nilai non-reaktif (Dikirim via getViewData untuk menghindari error Livewire)
     private string $currentTrainingNameValue = 'Memuat Data...';
 
-    protected static bool $isLazy = false;
+
 
     public function mount(): void
     {

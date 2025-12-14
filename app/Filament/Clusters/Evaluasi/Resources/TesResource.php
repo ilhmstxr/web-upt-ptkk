@@ -46,7 +46,8 @@ class TesResource extends Resource
                             ->searchable()
                             ->required()
                             ->default(request()->query('pelatihan_id'))
-                            ->disabled(fn (?string $operation) =>
+                            ->disabled(
+                                fn(?string $operation) =>
                                 $operation === 'edit' || request()->has('pelatihan_id')
                             ),
 
@@ -55,7 +56,8 @@ class TesResource extends Resource
                             ->searchable()
                             ->required()
                             ->default(request()->query('kompetensi_id'))
-                            ->disabled(fn (?string $operation) =>
+                            ->disabled(
+                                fn(?string $operation) =>
                                 $operation === 'edit' || request()->has('kompetensi_id')
                             ),
 
@@ -104,10 +106,17 @@ class TesResource extends Resource
                             ->schema([
 
                                 /* ===== KATEGORI / SUB SECTION ===== */
-                                Forms\Components\TextInput::make('kategori')
-                                    ->label('Kategori / Bagian (Sub Section)')
-                                    ->placeholder('Contoh: PERSEPSI TERHADAP PROGRAM PELATIHAN')
-                                    ->maxLength(255),
+                                Forms\Components\Select::make('kelompok_pertanyaan_id')
+                                    ->label('Kelompok / Kategori')
+                                    ->relationship('kelompok', 'nama_kategori')
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('nama_kategori')
+                                            ->required()
+                                            ->maxLength(255),
+                                    ])
+                                    ->columnSpanFull(),
 
                                 Forms\Components\RichEditor::make('teks_pertanyaan')
                                     ->label('Teks Pertanyaan')
@@ -171,12 +180,13 @@ class TesResource extends Resource
                                     ])
                                     ->columns(2)
                                     ->label('Opsi Jawaban')
-                                    ->visible(fn (Forms\Get $get) =>
+                                    ->visible(
+                                        fn(Forms\Get $get) =>
                                         $get('tipe_jawaban') === 'pilihan_ganda'
                                     )
                                     ->defaultItems(4)
                                     ->rules([
-                                        fn (): \Closure => function (
+                                        fn(): \Closure => function (
                                             string $attribute,
                                             $value,
                                             \Closure $fail
@@ -190,7 +200,8 @@ class TesResource extends Resource
                                         },
                                     ]),
                             ])
-                            ->itemLabel(fn (array $state): ?string =>
+                            ->itemLabel(
+                                fn(array $state): ?string =>
                                 strip_tags($state['teks_pertanyaan'] ?? null)
                             )
                             ->collapsible()
@@ -214,7 +225,7 @@ class TesResource extends Resource
 
                 Tables\Columns\TextColumn::make('tipe')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'pre-test'  => 'info',
                         'post-test' => 'success',
                         'survei'    => 'warning',
