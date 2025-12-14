@@ -2,49 +2,41 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder; // Diperlukan untuk scope type-hinting
-use App\Models\Pelatihan; // Diperlukan untuk relasi
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PenempatanAsrama extends Model
 {
+    use HasFactory;
+
     protected $table = 'penempatan_asrama';
 
     protected $fillable = [
         'peserta_id',
-        'asrama_id',
-        'kamar_id',
-        'pendaftaran_id',
-        'pendaftaran_pelatihan_id',
         'pelatihan_id',
+        'kamar_pelatihan_id',
+        'gender',
     ];
 
-    public function kamar()
+    protected $casts = [
+        'peserta_id' => 'integer',
+        'pelatihan_id' => 'integer',
+        'kamar_pelatihan_id' => 'integer',
+    ];
+
+    public function peserta(): BelongsTo
     {
-        return $this->belongsTo(Kamar::class, 'kamar_id');
-    }
-    
-    public function pendaftaranPelatihan()
-    {
-        return $this->belongsTo(PendaftaranPelatihan::class, 'pendaftaran_pelatihan_id');
+        return $this->belongsTo(Peserta::class, 'peserta_id');
     }
 
-    public function pelatihan()
+    public function pelatihan(): BelongsTo
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
-    /**
-     * Scope untuk mengambil semua penempatan yang masih aktif.
-     * Logika aktif diambil dari tanggal berakhir pelatihan yang diikuti peserta.
-     *
-     * @param Builder $query
-     * @return Builder
-     */
-    public function scopePenghuniAktif(Builder $query): Builder
+    public function kamarPelatihan(): BelongsTo
     {
-        return $query->whereHas('pelatihan', function (Builder $pelatihanQuery) {
-            $pelatihanQuery->where('tanggal_selesai', '>=', now()->toDateString());
-        });
+        return $this->belongsTo(KamarPelatihan::class, 'kamar_pelatihan_id');
     }
 }

@@ -9,6 +9,8 @@ use App\Models\Asrama;
 
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 
 use Filament\Tables;
@@ -31,59 +33,82 @@ class AsramaResource extends Resource
     protected static ?string $modelLabel       = 'Asrama';
     protected static ?string $pluralModelLabel = 'Asrama';
 
-    /**
-     * =========================
-     * QUERY
-     * =========================
-     */
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery();
+        // penting supaya badge counts tidak N+1
+        return parent::getEloquentQuery()->withCount('kamars');
     }
 
     /**
-     * =========================
-     * FORM CREATE & EDIT
-     * - Create asrama: kosong
-     * - Kamar manual (tidak auto dari config)
-     * =========================
+     * Ambil default kamar dari config berdasarkan nama asrama.
+     * Format repeater kamars: nomor_kamar, total_beds, is_active, available_beds
      */
+    protected static function defaultKamarsForAsramaName(?string $asramaName): array
+    {
+        $asramaName = trim((string) $asramaName);
+        if ($asramaName === '') return [];
+
+        $config = config('kamar', []);
+        if (!is_array($config) || !isset($config[$asramaName]) || !is_array($config[$asramaName])) {
+            return [];
+        }
+
+        return collect($config[$asramaName])
+            ->map(function ($room) {
+                $no  = (int) ($room['no'] ?? 0);
+                $bed = $room['bed'] ?? null;
+
+                $isActive = is_numeric($bed) && (int) $bed > 0;
+                $totalBeds = $isActive ? (int) $bed : 0;
+
+                return [
+                    'nomor_kamar'    => $no,
+                    'total_beds'     => $totalBeds,
+                    'available_beds' => $totalBeds,
+                    'is_active'      => $isActive,
+                ];
+            })
+            ->values()
+            ->toArray();
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
 
-            /* ===============================
-             * INFORMASI ASRAMA
-             * =============================== */
             Forms\Components\Section::make('Informasi Asrama')
                 ->schema([
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('Nama Asrama')
+                        ->required()
+                        ->maxLength(255)
+                        ->reactive()
+                        ->afterStateUpdated(function (Set $set, Get $get, ?string $state) {
+                            /**
+                             * Jika user membuat asrama baru dan namanya sama dengan key config,
+                             * maka kamar otomatis terisi dari config (sekali).
+                             *
+                             * Tapi kalau user sudah mengisi repeater manual, jangan ditimpa.
+                             */
+                            $current = $get('kamars') ?? [];
+                            if (!empty($current)) {
+                                return;
+                            }
 
-                        Forms\Components\TextInput::make('name')
-                            ->label('Nama Asrama')
-                            ->required()
-                            ->maxLength(255),
+                            $defaults = static::defaultKamarsForAsramaName($state);
+                            if (!empty($defaults)) {
+                                $set('kamars', $defaults);
+                            }
+                        }),
 
-                        Forms\Components\Select::make('gender')
-                            ->label('Khusus')
-                            ->options([
-                                'Laki-laki' => 'Laki-laki',
-                                'Perempuan' => 'Perempuan',
-                                'Campur'    => 'Campur',
-                            ])
-                            ->nullable(), // boleh kosong
-                    ]),
                 ]),
 
-            /* ===============================
-             * KAMAR & BED (MANUAL)
-             * =============================== */
             Forms\Components\Section::make('Kamar & Bed')
-                ->description('Tambah kamar secara manual')
+                ->description('Default otomatis dari config jika nama asrama sesuai. Tetap bisa diubah manual.')
                 ->schema([
 
                     Forms\Components\Repeater::make('kamars')
-                        ->relationship()
+                        ->relationship() // Asrama::kamars()
                         ->schema([
 
                             Forms\Components\TextInput::make('nomor_kamar')
@@ -92,40 +117,51 @@ class AsramaResource extends Resource
                                 ->required(),
 
                             Forms\Components\TextInput::make('total_beds')
-                                ->label('Jumlah Bed')
+                                ->label('Total Bed')
+                                ->numeric()
+                                ->minValue(0)
+                                ->required()
+                                ->afterStateUpdated(function (Set $set, $state, Get $get) {
+                                    // kalau user ubah total_beds, available_beds ikut disetarakan
+                                    $beds = (int) $state;
+                                    $set('available_beds', $beds);
+                                    $set('is_active', $beds > 0);
+                                }),
+
+                            Forms\Components\TextInput::make('available_beds')
+                                ->label('Bed Tersedia')
                                 ->numeric()
                                 ->minValue(0)
                                 ->required(),
 
+                            Forms\Components\Toggle::make('is_active')
+                                ->label('Aktif')
+                                ->default(true),
+
                         ])
-                        ->columns(2)
+                        ->columns(4)
                         ->addActionLabel('Tambah Kamar')
                         ->reorderable()
                         ->collapsible(),
+
                 ]),
         ]);
     }
 
-    /**
-     * =========================
-     * TABLE
-     * =========================
-     */
     public static function table(Table $table): Table
     {
         return $table
             ->heading('Fasilitas Asrama')
-            ->description('Daftar asrama beserta jumlah kamar dan bed.')
-
+            ->description('Asrama global (dari config), kamar bisa dipakai per pelatihan via kamar_pelatihan.')
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,
             ])
-
             ->columns([
                 Stack::make([
 
                     TextColumn::make('name')
+                        ->label('')
                         ->size(TextColumn\TextColumnSize::Large)
                         ->weight('bold')
                         ->searchable()
@@ -139,18 +175,16 @@ class AsramaResource extends Resource
                         BadgeColumn::make('kamars_count')
                             ->label('Kamar')
                             ->icon('heroicon-o-home')
-                            ->counts('kamars')
                             ->color('primary')
                             ->alignCenter(),
 
                         BadgeColumn::make('total_beds')
                             ->label('Bed')
                             ->icon('heroicon-o-rectangle-stack')
-                            ->state(fn (Asrama $record) =>
-                                $record->kamars()->sum('total_beds')
-                            )
+                            ->state(fn (Asrama $record) => (int) $record->kamars()->sum('total_beds'))
                             ->color('success')
                             ->alignCenter(),
+
                     ]),
                 ])
                 ->space(3)
@@ -161,7 +195,6 @@ class AsramaResource extends Resource
                     ',
                 ]),
             ])
-
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
@@ -175,7 +208,6 @@ class AsramaResource extends Resource
                     ->color('danger')
                     ->button(),
             ])
-
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -183,11 +215,6 @@ class AsramaResource extends Resource
             ]);
     }
 
-    /**
-     * =========================
-     * RELATIONS
-     * =========================
-     */
     public static function getRelations(): array
     {
         return [
@@ -195,11 +222,6 @@ class AsramaResource extends Resource
         ];
     }
 
-    /**
-     * =========================
-     * PAGES
-     * =========================
-     */
     public static function getPages(): array
     {
         return [

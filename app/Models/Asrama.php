@@ -4,56 +4,32 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Asrama extends Model
 {
     use HasFactory;
 
-    protected $table = 'asrama';
+    protected $table = 'asrama'; // ✅ sesuai migration
 
     protected $fillable = [
-        'pelatihan_id', // legacy / opsional
         'name',
-        'gender',
+        'alamat',
     ];
-
-    /* =====================
-     * RELATIONS
-     * ===================== */
-
-    public function pelatihan(): BelongsTo
-    {
-        return $this->belongsTo(Pelatihan::class);
-    }
 
     public function kamars(): HasMany
     {
-        return $this->hasMany(Kamar::class);
+        return $this->hasMany(Kamar::class, 'asrama_id');
     }
 
-    /* =====================
-     * DB-BASED COUNTER ✅
-     * ===================== */
-
+    // ✅ helper count (DB-based)
     public function totalKamar(): int
     {
         return $this->kamars()->count();
     }
 
-    public function totalBeds(): int
+    public function totalBedsGlobal(): int
     {
-        return $this->kamars()->sum('total_beds');
-    }
-
-    public function totalBedTersedia(): int
-    {
-        return $this->kamars()->sum('available_beds');
-    }
-
-    public function totalKamarNonaktif(): int
-    {
-        return $this->kamars()->where('is_active', false)->count();
+        return (int) $this->kamars()->sum('total_beds');
     }
 }
