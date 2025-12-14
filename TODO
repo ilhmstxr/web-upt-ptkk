@@ -126,3 +126,4 @@ muhammad nazar qoirun nazmi
 SELECT * from peserta WHERE nama LIKE "%AMELTA%";
 MUHAMMAD NAZAR QOIRUN NAZMI
 mnazar.qn18@gmail.com
+

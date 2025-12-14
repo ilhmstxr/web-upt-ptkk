@@ -35,4 +35,10 @@ class PenempatanAsrama extends Model
             ->first();
     }
 
+    public function scopePenghuniAktif($query)
+    {
+        return $query->whereHas('pendaftaranPelatihan.pelatihan', function ($q) {
+            $q->where('status', 'aktif');
+        });
+    }
 }

@@ -160,12 +160,7 @@ final class PelatihanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('gambar')
-                    ->label('Cover')
-                    ->square()
-                    ->size(60)
-                    ->defaultImageUrl('https://via.placeholder.com/150'),
-
+            
                 Tables\Columns\TextColumn::make('nama_pelatihan')
                     ->label('Nama Pelatihan')
                     ->searchable()
