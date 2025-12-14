@@ -65,4 +65,8 @@ class Tes extends Model
     {
         return $this->hasMany(TipeTes::class, 'tes_id');
     }
+    public function kelompokPertanyaan()
+    {
+        return $this->hasMany(KelompokPertanyaan::class, 'tes_id');
+    }
 }
