@@ -2,11 +2,13 @@
 
 namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets;
 
+use App\Models\KompetensiPelatihan;
 use App\Models\PendaftaranPelatihan;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class PesertaPelatihanTable extends BaseWidget
@@ -16,24 +18,48 @@ class PesertaPelatihanTable extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    /**
+     * Query utama table (dibikin aman kalau record belum kebawa).
+     */
+    protected function getPesertaQuery(): Builder
+    {
+        if (! $this->record?->getKey()) {
+            return PendaftaranPelatihan::query()->whereRaw('1=0');
+        }
+
+        return PendaftaranPelatihan::query()
+            ->where('pelatihan_id', $this->record->getKey())
+            ->when(
+                $this->kompetensiPelatihanId,
+                fn (Builder $q) => $q->where('kompetensi_pelatihan_id', $this->kompetensiPelatihanId)
+            )
+            ->with([
+                'peserta.user',
+                'peserta.instansi.cabangDinas',
+                'kompetensiPelatihan.kompetensi',
+                'pelatihan',
+                'penempatanAsramaAktif.kamarPelatihan.kamar',
+            ]);
+    }
+
+    protected function getKompetensiOptions(): array
+    {
+        if (! $this->record?->getKey()) {
+            return [];
+        }
+
+        return KompetensiPelatihan::query()
+            ->with('kompetensi')
+            ->where('pelatihan_id', $this->record->getKey())
+            ->get()
+            ->pluck('kompetensi.nama_kompetensi', 'id')
+            ->toArray();
+    }
+
     public function table(Table $table): Table
     {
         return $table
-            ->query(
-                PendaftaranPelatihan::query()
-                    ->where('pelatihan_id', $this->record->id)
-                    ->when(
-                        $this->kompetensiPelatihanId,
-                        fn ($q) => $q->where('kompetensi_pelatihan_id', $this->kompetensiPelatihanId)
-                    )
-                    ->with([
-                        'peserta.user',
-                        'peserta.instansi.cabangDinas',
-                        'kompetensiPelatihan.kompetensi',
-                        'pelatihan',
-                        'penempatanAsramaAktif.kamarPelatihan.kamar',
-                    ])
-            )
+            ->query($this->getPesertaQuery())
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_registrasi')
                     ->label('No. Registrasi')
@@ -70,30 +96,25 @@ class PesertaPelatihanTable extends BaseWidget
                     }),
             ])
             ->filters([
-                // FIX: harus status_pendaftaran (bukan "status")
                 Tables\Filters\SelectFilter::make('status_pendaftaran')
                     ->label('Status')
                     ->options([
-                        'Pending'    => 'Pending',
-                        'Verifikasi' => 'Verifikasi',
-                        'Diterima'   => 'Diterima',
-                        'Ditolak'    => 'Ditolak',
-                        'Cadangan'   => 'Cadangan',
+                        'pending'    => 'Pending',
+                        'verifikasi' => 'Verifikasi',
+                        'diterima'   => 'Diterima',
+                        'ditolak'    => 'Ditolak',
+                        'cadangan'   => 'Cadangan',
                     ]),
 
                 Tables\Filters\SelectFilter::make('kompetensi_pelatihan_id')
                     ->label('Kompetensi')
-                    ->options(function () {
-                        return \App\Models\KompetensiPelatihan::with('kompetensi')
-                            ->where('pelatihan_id', $this->record->id)
-                            ->get()
-                            ->pluck('kompetensi.nama_kompetensi', 'id')
-                            ->toArray();
-                    })
-                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
+                    ->options(fn () => $this->getKompetensiOptions())
+                    ->query(function (Builder $query, array $data) {
+                        $value = $data['value'] ?? null;
+
                         return $query->when(
-                            $data['value'] ?? null,
-                            fn ($q, $v) => $q->where('kompetensi_pelatihan_id', $v)
+                            $value,
+                            fn (Builder $q) => $q->where('kompetensi_pelatihan_id', $value)
                         );
                     })
                     ->visible(fn () => is_null($this->kompetensiPelatihanId)),
@@ -106,7 +127,7 @@ class PesertaPelatihanTable extends BaseWidget
                     ->label('Terima')
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->requiresConfirmation(fn () => !session()->get('suppress_peserta_approval_confirmation'))
+                    ->requiresConfirmation(fn () => ! session()->get('suppress_peserta_approval_confirmation'))
                     ->modalIcon('heroicon-o-check')
                     ->modalHeading('Terima Peserta')
                     ->modalDescription('Apakah Anda yakin ingin menerima peserta ini? Status akan berubah menjadi Diterima.')
@@ -120,7 +141,7 @@ class PesertaPelatihanTable extends BaseWidget
                             session()->put('suppress_peserta_approval_confirmation', true);
                         }
 
-                        $record->update(['status_pendaftaran' => 'Diterima']);
+                        $record->update(['status_pendaftaran' => 'diterima']);
 
                         // Load relations needed for email template
                         $record->load([
@@ -169,13 +190,13 @@ class PesertaPelatihanTable extends BaseWidget
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower($record->status_pendaftaran ?? '') === 'pending'),
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
 
                 Tables\Actions\Action::make('reject')
                     ->label('Tolak')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
-                    ->requiresConfirmation(fn () => !session()->get('suppress_peserta_approval_confirmation'))
+                    ->requiresConfirmation(fn () => ! session()->get('suppress_peserta_approval_confirmation'))
                     ->modalIcon('heroicon-o-x-mark')
                     ->modalHeading('Tolak Peserta')
                     ->modalDescription('Apakah Anda yakin ingin menolak peserta ini? Status akan berubah menjadi Ditolak.')
@@ -189,14 +210,14 @@ class PesertaPelatihanTable extends BaseWidget
                             session()->put('suppress_peserta_approval_confirmation', true);
                         }
 
-                        $record->update(['status_pendaftaran' => 'Ditolak']);
+                        $record->update(['status_pendaftaran' => 'ditolak']);
 
                         \Filament\Notifications\Notification::make()
                             ->title('Peserta ditolak')
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower($record->status_pendaftaran ?? '') === 'pending'),
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
 
                 Tables\Actions\EditAction::make()
                     ->slideOver()
@@ -204,34 +225,26 @@ class PesertaPelatihanTable extends BaseWidget
                         Forms\Components\Select::make('status_pendaftaran')
                             ->label('Status Pendaftaran')
                             ->options([
-                                'Pending'    => 'Pending',
-                                'Verifikasi' => 'Verifikasi',
-                                'Diterima'   => 'Diterima',
-                                'Ditolak'    => 'Ditolak',
-                                'Cadangan'   => 'Cadangan',
+                                'pending'    => 'Pending',
+                                'verifikasi' => 'Verifikasi',
+                                'diterima'   => 'Diterima',
+                                'ditolak'    => 'Ditolak',
+                                'cadangan'   => 'Cadangan',
                             ])
                             ->required()
                             ->native(false),
 
                         Forms\Components\Select::make('kompetensi_pelatihan_id')
                             ->label('Kompetensi')
-                            ->options(function () {
-                                return \App\Models\KompetensiPelatihan::with('kompetensi')
-                                    ->where('pelatihan_id', $this->record->id)
-                                    ->get()
-                                    ->mapWithKeys(fn ($item) => [
-                                        $item->id => $item->kompetensi->nama_kompetensi ?? 'Unknown'
-                                    ])
-                                    ->toArray();
-                            })
+                            ->options(fn () => $this->getKompetensiOptions())
                             ->searchable()
                             ->preload()
                             ->required(),
                     ])
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower($record->status_pendaftaran ?? '') !== 'pending'),
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
 
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower($record->status_pendaftaran ?? '') !== 'pending'),
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
             ]);
     }
 }
