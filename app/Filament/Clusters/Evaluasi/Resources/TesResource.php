@@ -173,10 +173,10 @@ class TesResource extends Resource
                                     ->label('Teks Pertanyaan')
                                     ->required(),
 
-                                Forms\Components\FileUpload::make('gambar')
-                                    ->image()
-                                    ->directory('soal-images')
-                                    ->label('Gambar Soal (Opsional)'),
+                                    Forms\Components\FileUpload::make('gambar')
+                                        ->image()
+                                        ->directory('soal-images')
+                                        ->label('Gambar Soal (Opsional)'),
 
                                 Forms\Components\Select::make('tipe_jawaban')
                                     ->options([
