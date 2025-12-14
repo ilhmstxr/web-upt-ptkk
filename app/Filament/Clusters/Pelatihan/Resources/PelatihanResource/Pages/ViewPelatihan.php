@@ -145,116 +145,46 @@ class ViewPelatihan extends ViewRecord
     {
         $pelatihanId = $this->record->id;
 
-        // 1. Calculate Pretest & Posttest
-        // Try Percobaan First
-        $avgPretest = \App\Models\Percobaan::query()
-            ->where('pelatihan_id', $pelatihanId)
-            ->whereHas('tes', fn($q) => $q->where('tipe', 'pre_test'))
-            ->avg('skor');
-
-        // Fallback to PendaftaranPelatihan if null
-        if ($avgPretest === null) {
-            $avgPretest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_pre_test') ?? 0;
-        }
-
-        $avgPosttest = \App\Models\Percobaan::query()
-            ->where('pelatihan_id', $pelatihanId)
-            ->whereHas('tes', fn($q) => $q->where('tipe', 'post_test'))
-            ->avg('skor');
-
-        // Fallback
-        if ($avgPosttest === null) {
-            $avgPosttest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_post_test') ?? 0;
-        }
+        // 1. Calculate Pretest & Posttest (Using PendaftaranPelatihan)
+        $avgPretest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_pre_test') ?? 0;
+        $avgPosttest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_post_test') ?? 0;
 
         $improvement = 0;
         if ($avgPretest > 0) {
             $improvement = (($avgPosttest - $avgPretest) / $avgPretest) * 100;
         }
 
-        // 2. Calculate CSAT (Survey) using BuildsLikertData logic
-        // Aggregating all Likert answers from 'survei' tests for this training
         // 2. Calculate CSAT (Survey)
-        $pertanyaanIds = $this->collectPertanyaanIds($pelatihanId, 'survei');
-        $avgCsat = 0;
-        $respondentsCount = 0;
+        $avgCsat = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+            ->whereNotNull('nilai_survey')
+            ->avg('nilai_survey') ?? 0;
 
-        if ($pertanyaanIds->isNotEmpty()) {
-            [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIds);
-            $allAnswers = $this->normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId);
-            $validScales = $allAnswers->pluck('skala')->filter(fn($s) => is_numeric($s) && $s > 0);
-
-            if ($validScales->isNotEmpty()) {
-                $avgCsat = $validScales->avg();
-                $respondentsCount = \App\Models\Percobaan::query()
-                    ->where('pelatihan_id', $pelatihanId)
-                    ->whereHas('tes', fn($q) => $q->where('tipe', 'survei'))
-                    ->count();
-            }
-        }
-
-        // Fallback check for CSAT
-        if ($avgCsat == 0) {
-            $legacyCsat = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->whereNotNull('nilai_survey')
-                ->avg('nilai_survey');
-
-            if ($legacyCsat > 0) {
-                $avgCsat = $legacyCsat;
-                $respondentsCount = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                    ->whereNotNull('nilai_survey')
-                    ->count();
-            }
-        }
+        $respondentsCount = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+            ->whereNotNull('nilai_survey')
+            ->count();
 
         // 3. Competency Details
-        // Now using Percobaan as the source of truth
         $competencyStats = [];
         // Iterate through unique competencies associated with this training
-        // We get them via KompetensiPelatihan relation
         $sessions = $this->record->kompetensiPelatihan;
 
         foreach ($sessions as $session) {
             $kompetensiId = $session->kompetensi_id;
 
             // Calculate Pretest for this specific competency
-            $pre = \App\Models\Percobaan::query()
-                ->where('pelatihan_id', $pelatihanId)
-                ->whereHas('tes', fn($q) => $q->where('tipe', 'pre_test')->where('kompetensi_id', $kompetensiId))
-                ->avg('skor');
-
-            if ($pre === null) {
-                $pre = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                    ->where('kompetensi_id', $kompetensiId)
-                    ->avg('nilai_pre_test') ?? 0;
-            }
+            $pre = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+                ->where('kompetensi_id', $kompetensiId)
+                ->avg('nilai_pre_test') ?? 0;
 
             // Calculate Posttest for this specific competency
-            $post = \App\Models\Percobaan::query()
-                ->where('pelatihan_id', $pelatihanId)
-                ->whereHas('tes', fn($q) => $q->where('tipe', 'post_test')->where('kompetensi_id', $kompetensiId))
-                ->avg('skor');
-
-            if ($post === null) {
-                $post = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                    ->where('kompetensi_id', $kompetensiId)
-                    ->avg('nilai_post_test') ?? 0;
-            }
+            $post = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+                ->where('kompetensi_id', $kompetensiId)
+                ->avg('nilai_post_test') ?? 0;
 
             // Calculate Satisfaction (if available per competency)
-            $sat = \App\Models\Percobaan::query()
-                ->where('pelatihan_id', $pelatihanId)
-                ->whereHas('tes', fn($q) => $q->where('tipe', 'survei')->where('kompetensi_id', $kompetensiId))
-                ->avg('skor');
-
-            if ($sat === null || $sat == 0) {
-                $sat = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                    ->where('kompetensi_id', $kompetensiId)
-                    ->avg('nilai_survey') ?? 0;
-            }
-
-            // If sat is 0 (maybe because surveys are global), we might leave it 0 or use global avg.
-            // For now, let's keep strict linking.
+            $sat = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+                ->where('kompetensi_id', $kompetensiId)
+                ->avg('nilai_survey') ?? 0;
 
             $competencyStats[] = [
                 'name' => $session->kompetensi->nama_kompetensi ?? 'Unknown',
@@ -266,7 +196,7 @@ class ViewPelatihan extends ViewRecord
             ];
         }
 
-        // Check data existence (Percobaan OR PendaftaranPelatihan)
+        // Check data existence
         $hasData = ($respondentsCount > 0) || ($avgPretest > 0) || ($avgPosttest > 0);
         if (!$hasData) {
             $hasData = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
