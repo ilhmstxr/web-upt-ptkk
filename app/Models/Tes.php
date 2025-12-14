@@ -17,17 +17,18 @@ class Tes extends Model
         'deskripsi',
         'tipe',
         'sub_tipe',
-        'kompetensi_id',
+        'sub_tipe',
+        'kompetensi_pelatihan_id',
         'pelatihan_id',
         'durasi_menit',
         'tanggal_mulai',
         'tanggal_selesai',
     ];
 
-    // Relasi ke Kompetensi
-    public function kompetensi()
+    // Relasi ke KompetensiPelatihan
+    public function kompetensiPelatihan()
     {
-        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
+        return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
     }
 
     // Relasi ke Pelatihan

@@ -25,7 +25,7 @@ class ViewMonevDetail extends Page
     {
         $this->record = $record;
         $this->kompetensiPelatihan = KompetensiPelatihan::findOrFail($kompetensi_id);
-        
+
         $this->prepareSurveiData();
     }
 
@@ -38,7 +38,7 @@ class ViewMonevDetail extends Page
     {
         // 1. Get Survei Tests
         $surveiTesIds = Tes::where('pelatihan_id', $this->record->id)
-            ->where('kompetensi_id', $this->kompetensiPelatihan->kompetensi_id)
+            ->where('kompetensi_pelatihan_id', $this->kompetensiPelatihan->id)
             ->where('tipe', 'survei')
             ->pluck('id');
 
@@ -57,7 +57,7 @@ class ViewMonevDetail extends Page
             ->get();
 
         // 4. Calculate Stats
-        
+
         // Total Accumulation (IKM)
         // Assuming scale 1-4 or similar, mapped to 0-100
         // For simplicity, let's calculate average score based on 'nilai_jawaban' if available, or just count
@@ -65,7 +65,7 @@ class ViewMonevDetail extends Page
         // Let's assume 'nilai_jawaban' in JawabanUser is populated or we use OpsiJawaban 'nilai' (if exists) or just index.
         // Checking OpsiJawaban schema: it has 'apakah_benar', no explicit score. 
         // Checking JawabanUser schema: it has 'nilai_jawaban'. Let's use that.
-        
+
         $totalScore = $answers->avg('nilai_jawaban') ?? 0; // Raw average
         // Normalize to 0-100 if the scale is different. 
         // If max score per question is 4, then (avg / 4) * 100.
@@ -88,16 +88,16 @@ class ViewMonevDetail extends Page
             elseif ($val >= 2) $distribution['Kurang Memuaskan']++;
             else $distribution['Tidak Memuaskan']++;
         }
-        
+
         // Per Category
         $categories = $questions->groupBy('kategori');
         $categoryStats = [];
-        
+
         foreach ($categories as $catName => $catQuestions) {
             $catQIds = $catQuestions->pluck('id');
             $catAnswers = $answers->whereIn('pertanyaan_id', $catQIds);
             $catAvg = $catAnswers->avg('nilai_jawaban') ?? 0;
-            
+
             $categoryStats[$catName ?? 'Lainnya'] = number_format($catAvg, 1);
         }
 
@@ -111,7 +111,7 @@ class ViewMonevDetail extends Page
                 'Kurang Memuaskan' => 0,
                 'Tidak Memuaskan' => 0,
             ];
-            
+
             foreach ($qAnswers as $ans) {
                 $val = $ans->nilai_jawaban;
                 if ($val >= 4) $qDist['Sangat Memuaskan']++;
@@ -119,7 +119,7 @@ class ViewMonevDetail extends Page
                 elseif ($val >= 2) $qDist['Kurang Memuaskan']++;
                 else $qDist['Tidak Memuaskan']++;
             }
-            
+
             $questionStats[] = [
                 'id' => $q->id,
                 'nomor' => $q->nomor,

@@ -23,10 +23,10 @@
                     new Chart(ctx, {
                         type: 'doughnut',
                         data: {
-                            labels: ['Sangat Memuaskan', 'Memuaskan', 'Kurang Memuaskan', 'Tidak Memuaskan'],
+                            labels: ['Tidak Memuaskan', 'Kurang Memuaskan', 'Cukup Memuaskan', 'Sangat Memuaskan'],
                             datasets: [{
-                                data: {{ json_encode($surveiData['total_distribution']) }},
-                                backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444'],
+                                data: {{ json_encode($surveiData['total_chart']['datasets'][0]['data']) }},
+                                backgroundColor: {{ json_encode($surveiData['total_chart']['datasets'][0]['backgroundColor']) }},
                                 borderWidth: 0,
                                 hoverOffset: 4
                             }]
@@ -43,27 +43,30 @@
                     const ctx = document.getElementById('chartCategories')?.getContext('2d');
                     if (!ctx) return;
 
+                    const chartData = {!! json_encode($surveiData['category_chart']) !!};
+                    
+                    if (!chartData || !chartData.labels || chartData.labels.length === 0) return;
+
                     new Chart(ctx, {
                         type: 'bar',
-                        data: {
-                            labels: {!! json_encode(array_keys($surveiData['category_stats'])) !!},
-                            datasets: [{
-                                label: 'Nilai Rata-rata (Maks 4.0)',
-                                data: {!! json_encode(array_values($surveiData['category_stats'])) !!},
-                                backgroundColor: ['#60A5FA', '#FBBF24', '#A78BFA', '#34D399', '#F472B6'],
-                                borderRadius: 6,
-                                barThickness: 40
-                            }]
-                        },
+                        data: chartData,
                         options: {
                             indexAxis: 'y',
                             responsive: true,
                             maintainAspectRatio: false,
                             scales: {
-                                x: { beginAtZero: true, max: 4.0, grid: { color: '#f3f4f6' } },
-                                y: { grid: { display: false } }
+                                x: { 
+                                    stacked: true,
+                                    grid: { color: '#f3f4f6' } 
+                                },
+                                y: { 
+                                    stacked: true,
+                                    grid: { display: false } 
+                                }
                             },
-                            plugins: { legend: { display: false } }
+                            plugins: { 
+                                legend: { position: 'bottom' } 
+                            }
                         }
                     });
                 },
@@ -75,10 +78,10 @@
                             new Chart(ctx.getContext('2d'), {
                                 type: 'pie',
                                 data: {
-                                    labels: ['Sangat Memuaskan', 'Memuaskan', 'Kurang Memuaskan', 'Tidak Memuaskan'],
+                                    labels: ['Tidak Memuaskan', 'Kurang Memuaskan', 'Cukup Memuaskan', 'Sangat Memuaskan'],
                                     datasets: [{
-                                        data: q.distribution,
-                                        backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444'],
+                                        data: q.data,
+                                        backgroundColor: q.backgroundColor,
                                         borderWidth: 2,
                                         borderColor: '#ffffff'
                                     }]
@@ -88,7 +91,7 @@
                                     maintainAspectRatio: false,
                                     plugins: {
                                         legend: {
-                                            position: 'bottom',
+                                            position: 'right',
                                             labels: { boxWidth: 10, font: { size: 10 }, padding: 10 }
                                         }
                                     }
@@ -126,11 +129,11 @@
                             </div>
                             <div class="flex-1 grid grid-cols-2 gap-4">
                                 @php
-                                    $labels = ['Sangat Memuaskan', 'Memuaskan', 'Kurang Memuaskan', 'Tidak Memuaskan'];
-                                    $colors = ['bg-green-500', 'bg-blue-500', 'bg-yellow-500', 'bg-red-500'];
-                                    $totalResp = array_sum($surveiData['total_distribution']);
+                                    $labels = ['Tidak Memuaskan', 'Kurang Memuaskan', 'Cukup Memuaskan', 'Sangat Memuaskan'];
+                                    $colors = ['bg-red-400', 'bg-yellow-400', 'bg-blue-500', 'bg-green-500'];
+                                    $totalResp = array_sum($surveiData['total_chart']['datasets'][0]['data']);
                                 @endphp
-                                @foreach($surveiData['total_distribution'] as $index => $val)
+                                @foreach($surveiData['total_chart']['datasets'][0]['data'] as $index => $val)
                                     <div>
                                         <div class="text-xs text-gray-500">{{ $labels[$index] }}</div>
                                         <div class="font-bold text-lg text-gray-800">{{ $totalResp > 0 ? round(($val / $totalResp) * 100) : 0 }}%</div>
