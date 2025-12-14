@@ -682,7 +682,7 @@ trait BuildsLikertData
                 'pendaftaranPelatihan.nilai_post_test' => ['label' => 'POST-TEST'],
                 'pendaftaranPelatihan.nilai_praktek' => ['label' => 'PRAKTEK'],
                 'pendaftaranPelatihan.rata_rata' => ['label' => 'RATA²'],
-                'pendaftaranPelatihan.nilai_survei' => ['label' => 'SURVEI'],
+                'pendaftaranPelatihan.nilai_survey' => ['label' => 'SURVEI'],
                 'pendaftaranPelatihan.status' => [
                     'label' => 'STATUS',
                     'type' => 'badge',

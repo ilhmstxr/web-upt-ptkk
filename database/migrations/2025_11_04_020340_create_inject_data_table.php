@@ -12,15 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('inject_data', function (Blueprint $table) {
-            $table->id();
+            // $table->id();
+            $table->unsignedBigInteger('unique_key')->primary();
             // monev
             $table->string('email')->nullable();
             $table->string('nama')->nullable();
             $table->string('instansi')->nullable();
-            $table->string('angkatan')->nullable();
-            $table->string('kompetensi')->nullable();
+            // $table->string('angkatan')->nullable();
+            $table->string('pelatihan_id')->nullable();
+            $table->string('tes_id')->nullable();
+            $table->string('kompetensi_id')->nullable();
             // test
-            $table->Integer('skor')->nullable();
+            $table->string('nilai_pre_test')->nullable();
+            $table->string('nilai_post_test')->nullable();
             $table->timestamps();
         });
     }

@@ -43,6 +43,7 @@ class ImportSqlFile extends Command
             'cabang_dinas',
             'instansi',
             'pelatihan',
+            'kompetensi_pelatihan',
             'tes',
             'pertanyaan',
             'opsi_jawaban',
@@ -53,7 +54,6 @@ class ImportSqlFile extends Command
             'lampiran_peserta',
             'percobaan',
             'jawaban_user',
-            'kompetensi_pelatihan',
             'pendaftaran_pelatihan',
             'instruktur'
         ];
@@ -85,6 +85,7 @@ class ImportSqlFile extends Command
                 }
             }
 
+
             // --- LOGIKA PEMILIHAN tableOrder ADA DI SINI ---
 
             // 1. Dapatkan semua nama tabel yang ADA di file SQL
@@ -94,15 +95,15 @@ class ImportSqlFile extends Command
             $intersection = array_intersect($tableOrder1, $foundTablesInSql);
 
             if (!empty($intersection)) {
-                // 3. JIKA DITEMUKAN: Kita gunakan $tableOrder1
-                $this->info('Main tables (Order 1) detected. Using Main Order.');
-                $tableOrder = $tableOrder1;
+                // 3. JIKA DITEMUKAN: Kita gunakan $tableOrder1 DITAMBAH $tableOrder2
+                $this->info('Main tables (Order 1) detected. Using Main Order + Inject Order.');
+                $tableOrder = array_merge($tableOrder1, $tableOrder2);
             } else {
                 // 4. JIKA TIDAK: Kita asumsikan ini adalah $tableOrder2
                 $this->info('Main tables not found. Using Inject Order (Order 2).');
                 $tableOrder = $tableOrder2;
             }
-            
+
             // --- AKHIR DARI LOGIKA PEMILIHAN ---
 
 
@@ -111,7 +112,7 @@ class ImportSqlFile extends Command
 
                 // $tableOrder sekarang berisi $tableOrder1 atau $tableOrder2
                 // sesuai hasil deteksi di atas.
-                foreach ($tableOrder as $tableName) { 
+                foreach ($tableOrder as $tableName) {
                     if (isset($groupedInserts[$tableName])) {
                         $this->line(" - Inserting data for table: {$tableName}");
                         foreach ($groupedInserts[$tableName] as $insertQuery) {
@@ -123,13 +124,14 @@ class ImportSqlFile extends Command
 
             $this->info('🎉 SQL file imported successfully!');
         } catch (\Exception $e) {
-            $this->error("Database error: " . $e->getMessage());
+            $msg = $e->getMessage();
+            if (strlen($msg) > 500) {
+                $msg = substr($msg, 0, 500) . '... [Truncated]';
+            }
+            $this->error("Database error: " . $msg);
             return 1;
         }
 
         return 0;
-    
-
     }
-
 }

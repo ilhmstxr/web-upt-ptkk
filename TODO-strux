@@ -866,3 +866,6 @@ ALUR SYSTEM CBT (COMPUTER BASED TEST)
         - Sidebar "Materi Terkait" untuk navigasi cepat.
 
 Catatan Arsip: Flow ini otomatis tercatat agar tidak lupa saat development fitur berikutnya.
+
+
+tambahkan juga otomatisasi tesnya ketika sudah mengerjakan maka akan tersimpan di @Percobaan.php dan juga nanti skornya akan masuk di @PendaftaranPelatihan.php sesuai pengerjaan pretest / posttest (kolom nilai_pre_test / nilai_post_test)

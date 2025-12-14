@@ -14,15 +14,15 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PendaftaranResource extends Resource
 {
-    
+
     protected static ?string $model = PendaftaranPelatihan::class;
     protected static ?string $cluster = Kesiswaan::class;
 
     // ✅ Hero icon + label biar rapih di sidebar
-    protected static ?string $navigationIcon  = 'heroicon-o-clipboard-document-check';
-    protected static ?string $navigationLabel = 'Pendaftaran Pelatihan';
-    protected static ?string $modelLabel      = 'Pendaftaran';
-    protected static ?string $pluralModelLabel = 'Pendaftaran Pelatihan';
+    protected static ?string $navigationIcon  = 'heroicon-o-users'; // Changed icon to users to match 'Peserta'
+    protected static ?string $navigationLabel = 'Peserta';
+    protected static ?string $modelLabel      = 'Peserta';
+    protected static ?string $pluralModelLabel = 'Peserta';
 
     public static function form(Form $form): Form
     {
@@ -35,7 +35,7 @@ class PendaftaranResource extends Resource
                             ->schema([
                                 Forms\Components\TextInput::make('peserta_name')
                                     ->label('Nama Peserta')
-                                    ->formatStateUsing(fn ($record) => $record->peserta->nama ?? '-')
+                                    ->formatStateUsing(fn($record) => $record->peserta->nama ?? '-')
                                     ->disabled(),
 
                                 Forms\Components\TextInput::make('nomor_registrasi')
@@ -44,7 +44,7 @@ class PendaftaranResource extends Resource
 
                                 Forms\Components\TextInput::make('pelatihan_name')
                                     ->label('Pelatihan')
-                                    ->formatStateUsing(fn ($record) => $record->pelatihan->nama_pelatihan ?? '-')
+                                    ->formatStateUsing(fn($record) => $record->pelatihan->nama_pelatihan ?? '-')
                                     ->disabled(),
 
                                 // ✅ tambah kelas di form
@@ -67,10 +67,10 @@ class PendaftaranResource extends Resource
                                         $lampiran = $record->peserta->lampiran;
                                         return new \Illuminate\Support\HtmlString('
                                             <div class="grid grid-cols-2 gap-4">
-                                                <div><strong>KTP:</strong> <a href="'.$lampiran->fc_ktp_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
-                                                <div><strong>Ijazah:</strong> <a href="'.$lampiran->fc_ijazah_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
-                                                <div><strong>Surat Sehat:</strong> <a href="'.$lampiran->fc_surat_sehat_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
-                                                <div><strong>Pas Foto:</strong> <a href="'.$lampiran->pas_foto_url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
+                                                <div><strong>KTP:</strong> <a href="' . $lampiran->fc_ktp_url . '" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
+                                                <div><strong>Ijazah:</strong> <a href="' . $lampiran->fc_ijazah_url . '" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
+                                                <div><strong>Surat Sehat:</strong> <a href="' . $lampiran->fc_surat_sehat_url . '" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
+                                                <div><strong>Pas Foto:</strong> <a href="' . $lampiran->pas_foto_url . '" target="_blank" class="text-primary-600 hover:underline">Lihat File</a></div>
                                             </div>
                                         ');
                                     })
@@ -138,7 +138,7 @@ class PendaftaranResource extends Resource
                     ->label('Status')
                     ->icon('heroicon-o-shield-check')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Pending' => 'warning',
                         'Verifikasi' => 'info',
                         'Diterima' => 'success',
@@ -168,7 +168,7 @@ class PendaftaranResource extends Resource
 
                 Tables\Filters\SelectFilter::make('kompetensi')
                     ->label('Kompetensi')
-                    ->options(fn () => \App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
+                    ->options(fn() => \App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
                     ->query(function (Builder $query, array $data) {
                         if (empty($data['value'])) return $query;
 

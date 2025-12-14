@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             // tes_id,kompetensi_id,foreign_id,Attribute,Value
             // $table->string('inject_data_id');
-            $table->foreignId('tes_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('kompetensi_id')->constrained('kompetensi')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('unique_keys')->constrained('inject_data', 'unique_key')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('pelatihan_id');
+            $table->string('tes_id');
+            $table->string('kompetensi_id');
             $table->integer('foreign_id');
             // $table->longText('attribute');
             // $table->text('attribute');

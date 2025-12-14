@@ -15,5 +15,31 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
-echo Database refresh and import completed successfully.
+@REM echo Fixing Inject Data Kompetensi IDs...
+@REM call php artisan fix:inject-data-kompetensi
+@REM if %errorlevel% neq 0 (
+@REM     echo Fix Inject Data Kompetensi failed.
+@REM     pause
+@REM     exit /b %errorlevel%
+@REM )
+
+
+@REM echo Importing Inject Data...
+@REM call php artisan import:sql "backupData\inject-data.sql"
+@REM if %errorlevel% neq 0 (
+@REM     echo Inject Data Import failed.
+@REM     pause
+@REM     exit /b %errorlevel%
+@REM )
+
+
+@REM echo Processing Inject Data migration...
+@REM call php artisan process:inject-data
+@REM if %errorlevel% neq 0 (
+@REM     echo Processing Inject Data failed.
+@REM     pause
+@REM     exit /b %errorlevel%
+@REM )
+
+@REM echo Database refresh and import completed successfully.
 pause
