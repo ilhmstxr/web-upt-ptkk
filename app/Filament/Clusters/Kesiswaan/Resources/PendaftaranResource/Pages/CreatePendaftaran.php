@@ -22,28 +22,46 @@ class CreatePendaftaran extends CreateRecord
 {
     protected static string $resource = PendaftaranResource::class;
 
+    /**
+     * Kalau admin ingin langsung "diterima" + kirim email saat create.
+     * Default false biar mengikuti alur verifikasi.
+     */
     protected bool $autoAcceptAndSendEmail = false;
 
     protected function handleRecordCreation(array $data): Model
     {
         return DB::transaction(function () use ($data) {
+
+            /**
+             * 0) Ambil kompetensi pelatihan
+             */
             $kp = KompetensiPelatihan::with('kompetensi')->findOrFail($data['kompetensi_pelatihan_id']);
-            $realKompetensiId = $kp->kompetensi_id;
+            $realKompetensiId = (int) $kp->kompetensi_id;
             $namaKompetensi   = $kp->kompetensi->nama_kompetensi ?? '-';
             $kodeKompetensi   = $kp->kompetensi->kode ?? 'X';
 
+            /**
+             * 1) INSTANSI
+             * NOTE: kamu belum punya kota_id di form, jadi fallback 0 (sesuai versi kamu).
+             * Kalau tabel instansi butuh FK valid, nanti kita ganti jadi select kota_id beneran.
+             */
             $instansi = Instansi::firstOrCreate(
                 [
                     'asal_instansi'   => $data['asal_instansi'],
                     'alamat_instansi' => $data['alamat_instansi'],
                     'kota'            => $data['kota'],
-                    'kota_id'         => 0, // fallback
+                    'kota_id'         => 0,
                 ],
                 [
+                    // simpan nama kompetensi (bukan id) kalau kolom memang string
                     'kompetensi_keahlian' => $namaKompetensi,
                     'cabang_dinas_id'     => $data['cabang_dinas_id'],
                 ]
             );
+
+            /**
+             * 2) USER
+             */
             $user = User::firstOrCreate(
                 ['email' => $data['email']],
                 [
@@ -63,7 +81,7 @@ class CreatePendaftaran extends CreateRecord
                     'pelatihan_id'  => $data['pelatihan_id'],
                     'instansi_id'   => $instansi->id,
                     'user_id'       => $user->id,
-                    'kompetensi_id' => $realKompetensiId,
+                    'kompetensi_id' => $realKompetensiId, // pastikan kolom ini memang ada di tabel peserta kalau dipakai
 
                     'nama'          => $data['nama'],
                     'tempat_lahir'  => $data['tempat_lahir'],
@@ -78,18 +96,20 @@ class CreatePendaftaran extends CreateRecord
             /**
              * 4) PENDAFTARAN: nomor registrasi + token
              */
-            $existingPendaftaran = PendaftaranPelatihan::where('pelatihan_id', $data['pelatihan_id'])
+            $existing = PendaftaranPelatihan::query()
+                ->where('pelatihan_id', $data['pelatihan_id'])
                 ->where('kompetensi_id', $realKompetensiId)
                 ->count();
 
-            $nextUrut = $existingPendaftaran + 1;
+            $nextUrut = $existing + 1;
             $nomorReg = sprintf('%d-%s-%03d', $data['pelatihan_id'], strtoupper($kodeKompetensi), $nextUrut);
 
             $namaDepan = Str::upper(Str::slug(explode(' ', $data['nama'])[0] ?? '', ''));
             $namaClean = substr($namaDepan, 0, 5);
             $token = sprintf('%s-%s-%s-%s', $namaClean, $data['pelatihan_id'], date('Y'), Str::upper(Str::random(4)));
 
-            $statusPendaftaran = $this->autoAcceptAndSendEmail ? 'Diterima' : 'Pending';
+            // ✅ enum lowercase sesuai migration
+            $statusPendaftaran = $this->autoAcceptAndSendEmail ? 'diterima' : 'pending';
 
             $pendaftaran = PendaftaranPelatihan::create([
                 'peserta_id'              => $peserta->id,
@@ -130,7 +150,9 @@ class CreatePendaftaran extends CreateRecord
                 ]
             );
 
-            // 6) OPTIONAL: Auto-send email kalau admin create langsung diterima
+            /**
+             * 6) OPTIONAL: Auto-send email kalau langsung diterima
+             */
             if ($this->autoAcceptAndSendEmail) {
                 try {
                     $pelatihan = Pelatihan::find($data['pelatihan_id']);
@@ -142,8 +164,7 @@ class CreatePendaftaran extends CreateRecord
                         'id_peserta'     => $pendaftaran->nomor_registrasi,
                         'nama_peserta'   => $peserta->nama ?? '-',
                         'asal_lembaga'   => $instansi->asal_instansi ?? '-',
-                        // relasi boleh null, tetap aman
-                        'cabang_dinas'   => $instansi->cabangDinas->nama ?? '-',
+                        'cabang_dinas'   => $instansi?->cabangDinas?->nama ?? '-',
                         'kompetensi'     => $namaKompetensi,
                         'kamar_asrama'   => 'Belum Ditentukan',
                         'waktu_mulai'    => $waktuMulai,
@@ -152,7 +173,7 @@ class CreatePendaftaran extends CreateRecord
                         'alamat_lengkap' => $pelatihan?->lokasi_text ?? 'Jl. Menur No. 123, Surabaya',
                     ];
 
-                    if (!empty($user->email)) {
+                    if (! empty($user->email)) {
                         \App\Services\EmailService::send(
                             $user->email,
                             'Informasi Pendaftaran dan Undangan Pelatihan',
@@ -161,7 +182,7 @@ class CreatePendaftaran extends CreateRecord
                             'template_surat.informasi_kegiatan'
                         );
                     }
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     Log::error('Failed to send auto-accept email: ' . $e->getMessage());
                 }
             }
