@@ -36,7 +36,7 @@ class TesResource extends Resource
                                             ->options([
                                                 'pre-test' => 'Pre-Test',
                                                 'post-test' => 'Post-Test',
-                                                'survey' => 'Survey',
+                                                'survei' => 'Survei',
                                             ])
                                             ->required(),
                                         Forms\Components\Select::make('pelatihan_id')
@@ -171,7 +171,7 @@ class TesResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'pre-test' => 'info',
                         'post-test' => 'success',
-                        'survey' => 'warning',
+                        'survei' => 'warning',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
@@ -189,7 +189,7 @@ class TesResource extends Resource
                     ->options([
                         'pre-test' => 'Pre-Test',
                         'post-test' => 'Post-Test',
-                        'survey' => 'Survey',
+                        'survei' => 'Survei',
                     ]),
                 Tables\Filters\SelectFilter::make('pelatihan')
                     ->relationship('pelatihan', 'nama_pelatihan'),

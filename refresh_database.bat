@@ -16,22 +16,22 @@ if %errorlevel% neq 0 (
 )
 
 
-echo Importing Inject Data...
-call php artisan import:sql "backupData\inject-data.sql"
-if %errorlevel% neq 0 (
-    echo Inject Data Import failed.
-    pause
-    exit /b %errorlevel%
-)
+@REM echo Importing Inject Data...
+@REM call php artisan import:sql "backupData\inject-data.sql"
+@REM if %errorlevel% neq 0 (
+@REM     echo Inject Data Import failed.
+@REM     pause
+@REM     exit /b %errorlevel%
+@REM )
 
 
-echo Processing Inject Data migration...
-call php artisan process:inject-data
-if %errorlevel% neq 0 (
-    echo Processing Inject Data failed.
-    pause
-    exit /b %errorlevel%
-)
+@REM echo Processing Inject Data migration...
+@REM call php artisan process:inject-data
+@REM if %errorlevel% neq 0 (
+@REM     echo Processing Inject Data failed.
+@REM     pause
+@REM     exit /b %errorlevel%
+@REM )
 
-echo Database refresh and import completed successfully.
+@REM echo Database refresh and import completed successfully.
 pause
