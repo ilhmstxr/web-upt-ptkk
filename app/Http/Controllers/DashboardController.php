@@ -869,6 +869,9 @@ class DashboardController extends Controller
             $percobaan->lulus = $percobaan->skor >= ($tes->passing_score ?? 70);
             $percobaan->save();
 
+            // ✅ SYNC ke PendaftaranPelatihan
+            $this->syncScoreToPendaftaran($percobaan);
+
             return redirect()->route($resultRouteName, ['percobaan' => $percobaan->id])
                 ->with('error', 'Waktu tes sudah habis.');
         }
@@ -894,6 +897,9 @@ class DashboardController extends Controller
                 $percobaan->skor = $this->hitungSkor($percobaan);
                 $percobaan->lulus = $percobaan->skor >= ($tes->passing_score ?? 70);
                 $percobaan->save();
+
+                // ✅ SYNC ke PendaftaranPelatihan
+                $this->syncScoreToPendaftaran($percobaan);
             }
             return redirect()->route($resultRouteName, ['percobaan' => $percobaan->id]);
         }
@@ -965,6 +971,9 @@ class DashboardController extends Controller
         $percobaan->skor = $this->hitungSkor($percobaan);
         $percobaan->lulus = $percobaan->skor >= ($percobaan->tes->passing_score ?? 70);
         $percobaan->save();
+
+        // ✅ SYNC ke PendaftaranPelatihan
+        $this->syncScoreToPendaftaran($percobaan);
 
         return redirect()->route($resultRouteName, ['percobaan' => $percobaan->id]);
     }
@@ -1351,5 +1360,61 @@ class DashboardController extends Controller
             ->get(['id', 'asal_instansi', 'kota']);
 
         return response()->json($list);
+    }
+    /* =========================================================
+     * SYNC SCORE TO PENDAFTARAN
+     * ========================================================= */
+    protected function syncScoreToPendaftaran(Percobaan $percobaan)
+    {
+        // Pastikan load relasi yang dibutuhkan
+        $percobaan->loadMissing(['tes']);
+
+        $pelatihanId = $percobaan->pelatihan_id ?? session('pelatihan_id');
+        ['key' => $key, 'id' => $pesertaId] = $this->getParticipantKeyAndId();
+
+        if (!$pelatihanId || !$pesertaId || $key !== 'peserta_id') {
+            return;
+        }
+
+        // Cari pendaftaran pelatihan
+        $pendaftaran = PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+            ->where('peserta_id', $pesertaId)
+            ->first();
+
+        if (!$pendaftaran) {
+            return;
+        }
+
+        // Tentukan kolom mana yang mau diupdate based on tipe tes
+        $tipe = $percobaan->tes->tipe ?? $percobaan->tipe;
+
+        // Normalisasi tipe (kadang ada pre-test, pre_test, dll)
+        // Sesuaikan dengan logic enum di DB
+        $column = match ($tipe) {
+            'pre-test', 'pre_test' => 'nilai_pre_test',
+            'post-test', 'post_test' => 'nilai_post_test',
+            'survei', 'survey' => 'nilai_survey',
+            default => null,
+        };
+
+        if ($column) {
+            // Update skor
+            // Nilai percobaan biasanya 0-100 (integer)
+            // Kolom di PendaftaranPelatihan mungkin string "80 / 100" atau integer
+            // Sesuaikan dengan format yang diinginkan.
+            // User minta: "skornya akan masuk di PendaftaranPelatihan sesuai pengerjaan"
+
+            // Kita simpan angkanya saja agar mudah diolah (avg dll)
+            // Jika kolom di DB string, Laravel akan cast otomatis.
+            // Namun jika sebelumnya user minta string "XX / 100", kita format string jika perlu.
+            // Berhubung getEvaluationData pakai avg(), sebaiknya simpan angka murni.
+
+            $pendaftaran->$column = $percobaan->skor;
+
+            // Hitung rata-rata jika perlu (opsional)
+            // $pendaftaran->rata_rata = ...
+
+            $pendaftaran->save();
+        }
     }
 }

@@ -23,4 +23,9 @@ class InjectData extends Model
         // 'unique_key' is the local key in inject_data table
         return $this->hasMany(InjectDataDetail::class, 'unique_keys', 'unique_key');
     }
+
+    public function kompetensiPelatihan()
+    {
+        return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_id');
+    }
 }

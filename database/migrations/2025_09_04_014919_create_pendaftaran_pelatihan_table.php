@@ -36,7 +36,7 @@ return new class extends Migration
             $table->integer('nilai_post_test')->default(0);
             $table->integer('nilai_praktek')->default(0);
             $table->integer('rata_rata')->default(0);
-            $table->integer('nilai_survei')->default(0);
+            $table->integer('nilai_survey')->default(0);
 
             $table->enum('status', ['Lulus', 'Tidak Lulus', 'Belum Lulus'])
                 ->default('Belum Lulus');

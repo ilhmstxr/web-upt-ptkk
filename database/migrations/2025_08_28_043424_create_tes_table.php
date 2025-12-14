@@ -15,9 +15,9 @@ return new class extends Migration
 
             $table->enum('tipe', ['post-test', 'pre-test', 'survei']);
 
-            $table->foreignId('kompetensi_id')
+            $table->foreignId('kompetensi_pelatihan_id')
                 ->nullable()
-                ->constrained('kompetensi')
+                ->constrained('kompetensi_pelatihan')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 

@@ -43,6 +43,7 @@ class ImportSqlFile extends Command
             'cabang_dinas',
             'instansi',
             'pelatihan',
+            'kompetensi_pelatihan',
             'tes',
             'pertanyaan',
             'opsi_jawaban',
@@ -53,7 +54,6 @@ class ImportSqlFile extends Command
             'lampiran_peserta',
             'percobaan',
             'jawaban_user',
-            'kompetensi_pelatihan',
             'pendaftaran_pelatihan',
             'instruktur'
         ];

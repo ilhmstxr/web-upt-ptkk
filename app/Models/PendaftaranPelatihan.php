@@ -41,7 +41,7 @@ class PendaftaranPelatihan extends Model
         'nilai_post_test',
         'nilai_praktek',
         'rata_rata',
-        'nilai_survei',
+        'nilai_survey',
     ];
 
     protected $casts = [
