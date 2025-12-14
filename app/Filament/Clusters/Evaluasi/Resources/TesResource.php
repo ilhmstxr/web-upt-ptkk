@@ -46,7 +46,8 @@ class TesResource extends Resource
                             ->searchable()
                             ->required()
                             ->default(request()->query('pelatihan_id'))
-                            ->disabled(fn (?string $operation) =>
+                            ->disabled(
+                                fn(?string $operation) =>
                                 $operation === 'edit' || request()->has('pelatihan_id')
                             ),
 
@@ -55,7 +56,8 @@ class TesResource extends Resource
                             ->searchable()
                             ->required()
                             ->default(request()->query('kompetensi_id'))
-                            ->disabled(fn (?string $operation) =>
+                            ->disabled(
+                                fn(?string $operation) =>
                                 $operation === 'edit' || request()->has('kompetensi_id')
                             ),
 
@@ -96,106 +98,99 @@ class TesResource extends Resource
                     ]),
 
                     /* =====================
-                     * BANK SOAL
-                     * ===================== */
-                    Forms\Components\Section::make('Bank Soal')->schema([
-                        Forms\Components\Repeater::make('pertanyaan')
-                            ->relationship()
-                            ->schema([
+                         * BANK SOAL (KATEGORI -> PERTANYAAN)
+                         * ===================== */
+                    Forms\Components\Repeater::make('kelompokPertanyaan')
+                        ->label('Kelompok Pertanyaan')
+                        ->relationship('kelompokPertanyaan')
+                        ->schema([
+                            Forms\Components\TextInput::make('nama_kategori')
+                                ->label('Nama Kategori')
+                                ->required()
+                                ->placeHolder('Contoh: Pengetahuan Umum'),
 
-                                /* ===== KATEGORI / SUB SECTION ===== */
-                                Forms\Components\TextInput::make('kategori')
-                                    ->label('Kategori / Bagian (Sub Section)')
-                                    ->placeholder('Contoh: PERSEPSI TERHADAP PROGRAM PELATIHAN')
-                                    ->maxLength(255),
+                            Forms\Components\Repeater::make('pertanyaan')
+                                ->relationship('pertanyaan')
+                                ->schema([
+                                    Forms\Components\RichEditor::make('teks_pertanyaan')
+                                        ->label('Teks Pertanyaan')
+                                        ->required(),
 
-                                Forms\Components\RichEditor::make('teks_pertanyaan')
-                                    ->label('Teks Pertanyaan')
-                                    ->required(),
+                                    Forms\Components\FileUpload::make('gambar')
+                                        ->image()
+                                        ->directory('soal-images')
+                                        ->label('Gambar Soal (Opsional)'),
 
-                                Forms\Components\FileUpload::make('gambar')
-                                    ->image()
-                                    ->directory('soal-images')
-                                    ->label('Gambar Soal (Opsional)'),
+                                    Forms\Components\Select::make('tipe_jawaban')
+                                        ->options([
+                                            'pilihan_ganda' => 'Pilihan Ganda',
+                                            'skala_likert'  => 'Skala Likert (Survei)',
+                                            'teks_bebas'    => 'Essay',
+                                        ])
+                                        // Auto-select 'skala_likert' if parent Tes type is 'survei'
+                                        ->default(fn(Forms\Get $get) => $get('../../../tipe') === 'survei' ? 'skala_likert' : 'pilihan_ganda')
+                                        ->reactive(),
 
-                                Forms\Components\Select::make('tipe_jawaban')
-                                    ->options([
-                                        'pilihan_ganda' => 'Pilihan Ganda',
-                                        'skala_likert'  => 'Skala Likert (Survei)',
-                                        'teks_bebas'    => 'Essay',
-                                    ])
-                                    ->default('pilihan_ganda')
-                                    ->reactive(),
+                                    /* ===== OPSI JAWABAN ===== */
+                                    Forms\Components\Repeater::make('opsiJawabans')
+                                        ->relationship('opsiJawabans')
+                                        ->schema([
+                                            Forms\Components\TextInput::make('teks_opsi')
+                                                ->required()
+                                                ->label('Teks Opsi'),
 
-                                /* ===== OPSI JAWABAN (KHUSUS PG) ===== */
-                                Forms\Components\Repeater::make('opsiJawabans')
-                                    ->relationship()
-                                    ->schema([
-                                        Forms\Components\TextInput::make('teks_opsi')
-                                            ->required()
-                                            ->label('Teks Opsi'),
-
-                                        Forms\Components\Toggle::make('apakah_benar')
-                                            ->label('Jawaban Benar')
-                                            ->default(false)
-                                            ->live()
-                                            ->afterStateUpdated(function (
-                                                $state,
-                                                Forms\Get $get,
-                                                Forms\Set $set,
-                                                Forms\Components\Toggle $component
-                                            ) {
-                                                if (!$state) return;
-
-                                                $path = $component->getStatePath();
-                                                $segments = explode('.', $path);
-                                                $currentKey = $segments[count($segments) - 2];
-                                                $items = $get('../../opsiJawabans');
-
-                                                foreach ($items as $key => $value) {
-                                                    if ($key !== $currentKey && ($value['apakah_benar'] ?? false)) {
-                                                        $targetPath = str_replace(
-                                                            ".{$currentKey}.",
-                                                            ".{$key}.",
-                                                            $path
-                                                        );
-                                                        $set($targetPath, false);
+                                            Forms\Components\Toggle::make('apakah_benar')
+                                                ->label('Jawaban Benar')
+                                                ->default(false)
+                                                ->live()
+                                                // Ensure only one correct answer for basic PG (optional for Likert)
+                                                ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set, $component) {
+                                                    if (!$state) return;
+                                                    $path = $component->getStatePath();
+                                                    // logic to uncheck others
+                                                    $segments = explode('.', $path);
+                                                    $currentKey = $segments[count($segments) - 2];
+                                                    $items = $get('../../opsiJawabans');
+                                                    foreach ($items as $key => $value) {
+                                                        if ($key !== $currentKey && ($value['apakah_benar'] ?? false)) {
+                                                            $targetPath = str_replace(".{$currentKey}.", ".{$key}.", $path);
+                                                            $set($targetPath, false);
+                                                        }
                                                     }
-                                                }
-                                            }),
+                                                }),
 
-                                        Forms\Components\FileUpload::make('gambar')
-                                            ->image()
-                                            ->directory('opsi-images')
-                                            ->label('Gambar Opsi (Opsional)'),
-                                    ])
-                                    ->columns(2)
-                                    ->label('Opsi Jawaban')
-                                    ->visible(fn (Forms\Get $get) =>
-                                        $get('tipe_jawaban') === 'pilihan_ganda'
-                                    )
-                                    ->defaultItems(4)
-                                    ->rules([
-                                        fn (): \Closure => function (
-                                            string $attribute,
-                                            $value,
-                                            \Closure $fail
-                                        ) {
-                                            $correctCount = collect($value)
-                                                ->where('apakah_benar', true)
-                                                ->count();
-                                            if ($correctCount > 1) {
-                                                $fail('Hanya satu jawaban yang boleh ditandai sebagai benar.');
+                                            Forms\Components\FileUpload::make('gambar')
+                                                ->image()
+                                                ->directory('opsi-images')
+                                                ->label('Gambar Opsi'),
+                                        ])
+                                        ->columns(2)
+                                        ->label('Opsi Jawaban')
+                                        // Visible only if NOT Essay
+                                        ->visible(fn(Forms\Get $get) => $get('tipe_jawaban') !== 'teks_bebas')
+                                        // Auto-fill defaults for Survey
+                                        ->default(function (Forms\Get $get) {
+                                            $tipeJawaban = $get('tipe_jawaban');
+                                            // If Survey (Likert) -> 4 options
+                                            // 4 = Terbaik, 1 = Terburuk
+                                            if ($tipeJawaban === 'skala_likert') {
+                                                return [
+                                                    ['teks_opsi' => 'Sangat Baik', 'apakah_benar' => false],
+                                                    ['teks_opsi' => 'Baik', 'apakah_benar' => false],
+                                                    ['teks_opsi' => 'Cukup', 'apakah_benar' => false],
+                                                    ['teks_opsi' => 'Kurang', 'apakah_benar' => false],
+                                                ];
                                             }
-                                        },
-                                    ]),
-                            ])
-                            ->itemLabel(fn (array $state): ?string =>
-                                strip_tags($state['teks_pertanyaan'] ?? null)
-                            )
-                            ->collapsible()
-                            ->collapsed(),
-                    ]),
+                                            return []; // standard default
+                                        }),
+                                ])
+                                ->label('Daftar Pertanyaan')
+                                ->itemLabel(fn(array $state) => strip_tags($state['teks_pertanyaan'] ?? null))
+                                ->collapsible()
+                                ->collapsed(),
+                        ])
+                        ->itemLabel(fn(array $state) => $state['nama_kategori'] ?? 'Kategori Baru')
+                        ->collapsible(),
                 ])->columnSpan(2),
             ]),
         ]);
@@ -214,7 +209,7 @@ class TesResource extends Resource
 
                 Tables\Columns\TextColumn::make('tipe')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'pre-test'  => 'info',
                         'post-test' => 'success',
                         'survei'    => 'warning',
