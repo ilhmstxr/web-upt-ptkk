@@ -7,6 +7,8 @@ use Filament\Resources\Pages\ViewRecord;
 
 class ViewPelatihan extends ViewRecord
 {
+    use \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\Concerns\BuildsLikertData;
+
     protected static string $resource = PelatihanResource::class;
 
     protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-pelatihan';
@@ -31,28 +33,28 @@ class ViewPelatihan extends ViewRecord
                 \Filament\Actions\Action::make('export_rekap')
                     ->label('Rekap Peserta (PDF)')
                     ->icon('heroicon-o-document-text')
-                    ->url(fn () => route('export.template.rekap-pelatihan', ['pelatihanId' => $this->record->id]))
+                    ->url(fn() => route('export.template.rekap-pelatihan', ['pelatihanId' => $this->record->id]))
                     ->openUrlInNewTab(),
                 \Filament\Actions\Action::make('export_excel')
                     ->label('Peserta (Excel)')
                     ->icon('heroicon-o-table-cells')
-                    ->url(fn () => route('export.template.peserta-excel', ['pelatihanId' => $this->record->id]))
+                    ->url(fn() => route('export.template.peserta-excel', ['pelatihanId' => $this->record->id]))
                     ->openUrlInNewTab(),
                 \Filament\Actions\Action::make('export_instruktur')
                     ->label('Daftar Instruktur (PDF)')
                     ->icon('heroicon-o-users')
-                    ->url(fn () => route('export.template.daftar-instruktur', ['pelatihanId' => $this->record->id]))
+                    ->url(fn() => route('export.template.daftar-instruktur', ['pelatihanId' => $this->record->id]))
                     ->openUrlInNewTab(),
                 \Filament\Actions\Action::make('export_biodata')
                     ->label('Biodata Peserta (PDF)')
                     ->icon('heroicon-o-identification')
-                    ->url(fn () => route('export.template.biodata-peserta', ['pelatihanId' => $this->record->id]))
+                    ->url(fn() => route('export.template.biodata-peserta', ['pelatihanId' => $this->record->id]))
                     ->openUrlInNewTab(),
             ])
-            ->label('Export Data')
-            ->icon('heroicon-o-arrow-down-tray')
-            ->color('gray'),
-            
+                ->label('Export Data')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('gray'),
+
             \Filament\Actions\EditAction::make()
                 ->label('Edit Pelatihan'),
         ];
@@ -109,10 +111,10 @@ class ViewPelatihan extends ViewRecord
                     ->options(\App\Models\Instruktur::query()->pluck('nama', 'id'))
                     ->searchable()
                     ->multiple(),
-             ])
+            ])
             ->action(function (array $data) {
                 $instructors = $data['instruktur_id'] ?? [];
-                
+
                 // Cek apakah sudah ada data KompetensiPelatihan untuk kompetensi ini di pelatihan ini
                 $kompetensiPelatihan = $this->record->kompetensiPelatihan()
                     ->where('kompetensi_id', $data['kompetensi_id'])
@@ -142,85 +144,94 @@ class ViewPelatihan extends ViewRecord
     public function getEvaluationData(): array
     {
         $pelatihanId = $this->record->id;
-        
-        // 1. Global Pretest & Posttest Stats
-        // We assume PendaftaranPelatihan holds the scores
-        $pendaftaran = $this->record->pendaftaranPelatihan;
-        
-        $avgPretest = $pendaftaran->avg('nilai_pre_test') ?? 0;
-        $avgPosttest = $pendaftaran->avg('nilai_post_test') ?? 0;
-        
+
+        // 1. Calculate Pretest & Posttest from Percobaan (more reliable than PendaftaranPelatihan)
+        // Note: Using 'avg' on 'skor' column from Percobaan.
+        // Assuming Percobaan stores score 0-100.
+        $avgPretest = \App\Models\Percobaan::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->whereHas('tes', fn($q) => $q->where('tipe', 'pre_test'))
+            ->avg('skor') ?? 0;
+
+        $avgPosttest = \App\Models\Percobaan::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->whereHas('tes', fn($q) => $q->where('tipe', 'post_test'))
+            ->avg('skor') ?? 0;
+
         $improvement = 0;
         if ($avgPretest > 0) {
             $improvement = (($avgPosttest - $avgPretest) / $avgPretest) * 100;
         }
 
-        // 2. CSAT (Survey)
-        // Assuming 'nilai_survey' is 1-5 or similar scale.
-        $avgCsat = $pendaftaran->avg('nilai_survey') ?? 0;
-        $respondentsCount = $pendaftaran->whereNotNull('nilai_survey')->count();
-        
-        // 3. Graduation Projection (REMOVED)
-        // Logic removed as per user request to hide the card.
-        
-        // 4. Competency Details
-        // We need to group scores by competency.
-        // PendaftaranPelatihan might store aggregate scores, OR specific scores per competency are in a related table?
-        // Looking at PendaftaranPelatihan model, it has 'kompetensi_id' and 'nilai_post_test'.
-        // This implies one PendaftaranPelatihan row PER competency PER student?? 
-        // OR does PendaftaranPelatihan represent the whole course?
-        // If it's the whole course, how do we get "Rincian Nilai per Kompetensi"?
-        // Ah, PendaftaranPelatihan has 'kompetensi_id' (nullable).
-        // If the system creates multiple PendaftaranPelatihan rows (one per competency) for a single student...
-        // OR likely there's a child table `NilaiKompetensi`?
-        // Let's assume PendaftaranPelatihan is ONE per student per Pelatihan.
-        // AND maybe `kompetensi_id` in PendaftaranPelatihan is just for "Kompetensi Keahlian" track?
-        // BUT the dashboard wants "Rincian Nilai per Kompetensi" (plural).
-        // IF PendaftaranPelatihan is 1 row per student, AND we don't have a child table for scores,
-        // THEN maybe we calculate based on the 'kompetensiPelatihan' sessions?
-        // Let's check if there is a `Nilai` table.
-        // Validating from previous file reads... only `PendaftaranPelatihan` has scores.
-        // It has `kompetensi_id` and `kompetensi_pelatihan_id`.
-        // This suggests:
-        // A student enrolls in a Pelatihan.
-        // Maybe they get a separate row for each competency module?
-        // Let's assume for now we group `PendaftaranPelatihan` records by `kompetensi_id`?
-        // But `PendaftaranPelatihan` -> belongsTo `Peserta`.
-        // If a student takes 3 competencies in 1 training, do they have 3 rows?
-        // If YES, then grouping by `kompetensi_id` works.
-        // Let's proceed with that assumption.
-        
+        // 2. Calculate CSAT (Survey) using BuildsLikertData logic
+        // Aggregating all Likert answers from 'survei' tests for this training
+        $pertanyaanIds = $this->collectPertanyaanIds($pelatihanId, 'survei');
+
+        $avgCsat = 0;
+        $respondentsCount = 0;
+
+        if ($pertanyaanIds->isNotEmpty()) {
+            [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIds);
+
+            // Normalized answers don't assume a user context, just raw answers
+            $allAnswers = $this->normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId);
+
+            // Calculate average scale (1-4)
+            // Filter valid scales
+            $validScales = $allAnswers->pluck('skala')->filter(fn($s) => is_numeric($s) && $s > 0);
+
+            if ($validScales->isNotEmpty()) {
+                $avgCsat = $validScales->avg();
+            }
+
+            // Count distinct respondents
+            $respondentsCount = \App\Models\Percobaan::query()
+                ->where('pelatihan_id', $pelatihanId)
+                ->whereHas('tes', fn($q) => $q->where('tipe', 'survei'))
+                ->count();
+        }
+
+        // 3. Competency Details
+        // Keeping PendaftaranPelatihan logic as fallback for now, as breaking it down by competency 
+        // via Percobaan requires traversing complex relationships not fully verified yet.
         $competencyStats = [];
-        $sessions = $this->record->kompetensiPelatihan; 
-        
+        $sessions = $this->record->kompetensiPelatihan;
+
         foreach ($sessions as $session) {
-             // Get all registrations for this specific competency session
-             // Note: PendaftaranPelatihan has `pelatihan_id` but does it have `kompetensi_pelatihan_id` populated?
-             // The model has `kompetensi_pelatihan_id`.
-             $sessionRegistrations = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+            $sessionRegistrations = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
                 ->where('kompetensi_pelatihan_id', $session->id)
                 ->get();
-             
-             if ($sessionRegistrations->isEmpty()) {
-                 // Fallback: maybe just match by pelatihan_id if we treat it as single grade?
-                 // But the requested UI shows multiple competencies.
-                 // Let's just assume we want to show the list of competencies even if empty data.
-                 $pre = 0; $post = 0; $sat = 0;
-             } else {
-                 $pre = $sessionRegistrations->avg('nilai_pre_test') ?? 0;
-                 $post = $sessionRegistrations->avg('nilai_post_test') ?? 0;
-                 $sat = $sessionRegistrations->avg('nilai_survey') ?? 0; // CSAT per competency?
-             }
-             
-             $competencyStats[] = [
-                 'name' => $session->kompetensi->nama_kompetensi ?? 'Unknown',
-                 'pretest' => number_format($pre, 1),
-                 'posttest' => number_format($post, 1),
-                 'kepuasan' => number_format($sat, 1),
-                 'status' => $post >= 85 ? 'Sangat Baik' : ($post >= 75 ? 'Baik' : 'Cukup'), // Dummy logic
-                 'status_color' => $post >= 85 ? 'success' : ($post >= 75 ? 'info' : 'warning'),
-             ];
+
+            if ($sessionRegistrations->isEmpty()) {
+                $pre = 0;
+                $post = 0;
+                $sat = 0;
+            } else {
+                $pre = $sessionRegistrations->avg('nilai_pre_test') ?? 0;
+                $post = $sessionRegistrations->avg('nilai_post_test') ?? 0;
+                $sat = $sessionRegistrations->avg('nilai_survey') ?? 0;
+            }
+
+            $competencyStats[] = [
+                'name' => $session->kompetensi->nama_kompetensi ?? 'Unknown',
+                'pretest' => number_format($pre, 1),
+                'posttest' => number_format($post, 1),
+                'kepuasan' => number_format($sat, 1),
+                'status' => $post >= 85 ? 'Sangat Baik' : ($post >= 75 ? 'Baik' : 'Cukup'),
+                'status_color' => $post >= 85 ? 'success' : ($post >= 75 ? 'info' : 'warning'),
+            ];
         }
+
+        // Check if there are any raw survey answers
+        $hasSurveyAnswers = \App\Models\JawabanUser::query()
+            ->whereHas('percobaan.tes', fn($q) => $q->where('pelatihan_id', $pelatihanId))
+            ->exists();
+
+        // Also check if there are any Percobaan records for pre/post test
+        $hasPrePost = \App\Models\Percobaan::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->whereHas('tes', fn($q) => $q->whereIn('tipe', ['pre_test', 'post_test']))
+            ->exists();
 
         return [
             'avgPretest' => number_format($avgPretest, 1),
@@ -229,6 +240,7 @@ class ViewPelatihan extends ViewRecord
             'csat' => number_format($avgCsat, 1),
             'respondents' => $respondentsCount,
             'competencies' => $competencyStats,
+            'hasData' => ($hasSurveyAnswers || $hasPrePost),
         ];
     }
 }
