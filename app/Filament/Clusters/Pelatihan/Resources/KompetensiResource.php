@@ -46,10 +46,22 @@ class KompetensiResource extends Resource
 
                                         Forms\Components\Select::make('kelas_keterampilan')
                                             ->label('Kelompok')
-                                            ->options([
+                                            ->options(function ($get, $state) {
+                                                $options = [
+                                                    1 => 'Kelas Keterampilan & Teknik',
+                                                    0 => 'Milenial Job Center',
+                                                ];
+
+                                                if ($state !== null && array_key_exists($state, $options)) {
+                                                    unset($options[$state]);
+                                                }
+
+                                                return $options;
+                                            })
+                                            ->getOptionLabelUsing(fn($value) => [
                                                 1 => 'Kelas Keterampilan & Teknik',
                                                 0 => 'Milenial Job Center',
-                                            ])
+                                            ][$value] ?? null)
                                             ->required()
                                             ->native(false)
                                             ->columnSpanFull(),
@@ -100,7 +112,8 @@ class KompetensiResource extends Resource
                     Tables\Columns\ImageColumn::make('gambar')
                         ->disk('public')
                         ->height(150)
-                        ->defaultImageUrl(fn ($record) =>
+                        ->defaultImageUrl(
+                            fn($record) =>
                             'https://ui-avatars.com/api/?name=' . urlencode($record->nama_kompetensi) . '&size=300&background=random'
                         )
                         ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3']),
@@ -114,12 +127,13 @@ class KompetensiResource extends Resource
 
                     Tables\Columns\TextColumn::make('kelas_keterampilan')
                         ->label('Kelompok')
-                        ->formatStateUsing(fn ($state) => $state
-                            ? 'Kelas Keterampilan & Teknik'
-                            : 'Milenial Job Center'
+                        ->formatStateUsing(
+                            fn($state) => $state
+                                ? 'Kelas Keterampilan & Teknik'
+                                : 'Milenial Job Center'
                         )
                         ->badge()
-                        ->color(fn ($state) => $state ? 'success' : 'warning'),
+                        ->color(fn($state) => $state ? 'success' : 'warning'),
 
                     Tables\Columns\TextColumn::make('deskripsi')
                         ->limit(100)

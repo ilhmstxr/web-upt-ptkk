@@ -32,9 +32,6 @@ class InstrukturResource extends Resource
                                     ->label('Nama Lengkap')
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('nik')
-                                    ->label('NIK')
-                                    ->maxLength(255),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\TextInput::make('tempat_lahir')
@@ -53,28 +50,31 @@ class InstrukturResource extends Resource
                                     ->label('No HP')
                                     ->tel()
                                     ->maxLength(255),
-                                Forms\Components\Textarea::make('alamat_rumah')
-                                    ->columnSpanFull(),
                             ])->columns(2),
 
-                        Forms\Components\Section::make('Data Administrasi')
+                        Forms\Components\Section::make('Lampiran')
+                            ->relationship('lampiran')
                             ->schema([
-                                Forms\Components\TextInput::make('instansi')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('npwp')
-                                    ->label('NPWP')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('pendidikan_terakhir')
-                                    ->maxLength(255),
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('nama_bank')
-                                            ->maxLength(255),
-                                        Forms\Components\TextInput::make('no_rekening')
-                                            ->maxLength(255),
-                                    ]),
-                                Forms\Components\Textarea::make('pengalaman_kerja')
-                                    ->columnSpanFull(),
+                                Forms\Components\FileUpload::make('cv')
+                                    ->label('CV')
+                                    ->directory('instruktur/cv')
+                                    ->downloadable()
+                                    ->openable(),
+                                Forms\Components\FileUpload::make('ktp')
+                                    ->label('KTP')
+                                    ->directory('instruktur/ktp')
+                                    ->downloadable()
+                                    ->openable(),
+                                Forms\Components\FileUpload::make('ijazah')
+                                    ->label('Ijazah')
+                                    ->directory('instruktur/ijazah')
+                                    ->downloadable()
+                                    ->openable(),
+                                Forms\Components\FileUpload::make('sertifikat_kompetensi')
+                                    ->label('Sertifikat Kompetensi')
+                                    ->directory('instruktur/sertifikat')
+                                    ->downloadable()
+                                    ->openable(),
                             ])->columns(2),
                     ])->columnSpan(['lg' => 2]),
 
@@ -95,8 +95,8 @@ class InstrukturResource extends Resource
                                 Forms\Components\TextInput::make('password')
                                     ->label('Password')
                                     ->password()
-                                    ->dehydrated(fn ($state) => filled($state))
-                                    ->required(fn (string $context): bool => $context === 'create')
+                                    ->dehydrated(fn($state) => filled($state))
+                                    ->required(fn(string $context): bool => $context === 'create')
                                     ->maxLength(255),
                             ]),
                     ])->columnSpan(['lg' => 1]),
@@ -115,8 +115,7 @@ class InstrukturResource extends Resource
                     ->label('Kompetensi')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('instansi')
-                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('no_hp')
                     ->label('No HP')
                     ->searchable(),
