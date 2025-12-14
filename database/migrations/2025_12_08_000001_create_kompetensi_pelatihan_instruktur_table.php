@@ -16,8 +16,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('kompetensi_pelatihan_id')->constrained('kompetensi_pelatihan')->cascadeOnDelete();
             $table->foreignId('instruktur_id')->constrained('instruktur')->cascadeOnDelete();
+            $table->unique(['kompetensi_pelatihan_id', 'instruktur_id']);
             $table->timestamps();
         });
+
 
         // Migrate existing data
         $existing = DB::table('kompetensi_pelatihan')
