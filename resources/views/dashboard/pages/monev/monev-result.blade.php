@@ -25,6 +25,9 @@
 
             $jawabanCollection = $percobaan->jawabanUser ?? collect();
 
+            // Ambil pertanyaan dari relasi tes (tanpa butuh $pertanyaanList)
+            $pertanyaanList = $percobaan->tes?->pertanyaan ?? collect();
+
             $likertMap = [
                 1 => ['emoji' => '😡', 'label' => 'Sangat Tidak Setuju'],
                 2 => ['emoji' => '😕', 'label' => 'Tidak Setuju'],
@@ -32,7 +35,7 @@
                 4 => ['emoji' => '😍', 'label' => 'Sangat Setuju'],
             ];
 
-            // Rata-rata nilai (opsional)
+            // Rata-rata nilai likert (opsional)
             $avg = $jawabanCollection->whereNotNull('nilai_jawaban')->avg('nilai_jawaban');
             $avg = $avg ? round($avg, 2) : null;
         @endphp
@@ -50,7 +53,7 @@
             </div>
             <div class="text-xs text-indigo-700 mt-1">
                 @if($avg !== null)
-                    Rata-rata respon Anda: <b>{{ $avg }}</b> dari skala 4.
+                    Rata-rata respon Anda: <b>{{ $avg }}</b> dari skala {{ count($likertMap) }}.
                 @else
                     Respon Anda sudah tersimpan.
                 @endif
@@ -59,11 +62,21 @@
 
         {{-- Detail Jawaban --}}
         <div class="space-y-3">
-            @foreach($pertanyaanList ?? [] as $idx => $p)
+            @forelse($pertanyaanList as $p)
                 @php
                     $jawaban = $jawabanCollection->firstWhere('pertanyaan_id', $p->id);
-                    $nilai = $jawaban->nilai_jawaban ?? null;
+
+                    $tipe = $p->tipe_jawaban ?? null;
+
+                    $nilai = $jawaban?->nilai_jawaban;
                     $meta = $nilai ? ($likertMap[$nilai] ?? null) : null;
+
+                    $opsiLabel = $jawaban?->opsiJawaban?->teks_opsi
+                        ?? $jawaban?->opsiJawaban?->opsi
+                        ?? $jawaban?->opsiJawaban?->jawaban
+                        ?? null;
+
+                    $jawabanTeks = $jawaban?->jawaban_teks;
                 @endphp
 
                 <div class="p-4 bg-white border border-slate-100 rounded-xl">
@@ -71,20 +84,66 @@
                         {{ $loop->iteration }}. {{ $p->teks_pertanyaan ?? '-' }}
                     </div>
 
-                    @if($meta)
-                        <div class="mt-2 flex items-center gap-3">
-                            <span class="text-2xl">{{ $meta['emoji'] }}</span>
-                            <div class="text-sm text-slate-700">
-                                {{ $meta['label'] }} <span class="text-xs text-slate-500">(Skala {{ $nilai }})</span>
+                    {{-- OUTPUT SESUAI TIPE --}}
+                    @if($tipe === 'skala_likert' || $tipe === 'likert')
+                        @if($meta)
+                            <div class="mt-2 flex items-center gap-3">
+                                <span class="text-2xl">{{ $meta['emoji'] }}</span>
+                                <div class="text-sm text-slate-700">
+                                    {{ $meta['label'] }}
+                                    <span class="text-xs text-slate-500">(Skala {{ $nilai }})</span>
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="mt-2 text-xs text-slate-500 italic">Belum dijawab.</div>
+                        @endif
+
+                    @elseif($tipe === 'pilihan_ganda' || $tipe === 'pg')
+                        @if($opsiLabel)
+                            <div class="mt-2 text-sm text-slate-700">
+                                ✅ Jawaban: <span class="font-semibold">{{ $opsiLabel }}</span>
+                            </div>
+                        @else
+                            <div class="mt-2 text-xs text-slate-500 italic">Belum dijawab.</div>
+                        @endif
+
+                    @elseif($tipe === 'teks_bebas' || $tipe === 'essay')
+                        @if(!empty($jawabanTeks))
+                            <div class="mt-2 text-sm text-slate-700 whitespace-pre-line">
+                                📝 {{ $jawabanTeks }}
+                            </div>
+                        @else
+                            <div class="mt-2 text-xs text-slate-500 italic">Belum dijawab.</div>
+                        @endif
+
                     @else
-                        <div class="mt-2 text-xs text-slate-500 italic">
-                            Belum dijawab.
-                        </div>
+                        {{-- fallback: kalau tipe tidak dikenal --}}
+                        @if($meta)
+                            <div class="mt-2 flex items-center gap-3">
+                                <span class="text-2xl">{{ $meta['emoji'] }}</span>
+                                <div class="text-sm text-slate-700">
+                                    {{ $meta['label'] }}
+                                    <span class="text-xs text-slate-500">(Skala {{ $nilai }})</span>
+                                </div>
+                            </div>
+                        @elseif($opsiLabel)
+                            <div class="mt-2 text-sm text-slate-700">
+                                ✅ Jawaban: <span class="font-semibold">{{ $opsiLabel }}</span>
+                            </div>
+                        @elseif(!empty($jawabanTeks))
+                            <div class="mt-2 text-sm text-slate-700 whitespace-pre-line">
+                                📝 {{ $jawabanTeks }}
+                            </div>
+                        @else
+                            <div class="mt-2 text-xs text-slate-500 italic">Belum dijawab.</div>
+                        @endif
                     @endif
                 </div>
-            @endforeach
+            @empty
+                <div class="py-6 text-center text-slate-500">
+                    Pertanyaan survei tidak ditemukan.
+                </div>
+            @endforelse
         </div>
 
         {{-- Pesan Kesan --}}
