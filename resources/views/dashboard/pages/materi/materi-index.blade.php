@@ -8,94 +8,14 @@
 @php
     /**
      * ==========================================================
-     * 1) DATA ASLI dari controller
+     * DATA ASLI dari controller (TANPA DUMMY)
      * ==========================================================
      */
     $materis = $materiList ?? collect();
 
     /**
      * ==========================================================
-     * 2) DUMMY FALLBACK
-     * - aktif kalau data kosong / belum ada
-     * - bentuk object supaya kompatibel dengan materi-card
-     * ==========================================================
-     */
-    $isDummy = false;
-
-    if ($materis->isEmpty()) {
-        $isDummy = true;
-
-        $materis = collect([
-            (object)[
-                'id' => 'dummy-1',
-                'judul' => 'Pengenalan Keselamatan Kerja',
-                'deskripsi' => 'Materi dasar mengenai aturan keselamatan kerja di workshop.',
-                'tipe' => 'teks',
-                'estimasi_menit' => 15,
-                'urutan' => 1,
-                'kategori' => 'Dasar',
-                'file_path' => null,
-                'video_url' => null,
-                'link_url' => null,
-                'teks' => '<p>Contoh isi materi dummy...</p>',
-                'is_published' => true,
-                'pelatihan_id' => null,
-                'is_done' => false,
-            ],
-            (object)[
-                'id' => 'dummy-2',
-                'judul' => 'Video Teknik Dasar Pengelasan',
-                'deskripsi' => 'Video praktik teknik pengelasan untuk pemula.',
-                'tipe' => 'video',
-                'estimasi_menit' => 20,
-                'urutan' => 2,
-                'kategori' => 'Praktik',
-                'file_path' => null,
-                'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                'link_url' => null,
-                'teks' => null,
-                'is_published' => true,
-                'pelatihan_id' => null,
-                'is_done' => false,
-            ],
-            (object)[
-                'id' => 'dummy-3',
-                'judul' => 'Modul Mesin Bubut (PDF)',
-                'deskripsi' => 'Dokumen modul lengkap tentang pengoperasian mesin bubut.',
-                'tipe' => 'file',
-                'estimasi_menit' => 30,
-                'urutan' => 3,
-                'kategori' => 'Modul',
-                'file_path' => 'materi/dummy-modul-mesin-bubut.pdf',
-                'video_url' => null,
-                'link_url' => null,
-                'teks' => null,
-                'is_published' => true,
-                'pelatihan_id' => null,
-                'is_done' => false,
-            ],
-            (object)[
-                'id' => 'dummy-4',
-                'judul' => 'Referensi External CNC',
-                'deskripsi' => 'Link referensi pembelajaran CNC resmi.',
-                'tipe' => 'link',
-                'estimasi_menit' => 10,
-                'urutan' => 4,
-                'kategori' => 'Referensi',
-                'file_path' => null,
-                'video_url' => null,
-                'link_url' => 'https://example.com/referensi-cnc',
-                'teks' => null,
-                'is_published' => true,
-                'pelatihan_id' => null,
-                'is_done' => false,
-            ],
-        ]);
-    }
-
-    /**
-     * ==========================================================
-     * 3) KATEGORI untuk dropdown filter
+     * KATEGORI untuk dropdown filter
      * ==========================================================
      */
     $kategoriList = $materis
@@ -105,10 +25,10 @@
         ->values();
 @endphp
 
-{{-- Notice jika dummy aktif --}}
-@if($isDummy)
-    <div class="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-sm">
-        Data materi belum tersedia. Menampilkan contoh materi sementara.
+{{-- Notice jika belum ada materi --}}
+@if($materis->isEmpty())
+    <div class="mb-4 bg-slate-50 border border-slate-200 text-slate-600 px-4 py-3 rounded-lg text-sm">
+        Materi pelatihan belum tersedia.
     </div>
 @endif
 
@@ -121,7 +41,7 @@
                class="w-full md:w-2/3 p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition"
                onkeyup="filterMateri(this.value)">
 
-        {{-- Filter kategori (dinamis) --}}
+        {{-- Filter kategori --}}
         <select id="kategoriFilter"
                 class="w-full md:w-1/4 p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition"
                 onchange="filterKategori(this.value)">
@@ -134,16 +54,18 @@
 </div>
 
 {{-- Grid Materi --}}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    @foreach($materis as $materi)
-        @include('dashboard.pages.materi.materi-card', [
-            'materi' => $materi,
-        ])
-    @endforeach
-</div>
+@if($materis->isNotEmpty())
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @foreach($materis as $materi)
+            @include('dashboard.pages.materi.materi-card', [
+                'materi' => $materi,
+            ])
+        @endforeach
+    </div>
+@endif
 
-{{-- Pagination hanya kalau data asli dan paginator --}}
-@if(!$isDummy && $materis instanceof \Illuminate\Pagination\AbstractPaginator)
+{{-- Pagination --}}
+@if($materis instanceof \Illuminate\Pagination\AbstractPaginator)
     <div class="mt-8">
         {{ $materis->links() }}
     </div>
@@ -208,7 +130,7 @@ function filterKategori(value) {
         <div class="space-y-2 max-h-[420px] overflow-auto pr-1">
             @forelse($materisForSidebar as $i => $m)
                 @php
-                    $link = route('dashboard.materi.show', $m->id);
+                    $link = route('dashboard.materi.show', $m->slug ?? $m->id);
                 @endphp
                 <a href="{{ $link }}"
                    class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition">
@@ -217,7 +139,7 @@ function filterKategori(value) {
                         {{ $i + 1 }}
                     </div>
                     <div class="min-w-0">
-                        <div class="text-sm font-medium truncate">{{ $m->judul ?? '-' }}</div>
+                        <div class="text-sm font-medium truncate">{{ $m->judul }}</div>
                         <div class="text-[11px] text-slate-500">
                             {{ ($m->is_done ?? false) ? 'Selesai' : 'Belum' }}
                         </div>

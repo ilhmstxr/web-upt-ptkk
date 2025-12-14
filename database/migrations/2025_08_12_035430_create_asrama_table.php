@@ -11,12 +11,7 @@ return new class extends Migration
         Schema::create('asrama', function (Blueprint $table) {
             $table->id();
 
-            // FK ke pelatihan (parent)
-            $table->foreignId('pelatihan_id')
-                ->constrained('pelatihan')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-
+            // ASRAMA = FASILITAS MURNI
             $table->string('name');
 
             $table->enum('gender', ['Laki-laki', 'Perempuan', 'Campur'])
@@ -27,7 +22,8 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique(['pelatihan_id', 'name', 'gender']);
+            // unik per fasilitas
+            $table->unique(['name', 'gender']);
         });
     }
 
@@ -36,3 +32,4 @@ return new class extends Migration
         Schema::dropIfExists('asrama');
     }
 };
+

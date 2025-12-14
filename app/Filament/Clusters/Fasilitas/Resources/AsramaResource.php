@@ -26,29 +26,39 @@ class AsramaResource extends Resource
     protected static ?string $model = Asrama::class;
     protected static ?string $cluster = Fasilitas::class;
 
-    protected static ?string $navigationIcon  = 'heroicon-o-home-modern';
-    protected static ?string $navigationLabel = 'Asrama';
-    protected static ?string $modelLabel      = 'Asrama';
+    protected static ?string $navigationIcon   = 'heroicon-o-home-modern';
+    protected static ?string $navigationLabel  = 'Asrama';
+    protected static ?string $modelLabel       = 'Asrama';
     protected static ?string $pluralModelLabel = 'Asrama';
 
     /**
-     * ✅ sebelum list tampil, sync dulu dari config kamar.php
-     * sekarang methodnya udah ada di model Asrama.
+     * =========================
+     * QUERY
+     * =========================
      */
     public static function getEloquentQuery(): Builder
     {
-        Asrama::syncFromConfig();
-
-        return parent::getEloquentQuery()
-            ->withCount('kamars');
+        return parent::getEloquentQuery();
     }
 
+    /**
+     * =========================
+     * FORM CREATE & EDIT
+     * - Create asrama: kosong
+     * - Kamar manual (tidak auto dari config)
+     * =========================
+     */
     public static function form(Form $form): Form
     {
         return $form->schema([
+
+            /* ===============================
+             * INFORMASI ASRAMA
+             * =============================== */
             Forms\Components\Section::make('Informasi Asrama')
                 ->schema([
                     Forms\Components\Grid::make(2)->schema([
+
                         Forms\Components\TextInput::make('name')
                             ->label('Nama Asrama')
                             ->required()
@@ -59,18 +69,53 @@ class AsramaResource extends Resource
                             ->options([
                                 'Laki-laki' => 'Laki-laki',
                                 'Perempuan' => 'Perempuan',
+                                'Campur'    => 'Campur',
                             ])
-                            ->required(),
+                            ->nullable(), // boleh kosong
                     ]),
+                ]),
+
+            /* ===============================
+             * KAMAR & BED (MANUAL)
+             * =============================== */
+            Forms\Components\Section::make('Kamar & Bed')
+                ->description('Tambah kamar secara manual')
+                ->schema([
+
+                    Forms\Components\Repeater::make('kamars')
+                        ->relationship()
+                        ->schema([
+
+                            Forms\Components\TextInput::make('nomor_kamar')
+                                ->label('Nomor Kamar')
+                                ->numeric()
+                                ->required(),
+
+                            Forms\Components\TextInput::make('total_beds')
+                                ->label('Jumlah Bed')
+                                ->numeric()
+                                ->minValue(0)
+                                ->required(),
+
+                        ])
+                        ->columns(2)
+                        ->addActionLabel('Tambah Kamar')
+                        ->reorderable()
+                        ->collapsible(),
                 ]),
         ]);
     }
 
+    /**
+     * =========================
+     * TABLE
+     * =========================
+     */
     public static function table(Table $table): Table
     {
         return $table
             ->heading('Fasilitas Asrama')
-            ->description('Menampilkan asrama per pelatihan sesuai config kamar.php.')
+            ->description('Daftar asrama beserta jumlah kamar dan bed.')
 
             ->contentGrid([
                 'md' => 2,
@@ -79,8 +124,8 @@ class AsramaResource extends Resource
 
             ->columns([
                 Stack::make([
+
                     TextColumn::make('name')
-                        ->label('')
                         ->size(TextColumn\TextColumnSize::Large)
                         ->weight('bold')
                         ->searchable()
@@ -89,23 +134,18 @@ class AsramaResource extends Resource
                             'class' => 'text-indigo-800 text-xl font-extrabold tracking-wide',
                         ]),
 
-                    // tampilkan pelatihan biar jelas ini asrama pelatihan mana
-                    TextColumn::make('pelatihan.nama_pelatihan')
-                        ->label('Pelatihan')
-                        ->wrap()
-                        ->limit(60)
-                        ->extraAttributes([
-                            'class' => 'text-slate-600 text-sm',
-                        ]),
-
                     ColumnGrid::make(2)->schema([
+
                         BadgeColumn::make('kamars_count')
-                            ->label('Jumlah Kamar')
+                            ->label('Kamar')
+                            ->icon('heroicon-o-home')
+                            ->counts('kamars')
                             ->color('primary')
                             ->alignCenter(),
 
                         BadgeColumn::make('total_beds')
-                            ->label('Jumlah Bed')
+                            ->label('Bed')
+                            ->icon('heroicon-o-rectangle-stack')
                             ->state(fn (Asrama $record) =>
                                 $record->kamars()->sum('total_beds')
                             )
@@ -143,6 +183,11 @@ class AsramaResource extends Resource
             ]);
     }
 
+    /**
+     * =========================
+     * RELATIONS
+     * =========================
+     */
     public static function getRelations(): array
     {
         return [
@@ -150,6 +195,11 @@ class AsramaResource extends Resource
         ];
     }
 
+    /**
+     * =========================
+     * PAGES
+     * =========================
+     */
     public static function getPages(): array
     {
         return [

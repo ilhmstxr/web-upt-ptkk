@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Kamar extends Model
 {
@@ -15,24 +17,24 @@ class Kamar extends Model
         'pelatihan_id',
         'asrama_id',
         'nomor_kamar',
-        'lantai',          // atas / bawah
+        'lantai',
         'total_beds',
         'available_beds',
         'is_active',
-        'status',          // kalau kamu punya kolom status
+        'status',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
 
-    public function asrama()
+    public function asrama(): BelongsTo
     {
-        return $this->belongsTo(Asrama::class, 'asrama_id');
+        return $this->belongsTo(Asrama::class);
     }
 
-    public function penempatanAsrama()
+    public function penempatanAsrama(): HasMany
     {
-        return $this->hasMany(PenempatanAsrama::class, 'kamar_id');
+        return $this->hasMany(PenempatanAsrama::class);
     }
 }
