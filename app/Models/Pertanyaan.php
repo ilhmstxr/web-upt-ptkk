@@ -13,6 +13,7 @@ class Pertanyaan extends Model
 
     protected $fillable = [
         'tes_id',
+        'kelompok_pertanyaan_id',
         'nomor',
         'teks_pertanyaan',
         'kategori',
@@ -47,6 +48,11 @@ class Pertanyaan extends Model
     public function tes()
     {
         return $this->belongsTo(Tes::class, 'tes_id');
+    }
+
+    public function kelompok()
+    {
+        return $this->belongsTo(KelompokPertanyaan::class, 'kelompok_pertanyaan_id');
     }
 
     // Opsi jawaban milik pertanyaan ini (relasi utama)

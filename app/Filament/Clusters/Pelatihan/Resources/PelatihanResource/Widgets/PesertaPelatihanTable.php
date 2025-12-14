@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 class PesertaPelatihanTable extends BaseWidget
 {
     public ?Model $record = null;
+    public ?int $kompetensiPelatihanId = null;
 
     protected int | string | array $columnSpan = 'full';
 
@@ -22,6 +23,7 @@ class PesertaPelatihanTable extends BaseWidget
                 PendaftaranPelatihan::query()
                     ->with(['peserta.instansi', 'kompetensi'])
                     ->where('pelatihan_id', $this->record->id)
+                    ->when($this->kompetensiPelatihanId, fn($q) => $q->where('kompetensi_pelatihan_id', $this->kompetensiPelatihanId))
             )
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_registrasi')
@@ -30,7 +32,7 @@ class PesertaPelatihanTable extends BaseWidget
                     ->sortable(),
                 Tables\Columns\TextColumn::make('peserta.nama')
                     ->label('Info Peserta')
-                    ->description(fn (PendaftaranPelatihan $record): string => $record->peserta?->user?->email . ' | ' . $record->peserta?->no_hp)
+                    ->description(fn(PendaftaranPelatihan $record): string => $record->peserta?->user?->email . ' | ' . $record->peserta?->no_hp)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('kompetensiPelatihan.kompetensi.nama_kompetensi')
@@ -43,7 +45,7 @@ class PesertaPelatihanTable extends BaseWidget
                 Tables\Columns\TextColumn::make('status_pendaftaran')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Pending' => 'warning',
                         'Diterima' => 'success',
                         'Ditolak' => 'danger',
@@ -66,11 +68,9 @@ class PesertaPelatihanTable extends BaseWidget
                             ->pluck('kompetensi.nama_kompetensi', 'id');
                     })
                     ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
-                        if (empty($data['value'])) {
-                            return $query;
-                        }
-                        return $query->where('kompetensi_pelatihan_id', $data['value']);
-                    }),
+                        return $query->when($data['value'], fn($q, $v) => $q->where('kompetensi_pelatihan_id', $v));
+                    })
+                    ->visible(fn() => is_null($this->kompetensiPelatihanId)),
             ])
             ->headerActions([])
             ->actions([
@@ -93,7 +93,7 @@ class PesertaPelatihanTable extends BaseWidget
                                 return \App\Models\KompetensiPelatihan::with('kompetensi')
                                     ->where('pelatihan_id', $this->record->id)
                                     ->get()
-                                    ->mapWithKeys(fn ($item) => [$item->id => $item->kompetensi->nama_kompetensi ?? 'Unknown']);
+                                    ->mapWithKeys(fn($item) => [$item->id => $item->kompetensi->nama_kompetensi ?? 'Unknown']);
                             })
                             ->searchable()
                             ->preload()

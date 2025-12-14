@@ -63,7 +63,7 @@ class ViewKompetensiPelatihan extends Page
             \Filament\Actions\Action::make('detail_monev')
                 ->label('Detail Survei Monev')
                 ->icon('heroicon-o-chart-pie')
-                ->url(fn () => ViewMonevDetail::getUrl(['record' => $this->record->id, 'kompetensi_id' => $this->kompetensiPelatihan->id]))
+                ->url(fn() => ViewMonevDetail::getUrl(['record' => $this->record->id, 'kompetensi_id' => $this->kompetensiPelatihan->id]))
                 ->color('primary'),
             $this->addInstructorAction(),
         ];
@@ -144,7 +144,7 @@ class ViewKompetensiPelatihan extends Page
     public function getTesProperty()
     {
         return \App\Models\Tes::where('pelatihan_id', $this->record->id)
-            ->where('kompetensi_id', $this->kompetensiPelatihan->kompetensi_id)
+            ->where('kompetensi_pelatihan_id', $this->kompetensiPelatihan->id)
             ->get();
     }
 
@@ -156,7 +156,7 @@ class ViewKompetensiPelatihan extends Page
     public function getStatistikProperty()
     {
         $tes = $this->tes;
-        
+
         $pretestIds = $tes->where('tipe', 'pre-test')->pluck('id');
         $posttestIds = $tes->where('tipe', 'post-test')->pluck('id');
         $surveiIds = $tes->where('tipe', 'survei')->pluck('id');
@@ -188,7 +188,7 @@ class ViewKompetensiPelatihan extends Page
         $surveiAttempts = \App\Models\Percobaan::whereIn('tes_id', $surveiIds)->get();
         $surveiAvg = $surveiAttempts->avg('skor') ?? 0;
         // Convert 0-100 scale to 0-5 scale
-        $surveiScale5 = ($surveiAvg / 20); 
+        $surveiScale5 = ($surveiAvg / 20);
         $surveiUniqueCount = $surveiAttempts->pluck('peserta_id')->unique()->count();
 
         $monevStats = [
