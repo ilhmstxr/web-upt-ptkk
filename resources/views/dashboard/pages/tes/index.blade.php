@@ -3,7 +3,7 @@
 
 @php
     /** @var string $mode  pre-test | post-test | monev */
-    $isMonev = $mode === 'monev' || $mode === 'survey';
+    $isMonev = $mode === 'monev' || $mode === 'survei';
 
     $pageTitle = match($mode) {
         'pre-test' => 'Pre-Test',

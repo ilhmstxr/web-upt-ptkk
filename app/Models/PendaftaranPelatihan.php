@@ -36,12 +36,12 @@ class PendaftaranPelatihan extends Model
         'assessment_token_sent_at',
         'token_expires_at',
 
-        // Nilai & Survey
+        // Nilai & Survei
         'nilai_pre_test',
         'nilai_post_test',
         'nilai_praktek',
         'rata_rata',
-        'nilai_survey',
+        'nilai_survei',
     ];
 
     protected $casts = [

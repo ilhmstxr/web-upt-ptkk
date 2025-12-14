@@ -2,12 +2,12 @@
 @extends('dashboard.layouts.main')
 
 @php
-    /** @var string $mode  pre-test | post-test | monev|survey */
-    $isMonev = $mode === 'monev' || $mode === 'survey';
+    /** @var string $mode  pre-test | post-test | monev|survei */
+    $isMonev = $mode === 'monev' || $mode === 'survei';
     $pageTitle = match($mode) {
         'pre-test' => 'Pre-Test',
         'post-test' => 'Post-Test',
-        default => 'Monev / Survey',
+        default => 'Monev / Survei',
     };
 
     $routePrefix = match($mode) {
@@ -119,7 +119,7 @@
                         $existing = $jawabanCollection->firstWhere('pertanyaan_id', $pertanyaan->id);
                         $existingId = $existing->opsi_jawaban_id ?? null;
 
-                        // Untuk survey/monev: mapping emoji otomatis berdasarkan index
+                        // Untuk survei/monev: mapping emoji otomatis berdasarkan index
                         $emojiMap = ['😡','😕','🙂','😄','😍'];
                     @endphp
 
@@ -130,7 +130,7 @@
                         @endphp
 
                         @if($isMonev)
-                            {{-- MODE SURVEY / MONEV: tampilan emoji --}}
+                            {{-- MODE SURVEI / MONEV: tampilan emoji --}}
                             <label class="flex items-center gap-3 p-2.5 border rounded-lg cursor-pointer
                                            hover:bg-indigo-50 transition text-sm">
                                 <input

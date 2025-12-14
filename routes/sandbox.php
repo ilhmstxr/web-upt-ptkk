@@ -3,7 +3,7 @@
 use App\Models\Kompetensi;
 // ... imports
 
-function SurveyHasilKegiatan()
+function SurveiHasilKegiatan()
 {
     $pelatihanId = 2;
 

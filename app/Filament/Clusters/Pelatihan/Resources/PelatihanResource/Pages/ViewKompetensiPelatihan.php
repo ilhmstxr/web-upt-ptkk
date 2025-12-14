@@ -61,7 +61,7 @@ class ViewKompetensiPelatihan extends Page
     {
         return [
             \Filament\Actions\Action::make('detail_monev')
-                ->label('Detail Survey Monev')
+                ->label('Detail Survei Monev')
                 ->icon('heroicon-o-chart-pie')
                 ->url(fn () => ViewMonevDetail::getUrl(['record' => $this->record->id, 'kompetensi_id' => $this->kompetensiPelatihan->id]))
                 ->color('primary'),
@@ -159,7 +159,7 @@ class ViewKompetensiPelatihan extends Page
         
         $pretestIds = $tes->where('tipe', 'pre-test')->pluck('id');
         $posttestIds = $tes->where('tipe', 'post-test')->pluck('id');
-        $surveyIds = $tes->where('tipe', 'survey')->pluck('id');
+        $surveiIds = $tes->where('tipe', 'survei')->pluck('id');
 
         // Pretest Stats
         $pretestAttempts = \App\Models\Percobaan::whereIn('tes_id', $pretestIds)->get();
@@ -185,17 +185,17 @@ class ViewKompetensiPelatihan extends Page
         ];
 
         // Monev Stats
-        $surveyAttempts = \App\Models\Percobaan::whereIn('tes_id', $surveyIds)->get();
-        $surveyAvg = $surveyAttempts->avg('skor') ?? 0;
+        $surveiAttempts = \App\Models\Percobaan::whereIn('tes_id', $surveiIds)->get();
+        $surveiAvg = $surveiAttempts->avg('skor') ?? 0;
         // Convert 0-100 scale to 0-5 scale
-        $surveyScale5 = ($surveyAvg / 20); 
-        $surveyUniqueCount = $surveyAttempts->pluck('peserta_id')->unique()->count();
+        $surveiScale5 = ($surveiAvg / 20); 
+        $surveiUniqueCount = $surveiAttempts->pluck('peserta_id')->unique()->count();
 
         $monevStats = [
-            'avg' => number_format($surveyScale5, 1),
-            'responden' => $surveyUniqueCount,
+            'avg' => number_format($surveiScale5, 1),
+            'responden' => $surveiUniqueCount,
             'total_peserta' => $this->peserta->count(),
-            'percentage' => $this->peserta->count() > 0 ? ($surveyUniqueCount / $this->peserta->count()) * 100 : 0,
+            'percentage' => $this->peserta->count() > 0 ? ($surveiUniqueCount / $this->peserta->count()) * 100 : 0,
         ];
 
         return [

@@ -1,8 +1,8 @@
 {{-- resources/views/dashboard/pages/monev/monev.blade.php --}}
 @extends('dashboard.layouts.main')
 
-@section('title', 'Monev / Survey')
-@section('page-title', 'Monev / Survey')
+@section('title', 'Monev / Survei')
+@section('page-title', 'Monev / Survei')
 
 @section('content')
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -13,7 +13,7 @@
             $okPelatihan = !session('pelatihan_id') || $t->pelatihan_id == session('pelatihan_id');
             if(!$okPelatihan) continue;
 
-            if (!in_array($t->tipe, ['survei','monev','survey'])) continue;
+            if (!in_array($t->tipe, ['survei','monev'])) continue;
         @endphp
 
         <div class="p-6 bg-white rounded-xl shadow-md hover:shadow-xl transition card-hover flex flex-col">
@@ -61,7 +61,7 @@
                 @elseif(!empty($t->__running_id))
                     <div class="flex items-center justify-between gap-3">
                         <div class="text-sm text-slate-600">
-                            ⏳ Survey sedang berjalan
+                            ⏳ Survei sedang berjalan
                         </div>
 
                         <a href="{{ route('dashboard.monev.show', $t->id).'?percobaan='.$t->__running_id }}"
@@ -85,8 +85,8 @@
 
     @empty
         <div class="col-span-full p-6 bg-white rounded-xl shadow-sm">
-            <p class="text-gray-500 mb-2">Tidak ada Monev / Survey untuk pelatihan Anda.</p>
-            <p class="text-gray-500 text-sm">Silakan hubungi admin jika seharusnya ada survey.</p>
+            <p class="text-gray-500 mb-2">Tidak ada Monev / Survei untuk pelatihan Anda.</p>
+            <p class="text-gray-500 text-sm">Silakan hubungi admin jika seharusnya ada survei.</p>
         </div>
     @endforelse
 

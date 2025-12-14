@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder; // Diperlukan untuk scope type-hinting
+use App\Models\Pelatihan; // Diperlukan untuk relasi
 
 class PenempatanAsrama extends Model
 {
@@ -21,24 +23,28 @@ class PenempatanAsrama extends Model
     {
         return $this->belongsTo(Kamar::class, 'kamar_id');
     }
-
-    public function pendaftaran()
+    
+    public function pendaftaranPelatihan()
     {
-        return $this->belongsTo(PendaftaranPelatihan::class, 'pendaftaran_id');
+        return $this->belongsTo(PendaftaranPelatihan::class, 'pendaftaran_pelatihan_id');
     }
 
-    public function penempatanAsramaAktif()
+    public function pelatihan()
     {
-        return $this->penempatanAsrama()
-            ->with('kamar.asrama')
-            ->latest()
-            ->first();
+        return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
-    public function scopePenghuniAktif($query)
+    /**
+     * Scope untuk mengambil semua penempatan yang masih aktif.
+     * Logika aktif diambil dari tanggal berakhir pelatihan yang diikuti peserta.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopePenghuniAktif(Builder $query): Builder
     {
-        return $query->whereHas('pendaftaranPelatihan.pelatihan', function ($q) {
-            $q->where('status', 'aktif');
+        return $query->whereHas('pelatihan', function (Builder $pelatihanQuery) {
+            $pelatihanQuery->where('tanggal_selesai', '>=', now()->toDateString());
         });
     }
 }

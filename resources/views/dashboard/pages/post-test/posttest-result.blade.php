@@ -16,90 +16,87 @@
         </a>
     </div>
 
-    @if(!empty($percobaan))
-        @php
-            use App\Models\Percobaan;
+            @if($percobaan)
+            @php
+                // Nama peserta
+                $namaPeserta =
+                    $percobaan->pesertaSurvei?->nama
+                    ?? $percobaan->peserta?->nama
+                    ?? 'Peserta';
 
-            $namaPeserta =
-                $percobaan->pesertaSurvei?->nama
-                ?? $percobaan->peserta?->nama
-                ?? 'Peserta';
+                $skor = (float) ($percobaan->skor ?? 0);
 
-            $skor = (float) ($percobaan->skor ?? 0);
+                // Passing score: ambil dari tes kalau ada, fallback 70
+                $passing = (float) ($percobaan->tes?->passing_score ?? 70);
+                $lulus = $skor >= $passing;
 
-            // Passing score: ambil dari tes kalau ada, fallback 70
-            $passing = (float) ($percobaan->tes?->passing_score ?? 70);
-            $lulus = $skor >= $passing;
+                // =========================
+                // Ambil PRE-TEST terakhir
+                // =========================
+                $participantKey = null;
 
-            // =========================
-            // Ambil PRE-TEST terakhir
-            // =========================
-            $participantKey = !empty($percobaan->peserta_id)
-                ? 'peserta_id'
-                : (!empty($percobaan->pesertaSurvei_id) ? 'pesertaSurvei_id' : null);
-
-            $participantId = $participantKey ? $percobaan->{$participantKey} : null;
-
-            $preAttempt = null;
-            if ($participantKey && $participantId) {
-                $preAttempt = Percobaan::query()
-                    ->where($participantKey, $participantId)
-                    ->whereNotNull('waktu_selesai')
-                    ->whereHas('tes', function($q){
-                        $q->where('tipe', 'pre-test');
-                    })
-                    ->latest('waktu_selesai')
-                    ->first();
-            }
-
-            $preScore = $preAttempt?->skor;
-
-            // Improvement (TETAP SAMA)
-            $improvementPoints  = null;
-            $improvementPercent = null;
-
-            if ($preScore !== null) {
-                $improvementPoints = (float)$skor - (float)$preScore;
-                if ((float)$preScore > 0) {
-                    $improvementPercent = round(($improvementPoints / (float)$preScore) * 100, 2);
+                if (!empty($percobaan->peserta_id)) {
+                    $participantKey = 'peserta_id';
+                } elseif (!empty($percobaan->pesertaSurvei_id)) {
+                    // NOTE: pastikan nama field bener (bisa jadi peserta_survei_id)
+                    $participantKey = 'peserta_survei_id';
                 }
-            }
 
-            // Kategori nilai (TETAP)
-            $kategori = match (true) {
-                $skor >= 85 => 'Sangat Baik',
-                $skor >= 70 => 'Baik',
-                $skor >= 55 => 'Cukup',
-                default     => 'Perlu Belajar Lagi',
-            };
+                $participantId = $participantKey ? $percobaan->{$participantKey} : null;
 
-            $kategoriClass = match ($kategori) {
-                'Sangat Baik'        => 'bg-emerald-100 text-emerald-700 border-emerald-200',
-                'Baik'              => 'bg-blue-100 text-blue-700 border-blue-200',
-                'Cukup'             => 'bg-amber-100 text-amber-700 border-amber-200',
-                default             => 'bg-red-100 text-red-700 border-red-200',
-            };
+                $preAttempt = null;
+                if ($participantKey && $participantId) {
+                    $preAttempt = \App\Models\Percobaan::query()
+                        ->where($participantKey, $participantId)
+                        ->whereNotNull('waktu_selesai')
+                        ->whereHas('tes', function ($q) {
+                            $q->where('tipe', 'pre-test');
+                        })
+                        ->latest('waktu_selesai')
+                        ->first();
+                }
 
-            $improveClass = ($improvementPoints ?? 0) >= 0 ? 'text-emerald-700' : 'text-red-600';
+                $preScore = $preAttempt?->skor;
 
-            // Amankan waktu (string/Carbon)
-            $mulaiRaw = $percobaan->waktu_mulai ?? null;
-            $selesaiRaw = $percobaan->waktu_selesai ?? null;
+                // Improvement
+                $improvementPoints  = null;
+                $improvementPercent = null;
 
-            $mulai = $mulaiRaw
-                ? ( $mulaiRaw instanceof \Carbon\Carbon
-                    ? $mulaiRaw
-                    : \Illuminate\Support\Carbon::parse($mulaiRaw)
-                  )
-                : null;
+                if ($preScore !== null) {
+                    $improvementPoints = (float) $skor - (float) $preScore;
+                    if ((float) $preScore > 0) {
+                        $improvementPercent = round(($improvementPoints / (float) $preScore) * 100, 2);
+                    }
+                }
 
-            $selesai = $selesaiRaw
-                ? ( $selesaiRaw instanceof \Carbon\Carbon
-                    ? $selesaiRaw
-                    : \Illuminate\Support\Carbon::parse($selesaiRaw)
-                  )
-                : null;
-        @endphp
+                // Kategori nilai
+                $kategori = match (true) {
+                    $skor >= 85 => 'Sangat Baik',
+                    $skor >= 70 => 'Baik',
+                    $skor >= 55 => 'Cukup',
+                    default     => 'Perlu Belajar Lagi',
+                };
+
+                $kategoriClass = match ($kategori) {
+                    'Sangat Baik' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
+                    'Baik'        => 'bg-blue-100 text-blue-700 border-blue-200',
+                    'Cukup'       => 'bg-amber-100 text-amber-700 border-amber-200',
+                    default       => 'bg-red-100 text-red-700 border-red-200',
+                };
+
+                $improveClass = ($improvementPoints ?? 0) >= 0 ? 'text-emerald-700' : 'text-red-600';
+
+                // Amankan waktu (string/Carbon/null)
+                $mulai = !empty($percobaan->waktu_mulai)
+                    ? \Illuminate\Support\Carbon::parse($percobaan->waktu_mulai)
+                    : null;
+
+                $selesai = !empty($percobaan->waktu_selesai)
+                    ? \Illuminate\Support\Carbon::parse($percobaan->waktu_selesai)
+                    : null;
+            @endphp
+        @endif
+
 
         {{-- Nama --}}
         <div class="mb-6">

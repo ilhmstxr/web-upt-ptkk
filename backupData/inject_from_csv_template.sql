@@ -140,7 +140,7 @@ SET @percobaan_post_id = LAST_INSERT_ID();
 -- [BLOK 3]: CONTOH UNTUK DATA TIPE "MONEV"
 -- Format Sumber: bidang_pelatihan, email, kompetensi, tes_id, jawaban_1...
 -- =================================================================================================
--- Logika mirip, tapi insert ke kolom 'nilai_survey' di pendaftaran (jika ada) atau hanya masuk tabel Percobaan.
+-- Logika mirip, tapi insert ke kolom 'nilai_survei' di pendaftaran (jika ada) atau hanya masuk tabel Percobaan.
 
 COMMIT;
 

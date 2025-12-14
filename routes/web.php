@@ -13,7 +13,7 @@ use App\Http\Controllers\Public\PelatihanController as PublicPelatihanController
 use App\Http\Controllers\PelatihanDetailController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\SurveiController;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\MateriController;
@@ -152,26 +152,26 @@ Route::view('template/instruktur', 'template_surat.instruktur');
 Route::view('pendaftaran/monev', 'peserta.monev.pendaftaran');
 
 /* ======================================================================
-|  E. SURVEY PUBLIC + SURVEY ADMIN
+|  E. SURVEI PUBLIC + SURVEI ADMIN
 ====================================================================== */
-Route::prefix('survey')->name('survey.')->group(function () {
-    Route::get('/', [SurveyController::class, 'index'])->name('index');
-    Route::get('/create', [SurveyController::class, 'create'])->name('create');
-    Route::post('/', [SurveyController::class, 'store'])->name('store');
+Route::prefix('survei')->name('survei.')->group(function () {
+    Route::get('/', [SurveiController::class, 'index'])->name('index');
+    Route::get('/create', [SurveiController::class, 'create'])->name('create');
+    Route::post('/', [SurveiController::class, 'store'])->name('store');
 
     // resource tambahan selain index/create/store
-    Route::resource('/', SurveyController::class)->except(['index', 'create', 'store']);
+    Route::resource('/', SurveiController::class)->except(['index', 'create', 'store']);
 
-    Route::get('/complete', [SurveyController::class, 'complete'])->name('complete');
-    Route::post('/start', [SurveyController::class, 'start'])->name('start');
-    Route::post('/check-credentials', [SurveyController::class, 'checkCredentials'])->name('checkCredentials');
+    Route::get('/complete', [SurveiController::class, 'complete'])->name('complete');
+    Route::post('/start', [SurveiController::class, 'start'])->name('start');
+    Route::post('/check-credentials', [SurveiController::class, 'checkCredentials'])->name('checkCredentials');
 
-    Route::get('/{peserta}/{order}', [SurveyController::class, 'show'])->name('step');
-    Route::post('/{peserta}/{order}', [SurveyController::class, 'update'])->name('update');
+    Route::get('/{peserta}/{order}', [SurveiController::class, 'show'])->name('step');
+    Route::post('/{peserta}/{order}', [SurveiController::class, 'update'])->name('update');
 });
 
 // admin variant supaya ga bentrok dengan public
-Route::resource('/survey-admin', SurveyController::class)
+Route::resource('/survei-admin', SurveiController::class)
     ->except(['index', 'create', 'store']);
 
 /* ======================================================================
@@ -241,9 +241,9 @@ Route::middleware(['web', 'assessment', 'training.session'])
         Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
     });
 
-    // Survey internal dashboard
-    Route::get('survey', [DashboardController::class, 'survey'])->name('survey');
-    Route::post('survey/submit', [DashboardController::class, 'surveySubmit'])->name('survey.submit');
+    // Survei internal dashboard
+    Route::get('survei', [DashboardController::class, 'survei'])->name('survei');
+    Route::post('survei/submit', [DashboardController::class, 'surveiSubmit'])->name('survei.submit');
 
     // Monev (jika dipakai)
     Route::prefix('monev')->name('monev.')->group(function () {

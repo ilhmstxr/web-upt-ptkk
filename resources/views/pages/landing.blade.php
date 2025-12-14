@@ -466,13 +466,21 @@ $latestBeritas = Berita::query()
     <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16">
       {{-- Kolom Kiri: Foto --}}
       <div class="shrink-0 flex justify-center md:justify-start">
-        <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF] 
+        <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF]
                     w-[300px] md:w-[360px] lg:w-[400px] aspect-[3/2] bg-slate-200">
           @if(!empty($cerita) && $cerita->image_url)
-            <img src="{{ $cerita->image_url }}" alt="{{ $cerita->title ?? 'Cerita Kami' }}" class="absolute inset-0 w-full h-full object-cover" />
+           <img
+  src="{{ (!empty($cerita) && $cerita->image_url) ? $cerita->image_url : asset('images/cerita-kami.svg') }}"
+  alt="{{ $cerita->title ?? 'Cerita Kami' }}"
+  class="absolute inset-0 w-full h-full object-cover"
+/>
           @else
             {{-- fallback static --}}
-            <img src="{{ asset('images/cerita-kami.svg') }}" alt="Kegiatan UPT PTKK" class="w-full h-auto object-cover" />
+           <img
+  src="{{ asset('images/cerita-kami.svg') }}"
+  alt="Kegiatan UPT PTKK"
+  class="absolute inset-0 w-full h-full object-cover"
+/>
           @endif
         </div>
       </div>
@@ -527,18 +535,18 @@ $latestBeritas = Berita::query()
           }
         @endphp
 
-        <a href="{{ $ceritaUrl }}" 
-          class=" inline-flex items-center justify-center gap-2 w-max 
-                  px-4 py-1 
-                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
-                  text-[14px] md:text-[15px] lg:text-[16px] 
+        <a href="{{ $ceritaUrl }}"
+          class=" inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-1
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
+                  text-[14px] md:text-[15px] lg:text-[16px]
                   shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
-          
+
           <span class="leading-none">Cari tahu lebih</span>
-          
+
           {{-- Ikon diperbesar responsif (w-4 sm:w-5 md:w-6) --}}
-          <svg xmlns="http://www.w3.org/2000/svg" 
-              class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" 
+          <svg xmlns="http://www.w3.org/2000/svg"
+              class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
           </svg>
@@ -690,32 +698,34 @@ $latestBeritas = Berita::query()
 {{-- SECTION: Sorotan Pelatihan (FULL DINAMIS DARI DB) --}}
 @php
 
-    // Ambil data dari controller (bisa kosong)
-    $collection = ($sorotans ?? collect())
-        ->where('is_published', true);
+$collection = ($sorotans ?? collect())->where('is_published', true);
 
-    // Urutan kelas yang diizinkan
-    $order = ['mtu', 'reguler', 'akselerasi'];
+$labelFallback = [
+  'mtu'        => 'Mobil Training Unit',
+  'reguler'    => 'Program Reguler',
+  'akselerasi' => 'Program Akselerasi',
+];
 
-    // Bangun array hanya dari data yang BENAR-BENAR ada di DB
-    $sorotanData = collect($order)
-        ->map(function ($kelas) use ($collection) {
-            $row = $collection->firstWhere('kelas', $kelas);
-            if (!$row) {
-                return null; // kalau belum ada row kelas itu, skip
-            }
+$order = ['mtu', 'reguler', 'akselerasi'];
 
-            $files = $row->photo_urls ?: [];   // dari accessor model
+$sorotanData = collect($order)
+    ->map(function ($key) use ($collection, $labelFallback) {
+        $row = $collection->firstWhere('kelas', $key);
+        if (!$row) {
+            return null;
+        }
 
-            return [
-                'key'   => $kelas,
-                'label' => $row->title ?? Str::headline($kelas),
-                'desc'  => $row->description ?? '',
-                'files' => $files,
-            ];
-        })
-        ->filter()   // buang yang null (kelas yang belum ada di DB)
-        ->values();
+        return [
+            'key'   => $key,
+            'label' => $row->title ?? $labelFallback[$key],
+            'desc'  => $row->description ?? '',
+            'files' => is_array($row->photos)
+                ? collect($row->photos)->map(fn ($p) => Storage::url($p))->toArray()
+                : [],
+        ];
+    })
+    ->filter()
+    ->values();
 @endphp
 
 @if($sorotanData->isNotEmpty())

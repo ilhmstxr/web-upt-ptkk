@@ -293,7 +293,7 @@ trait BuildsLikertData
     /**
      * FUNGSI HELPER BARU
      * Fungsi ini berisi logika spesifik untuk memetakan pertanyaan ke kategori
-     * berdasarkan tipe laporannya (survey vs pre/post-test).
+     * berdasarkan tipe laporannya (survei vs pre/post-test).
      */
     protected function buildKategoriMap(?int $pelatihanId, string $localTipe): array
     {
@@ -682,7 +682,7 @@ trait BuildsLikertData
                 'pendaftaranPelatihan.nilai_post_test' => ['label' => 'POST-TEST'],
                 'pendaftaranPelatihan.nilai_praktek' => ['label' => 'PRAKTEK'],
                 'pendaftaranPelatihan.rata_rata' => ['label' => 'RATA²'],
-                'pendaftaranPelatihan.nilai_survey' => ['label' => 'SURVEI'],
+                'pendaftaranPelatihan.nilai_survei' => ['label' => 'SURVEI'],
                 'pendaftaranPelatihan.status' => [
                     'label' => 'STATUS',
                     'type' => 'badge',

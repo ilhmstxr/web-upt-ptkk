@@ -77,7 +77,7 @@
                     }"
                     class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center">
                     <x-heroicon-o-chart-pie class="w-4 h-4 mr-2" />
-                    Hasil Tes & Survey
+                    Hasil Tes & Survei
                 </button>
 
             </nav>
@@ -220,7 +220,7 @@
         </div>
 
         {{-- =========================================================
-            CONTENT 6: HASIL TES / SURVEY
+            CONTENT 6: HASIL TES / SURVEI
             - UI lengkap versi 1
             - + chart livewire versi 2
         ========================================================= --}}
@@ -237,7 +237,7 @@
                         Laporan Hasil Evaluasi {{ $record->nama_pelatihan }}
                     </h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                        Rekapitulasi nilai pretest, posttest, dan survey kepuasan.
+                        Rekapitulasi nilai pretest, posttest, dan survei kepuasan.
                     </p>
                 </div>
             </div>

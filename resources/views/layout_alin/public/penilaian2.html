@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey Kepuasan - Persepsi Program Pelatihan</title>
+    <title>Survei Kepuasan - Persepsi Program Pelatihan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -78,8 +78,8 @@
             📌 <em>Silakan pilih salah satu jawaban yang paling sesuai dengan persepsi Anda terhadap program pelatihan ini.</em>
         </div>
 
-        <!-- Survey Section -->
-        <form id="trainingEvaluationSurvey">
+        <!-- Survei Section -->
+        <form id="trainingEvaluationSurvei">
             <div class="bg-white rounded-xl shadow-md overflow-hidden">
                 <!-- Rating Legend -->
                 <div class="p-6 border-b border-gray-200">
@@ -457,19 +457,19 @@
     }
 
     // Kumpulkan jawaban
-    const formData = new FormData(document.getElementById('trainingEvaluationSurvey'));
+    const formData = new FormData(document.getElementById('trainingEvaluationSurvei'));
     const answers = {};
     questions.forEach(q => answers[q] = parseInt(formData.get(q), 10));
     const comments = formData.get('training_comments') || '';
 
     // Simpan ringkas ke localStorage (opsional)
-    let surveyData = JSON.parse(localStorage.getItem('surveyData') || '{}');
-    surveyData = {
-      ...surveyData,
+    let surveiData = JSON.parse(localStorage.getItem('surveiData') || '{}');
+    surveiData = {
+      ...surveiData,
       instructor_evaluation: { ...answers, training_comments: comments },
       timestamp_p3: new Date().toISOString()
     };
-    localStorage.setItem('surveyData', JSON.stringify(surveyData));
+    localStorage.setItem('surveiData', JSON.stringify(surveiData));
 
     // Kirim ke server
     try {

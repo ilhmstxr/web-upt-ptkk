@@ -61,14 +61,14 @@ class DashboardController extends Controller
             return ['key' => 'peserta_id', 'id' => (int) session('peserta_id')];
         }
 
-        $surveySessionId =
+        $surveiSessionId =
             session('pesertaSurvei_id')
-            ?? session('peserta_Survey_id');
+            ?? session('peserta_Survei_id');
 
-        if ($surveySessionId) {
+        if ($surveiSessionId) {
             return [
                 'key' => 'peserta_survei_id',  // ✅ selalu kolom DB
-                'id'  => (int) $surveySessionId
+                'id'  => (int) $surveiSessionId
             ];
         }
 
@@ -353,9 +353,9 @@ class DashboardController extends Controller
         $pesertaAktif = ($key === 'peserta_id') ? Peserta::find($id) : null;
         $this->ensureActiveTrainingSession($pesertaAktif);
 
-        // ✅ mapping mode percobaan survey -> tipe tes = survei
+        // ✅ mapping mode percobaan survei -> tipe tes = survei
         $mode = strtolower($mode);
-        $tesTipe = ($mode === 'survey' || $mode === 'survei') ? 'survei' : $mode;
+        $tesTipe = ($mode === 'survei' || $mode === 'survei') ? 'survei' : $mode;
 
         // ✅ guard monev pakai baseMonevTesQuery (tanpa kompetensi)
         $guardQuery = ($tesTipe === 'survei')
@@ -401,7 +401,7 @@ class DashboardController extends Controller
         }
 
         if (Schema::hasColumn('percobaan', 'tipe')) {
-            $data['tipe'] = $mode; // survey / pre-test / post-test
+            $data['tipe'] = $tesTipe; // survei / pre-test / post-test
         }
 
         $percobaan = Percobaan::create($data);
@@ -637,7 +637,7 @@ class DashboardController extends Controller
     }
 
     // ======================================================
-    // MONEV / SURVEY
+    // MONEV / SURVEI
     // ======================================================
 
     /**
@@ -688,7 +688,7 @@ class DashboardController extends Controller
 
         return $this->startByTes(
             $tes,
-            'survey',                 // ✅ percobaan enum
+            'survei',                 // ✅ percobaan enum
             'dashboard.monev.index',
             'dashboard.monev.show',
             'dashboard.monev.result'
@@ -710,7 +710,7 @@ class DashboardController extends Controller
         return $this->handleTesShow(
             $tes,
             $request,
-            'survey',                  // ✅ percobaan enum
+            'survei',                  // ✅ percobaan enum
             'dashboard.monev.start',
             'dashboard.monev.result',
             'dashboard.pages.monev.monev-start'
@@ -719,8 +719,8 @@ class DashboardController extends Controller
 
     public function monevSubmit(Request $request, Percobaan $percobaan)
     {
-        if (($percobaan->tipe ?? null) !== 'survey') {
-            abort(404, 'Percobaan bukan survey.');
+        if (($percobaan->tipe ?? null) !== 'survei') {
+            abort(404, 'Percobaan bukan survei.');
         }
 
         return $this->processTesSubmit(
@@ -733,23 +733,23 @@ class DashboardController extends Controller
 
     public function monevResult(Percobaan $percobaan)
     {
-        if (($percobaan->tipe ?? null) !== 'survey') {
-            abort(404, 'Percobaan bukan survey.');
+        if (($percobaan->tipe ?? null) !== 'survei') {
+            abort(404, 'Percobaan bukan survei.');
         }
 
         return $this->showResult(
             $percobaan,
             'dashboard.pages.monev.monev-result',
-            'survey'
+            'survei'
         );
     }
 
     /* =========================================================
-     * SURVEY legacy dashboard (route masih ada)
+     * SURVEI legacy dashboard (route masih ada)
      * ========================================================= */
-    public function survey()
+    public function survei()
     {
-        // kalau dashboard survey masih dipakai, tampilkan tipe survei dalam scope
+        // kalau dashboard survei masih dipakai, tampilkan tipe survei dalam scope
         $tes = (clone $this->baseTesQuery())
             ->where('tipe', 'survei')
             ->get();
@@ -757,9 +757,9 @@ class DashboardController extends Controller
         return view('dashboard.pages.monev.monev', compact('tes'));
     }
 
-    public function surveySubmit(Request $request)
+    public function surveiSubmit(Request $request)
     {
-        // legacy submit survey, arahkan ke monev index
+        // legacy submit survei, arahkan ke monev index
         return redirect()->route('dashboard.monev.index');
     }
 
@@ -779,12 +779,12 @@ class DashboardController extends Controller
             return $login;
 
         // ===================================================
-        // NORMALISASI MODE (survey/survei aman)
+        // NORMALISASI MODE (survei aman)
         // ===================================================
         $mode = strtolower($mode);
 
-        // mode percobaan "survey" <-> tipe tes "survei"
-        $tesTipe = ($mode === 'survey' || $mode === 'survei') ? 'survei' : $mode;
+        // mode percobaan "survei" <-> tipe tes "survei"
+        $tesTipe = ($mode === 'survei') ? 'survei' : $mode;
 
         // guard query khusus monev (tanpa kompetensi)
         $guardQuery = ($tesTipe === 'survei')
@@ -927,8 +927,8 @@ class DashboardController extends Controller
             abort(403, 'Akses ditolak.');
         }
 
-        // ✅ bedain survey (likert) vs pilihan ganda
-        if (($percobaan->tipe ?? null) === 'survey') {
+        // ✅ bedain survei (likert) vs pilihan ganda
+        if (($percobaan->tipe ?? null) === 'survei') {
 
             $nilai = $request->input('nilai', []);
 

@@ -3,11 +3,11 @@
 
 @php
     /** @var string $mode */
-    $isMonev = $mode === 'monev' || $mode === 'survey';
+    $isMonev = $mode === 'monev' || $mode === 'survei';
     $pageTitle = match($mode) {
         'pre-test'  => 'Hasil Pre-Test',
         'post-test' => 'Hasil Post-Test',
-        default     => 'Hasil Monev / Survey',
+        default     => 'Hasil Monev / Survei',
     };
 
     $cheated = session('cheat_'.$percobaan->id, false);

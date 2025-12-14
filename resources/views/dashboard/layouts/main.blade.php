@@ -135,26 +135,32 @@
                     <ul class="space-y-1 text-sm">
 
                         {{-- Pre-Test --}}
-                        <li>
-                            <a href="{{ route('dashboard.pretest.index') }}"
-                               class="flex items-center p-2.5 rounded-lg font-medium
-                                    {{ request()->routeIs('dashboard.pretest.*') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:bg-slate-100' }}">
-                                <x-icon-clipboard class="w-5 h-5 mr-3" />
-                                <span>Pre-Test</span>
-                            </a>
-                        </li>
+                       <li>
+    <a href="{{ route('dashboard.pretest.index') }}"
+       class="flex items-center gap-3 p-2.5 rounded-lg font-medium transition
+            {{ request()->routeIs('dashboard.pretest.*')
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-700 hover:bg-slate-100' }}">
+        <span class="text-base leading-none">📝</span>
+        <span>Pre-Test</span>
+    </a>
+</li>
+
 
                         {{-- Post-Test --}}
                         <li>
-                            <a href="{{ route('dashboard.posttest.index') }}"
-                               class="flex items-center p-2.5 rounded-lg font-medium
-                                    {{ request()->routeIs('dashboard.posttest.*') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:bg-slate-100' }}">
-                                <x-icon-check-circle class="w-5 h-5 mr-3" />
-                                <span>Post-Test</span>
-                            </a>
-                        </li>
+    <a href="{{ route('dashboard.posttest.index') }}"
+       class="flex items-center gap-3 p-2.5 rounded-lg font-medium transition
+            {{ request()->routeIs('dashboard.posttest.*')
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-700 hover:bg-slate-100' }}">
+        <span class="text-base leading-none">📝</span>
+        <span>Post-Test</span>
+    </a>
+</li>
 
-                        {{-- Monev / Survey (✅ route diperbaiki jadi monev.index) --}}
+
+                        {{-- Monev / Survei (✅ route diperbaiki jadi monev.index) --}}
                         <li>
                             <a href="{{ route('dashboard.monev.index') }}"
                                class="flex items-center p-2.5 rounded-lg font-medium
@@ -162,7 +168,7 @@
                                 <span class="w-5 h-5 mr-3 flex items-center justify-center text-lg leading-none">
                                     📊
                                 </span>
-                                <span>Monev / Survey</span>
+                                <span>Monev / Survei</span>
                             </a>
                         </li>
 
@@ -273,6 +279,7 @@
 @stack('scripts')
 
 <script>
+
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('menu-toggle');
     const overlay = document.getElementById('sidebar-overlay');

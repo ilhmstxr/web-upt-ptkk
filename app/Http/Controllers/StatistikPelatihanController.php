@@ -14,7 +14,7 @@ class StatistikPelatihanController extends Controller
     public function data()
     {
         // 1) Ambil rata-rata skor percobaan per pelatihan per tipe tes
-        //    pre-test / post-test / survey
+        //    pre-test / post-test / survei
         $rows = Percobaan::query()
             ->select([
                 'tes.pelatihan_id as pelatihan_id',
@@ -22,7 +22,7 @@ class StatistikPelatihanController extends Controller
                 DB::raw('AVG(percobaans.skor) as avg_skor'),
             ])
             ->join('tes', 'tes.id', '=', 'percobaans.tes_id')
-            ->whereIn('tes.tipe', ['pre-test', 'post-test', 'survey'])
+            ->whereIn('tes.tipe', ['pre-test', 'post-test', 'survei'])
             ->groupBy('tes.pelatihan_id', 'tes.tipe')
             ->get();
 

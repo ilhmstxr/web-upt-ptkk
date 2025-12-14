@@ -30,7 +30,7 @@
         </div>
     @endif
     <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8 max-w-xl mx-auto">
-        <form action="{{ route('survey.start') }}" method="POST" class="space-y-6">
+        <form action="{{ route('survei.start') }}" method="POST" class="space-y-6">
             @csrf
             <input type="hidden" name="tes_id" value="{{ $tes->id }}">
             {{-- Menggunakan Grid Layout dari Tailwind CSS untuk membuat 2 kolom --}}

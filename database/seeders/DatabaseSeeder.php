@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             // PelatihanSeeder::class,
             // KompetensiSeeder::class,
             // PesertaSeeder::class,
-            // SurveySeeder::class,
+            // SurveiSeeder::class,
             // ProductionSeeder::class,
         ]);
 

@@ -75,7 +75,7 @@
 
                     <a href="{{ route('dashboard.posttest.index') }}"
                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm border bg-white hover:bg-slate-50 text-slate-700 border-slate-200">
-                        ✅ Post-Test
+                        📝 Post-Test
                     </a>
 
                     <a href="{{ route('dashboard.monev.index') }}"
@@ -250,7 +250,7 @@
                     <li>Kerjakan materi secara berurutan sampai statusnya <b>selesai</b>.</li>
                     <li>Pre-Test sebaiknya dikerjakan sebelum mulai materi utama.</li>
                     <li>Post-Test hanya bisa dikerjakan <b>sekali</b> setelah materi selesai.</li>
-                    <li>Monev/Survey wajib diisi untuk rekap evaluasi pelatihan.</li>
+                    <li>Monev/Survei wajib diisi untuk rekap evaluasi pelatihan.</li>
                 </ul>
             </section>
         </main>

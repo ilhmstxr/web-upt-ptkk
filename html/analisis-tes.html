@@ -274,9 +274,9 @@
                         class="px-6 py-2 text-sm font-bold rounded-md bg-white text-primary shadow-sm transition-all">
                         Mode Ujian (Benar/Salah)
                     </button>
-                    <button onclick="switchMode('survey')" id="btn-survey"
+                    <button onclick="switchMode('survei')" id="btn-survei"
                         class="px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-all">
-                        Mode Survey (Likert Scale)
+                        Mode Survei (Likert Scale)
                     </button>
                 </div>
             </div>
@@ -430,7 +430,7 @@
             </div>
 
             <!-- CONTENT 2: ANALISIS SURVEY (LIKERT SCALE) -->
-            <div id="view-survey" class="tab-content space-y-6">
+            <div id="view-survei" class="tab-content space-y-6">
 
                 <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-6 flex justify-between items-center">
                     <div>
@@ -560,22 +560,22 @@
         function switchMode(mode) {
             // Hide all content
             document.getElementById('view-ujian').classList.remove('active');
-            document.getElementById('view-survey').classList.remove('active');
+            document.getElementById('view-survei').classList.remove('active');
 
             // Reset Buttons
             const btnUjian = document.getElementById('btn-ujian');
-            const btnSurvey = document.getElementById('btn-survey');
+            const btnSurvei = document.getElementById('btn-survei');
 
             btnUjian.className = "px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-all";
-            btnSurvey.className = "px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-all";
+            btnSurvei.className = "px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-all";
 
             // Activate Selected
             if (mode === 'ujian') {
                 document.getElementById('view-ujian').classList.add('active');
                 btnUjian.className = "px-6 py-2 text-sm font-bold rounded-md bg-white text-primary shadow-sm transition-all";
             } else {
-                document.getElementById('view-survey').classList.add('active');
-                btnSurvey.className = "px-6 py-2 text-sm font-bold rounded-md bg-white text-primary shadow-sm transition-all";
+                document.getElementById('view-survei').classList.add('active');
+                btnSurvei.className = "px-6 py-2 text-sm font-bold rounded-md bg-white text-primary shadow-sm transition-all";
             }
         }
     </script>
