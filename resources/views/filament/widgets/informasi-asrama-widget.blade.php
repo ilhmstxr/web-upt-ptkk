@@ -66,9 +66,10 @@
                     <h3 class="font-bold text-gray-800 text-lg dark:text-white">Ketersediaan Asrama</h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Real-time status okupansi kamar.</p>
                 </div>
-                <div class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-medium max-w-[150px] truncate" title="{{ $currentTrainingName }}">
-                    {{ $currentTrainingName }}
+                <div class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-medium max-w-[150px] truncate" title="{{ $this->currentTrainingName ?? '-' }}">
+                 {{ $this->currentTrainingName ?? '-' }}
                 </div>
+
             </div>
 
             <div class="relative h-48 mb-6">
