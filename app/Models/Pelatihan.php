@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Carbon\Carbon; // Import Carbon secara eksplisit
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Pelatihan extends Model
 {
@@ -18,7 +19,6 @@ class Pelatihan extends Model
 
     protected $fillable = [
         'instansi_id',
-        // 'asrama_id', // Dihapus, karena Asrama seharusnya HasMany (anak) dari Pelatihan
         'angkatan',
         'jenis_program',
         'nama_pelatihan',
@@ -42,34 +42,35 @@ class Pelatihan extends Model
 
     protected static function booted()
     {
-        // Panggil metode updateStatusBasedOnDate sebelum menyimpan model
-        static::saving(function ($model) {
+        static::saving(function (self $model) {
             $model->updateStatusBasedOnDate();
         });
     }
 
     /**
-     * Mengubah nilai kolom 'status' di database berdasarkan tanggal hari ini.
+     * Update nilai kolom status berdasarkan tanggal
      */
-    public function updateStatusBasedOnDate()
+    public function updateStatusBasedOnDate(): void
     {
-        // Karena sudah di-cast, properti ini adalah instance Carbon atau null
-        if (! $this->tanggal_mulai || ! $this->tanggal_selesai) {
+        if (!$this->tanggal_mulai || !$this->tanggal_selesai) {
             return;
         }
 
-        $now = now()->startOfDay();
+        $now   = now()->startOfDay();
         $start = $this->tanggal_mulai->startOfDay();
-        // Menggunakan endOfDay() untuk memastikan hari terakhir pelatihan terhitung
-        $end = $this->tanggal_selesai->endOfDay(); 
+        $end   = $this->tanggal_selesai->endOfDay();
 
         if ($now->lt($start)) {
             $this->status = 'belum dimulai';
-        } elseif ($now->between($start, $end)) {
-            $this->status = 'aktif';
-        } else {
-            $this->status = 'selesai';
+            return;
         }
+
+        if ($now->between($start, $end)) {
+            $this->status = 'aktif';
+            return;
+        }
+
+        $this->status = 'selesai';
     }
 
     // ======================
@@ -81,14 +82,18 @@ class Pelatihan extends Model
         return $this->belongsTo(\App\Models\Instansi::class, 'instansi_id', 'id');
     }
 
-    // 🔥 KOREKSI: Relasi Asrama seharusnya HasMany (1 Pelatihan punya banyak Asrama)
+    /**
+     * ✅ 1 Pelatihan punya banyak Asrama
+     * FK: asrama.pelatihan_id -> pelatihan.id
+     */
     public function asramas(): HasMany
     {
         return $this->hasMany(\App\Models\Asrama::class, 'pelatihan_id', 'id');
     }
 
-    // Relasi Peserta langsung (jika kolom pelatihan_id ada di tabel 'peserta')
-    // Jika Peserta dihubungkan melalui PendaftaranPelatihan, gunakan HasManyThrough atau BelongsToMany
+    /**
+     * Peserta (kalau tabel peserta punya pelatihan_id)
+     */
     public function peserta(): HasMany
     {
         return $this->hasMany(\App\Models\Peserta::class, 'pelatihan_id', 'id');
@@ -104,16 +109,13 @@ class Pelatihan extends Model
         return $this->hasManyThrough(
             \App\Models\Percobaan::class,
             \App\Models\Tes::class,
-            'pelatihan_id', // FK di tabel Tes
-            'tes_id',       // FK di tabel Percobaan
-            'id',           // PK Pelatihan
-            'id'            // PK Tes
+            'pelatihan_id', // FK di tabel tes
+            'tes_id',       // FK di tabel percobaan
+            'id',           // PK pelatihan
+            'id'            // PK tes
         );
     }
 
-    /**
-     * Semua sesi/jadwal (kompetensi_pelatihan) di bawah pelatihan ini.
-     */
     public function kompetensiPelatihan(): HasMany
     {
         return $this->hasMany(\App\Models\KompetensiPelatihan::class, 'pelatihan_id', 'id');
@@ -129,7 +131,6 @@ class Pelatihan extends Model
         return $this->hasMany(\App\Models\MateriPelatihan::class, 'pelatihan_id', 'id');
     }
 
-
     // ======================
     // ACCESSORS / ATTRIBUTES
     // ======================
@@ -141,19 +142,17 @@ class Pelatihan extends Model
     {
         return Attribute::make(
             get: function (): string {
-                if (! $this->tanggal_mulai || ! $this->tanggal_selesai) {
+                if (!$this->tanggal_mulai || !$this->tanggal_selesai) {
                     return $this->status ?? 'Tidak Terjadwal';
                 }
 
                 $now = now();
-                // Menggunakan endOfDay() untuk mencakup hari terakhir
-                $end = $this->tanggal_selesai->endOfDay(); 
+                $end = $this->tanggal_selesai->endOfDay();
 
                 if ($now->isBefore($this->tanggal_mulai)) {
                     return 'Mendatang';
                 }
 
-                // Gunakan tanggal_mulai dan tanggal_selesai (endOfDay)
                 if ($now->between($this->tanggal_mulai, $end)) {
                     return 'Aktif';
                 }

@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 
 use App\Models\Pelatihan;
 use App\Models\Kamar;
@@ -15,9 +16,14 @@ class Asrama extends Model
 {
     use HasFactory;
 
-    // Ditambahkan: Menentukan nama tabel secara eksplisit (dari snippet Anda)
+    /**
+     * Nama tabel sesuai yang kamu pakai.
+     */
     protected $table = 'asrama';
 
+    /**
+     * Kolom yang boleh diisi.
+     */
     protected $fillable = [
         'pelatihan_id',
         'name',
@@ -25,16 +31,29 @@ class Asrama extends Model
         'total_kamar',
     ];
 
-    public function kamars(): HasMany
+    /**
+     * RELATION: 1 Asrama milik 1 Pelatihan
+     * FK: asrama.pelatihan_id -> pelatihan.id
+     */
+    public function pelatihan(): BelongsTo
     {
-        return $this->hasMany(Kamar::class, 'asrama_id');
+        return $this->belongsTo(Pelatihan::class, 'pelatihan_id', 'id');
     }
 
     /**
-     * ✅ Sync Asrama + Kamar dari config/session ke DB PER PELATIHAN.
+     * RELATION: 1 Asrama punya banyak Kamar
+     * FK: kamar.asrama_id -> asrama.id
+     */
+    public function kamars(): HasMany
+    {
+        return $this->hasMany(Kamar::class, 'asrama_id', 'id');
+    }
+
+    /**
+     * Sync Asrama + Kamar dari config/session ke DB per pelatihan.
      *
      * - Kalau $pelatihanId diisi → sync hanya pelatihan itu.
-     * - Kalau null → sync semua pelatihan (biar AsramaResource ngga error).
+     * - Kalau null → sync semua pelatihan (biar resource aman).
      *
      * sumber data:
      * - session('kamar') kalau admin pernah ubah
@@ -53,7 +72,7 @@ class Asrama extends Model
         if (!$pelatihanId) {
             $pelatihanIds = Pelatihan::query()->pluck('id');
             foreach ($pelatihanIds as $pid) {
-                $allocator->generateRoomsFromConfig($pid, $kamarConfig);
+                $allocator->generateRoomsFromConfig((int) $pid, $kamarConfig);
             }
             return;
         }
