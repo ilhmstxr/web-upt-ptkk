@@ -29,7 +29,7 @@ class CreatePelatihan extends CreateRecord
                 
                 // Common fields for all rows in this group
                 $commonData = [
-                    'kompetensi_id' => $item['kompetensi_id'],
+                    'kompetensi_pelatihan_id' => $item['kompetensi_pelatihan_id'],
                     'lokasi' => $item['lokasi'] ?? 'UPT-PTKK',
                     // Add other fields if present in schema
                 ];

@@ -29,7 +29,7 @@ class EditPelatihan extends EditRecord
         $relatedRecords = $this->record->kompetensiPelatihan;
 
         $grouped = $relatedRecords->groupBy(function ($item) {
-            return $item->kompetensi_id . '-' . ($item->lokasi ?? 'default');
+            return $item->kompetensi_pelatihan_id . '-' . ($item->lokasi ?? 'default');
         });
 
         $items = [];
@@ -56,7 +56,7 @@ class EditPelatihan extends EditRecord
             }
 
             $items[] = [
-                'kompetensi_id' => $first->kompetensi_id,
+                'kompetensi_pelatihan_id' => $first->kompetensi_pelatihan_id,
                 'lokasi'        => $first->lokasi,
                 'instruktur_id' => array_values(array_unique(array_filter($instructorIds))),
             ];
@@ -100,7 +100,7 @@ class EditPelatihan extends EditRecord
             $instructorIds = $item['instruktur_id'] ?? [];
 
             $commonData = [
-                'kompetensi_id' => $item['kompetensi_id'],
+                'kompetensi_pelatihan_id' => $item['kompetensi_pelatihan_id'],
                 'lokasi'        => $item['lokasi'] ?? 'UPT-PTKK',
             ];
 

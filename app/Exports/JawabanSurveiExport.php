@@ -15,7 +15,7 @@ class JawabanSurveiExport implements FromCollection, WithHeadings
     public function collection()
     {
         return \App\Models\JawabanUser::with([
-                'percobaan.peserta:id,nama,kompetensi_id,instansi_id',
+                'percobaan.peserta:id,nama,kompetensi_pelatihan_id,instansi_id',
                 'percobaan.peserta.kompetensi:id,nama_kompetensi',
                 'percobaan.peserta.instansi:id,asal_instansi',
                 'pertanyaan:id,judul',

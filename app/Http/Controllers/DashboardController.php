@@ -263,11 +263,40 @@ class DashboardController extends Controller
             });
         }
 
-        $preTes = $this->getTesByType('pre');
+        $preTes  = $this->getTesByType('pre');
         $postTes = $this->getTesByType('post');
-        $monevTes = $this->getTesByType('monev');
 
+        // ✅ AMBIL TES MONEV (SURVEI) YANG VALID DALAM SCOPE PELATIHAN (tanpa kompetensi)
+        $monevTes = (clone $this->baseMonevTesQuery())
+            ->where('tipe', 'survei')
+            ->latest('id')
+            ->first();
+
+        // ✅ STATS DEFAULT (pre/post tetap pakai ini)
         $stats = $this->getTestStats();
+
+        // ✅ OVERRIDE STATS MONEV AGAR PASTI MUNCUL SETELAH ATTEMPT 1 SELESAI
+        $basePerc = $this->basePercobaanQuery();
+
+        if ($monevTes) {
+            $doneMonev = (clone $basePerc)
+                ->where('tes_id', $monevTes->id)
+                ->whereNotNull('waktu_selesai')
+                ->latest('waktu_selesai')
+                ->first();
+
+            $stats['monevTestAttempts'] = (clone $basePerc)
+                ->where('tes_id', $monevTes->id)
+                ->count();
+
+            $stats['monevTestScore'] = $doneMonev?->skor;
+            $stats['monevTestDone']  = (bool) $doneMonev;
+        } else {
+            // kalau tidak ada survei untuk pelatihan tsb
+            $stats['monevTestAttempts'] = 0;
+            $stats['monevTestScore'] = null;
+            $stats['monevTestDone'] = false;
+        }
 
         return view('dashboard.pages.home', array_merge([
             'pesertaAktif' => $pesertaAktif,
@@ -279,52 +308,58 @@ class DashboardController extends Controller
             'monevTes' => $monevTes,
         ], $stats));
     }
-
     /* =========================================================
      * STATS
      * ========================================================= */
     private function getTestStats(): array
-    {
-        ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
+{
+    ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
 
-        $stats = [
-            'preTestAttempts' => 0,
-            'postTestAttempts' => 0,
-            'monevAttempts' => 0,
-            'preTestScore' => null,
-            'postTestScore' => null,
-            'monevScore' => null,
-            'preTestDone' => false,
-            'postTestDone' => false,
-            'monevDone' => false,
-        ];
+    $stats = [
+        'preTestAttempts' => 0,
+        'postTestAttempts' => 0,
+        'monevAttempts' => 0,
 
-        if (!$key || !$id) return $stats;
+        'preTestScore' => null,
+        'postTestScore' => null,
+        'monevScore' => null,
 
-        $preTes = $this->getTesByType('pre');
-        $postTes = $this->getTesByType('post');
-        $monevTes = $this->getTesByType('monev');
-        $basePerc = $this->basePercobaanQuery();
+        'preTestDone' => false,
+        'postTestDone' => false,
+        'monevDone' => false,
+    ];
 
-        foreach ([
-            'pre' => $preTes,
-            'post' => $postTes,
-            'monev' => $monevTes
-        ] as $k => $t) {
-            if (!$t) continue;
+    if (!$key || !$id) return $stats;
 
-            $done = (clone $basePerc)->where('tes_id', $t->id)
-                ->whereNotNull('waktu_selesai')
-                ->latest('waktu_selesai')
-                ->first();
+    $preTes  = $this->getTesByType('pre');
+    $postTes = $this->getTesByType('post');
+    $monevTes = $this->getTesByType('monev');
 
-            $stats[$k . 'TestAttempts'] = (clone $basePerc)->where('tes_id', $t->id)->count();
-            $stats[$k . 'TestScore'] = $done?->skor;
-            $stats[$k . 'TestDone'] = (bool) $done;
-        }
+    $basePerc = $this->basePercobaanQuery();
 
-        return $stats;
+    $map = [
+        'pre'  => ['tes' => $preTes,  'attemptKey' => 'preTestAttempts',  'scoreKey' => 'preTestScore',  'doneKey' => 'preTestDone'],
+        'post' => ['tes' => $postTes, 'attemptKey' => 'postTestAttempts', 'scoreKey' => 'postTestScore', 'doneKey' => 'postTestDone'],
+        'monev'=> ['tes' => $monevTes,'attemptKey' => 'monevAttempts',    'scoreKey' => 'monevScore',    'doneKey' => 'monevDone'],
+    ];
+
+    foreach ($map as $k => $cfg) {
+        $t = $cfg['tes'];
+        if (!$t) continue;
+
+        $done = (clone $basePerc)
+            ->where('tes_id', $t->id)
+            ->whereNotNull('waktu_selesai')
+            ->latest('waktu_selesai')
+            ->first();
+
+        $stats[$cfg['attemptKey']] = (clone $basePerc)->where('tes_id', $t->id)->count();
+        $stats[$cfg['scoreKey']]   = $done?->skor;
+        $stats[$cfg['doneKey']]    = (bool) $done;
     }
+
+    return $stats;
+}
 
     /* =========================================================
      * GENERIC START HANDLER
