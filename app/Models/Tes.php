@@ -42,14 +42,6 @@ class Tes extends Model
         return $this->hasMany(Pertanyaan::class, 'tes_id');
     }
 
-    /**
-     * Kategori/bagian hanya untuk SURVEI.
-     */
-    public function kelompokPertanyaan()
-    {
-        return $this->hasMany(KelompokPertanyaan::class, 'tes_id');
-    }
-
     public function percobaan()
     {
         return $this->hasMany(Percobaan::class, 'tes_id');

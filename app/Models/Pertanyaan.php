@@ -43,12 +43,7 @@ class Pertanyaan extends Model
 
             $query = static::where('tes_id', $pertanyaan->tes_id);
 
-            if (is_null($pertanyaan->kelompok_pertanyaan_id)) {
-                $query->whereNull('kelompok_pertanyaan_id');
-            } else {
-                $query->where('kelompok_pertanyaan_id', $pertanyaan->kelompok_pertanyaan_id);
-            }
-
+            // Logic nomor urut sederhana per tes_id
             $max = (int) ($query->max('nomor') ?? 0);
             $pertanyaan->nomor = $max + 1;
         });
@@ -61,14 +56,6 @@ class Pertanyaan extends Model
     public function tes()
     {
         return $this->belongsTo(Tes::class, 'tes_id');
-    }
-
-    /**
-     * Alias kompatibilitas lama: $pertanyaan->kelompok
-     */
-    public function kelompok()
-    {
-        return $this->kelompokPertanyaan();
     }
 
     /**
