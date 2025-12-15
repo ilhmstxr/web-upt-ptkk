@@ -21,7 +21,7 @@ class EmailService
     public static function send($to, $subject, $content, $data = [], $viewName = null)
     {
         try {
-            Mail::to($to)->queue(new GeneralNotificationMail($subject, $content, $data, $viewName));
+            Mail::to($to)->send(new GeneralNotificationMail($subject, $content, $data, $viewName));
             return true;
         } catch (\Exception $e) {
             Log::error("Failed to send email to " . (is_array($to) ? json_encode($to) : $to) . ": " . $e->getMessage());

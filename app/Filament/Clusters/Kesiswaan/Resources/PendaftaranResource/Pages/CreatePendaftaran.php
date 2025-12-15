@@ -24,26 +24,23 @@ class CreatePendaftaran extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         return DB::transaction(function () use ($data) {
-            // 1. INSTRANSI
-            // Logic controller: firstOrCreate instansi based on details
-            // We need 'kota_id' but in form we only captured 'kota' name?
-            // Controller required 'kota_id'|integer.
-            // For simplicity in Admin, let's assume we create/find by name or use dummy ID if strict validation not applied here.
-            // Or better, let's fix the Form to provide a default kota_id or make it nullable in logic if possible.
-            // Controller uses: 'kota_id' => $validatedData['kota_id'],
+            // 2. Resolve Kompetensi & User
+            // Get Kompetensi first to use its name in Instansi if needed
+            $kp = KompetensiPelatihan::with('kompetensi')->findOrFail($data['kompetensi_pelatihan_id']);
+            $realKompetensiId = $kp->kompetensi_id;
+            $namaKompetensi = $kp->kompetensi->nama_kompetensi ?? '-';
 
+            // 1. INSTRANSI
             $instansi = Instansi::firstOrCreate(
                 [
                     'asal_instansi'   => $data['asal_instansi'],
                     'alamat_instansi' => $data['alamat_instansi'],
                     'kota'            => $data['kota'],
-                    // 'kota_id'      => ??? We missed this in form. Let's assume 0 or 1 for now if not strictly checked by FK. 
-                    // Actually Instansi model might use it. Let's default to a safe value or 0.
                     'kota_id'         => 0, // Fallback
                 ],
                 [
-                    'kompetensi_keahlian' => $data['kompetensi_keahlian'], // This creates mixed usage? In controller it's passed.
-                    'cabangDinas_id'      => $data['cabangDinas_id'],
+                    'kompetensi_keahlian' => $namaKompetensi,
+                    'cabangDinas_id'      => $data['cabang_dinas_id'],
                 ]
             );
 
@@ -59,9 +56,7 @@ class CreatePendaftaran extends CreateRecord
             );
 
             // 3. PESERTA
-            // Get Kompetensi ID from KompetensiPelatihan
-            $kp = KompetensiPelatihan::findOrFail($data['kompetensi_keahlian']);
-            $realKompetensiId = $kp->kompetensi_id;
+            // $kp and $realKompetensiId already resolved above
 
             $peserta = Peserta::updateOrCreate(
                 ['nik' => $data['nik']],
@@ -98,11 +93,11 @@ class CreatePendaftaran extends CreateRecord
             $pendaftaran = PendaftaranPelatihan::create([
                 'peserta_id'              => $peserta->id,
                 'pelatihan_id'            => $data['pelatihan_id'],
-                'kompetensi_pelatihan_id' => $data['kompetensi_keahlian'],
+                'kompetensi_pelatihan_id' => $data['kompetensi_pelatihan_id'],
                 'kompetensi_id'           => $realKompetensiId,
                 'kelas'                   => $data['kelas'],
                 'status'                  => 'Belum Lulus',
-                'status_pendaftaran'      => 'Pending',
+                'status_pendaftaran'      => 'Diterima',
                 'nomor_registrasi'        => $nomorReg,
                 'tanggal_pendaftaran'     => now(),
                 'assessment_token'        => $token,
@@ -130,6 +125,43 @@ class CreatePendaftaran extends CreateRecord
                 ['peserta_id' => $peserta->id],
                 $lampiranData
             );
+
+            // 6. SEND EMAIL NOTIFICATION (Auto-Accept for Admin)
+            try {
+                $kamarAsrama = 'Belum Ditentukan';
+
+                $emailData = [
+                    'id_peserta' => $pendaftaran->nomor_registrasi,
+                    'nama_peserta' => $peserta->nama,
+                    'asal_lembaga' => $instansi->asal_instansi ?? '-',
+                    'cabang_dinas' => $instansi->cabangDinas->nama ?? '-',
+                    'kompetensi' => $kp->kompetensi->nama_kompetensi ?? '-',
+                    'kamar_asrama' => $kamarAsrama,
+                    'waktu_mulai' => '-',
+                    'waktu_selesai' => '-',
+                    'lokasi' => 'UPT PTKK Surabaya',
+                    'alamat_lengkap' => 'Jl. Menur No. 123, Surabaya',
+                ];
+
+                $pelatihan = \App\Models\Pelatihan::find($data['pelatihan_id']);
+                if ($pelatihan) {
+                    $emailData['waktu_mulai'] = $pelatihan->tanggal_mulai ? $pelatihan->tanggal_mulai->translatedFormat('d F Y') : '-';
+                    $emailData['waktu_selesai'] = $pelatihan->tanggal_selesai ? $pelatihan->tanggal_selesai->translatedFormat('d F Y') : '-';
+                    $emailData['alamat_lengkap'] = $pelatihan->lokasi_text ?? $emailData['alamat_lengkap'];
+                }
+
+                if ($user->email) {
+                    \App\Services\EmailService::send(
+                        $user->email,
+                        'Informasi Pendaftaran dan Undangan Pelatihan',
+                        '',
+                        $emailData,
+                        'template_surat.informasi_kegiatan'
+                    );
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send auto-accept email: ' . $e->getMessage());
+            }
 
             return $pendaftaran;
         });

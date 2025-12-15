@@ -366,8 +366,53 @@ class PendaftaranResource extends Resource
                         }
                         $record->update(['status_pendaftaran' => 'Diterima']);
 
+                        // SEND EMAIL
+                        try {
+                            $record->load(['peserta.instansi.cabangDinas', 'peserta.user', 'kompetensiPelatihan.kompetensi', 'pelatihan', 'penempatanAsramaAktif.kamarPelatihan.kamar']);
+
+                            $nama_peserta = $record->peserta->nama ?? '-';
+                            $asal_lembaga = $record->peserta->instansi->asal_instansi ?? '-';
+                            $cabang_dinas = $record->peserta->instansi->cabangDinas->nama ?? '-';
+                            $kompetensi   = $record->kompetensiPelatihan->kompetensi->nama_kompetensi ?? '-';
+
+                            $kamarAsrama = 'Belum Ditentukan';
+                            if ($record->penempatanAsramaAktif?->kamarPelatihan?->kamar) {
+                                $kamarAsrama = 'Kamar ' . $record->penempatanAsramaAktif->kamarPelatihan->kamar->nomor_kamar;
+                            }
+
+                            $waktu_mulai   = $record->pelatihan->tanggal_mulai ? $record->pelatihan->tanggal_mulai->translatedFormat('d F Y') : '-';
+                            $waktu_selesai = $record->pelatihan->tanggal_selesai ? $record->pelatihan->tanggal_selesai->translatedFormat('d F Y') : '-';
+                            $lokasi        = 'UPT PTKK Surabaya';
+                            $alamat_lengkap = $record->pelatihan->lokasi_text ?? 'Jl. Menur No. 123, Surabaya';
+
+                            $emailData = [
+                                'id_peserta'     => $record->nomor_registrasi,
+                                'nama_peserta'   => $nama_peserta,
+                                'asal_lembaga'   => $asal_lembaga,
+                                'cabang_dinas'   => $cabang_dinas,
+                                'kompetensi'     => $kompetensi,
+                                'kamar_asrama'   => $kamarAsrama,
+                                'waktu_mulai'    => $waktu_mulai,
+                                'waktu_selesai'  => $waktu_selesai,
+                                'lokasi'         => $lokasi,
+                                'alamat_lengkap' => $alamat_lengkap,
+                            ];
+
+                            if ($record->peserta?->user?->email) {
+                                \App\Services\EmailService::send(
+                                    $record->peserta->user->email,
+                                    'Informasi Pendaftaran dan Undangan Pelatihan',
+                                    '',
+                                    $emailData,
+                                    'template_surat.informasi_kegiatan'
+                                );
+                            }
+                        } catch (\Exception $e) {
+                            \Illuminate\Support\Facades\Log::error('Failed to send accept email from resource: ' . $e->getMessage());
+                        }
+
                         \Filament\Notifications\Notification::make()
-                            ->title('Peserta diterima')
+                            ->title('Peserta diterima & Email dikirim')
                             ->success()
                             ->send();
                     })

@@ -10757,11 +10757,11 @@ INSERT INTO `kompetensi_pelatihan` (`id`, `pelatihan_id`, `kompetensi_id`, `loka
 (7, 2, 8, 'smk negeri 12 malang', 'Malang', 'MTU-FTGR-25-2-MLG', NULL, NULL),
 (8, 2, 1, 'smk negeri 1 kediri', 'Kediri', 'MTU-TPTU-25-2-KDR', NULL, NULL),
 (9, 2, 1, 'smk negeri 1 tuban', 'Tuban', 'MTU-TPTU-25-2-TBN', NULL, NULL),
-(10, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
-(11, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
-(12, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
-(13, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
-(14, 3, 1, 'upt-ptkk', 'Surabaya', 'AKS-TPTU-25-1-SBY', NULL, NULL),
+(10, 3, 5, 'upt-ptkk', 'Surabaya', 'AKS-WBDS-25-1-SBY', NULL, NULL), -- web
+(11, 3, 6, 'upt-ptkk', 'Surabaya', 'AKS-DSGF-25-1-SBY', NULL, NULL), -- desain
+(12, 3, 7, 'upt-ptkk', 'Surabaya', 'AKS-ANMS-25-1-SBY', NULL, NULL), -- animasi
+(13, 3, 8, 'upt-ptkk', 'Surabaya', 'AKS-FTGR-25-1-SBY', NULL, NULL), -- fotografi
+(14, 3, 9, 'upt-ptkk', 'Surabaya', 'AKS-VDGR-25-1-SBY', NULL, NULL), -- videografi
 (15, 4, 10, 'smk negeri 3 Boyolangu Tulungagung', 'Tulungagung', 'MTU-TPTU-25-2-TBN', NULL, NULL),
 (16, 4, 4, 'smk negeri 1 bendo Magetan', 'Magetan', 'MTU-TPTU-25-2-TBN', NULL, NULL),
 (17, 4, 4, 'smk negeri 1 Lamongan', 'Lamongan', 'MTU-TPTU-25-2-TBN', NULL, NULL),
@@ -12419,12 +12419,12 @@ INSERT INTO `opsi_jawaban` (`id`, `pertanyaan_id`, `teks_opsi`, `gambar`, `apaka
 INSERT INTO `pelatihan` (`id`, `instansi_id`, `angkatan`, `jenis_program`, `nama_pelatihan`, `slug`, `gambar`, `status`, `tanggal_mulai`, `tanggal_selesai`, `deskripsi`, `jumlah_peserta`, `sasaran`, `syarat_ketentuan`, `jadwal_text`, `lokasi_text`, `created_at`, `updated_at`) VALUES
 (1, NULL, 2, 'reguler', 'Kegiatan Pengembangan dan Pelatihan bidang Vokasi bagi Siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. II(Teknik & Keterampilan)  Tahun 2025', NULL, NULL, 'selesai', '2025-08-25', '2025-08-30', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (2, NULL, 2, 'mtu', 'Kegiatan Pelatihan bidang Vokasi bagi Siswa SMK / SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan II  Tahun 2025', NULL, NULL, 'selesai', '2025-09-22', '2025-09-27', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(3, NULL, 1, 'akselerasi', 'Pengembangan bidang bagi Guru SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI bertaraf Nasional Tahun 2025', NULL, NULL, 'selesai', '2025-02-19', '2025-02-25', NULL, NULL, 'guru', NULL, NULL, NULL, NULL, NULL),
+(3, NULL, 1, 'akselerasi', 'Pengembangan bidang bagi Guru SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI bertaraf Nasional Tahun 2025 (MJC)', NULL, NULL, 'selesai', '2025-02-19', '2025-02-25', NULL, NULL, 'guru', NULL, NULL, NULL, NULL, NULL),
 (4, NULL, 1, 'mtu', 'Pengembangan bidang Vokasi bagi Siswa SMK/SMA (MILEA) melalui Mobile Training Unit (MTU) Angkatan I Tahun 2025', NULL, NULL, 'selesai', '2025-03-10', '2025-03-15', NULL, NULL, 'siswa', NULL, NULL, NULL, NULL, NULL),
 (5, NULL, 1, 'reguler', 'Pengembangan dan peningkatan bidang Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. I (Teknik & Keterampilan) Th. 2025', NULL, NULL, 'selesai', '2025-04-21', '2025-04-26', NULL, NULL, 'siswa', NULL, NULL, NULL, NULL, NULL),
 (6, NULL, 1, 'akselerasi', 'Pengembangan bidang bagi Siswa SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI (Teknik & Keterampilan) bertaraf Nasional Tahun 2025', NULL, NULL, 'selesai', '2025-05-05', '2025-05-11', NULL, NULL, 'siswa', NULL, NULL, NULL, NULL, NULL),
 (7, NULL, 1, 'akselerasi', 'Pengembangan bidang bagi Siswa SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI (MJC) bertaraf Nasional Tahun 2025', NULL, NULL, 'selesai', '2025-05-19', '2025-05-25', NULL, NULL, 'siswa', NULL, NULL, NULL, NULL, NULL),
-(8, NULL, 1, 'akselerasi', 'Pengembangan bidang bagi Guru SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI bertaraf Nasional Tahun 2025', NULL, NULL, 'selesai', '2025-06-18', '2025-06-24', NULL, NULL, 'guru', NULL, NULL, NULL, NULL, NULL),
+(8, NULL, 1, 'akselerasi', 'Pengembangan bidang bagi Guru SMK/SMA dan Sertifikasi Uji bidang berbasis KKNI bertaraf Nasional Tahun 2025 (Teknik & Keterampilan)', NULL, NULL, 'selesai', '2025-06-18', '2025-06-24', NULL, NULL, 'guru', NULL, NULL, NULL, NULL, NULL),
 (9, NULL, 1, 'reguler', 'Pengembangan dan peningkatan bidang Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. I (MJC) Th. 2025', NULL, NULL, 'selesai', '2025-07-21', '2025-07-26', NULL, NULL, 'siswa', NULL, NULL, NULL, NULL, NULL),
 (10, NULL, 2, 'reguler', 'Pengembangan dan peningkatan bidang Vokasi bagi siswa SMA/SMK (MILEA) menuju Generasi Emas 2045 Ang. II (MJC) Th. 2025', NULL, NULL, 'selesai', '2025-07-31', '2025-08-05', NULL, NULL, 'siswa', NULL, NULL, NULL, NULL, NULL);
 
@@ -15553,13 +15553,13 @@ INSERT INTO `tes` (`id`, `judul`, `deskripsi`, `tipe`, `kompetensi_pelatihan_id`
 (8, 'Fotografi posttest', 'Tes akhir untuk mengukur pemahaman materi Fotografi Produk.', 'post-test', 7, 2, 30, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
 (9, 'Survei Kepuasan Pelatihan - MTU', 'Survei untuk mengumpulkan umpan balik mengenai penyelenggaraan pelatihan.', 'survei', NULL, 2, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
 (10, 'Survei Monev Akselerasi Guru', 'survei aksel guru', 'survei', NULL, 3, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
-(11, 'Survei Monev Akselerasi Teknik Guru', 'survei aksel teknik guru', 'survei', NULL, 4, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
-(12, 'Survei Monev aksel teknik siswa', 'survei aksel teknik siswa', 'survei', NULL, 5, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
-(13, 'Survei Monev aksel mjc', 'survei aksel mjc', 'survei', NULL, 6, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
-(14, 'Survei Monev reguler siswa 1', 'survei reguler siswa 1', 'survei', NULL, 7, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
-(15, 'Survei Monev reguler mjc siswa 1', 'survei reguler mjc siswa 1', 'survei', NULL, 8, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
-(16, 'Survei Monev reguler mjc siswa 2', 'survei reguler mjc siswa 2', 'survei', NULL, 9, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
-(17, 'Survei Monev mtu siswa 1', 'survei mtu siswa 1', 'survei', NULL, 10, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
+(11, 'Survei Monev Akselerasi Teknik Guru', 'survei aksel teknik guru', 'survei', NULL, 8, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
+(12, 'Survei Monev aksel teknik siswa', 'survei aksel teknik siswa', 'survei', NULL, 6, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
+(13, 'Survei Monev aksel mjc', 'survei aksel mjc', 'survei', NULL, 7, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
+(14, 'Survei Monev reguler siswa 1', 'survei reguler siswa 1', 'survei', NULL, 5, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
+(15, 'Survei Monev reguler mjc siswa 1', 'survei reguler mjc siswa 1', 'survei', NULL, 9, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
+(16, 'Survei Monev reguler mjc siswa 2', 'survei reguler mjc siswa 2', 'survei', NULL, 10, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
+(17, 'Survei Monev mtu siswa 1', 'survei mtu siswa 1', 'survei', NULL, 4, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
 (18, 'Pretest Animasi Aksel guru', 'pretest', 'pre-test', 7, 3, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
 (19, 'Pretest Desain Grafis Aksel guru', 'pretest', 'pre-test', 6, 3, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),
 (20, 'Pretest Fotografi Aksel guru', 'pretest', 'pre-test', 8, 3, NULL, NULL, NULL, '2025-09-09 14:19:53', '2025-09-09 14:19:53'),

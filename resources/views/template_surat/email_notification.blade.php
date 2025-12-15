@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $subject ?? 'Pemberitahuan' }}</title>
+    <!-- <title>{{ $subject ?? 'Pemberitahuan' }}</title> -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -81,6 +81,9 @@
 
 <body>
     <div class="container">
+        <h1>testing email masuk kah? </h1>
+    </div>
+    <!-- <div class="container">
         <div class="header">
             <h1>{{ config('app.name') }}</h1>
         </div>
@@ -111,7 +114,7 @@
             <p>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
             <p>{{ config('app.url') }}</p>
         </div>
-    </div>
+    </div> -->
 </body>
 
 </html>
