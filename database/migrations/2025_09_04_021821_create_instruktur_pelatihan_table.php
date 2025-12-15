@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('instruktur_id')->constrained('instruktur')->cascadeOnDelete();
             $table->foreignId('pelatihan_id')->constrained('pelatihan')->cascadeOnDelete();
-            $table->foreignId('kamar_id')->constrained('kamar')->cascadeOnDelete()->nullable();
+            $table->foreignId('kamar_id')->constrained('kamars')->cascadeOnDelete()->nullable();
             $table->timestamps();
         });
     }

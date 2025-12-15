@@ -29,9 +29,9 @@ class AsramaResource extends Resource
     protected static ?string $cluster = Fasilitas::class;
 
     protected static ?string $navigationIcon   = 'heroicon-o-home-modern';
-    protected static ?string $navigationLabel  = 'Asrama';
+    protected static ?string $navigationLabel  = 'Asramas';
     protected static ?string $modelLabel       = 'Asrama';
-    protected static ?string $pluralModelLabel = 'Asrama';
+    protected static ?string $pluralModelLabel = 'Asramas';
 
     public static function getEloquentQuery(): Builder
     {

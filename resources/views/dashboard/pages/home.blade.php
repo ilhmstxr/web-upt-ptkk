@@ -193,8 +193,9 @@
                         <div>
                             <div class="text-xs font-semibold text-slate-400">Monev</div>
                             <div class="text-xl font-bold mt-2 text-indigo-600">
-                                {{ $monevDone ? ($monevScore ?? '-') : '-' }}
+                                {{ $monevDone ? 'Selesai' : '-' }}
                             </div>
+
                         </div>
                         <div class="bg-indigo-50 p-3 rounded-lg text-indigo-600 text-lg">📊</div>
                     </div>

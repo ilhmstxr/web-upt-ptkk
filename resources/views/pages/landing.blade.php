@@ -695,242 +695,325 @@ $latestBeritas = Berita::query()
 </section>
 {{-- /SECTION: Berita Terbaru --}}
 
-{{-- SECTION: Sorotan Pelatihan (FULL DINAMIS DARI DB) --}}
+{{-- SECTION: Sorotan Pelatihan (FULL DINAMIS + JS FIX) --}}
 @php
+    $collection = \App\Models\SorotanPelatihan::query()
+        ->where('is_published', true)
+        ->get();
 
-$collection = ($sorotans ?? collect())->where('is_published', true);
+    $labelFallback = [
+        'mtu'        => 'Mobil Training Unit',
+        'reguler'    => 'Pelatihan Reguler',
+        'akselerasi' => 'Pelatihan Akselerasi',
+    ];
 
-$labelFallback = [
-  'mtu'        => 'Mobil Training Unit',
-  'reguler'    => 'Program Reguler',
-  'akselerasi' => 'Program Akselerasi',
-];
+    $order = ['mtu', 'reguler', 'akselerasi'];
 
-$order = ['mtu', 'reguler', 'akselerasi'];
+    $sorotanData = collect($order)
+        ->map(function ($key) use ($collection, $labelFallback) {
+            $row = $collection->firstWhere('kelas', $key);
+            if (!$row) return null;
 
-$sorotanData = collect($order)
-    ->map(function ($key) use ($collection, $labelFallback) {
-        $row = $collection->firstWhere('kelas', $key);
-        if (!$row) {
-            return null;
-        }
+            // photos di Filament biasanya array; tapi kita amankan juga untuk string JSON
+            $photos = $row->photos;
+            if (is_string($photos)) {
+                $decoded = json_decode($photos, true);
+                $photos = is_array($decoded) ? $decoded : [];
+            }
+            if (!is_array($photos)) $photos = [];
 
-        return [
-            'key'   => $key,
-            'label' => $row->title ?? $labelFallback[$key],
-            'desc'  => $row->description ?? '',
-            'files' => is_array($row->photos)
-                ? collect($row->photos)->map(fn ($p) => Storage::url($p))->toArray()
-                : [],
-        ];
-    })
-    ->filter()
-    ->values();
+            // convert ke URL publik
+            $files = collect($photos)
+                ->filter(fn ($p) => is_string($p) && trim($p) !== '')
+                ->map(fn ($p) => \Illuminate\Support\Facades\Storage::disk('public')->url($p))
+                ->values()
+                ->toArray();
+
+            return [
+                'key'   => $key,
+                'label' => ($row->title && trim($row->title) !== '') ? $row->title : ($labelFallback[$key] ?? $key),
+                'desc'  => $row->description ?? '',
+                'files' => $files,
+            ];
+        })
+        ->filter()
+        ->values();
 @endphp
 
 @if($sorotanData->isNotEmpty())
-<section class="relative bg-[#F1F9FC] py-4 md:py-6">
-  <style>
-    @keyframes sorotan-scroll-x {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .sorotan-marquee { animation: none !important; }
-    }
-  </style>
-
-  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px] text-center flex flex-col items-center">
-
-    {{-- BADGE --}}
-    <div class="inline-block bg-[#FDECEC] text-[#861D23]
-                text-[18px] md:text-[20px] lg:text-[22px]
-                font-[Volkhov] font-bold leading-none
-                px-4 py-[6px] rounded-md mb-4">
-      Sorotan Pelatihan
-    </div>
-
-    {{-- JUDUL UTAMA --}}
-    <h2 class="heading-stroke text-[20px] md:text-[24px] lg:text-[26px]
-               font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mt-2
-               mb-10 md:mb-12 lg:mb-14">
-      <span class="relative z-10">
-        Mengasah Potensi dan Mencetak Tenaga Kerja yang Kompeten
-      </span>
-      <span class="absolute inset-0 text-transparent [-webkit-text-stroke:2px_#FFDE59] pointer-events-none">
-        Mengasah Potensi dan Mencetak Tenaga Kerja yang Kompeten
-      </span>
-    </h2>
-
-    {{-- HEADER NAMA + DESKRIPSI --}}
-    <div id="sorotan-top"
-         class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
-      <div class="shrink-0">
-        <button type="button"
-                class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
-                       font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
-                       rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
-          {{ $sorotanData[0]['label'] }}
-        </button>
-      </div>
-
-      <p id="sorotan-desc"
-         class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px]
-                font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">
-        {{ $sorotanData[0]['desc'] }}
-      </p>
-    </div>
-
-    {{-- SLIDER FOTO PER KATEGORI --}}
-    <div class="w-full mb-8 md:mb-10 lg:mb-12">
-      @foreach($sorotanData as $i => $cat)
-        @php
-          // pastikan files array
-          $files = is_array($cat['files']) ? $cat['files'] : (array) $cat['files'];
-        @endphp
-        <div class="sorotan-pane {{ $i === 0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
-          <div class="relative">
-            <div class="overflow-hidden">
-              <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform]" data-key="{{ $cat['key'] }}">
-                @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
-                  @foreach($files as $img)
-                    <div class="relative h-[130px] md:h-[150px] lg:h-[170px]
-                                w-[220px] md:w-[260px] lg:w-[280px]
-                                rounded-2xl overflow-hidden shrink-0">
-                      <img src="{{ $img }}" alt="{{ $cat['label'] }}" loading="lazy"
-                           class="w-full h-full object-cover">
-                    </div>
-                  @endforeach
-                @endfor
-              </div>
-              <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
-            </div>
-          </div>
-        </div>
-      @endforeach
-    </div>
-
-    {{-- CONTROLS --}}
-    <div class="mt-2 flex items-center justify-center gap-6">
-      <button id="sorotan-prev"
-              type="button"
-              class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
-                     text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition">
-        ‹
-      </button>
-
-      <div id="sorotan-dots" class="flex items-center gap-2"></div>
-
-      <button id="sorotan-next"
-              type="button"
-              class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
-                     text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition">
-        ›
-      </button>
-    </div>
-
-  </div>
-</section>
-
-{{-- SCRIPT: TAB / DOT + AUTO-SCROLL --}}
-<script>
-  (function () {
-    const tabOrder = @json($sorotanData->pluck('key'));
-    if (!tabOrder.length) return;
-
-    const meta = @json(
-        $sorotanData->mapWithKeys(fn($s) => [
-            $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']],
-        ])
-    );
-
-    const panes   = Array.from(document.querySelectorAll('.sorotan-pane'));
-    const labelEl = document.querySelector('.sorotan-label');
-    const descEl  = document.getElementById('sorotan-desc');
-    const dotsWrap = document.getElementById('sorotan-dots');
-    const prevBtn  = document.getElementById('sorotan-prev');
-    const nextBtn  = document.getElementById('sorotan-next');
-
-    function currentKey() {
-      const active = panes.find(p => !p.classList.contains('hidden'));
-      return active ? active.dataset.pane : tabOrder[0];
-    }
-
-    function currentIndex() {
-      return tabOrder.indexOf(currentKey());
-    }
-
-    function setActive(key) {
-      panes.forEach(p => p.classList.toggle('hidden', p.dataset.pane !== key));
-
-      if (meta[key]) {
-        if (labelEl) labelEl.textContent = meta[key].label;
-        if (descEl)  descEl.textContent  = meta[key].desc;
-      }
-
-      paintDots();
-    }
-
-    function paintDots() {
-      if (!dotsWrap) return;
-      const idx = currentIndex();
-      dotsWrap.innerHTML = '';
-      tabOrder.forEach((k, i) => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'w-2.5 h-2.5 rounded-full transition ' +
-          (i === idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
-        b.setAttribute('aria-label', meta[k]?.label ?? k);
-        b.setAttribute('aria-current', i === idx ? 'true' : 'false');
-        b.addEventListener('click', () => setActive(k));
-        dotsWrap.appendChild(b);
-      });
-    }
-
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
-        const idx = currentIndex();
-        const nextIdx = idx <= 0 ? tabOrder.length - 1 : idx - 1;
-        setActive(tabOrder[nextIdx]);
-      });
-    }
-
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
-        const idx = currentIndex();
-        const nextIdx = (idx + 1) % tabOrder.length;
-        setActive(tabOrder[nextIdx]);
-      });
-    }
-
-    // init
-    setActive(tabOrder[0]);
-
-    // AUTO-SCROLL TRACK FOTO
-    const tracks = document.querySelectorAll('.sorotan-track');
-    const SPEED = 0.8;
-
-    tracks.forEach(track => {
-      let offset = 0;
-
-      function animate() {
-        const halfWidth = track.scrollWidth / 2;
-        offset -= SPEED;
-        if (Math.abs(offset) >= halfWidth) {
-          offset += halfWidth;
+<section id="sorotanPelatihan" class="relative bg-[#F1F9FC] py-4 md:py-6">
+    <style>
+        @media (prefers-reduced-motion: reduce) {
+            #sorotanPelatihan .js-marquee { animation: none !important; transform: none !important; }
         }
-        track.style.transform = `translateX(${offset}px)`;
-        requestAnimationFrame(animate);
-      }
 
-      requestAnimationFrame(animate);
-    });
-  })();
-</script>
+        /* animasi saat ganti kategori */
+        #sorotanPelatihan .pane-enter {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+        #sorotanPelatihan .pane-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 220ms ease, transform 220ms ease;
+        }
+    </style>
+
+    <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px] text-center flex flex-col items-center">
+
+        {{-- BADGE --}}
+        <div class="inline-block bg-[#FDECEC] text-[#861D23]
+                    text-[18px] md:text-[20px] lg:text-[22px]
+                    font-[Volkhov] font-bold leading-none
+                    px-4 py-[6px] rounded-md mb-4">
+            Sorotan Pelatihan
+        </div>
+
+        {{-- JUDUL --}}
+        <h2 class="heading-stroke text-[20px] md:text-[24px] lg:text-[26px]
+                   font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mt-2
+                   mb-10 md:mb-12 lg:mb-14">
+            <span class="relative z-10">Mengasah Potensi dan Mencetak Tenaga Kerja yang Kompeten</span>
+            <span class="absolute inset-0 text-transparent [-webkit-text-stroke:2px_#FFDE59] pointer-events-none">
+                Mengasah Potensi dan Mencetak Tenaga Kerja yang Kompeten
+            </span>
+        </h2>
+
+        {{-- HEADER NAMA + DESKRIPSI --}}
+        <div class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
+            <div class="shrink-0">
+                <button type="button"
+                        class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
+                               font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
+                               rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
+                    {{ $sorotanData[0]['label'] }}
+                </button>
+            </div>
+
+            <p id="sorotan-desc"
+               class="mt-2 md:mt-0 text-sm md:text-base lg:text-[17px]
+                      font-[Montserrat] font-medium text-[#000000] leading-relaxed md:max-w-[75%]">
+                {{ $sorotanData[0]['desc'] }}
+            </p>
+        </div>
+
+        {{-- SLIDER FOTO --}}
+        <div class="w-full mb-8 md:mb-10 lg:mb-12">
+            @foreach($sorotanData as $i => $cat)
+                @php
+                    $files = $cat['files'] ?? [];
+                    // kalau files kosong: tetap render placeholder biar layout gak jebol
+                    $hasFiles = is_array($files) && count($files) > 0;
+                @endphp
+
+                <div class="sorotan-pane {{ $i === 0 ? '' : 'hidden' }}" data-pane="{{ $cat['key'] }}">
+                    <div class="relative overflow-hidden">
+                        <div class="sorotan-track flex items-center gap-4 md:gap-5 lg:gap-6 [will-change:transform] js-marquee"
+                             data-key="{{ $cat['key'] }}"
+                             data-has-files="{{ $hasFiles ? '1' : '0' }}">
+
+                            @if($hasFiles)
+                                {{-- gandakan 2x supaya loop mulus --}}
+                                @for($loopIdx = 0; $loopIdx < 2; $loopIdx++)
+                                    @foreach($files as $img)
+                                        <div class="relative h-[130px] md:h-[150px] lg:h-[170px]
+                                                    w-[220px] md:w-[260px] lg:w-[280px]
+                                                    rounded-2xl overflow-hidden shrink-0">
+                                            <img src="{{ $img }}"
+                                                 alt="{{ $cat['label'] }}"
+                                                 loading="lazy"
+                                                 class="w-full h-full object-cover">
+                                        </div>
+                                    @endforeach
+                                @endfor
+                            @else
+                                {{-- fallback kalau admin belum upload --}}
+                                @for($x = 0; $x < 6; $x++)
+                                    <div class="relative h-[130px] md:h-[150px] lg:h-[170px]
+                                                w-[220px] md:w-[260px] lg:w-[280px]
+                                                rounded-2xl overflow-hidden shrink-0 bg-white border border-slate-200
+                                                flex items-center justify-center">
+                                        <span class="text-sm text-slate-400">Belum ada foto</span>
+                                    </div>
+                                @endfor
+                            @endif
+                        </div>
+
+                        {{-- fade kiri–kanan --}}
+                        <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        {{-- CONTROLS --}}
+        <div class="mt-2 flex items-center justify-center gap-6">
+            <button id="sorotan-prev" type="button"
+                    class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
+                           text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition"
+                    aria-label="Sorotan sebelumnya">
+                ‹
+            </button>
+
+            <div id="sorotan-dots" class="flex items-center gap-2" aria-label="Indikator sorotan"></div>
+
+            <button id="sorotan-next" type="button"
+                    class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
+                           text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition"
+                    aria-label="Sorotan berikutnya">
+                ›
+            </button>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        const root = document.getElementById('sorotanPelatihan');
+        if (!root) return;
+
+        const tabOrder = @json($sorotanData->pluck('key')->values());
+        if (!tabOrder.length) return;
+
+        const meta = @json(
+            $sorotanData->mapWithKeys(fn($s) => [
+                $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']]
+            ])
+        );
+
+        const panes    = Array.from(root.querySelectorAll('.sorotan-pane'));
+        const labelEl  = root.querySelector('.sorotan-label');
+        const descEl   = root.querySelector('#sorotan-desc');
+        const dotsWrap = root.querySelector('#sorotan-dots');
+        const prevBtn  = root.querySelector('#sorotan-prev');
+        const nextBtn  = root.querySelector('#sorotan-next');
+
+        // ====== helper active ======
+        function currentKey() {
+            const active = panes.find(p => !p.classList.contains('hidden'));
+            return active ? active.dataset.pane : tabOrder[0];
+        }
+        function currentIndex() {
+            return Math.max(0, tabOrder.indexOf(currentKey()));
+        }
+
+        // ====== dots ======
+        function paintDots() {
+            if (!dotsWrap) return;
+            const idx = currentIndex();
+            dotsWrap.innerHTML = '';
+
+            tabOrder.forEach((k, i) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className =
+                    'w-2.5 h-2.5 rounded-full transition ' +
+                    (i === idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
+                b.setAttribute('aria-label', (meta[k]?.label ?? k));
+                b.setAttribute('aria-current', i === idx ? 'true' : 'false');
+                b.addEventListener('click', () => setActive(k, true));
+                dotsWrap.appendChild(b);
+            });
+        }
+
+        // ====== pane switch anim ======
+        function setActive(key, userAction = false) {
+            panes.forEach(p => {
+                const isTarget = p.dataset.pane === key;
+                if (isTarget && p.classList.contains('hidden')) {
+                    // animate in
+                    p.classList.remove('hidden');
+                    p.classList.add('pane-enter');
+                    requestAnimationFrame(() => {
+                        p.classList.add('pane-enter-active');
+                        p.classList.remove('pane-enter');
+                        setTimeout(() => p.classList.remove('pane-enter-active'), 240);
+                    });
+                } else if (!isTarget) {
+                    p.classList.add('hidden');
+                }
+            });
+
+            if (meta[key]) {
+                if (labelEl) labelEl.textContent = meta[key].label ?? '';
+                if (descEl)  descEl.textContent  = meta[key].desc ?? '';
+            }
+
+            paintDots();
+
+            // kalau user pindah kategori, reset posisi marquee kategori aktif biar gak loncat
+            if (userAction) resetTrackForKey(key);
+        }
+
+        // ====== controls ======
+        function move(delta) {
+            const idx = currentIndex();
+            const nextIdx = (idx + delta + tabOrder.length) % tabOrder.length;
+            setActive(tabOrder[nextIdx], true);
+        }
+
+        if (prevBtn) prevBtn.addEventListener('click', () => move(-1));
+        if (nextBtn) nextBtn.addEventListener('click', () => move(1));
+
+        // ====== marquee engine (pause on hover) ======
+        const tracks = Array.from(root.querySelectorAll('.sorotan-track'));
+        const SPEED = 0.8; // px per frame
+
+        const animState = new Map(); // track -> { rafId, offset, paused }
+
+        function startMarquee(track) {
+            if (!track) return;
+
+            // jangan jalan kalau tidak ada files
+            if (track.dataset.hasFiles !== '1') return;
+
+            // init state
+            if (!animState.has(track)) {
+                animState.set(track, { rafId: null, offset: 0, paused: false });
+            }
+            const state = animState.get(track);
+
+            // pause on hover (biar nyaman)
+            track.addEventListener('mouseenter', () => state.paused = true);
+            track.addEventListener('mouseleave', () => state.paused = false);
+
+            function step() {
+                const halfWidth = track.scrollWidth / 2;
+                if (!halfWidth) {
+                    state.rafId = requestAnimationFrame(step);
+                    return;
+                }
+
+                if (!state.paused) {
+                    state.offset -= SPEED;
+                    if (Math.abs(state.offset) >= halfWidth) {
+                        state.offset += halfWidth;
+                    }
+                    track.style.transform = `translateX(${state.offset}px)`;
+                }
+                state.rafId = requestAnimationFrame(step);
+            }
+
+            if (!state.rafId) state.rafId = requestAnimationFrame(step);
+        }
+
+        function resetTrackForKey(key) {
+            const track = root.querySelector(`.sorotan-track[data-key="${key}"]`);
+            if (!track) return;
+            const state = animState.get(track);
+            if (state) {
+                state.offset = 0;
+                track.style.transform = 'translateX(0px)';
+            }
+        }
+
+        // init
+        setActive(tabOrder[0], false);
+        tracks.forEach(startMarquee);
+    })();
+    </script>
+</section>
 @endif
 {{-- /SECTION: Sorotan Pelatihan --}}
-
-
 
 {{-- SECTION: Kompetensi Pelatihan (gambar dari DB Bidang) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">

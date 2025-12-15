@@ -117,7 +117,7 @@ final class PelatihanResource extends Resource
                                             Forms\Components\TextInput::make('nama')
                                                 ->required()
                                                 ->maxLength(255),
-                                            Forms\Components\Select::make('kompetensi_id')
+                                            Forms\Components\Select::make('kompetensi_pelatihan_id')
                                                 ->relationship('kompetensi', 'nama_kompetensi')
                                                 ->required(),
                                         ])
@@ -132,7 +132,7 @@ final class PelatihanResource extends Resource
                                 ->columns(2)
                                 ->defaultItems(1)
                                 ->addActionLabel('Tambah Sesi')
-                                ->itemLabel(fn(array $state): ?string => \App\Models\Kompetensi::find($state['kompetensi_id'] ?? null)?->nama_kompetensi),
+                                ->itemLabel(fn(array $state): ?string => \App\Models\Kompetensi::find($state['kompetensi_pelatihan_id'] ?? null)?->nama_kompetensi),
                         ]),
                 ]),
             Forms\Components\Wizard\Step::make('Konten Halaman Pendaftaran')
@@ -249,8 +249,8 @@ final class PelatihanResource extends Resource
             'create' => Pages\CreatePelatihan::route('/create'),
             'view' => Pages\ViewPelatihan::route('/{record}'),
             'edit' => Pages\EditPelatihan::route('/{record}/edit'),
-            'view-kompetensi' => Pages\ViewKompetensiPelatihan::route('/{record}/kompetensi/{kompetensi_id}'),
-            'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/kompetensi/{kompetensi_id}/monev'),
+            'view-kompetensi' => Pages\ViewKompetensiPelatihan::route('/{record}/kompetensi/{kompetensi_pelatihan_id}'),
+            'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/kompetensi/{kompetensi_pelatihan_id}/monev'),
         ];
     }
     public static function updateStatus(Forms\Get $get, Forms\Set $set)

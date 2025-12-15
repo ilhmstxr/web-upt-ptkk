@@ -10,7 +10,7 @@ class Asrama extends Model
 {
     use HasFactory;
 
-    protected $table = 'asrama'; // ✅ sesuai migration
+    protected $table = 'asramas'; // ✅ sesuai migration
 
     protected $fillable = [
         'name',
