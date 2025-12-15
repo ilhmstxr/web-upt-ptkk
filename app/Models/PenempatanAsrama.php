@@ -10,7 +10,7 @@ class PenempatanAsrama extends Model
 {
     use HasFactory;
 
-    protected $table = 'penempatan_asrama';
+    protected $table = 'penempatan_asramas';
 
     protected $fillable = [
         'peserta_id',
@@ -38,5 +38,12 @@ class PenempatanAsrama extends Model
     public function kamarPelatihan(): BelongsTo
     {
         return $this->belongsTo(KamarPelatihan::class, 'kamar_pelatihan_id');
+    }
+
+    public function scopePenghuniAktif($query)
+    {
+        return $query->whereHas('pelatihan', function ($q) {
+            $q->where('status', 'aktif');
+        });
     }
 }

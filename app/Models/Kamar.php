@@ -11,7 +11,7 @@ class Kamar extends Model
 {
     use HasFactory;
 
-    protected $table = 'kamars'; // ✅ sesuai migration kamu
+    protected $table = 'kamar'; // ✅ sesuai migration kamu
 
     protected $fillable = [
         'asrama_id',
@@ -38,11 +38,11 @@ class Kamar extends Model
     public function pelatihans(): BelongsToMany
     {
         return $this->belongsToMany(
-                Pelatihan::class,
-                'kamar_pelatihan',
-                'kamar_id',
-                'pelatihan_id'
-            )
+            Pelatihan::class,
+            'kamar_pelatihan',
+            'kamar_id',
+            'pelatihan_id'
+        )
             ->withPivot(['id', 'available_beds', 'is_active'])
             ->withTimestamps();
     }
