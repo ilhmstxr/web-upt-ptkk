@@ -16,7 +16,7 @@ return new class extends Migration
                 ->nullable()
                 ->after('tes_id')
                 ->constrained('kelompok_pertanyaans')
-                ->cascadeOnDelete();
+                ->nullOnDelete();
         });
     }
 

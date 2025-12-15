@@ -1214,8 +1214,9 @@ class DashboardController extends Controller
     }
 
     /* =========================================================
-     * MATERI (GABUNGAN FIX)
-     * ========================================================= */
+    * MATERI (FULL FIX — TANPA DUMMY)
+    * ========================================================= */
+
     public function materi()
     {
         $pelatihanId = session('pelatihan_id');
@@ -1223,7 +1224,7 @@ class DashboardController extends Controller
         if (!$pelatihanId) {
             return redirect()
                 ->route('dashboard.home')
-                ->with('error', 'Pelatihan aktif tidak ditemukan. Login ulang.');
+                ->with('error', 'Pelatihan aktif tidak ditemukan. Silakan login ulang.');
         }
 
         $materis = MateriPelatihan::query()
@@ -1232,13 +1233,6 @@ class DashboardController extends Controller
             ->orderBy('urutan')
             ->get();
 
-        $isDummy = false;
-
-        if ($materis->isEmpty()) {
-            $isDummy = true;
-            $materis = $this->dummyMateris();
-        }
-
         $pendaftaranId = session('pendaftaran_pelatihan_id');
 
         $doneIds = $pendaftaranId
@@ -1246,48 +1240,27 @@ class DashboardController extends Controller
                 ->where('pendaftaran_pelatihan_id', $pendaftaranId)
                 ->where('is_completed', true)
                 ->pluck('materi_id')
-                ->all()
+                ->toArray()
             : [];
 
-        $materis->each(function ($m) use ($doneIds) {
-            $m->is_done = in_array($m->id, $doneIds);
+        $materis->each(function ($materi) use ($doneIds) {
+            $materi->is_done = in_array($materi->id, $doneIds);
         });
 
         return view('dashboard.pages.materi.materi-index', [
             'materiList' => $materis,
-            'isDummy' => $isDummy,
         ]);
     }
 
     public function materiShow(string $materi)
     {
-        if (str_starts_with($materi, 'dummy-')) {
+        $query = MateriPelatihan::query();
 
-            $dummyMateris = $this->dummyMateris()
-                ->sortBy('urutan')
-                ->values();
-
-            $m = $dummyMateris->firstWhere('id', $materi);
-            abort_if(!$m, 404);
-
-            $dummyMateris->each(function ($dm) {
-                $dm->is_done = false;
-            });
-
-            return view('dashboard.pages.materi.materi-show', [
-                'materi' => $m,
-                'materiProgress' => null,
-                'progress' => null,
-                'relatedMateris' => $dummyMateris,
-                'isDummy' => true,
-            ]);
+        if (Schema::hasColumn('materi_pelatihan', 'slug')) {
+            $query->where('slug', $materi);
         }
 
-        $m = MateriPelatihan::query()
-            ->when(
-                Schema::hasColumn('materi_pelatihan', 'slug'),
-                fn ($q) => $q->where('slug', $materi)
-            )
+        $m = $query
             ->orWhere('id', $materi)
             ->firstOrFail();
 
@@ -1305,7 +1278,7 @@ class DashboardController extends Controller
                 ->where('pendaftaran_pelatihan_id', $pendaftaranId)
                 ->where('is_completed', true)
                 ->pluck('materi_id')
-                ->all()
+                ->toArray()
             : [];
 
         $relatedMateris = MateriPelatihan::query()
@@ -1318,31 +1291,28 @@ class DashboardController extends Controller
             });
 
         return view('dashboard.pages.materi.materi-show', [
-            'materi' => $m,
-            'materiProgress' => $progress,
-            'progress' => $progress,
-            'relatedMateris' => $relatedMateris,
-            'isDummy' => false,
+            'materi'          => $m,
+            'materiProgress'  => $progress,
+            'progress'        => $progress,
+            'relatedMateris'  => $relatedMateris,
         ]);
     }
 
     public function materiComplete(Request $request, string $materi)
     {
-        if (str_starts_with($materi, 'dummy-')) {
-            return redirect()
-                ->route('dashboard.materi.show', $materi)
-                ->with('success', 'Dummy materi ditandai selesai (mode demo).');
-        }
-
         $query = MateriPelatihan::query();
+
         if (Schema::hasColumn('materi_pelatihan', 'slug')) {
             $query->where('slug', $materi);
         }
 
-        $materiModel = $query->orWhere('id', $materi)->firstOrFail();
+        $materiModel = $query
+            ->orWhere('id', $materi)
+            ->firstOrFail();
 
-        ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
-        if (!$key || !$id) {
+        ['key' => $key, 'id' => $pesertaId] = $this->getParticipantKeyAndId();
+
+        if (!$key || !$pesertaId) {
             return redirect()
                 ->route('assessment.login')
                 ->with('error', 'Silakan login terlebih dahulu.');
@@ -1352,7 +1322,7 @@ class DashboardController extends Controller
 
         if (!$pendaftaranId) {
             $pendaftaran = PendaftaranPelatihan::query()
-                ->where('peserta_id', $id)
+                ->where('peserta_id', $pesertaId)
                 ->where('pelatihan_id', $materiModel->pelatihan_id)
                 ->latest('tanggal_pendaftaran')
                 ->first();
@@ -1366,13 +1336,13 @@ class DashboardController extends Controller
         if (!$pendaftaranId) {
             return redirect()
                 ->route('dashboard.materi.show', $materiModel->slug ?? $materiModel->id)
-                ->with('error', 'Tidak menemukan pendaftaran peserta untuk pelatihan ini.');
+                ->with('error', 'Pendaftaran pelatihan tidak ditemukan.');
         }
 
         MateriProgress::updateOrCreate(
             [
                 'pendaftaran_pelatihan_id' => $pendaftaranId,
-                'materi_id' => $materiModel->id,
+                'materi_id'                => $materiModel->id,
             ],
             [
                 'is_completed' => true,
@@ -1382,83 +1352,7 @@ class DashboardController extends Controller
 
         return redirect()
             ->route('dashboard.materi.show', $materiModel->slug ?? $materiModel->id)
-            ->with('success', 'Materi ditandai selesai. Terima kasih.');
-    }
-
-    private function dummyMateris()
-    {
-        $now = now();
-
-        return collect([
-            (object) [
-                'id' => 'dummy-1',
-                'judul' => 'Pengenalan Keselamatan Kerja',
-                'deskripsi' => 'Materi dasar mengenai aturan keselamatan kerja di workshop.',
-                'tipe' => 'teks',
-                'estimasi_menit' => 15,
-                'urutan' => 1,
-                'kategori' => 'Dasar',
-                'file_path' => null,
-                'video_url' => null,
-                'link_url' => null,
-                'teks' => '<p>Contoh isi materi dummy...</p>',
-                'is_published' => true,
-                'pelatihan_id' => null,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            (object) [
-                'id' => 'dummy-2',
-                'judul' => 'Video Teknik Dasar Pengelasan',
-                'deskripsi' => 'Video praktik teknik pengelasan untuk pemula.',
-                'tipe' => 'video',
-                'estimasi_menit' => 20,
-                'urutan' => 2,
-                'kategori' => 'Praktik',
-                'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                'file_path' => null,
-                'link_url' => null,
-                'teks' => null,
-                'is_published' => true,
-                'pelatihan_id' => null,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            (object) [
-                'id' => 'dummy-3',
-                'judul' => 'Modul Mesin Bubut (PDF)',
-                'deskripsi' => 'Dokumen modul lengkap tentang pengoperasian mesin bubut.',
-                'tipe' => 'file',
-                'estimasi_menit' => 30,
-                'urutan' => 3,
-                'kategori' => 'Modul',
-                'file_path' => 'materi/dummy-modul-mesin-bubut.pdf',
-                'video_url' => null,
-                'link_url' => null,
-                'teks' => null,
-                'is_published' => true,
-                'pelatihan_id' => null,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            (object) [
-                'id' => 'dummy-4',
-                'judul' => 'Referensi External CNC',
-                'deskripsi' => 'Link referensi pembelajaran CNC resmi.',
-                'tipe' => 'link',
-                'estimasi_menit' => 10,
-                'urutan' => 4,
-                'kategori' => 'Referensi',
-                'link_url' => 'https://example.com/referensi-cnc',
-                'file_path' => null,
-                'video_url' => null,
-                'teks' => null,
-                'is_published' => true,
-                'pelatihan_id' => null,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-        ]);
+            ->with('success', 'Materi berhasil ditandai selesai.');
     }
 
     /* =========================================================

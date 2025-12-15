@@ -11,32 +11,23 @@ return new class extends Migration
         Schema::create('kamar', function (Blueprint $table) {
             $table->id();
 
-            // FK ke pelatihan (parent)
-            $table->foreignId('pelatihan_id')
-                ->constrained('pelatihan')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-
-            // FK ke asrama (parent)
             $table->foreignId('asrama_id')
-                ->constrained('asrama')
+                ->constrained('asramas')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
-            $table->string('nomor_kamar');
+            $table->unsignedInteger('nomor_kamar');
 
-            // Atas / Bawah saja
-            $table->enum('lantai', ['atas', 'bawah'])
-                ->default('bawah');
+            // kapasitas master kamar (default dari config)
+            $table->unsignedInteger('total_beds')->default(0);
 
-            $table->integer('total_beds')->default(0);
-            $table->integer('available_beds')->default(0);
-
+            // kamar master bisa di-nonaktifkan (misal rusak permanen)
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();
 
-            $table->unique(['asrama_id', 'nomor_kamar']);
+            // nomor kamar tidak boleh dobel dalam 1 asrama
+            $table->unique(['asrama_id', 'nomor_kamar'], 'kamars_asrama_nomor_unique');
         });
     }
 

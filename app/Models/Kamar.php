@@ -4,35 +4,46 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Kamar extends Model
 {
     use HasFactory;
 
-    protected $table = 'kamar';
+    protected $table = 'kamars'; // ✅ sesuai migration kamu
 
     protected $fillable = [
-        'pelatihan_id',
         'asrama_id',
         'nomor_kamar',
-        'lantai',          // atas / bawah
         'total_beds',
-        'available_beds',
         'is_active',
-        'status',          // kalau kamu punya kolom status
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'nomor_kamar' => 'integer',
+        'total_beds' => 'integer',
     ];
 
-    public function asrama()
+    public function asrama(): BelongsTo
     {
         return $this->belongsTo(Asrama::class, 'asrama_id');
     }
 
-    public function penempatanAsrama()
+    /**
+     * Relasi kamar dipakai di banyak pelatihan (pivot: kamar_pelatihan)
+     * available_beds dan is_active per pelatihan disimpan di pivot.
+     */
+    public function pelatihans(): BelongsToMany
     {
-        return $this->hasMany(PenempatanAsrama::class, 'kamar_id');
+        return $this->belongsToMany(
+                Pelatihan::class,
+                'kamar_pelatihan',
+                'kamar_id',
+                'pelatihan_id'
+            )
+            ->withPivot(['id', 'available_beds', 'is_active'])
+            ->withTimestamps();
     }
 }

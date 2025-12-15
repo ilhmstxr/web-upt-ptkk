@@ -5,158 +5,269 @@ namespace App\Filament\Clusters\Kesiswaan\Resources;
 use App\Filament\Clusters\Kesiswaan;
 use App\Filament\Clusters\Kesiswaan\Resources\PendaftaranResource\Pages;
 use App\Models\PendaftaranPelatihan;
+use App\Models\Kompetensi;
+use App\Models\CabangDinas;
+use App\Models\KompetensiPelatihan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class PendaftaranResource extends Resource
 {
-
     protected static ?string $model = PendaftaranPelatihan::class;
     protected static ?string $cluster = Kesiswaan::class;
 
-    // ✅ Hero icon + label biar rapih di sidebar
-    protected static ?string $navigationIcon  = 'heroicon-o-users'; // Changed icon to users to match 'Peserta'
+    protected static ?string $navigationIcon  = 'heroicon-o-users';
     protected static ?string $navigationLabel = 'Peserta';
     protected static ?string $modelLabel      = 'Peserta';
     protected static ?string $pluralModelLabel = 'Peserta';
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with([
+                'peserta.lampiran',
+                'pelatihan',
+                'kompetensiPelatihan.kompetensi',
+            ]);
+    }
+
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Wizard::make([
-                    // STEP 1: Pelatihan & Kompetensi
-                    Forms\Components\Wizard\Step::make('Pelatihan')
+        return $form->schema([
+            /**
+             * CREATE: Wizard
+             */
+            Forms\Components\Wizard::make([
+                Forms\Components\Wizard\Step::make('Pelatihan')
+                    ->schema([
+                        Forms\Components\Select::make('pelatihan_id')
+                            ->label('Pelatihan')
+                            ->relationship('pelatihan', 'nama_pelatihan')
+                            ->reactive()
+                            ->required(),
+                        Forms\Components\Select::make('kompetensi_pelatihan_id')
+                            ->label('Kompetensi Keahlian')
+                            ->options(function (Forms\Get $get) {
+                                $pelatihanId = $get('pelatihan_id');
+                                if (!$pelatihanId) return [];
+
+                                return KompetensiPelatihan::where('pelatihan_id', $pelatihanId)
+                                    ->with('kompetensi')
+                                    ->get()
+                                    ->pluck('kompetensi.nama_kompetensi', 'id')
+                                    ->all();
+                            })
+                            ->required(),
+                    ]),
+
+                Forms\Components\Wizard\Step::make('Data Diri')
+                    ->schema([
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\TextInput::make('nama')
+                                ->required()
+                                ->maxLength(150),
+
+                            Forms\Components\TextInput::make('nik')
+                                ->label('NIK')
+                                ->required()
+                                ->numeric()
+                                ->length(16),
+
+                            Forms\Components\TextInput::make('no_hp')
+                                ->label('No. HP')
+                                ->required()
+                                ->tel(),
+
+                            Forms\Components\TextInput::make('email')
+                                ->email()
+                                ->required(),
+
+                            Forms\Components\TextInput::make('tempat_lahir')
+                                ->required(),
+
+                            Forms\Components\DatePicker::make('tanggal_lahir')
+                                ->required(),
+
+                            Forms\Components\Select::make('jenis_kelamin')
+                                ->options([
+                                    'Laki-laki' => 'Laki-laki',
+                                    'Perempuan' => 'Perempuan',
+                                ])
+                                ->required(),
+
+                            Forms\Components\TextInput::make('agama')
+                                ->required(),
+
+                            Forms\Components\Textarea::make('alamat')
+                                ->columnSpanFull()
+                                ->required(),
+                        ]),
+                    ]),
+
+                Forms\Components\Wizard\Step::make('Instansi')
+                    ->schema([
+                        Forms\Components\TextInput::make('asal_instansi')
+                            ->label('Asal Sekolah / Instansi')
+                            ->required(),
+
+                        Forms\Components\TextInput::make('alamat_instansi')
+                            ->required(),
+
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\TextInput::make('kota')
+                                ->label('Kota / Kabupaten')
+                                ->required(),
+
+                            Forms\Components\Select::make('cabang_dinas_id')
+                                ->label('Cabang Dinas')
+                                ->options(CabangDinas::query()->pluck('nama', 'id')->all())
+                                ->searchable()
+                                ->required(),
+
+                            Forms\Components\TextInput::make('kelas')
+                                ->label('Kelas')
+                                ->required(),
+                        ]),
+                    ]),
+
+                Forms\Components\Wizard\Step::make('Lampiran')
+                    ->schema([
+                        Forms\Components\FileUpload::make('fc_ktp')
+                            ->label('Scan KTP')
+                            ->disk('public')
+                            ->directory('lampiran-peserta')
+                            ->acceptedFileTypes(['application/pdf', 'image/*'])
+                            ->maxSize(2048)
+                            ->required(),
+
+                        Forms\Components\FileUpload::make('fc_ijazah')
+                            ->label('Scan Ijazah')
+                            ->disk('public')
+                            ->directory('lampiran-peserta')
+                            ->acceptedFileTypes(['application/pdf', 'image/*'])
+                            ->maxSize(2048)
+                            ->required(),
+
+                        Forms\Components\FileUpload::make('fc_surat_tugas')
+                            ->label('Surat Tugas')
+                            ->disk('public')
+                            ->directory('lampiran-peserta')
+                            ->acceptedFileTypes(['application/pdf', 'image/*'])
+                            ->maxSize(2048),
+
+                        Forms\Components\FileUpload::make('fc_surat_sehat')
+                            ->label('Surat Sehat')
+                            ->disk('public')
+                            ->directory('lampiran-peserta')
+                            ->acceptedFileTypes(['application/pdf', 'image/*'])
+                            ->maxSize(2048),
+
+                        Forms\Components\FileUpload::make('pas_foto')
+                            ->label('Pas Foto')
+                            ->disk('public')
+                            ->directory('lampiran-peserta')
+                            ->image()
+                            ->maxSize(2048)
+                            ->required(),
+
+                        Forms\Components\TextInput::make('nomor_surat_tugas')
+                            ->label('Nomor Surat Tugas'),
+                    ]),
+            ])
+                ->columnSpanFull()
+                ->visible(fn ($record) => blank($record)),
+
+            /**
+             * EDIT: Tampilan verifikasi + status
+             */
+            Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make('Informasi Pendaftar')
                         ->schema([
-                            Forms\Components\Select::make('pelatihan_id')
+                            Forms\Components\Placeholder::make('peserta_name')
+                                ->label('Nama Peserta')
+                                ->content(fn ($record) => $record?->peserta?->nama ?? '-'),
+
+                            Forms\Components\TextInput::make('nomor_registrasi')
+                                ->label('Nomor Registrasi')
+                                ->disabled()
+                                ->dehydrated(false),
+
+                            Forms\Components\Placeholder::make('pelatihan_name')
                                 ->label('Pelatihan')
-                                ->relationship('pelatihan', 'nama_pelatihan')
-                                ->reactive()
-                                ->required(),
+                                ->content(fn ($record) => $record?->pelatihan?->nama_pelatihan ?? '-'),
 
-                            Forms\Components\Select::make('kompetensi_keahlian') // Maps to kompetensi_pelatihan_id
-                                ->label('Kompetensi Keahlian')
-                                ->options(function (Forms\Get $get) {
-                                    $pelatihanId = $get('pelatihan_id');
-                                    if (!$pelatihanId) return [];
-                                    return \App\Models\KompetensiPelatihan::where('pelatihan_id', $pelatihanId)
-                                        ->with('kompetensi')
-                                        ->get()
-                                        ->pluck('kompetensi.nama_kompetensi', 'id');
+                            Forms\Components\TextInput::make('kelas')
+                                ->label('Kelas')
+                                ->disabled()
+                                ->dehydrated(false),
+
+                            Forms\Components\TextInput::make('tanggal_pendaftaran')
+                                ->label('Tanggal Pendaftaran')
+                                ->disabled()
+                                ->dehydrated(false),
+                        ])
+                        ->columns(2),
+
+                    Forms\Components\Section::make('Verifikasi Berkas')
+                        ->schema([
+                            Forms\Components\Placeholder::make('lampiran_info')
+                                ->label('')
+                                ->content(function ($record) {
+                                    $lampiran = $record?->peserta?->lampiran;
+
+                                    if (!$lampiran) {
+                                        return 'Belum ada berkas lampiran.';
+                                    }
+
+                                    $ktp   = $lampiran->fc_ktp_url ?? null;
+                                    $ijaz  = $lampiran->fc_ijazah_url ?? null;
+                                    $sehat = $lampiran->fc_surat_sehat_url ?? null;
+                                    $foto  = $lampiran->pas_foto_url ?? null;
+
+                                    $link = fn ($url) => $url
+                                        ? '<a href="'.$url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a>'
+                                        : '<span class="text-gray-500">Tidak ada</span>';
+
+                                    return new HtmlString('
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div><strong>KTP:</strong> '.$link($ktp).'</div>
+                                            <div><strong>Ijazah:</strong> '.$link($ijaz).'</div>
+                                            <div><strong>Surat Sehat:</strong> '.$link($sehat).'</div>
+                                            <div><strong>Pas Foto:</strong> '.$link($foto).'</div>
+                                        </div>
+                                    ');
                                 })
-                                ->required(),
+                                ->columnSpanFull(),
                         ]),
+                ])
+                ->columnSpan(['lg' => 2])
+                ->visible(fn ($record) => filled($record)),
 
-                    // STEP 2: Data Diri (Peserta & User)
-                    Forms\Components\Wizard\Step::make('Data Diri')
+            Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make('Status Pendaftaran')
                         ->schema([
-                            Forms\Components\Grid::make(2)->schema([
-                                Forms\Components\TextInput::make('nama')
-                                    ->required()
-                                    ->maxLength(150),
-                                Forms\Components\TextInput::make('nik')
-                                    ->label('NIK')
-                                    ->required()
-                                    ->numeric()
-                                    ->length(16),
-                                Forms\Components\TextInput::make('no_hp')
-                                    ->label('No. HP')
-                                    ->required()
-                                    ->tel(),
-                                Forms\Components\TextInput::make('email')
-                                    ->email()
-                                    ->required(),
-                                Forms\Components\TextInput::make('tempat_lahir')
-                                    ->required(),
-                                Forms\Components\DatePicker::make('tanggal_lahir')
-                                    ->required(),
-                                Forms\Components\Select::make('jenis_kelamin')
-                                    ->options([
-                                        'Laki-laki' => 'Laki-laki',
-                                        'Perempuan' => 'Perempuan',
-                                    ])
-                                    ->required(),
-                                Forms\Components\TextInput::make('agama')
-                                    ->required(),
-                                Forms\Components\Textarea::make('alamat')
-                                    ->columnSpanFull()
-                                    ->required(),
-                            ]),
+                            Forms\Components\Select::make('status_pendaftaran')
+                                ->label('Status Pendaftaran')
+                                ->options([
+                                    'Pending'    => 'Pending',
+                                    'Verifikasi' => 'Verifikasi',
+                                    'Diterima'   => 'Diterima',
+                                    'Ditolak'    => 'Ditolak',
+                                ])
+                                ->required()
+                                ->native(false),
                         ]),
-
-                    // STEP 3: Instansi
-                    Forms\Components\Wizard\Step::make('Instansi')
-                        ->schema([
-                            Forms\Components\TextInput::make('asal_instansi')
-                                ->label('Asal Sekolah / Instansi')
-                                ->required(),
-                            Forms\Components\TextInput::make('alamat_instansi')
-                                ->required(),
-                            Forms\Components\Grid::make(2)->schema([
-                                Forms\Components\TextInput::make('kota')
-                                    ->label('Kota / Kabupaten')
-                                    ->required(),
-                                // Note: kota_id handled via logic or simplify to just text if acceptable, 
-                                // but controller requires kota_id. For now let's use a hidden or text input for ID simulation if needed,
-                                // or just Select if we have master data. Assuming basic text for now to match UI text.
-                                // Actually Controller validation requires kota_id | integer. 
-                                // Let's try to find CabangDinas for relation.
-                                Forms\Components\Select::make('cabangDinas_id')
-                                    ->label('Cabang Dinas')
-                                    ->options(\App\Models\CabangDinas::pluck('nama', 'id'))
-                                    ->required(),
-
-                                Forms\Components\TextInput::make('kelas')
-                                    ->label('Kelas')
-                                    ->required(),
-                            ]),
-                        ]),
-
-                    // STEP 4: Lampiran
-                    Forms\Components\Wizard\Step::make('Lampiran')
-                        ->schema([
-                            Forms\Components\FileUpload::make('fc_ktp')
-                                ->label('Scan KTP')
-                                ->disk('public')
-                                ->directory('lampiran-peserta')
-                                ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                ->maxSize(2048)
-                                ->required(),
-                            Forms\Components\FileUpload::make('fc_ijazah')
-                                ->label('Scan Ijazah')
-                                ->disk('public')
-                                ->directory('lampiran-peserta')
-                                ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                ->maxSize(2048)
-                                ->required(),
-                            Forms\Components\FileUpload::make('fc_surat_tugas')
-                                ->label('Surat Tugas')
-                                ->disk('public')
-                                ->directory('lampiran-peserta')
-                                ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                ->maxSize(2048),
-                            Forms\Components\FileUpload::make('fc_surat_sehat')
-                                ->label('Surat Sehat')
-                                ->disk('public')
-                                ->directory('lampiran-peserta')
-                                ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                ->maxSize(2048),
-                            Forms\Components\FileUpload::make('pas_foto')
-                                ->label('Pas Foto')
-                                ->disk('public')
-                                ->directory('lampiran-peserta')
-                                ->image()
-                                ->maxSize(2048)
-                                ->required(),
-                            Forms\Components\TextInput::make('nomor_surat_tugas')
-                                ->label('Nomor Surat Tugas'),
-                        ]),
-                ])->columnSpanFull(),
-            ]);
+                ])
+                ->columnSpan(['lg' => 1])
+                ->visible(fn ($record) => filled($record)),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -178,17 +289,10 @@ class PendaftaranResource extends Resource
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
                     ->label('Pelatihan')
                     ->icon('heroicon-o-academic-cap')
-                    ->formatStateUsing(function ($state) {
-                        if (empty($state)) return '-';
-                        $words = explode(' ', $state);
-                        $chunks = array_chunk($words, 4);
-                        return implode('<br>', array_map(fn($chunk) => implode(' ', $chunk), $chunks));
-                    })
-                    ->html()
+                    ->wrap()
                     ->searchable()
                     ->sortable(),
 
-                // ✅ kolom KELAS di tabel
                 Tables\Columns\TextColumn::make('kelas')
                     ->label('Kelas')
                     ->icon('heroicon-o-building-office-2')
@@ -200,13 +304,14 @@ class PendaftaranResource extends Resource
                     ->label('Status')
                     ->icon('heroicon-o-shield-check')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'Pending' => 'warning',
+                    ->color(fn (?string $state): string => match ($state) {
+                        'Pending'    => 'warning',
                         'Verifikasi' => 'info',
-                        'Diterima' => 'success',
-                        'Ditolak' => 'danger',
-                        default => 'warning',
-                    }),
+                        'Diterima'   => 'success',
+                        'Ditolak'    => 'danger',
+                        default      => 'gray',
+                    })
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('tanggal_pendaftaran')
                     ->label('Tanggal Daftar')
@@ -218,24 +323,25 @@ class PendaftaranResource extends Resource
                 Tables\Filters\SelectFilter::make('status_pendaftaran')
                     ->label('Filter Status')
                     ->options([
-                        'pending' => 'Pending',
-                        'verifikasi' => 'Verifikasi',
-                        'diterima' => 'Diterima',
-                        'ditolak' => 'Ditolak',
+                        'Pending'    => 'Pending',
+                        'Verifikasi' => 'Verifikasi',
+                        'Diterima'   => 'Diterima',
+                        'Ditolak'    => 'Ditolak',
                     ]),
 
-                Tables\Filters\SelectFilter::make('pelatihan')
+                Tables\Filters\SelectFilter::make('pelatihan_id')
                     ->label('Filter Pelatihan')
                     ->relationship('pelatihan', 'nama_pelatihan'),
 
-                Tables\Filters\SelectFilter::make('kompetensi')
+                Tables\Filters\SelectFilter::make('kompetensi_id')
                     ->label('Kompetensi')
-                    ->options(fn() => \App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
+                    ->options(fn () => Kompetensi::query()->pluck('nama_kompetensi', 'id')->all())
                     ->query(function (Builder $query, array $data) {
-                        if (empty($data['value'])) return $query;
+                        $value = $data['value'] ?? null;
+                        if (!$value) return $query;
 
-                        return $query->whereHas('kompetensiPelatihan', function ($q) use ($data) {
-                            $q->where('kompetensi_id', $data['value']);
+                        return $query->whereHas('kompetensiPelatihan', function (Builder $q) use ($value) {
+                            $q->where('kompetensi_id', $value);
                         });
                     }),
             ])
@@ -258,9 +364,9 @@ class PendaftaranResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPendaftarans::route('/'),
+            'index'  => Pages\ListPendaftarans::route('/'),
             'create' => Pages\CreatePendaftaran::route('/create'),
-            'edit' => Pages\EditPendaftaran::route('/{record}/edit'),
+            'edit'   => Pages\EditPendaftaran::route('/{record}/edit'),
         ];
     }
 }
