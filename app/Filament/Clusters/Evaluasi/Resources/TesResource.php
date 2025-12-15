@@ -5,15 +5,13 @@ namespace App\Filament\Clusters\Evaluasi\Resources;
 use App\Filament\Clusters\Evaluasi;
 use App\Filament\Clusters\Evaluasi\Resources\TesResource\Pages;
 use App\Models\Tes;
-
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-
 use Filament\Tables;
 use Filament\Tables\Table;
-
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class TesResource extends Resource
 {
@@ -21,34 +19,55 @@ class TesResource extends Resource
     protected static ?string $cluster = Evaluasi::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    /**
-     * Default opsi untuk skala likert 1-4 (editable).
-     * NOTE: ini hanya default awal saat CREATE, tidak akan override saat EDIT.
-     */
     protected static function defaultLikertOptions(): array
     {
         return [
-            ['teks_opsi' => 'Sangat Tidak Setuju', 'apakah_benar' => false, 'gambar' => null],
-            ['teks_opsi' => 'Tidak Setuju',        'apakah_benar' => false, 'gambar' => null],
-            ['teks_opsi' => 'Setuju',              'apakah_benar' => false, 'gambar' => null],
-            ['teks_opsi' => 'Sangat Setuju',       'apakah_benar' => false, 'gambar' => null],
+            ['teks_opsi' => 'Sangat Tidak Setuju', 'apakah_benar' => false, 'emoji' => '😡', 'gambar' => null],
+            ['teks_opsi' => 'Tidak Setuju',        'apakah_benar' => false, 'emoji' => '😕', 'gambar' => null],
+            ['teks_opsi' => 'Setuju',              'apakah_benar' => false, 'emoji' => '🙂', 'gambar' => null],
+            ['teks_opsi' => 'Sangat Setuju',       'apakah_benar' => false, 'emoji' => '😍', 'gambar' => null],
         ];
     }
 
-    /* =========================================================
-     * FORM
-     * ========================================================= */
+    protected static function isCreating($component): bool
+    {
+        $livewire = $component->getLivewire();
+
+        if (method_exists($livewire, 'isCreate')) {
+            return $livewire->isCreate();
+        }
+
+        return property_exists($livewire, 'operation') && $livewire->operation === 'create';
+    }
+
+    /**
+     * Ambil kategori unik dari state repeater "pertanyaan"
+     */
+    protected static function getKategoriOptionsFromRepeater(Forms\Get $get): array
+    {
+        // ini aman: kita ambil langsung dari repeater pada record tes ini
+        $items = $get('../../pertanyaan') ?? [];
+        if (!is_array($items)) $items = [];
+
+        $list = collect($items)
+            ->pluck('kategori')
+            ->map(fn ($v) => trim((string) $v))
+            ->filter(fn ($v) => $v !== '')
+            ->unique()
+            ->values();
+
+        return $list->mapWithKeys(fn ($v) => [$v => $v])->toArray();
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
             Forms\Components\Grid::make(3)->schema([
 
-                /* =====================
-                 * LEFT COLUMN
-                 * ===================== */
+                // LEFT
                 Forms\Components\Group::make()->schema([
-
                     Forms\Components\Section::make('Pengaturan Tes')->schema([
+
                         Forms\Components\Select::make('tipe')
                             ->options([
                                 'pre-test'  => 'Pre-Test',
@@ -56,36 +75,38 @@ class TesResource extends Resource
                                 'survei'    => 'Survei',
                             ])
                             ->required()
-                            ->reactive(),
+                            ->live() // penting biar perubahan tipe langsung update field lain
+                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                // kalau ganti ke survei, kompetensi harus bersih
+                                if ($state === 'survei') {
+                                    $set('kompetensi_id', null);
+                                }
+                            }),
 
                         Forms\Components\Select::make('pelatihan_id')
                             ->relationship('pelatihan', 'nama_pelatihan')
                             ->searchable()
+                            ->preload()
                             ->required()
-                            ->default(request()->query('pelatihan_id'))
-                            ->disabled(fn (?string $operation) =>
-                                $operation === 'edit' || request()->has('pelatihan_id')
-                            ),
+                            ->default(fn () => request()->query('pelatihan_id'))
+                            // opsional: kalau edit, pelatihan jangan diubah
+                            ->disabled(fn (?string $operation) => $operation === 'edit'),
 
                         /**
-                         * ✅ FIX: Kompetensi hanya untuk pre/post.
-                         * - Kalau tipe=survei: tidak tampil, tidak required, dan disimpan NULL
+                         * ✅ FIX KOMPETENSI:
+                         * - pre/post: tampil + wajib + tersimpan
+                         * - survei: hilang + tidak tersimpan + dipaksa null
                          */
                         Forms\Components\Select::make('kompetensi_id')
                             ->relationship('kompetensi', 'nama_kompetensi')
                             ->searchable()
-                            ->default(request()->query('kompetensi_id'))
-                            ->required(fn (Forms\Get $get) => $get('tipe') !== 'survei')
+                            ->preload()
+                            ->default(fn () => request()->query('kompetensi_id'))
+                            ->required(fn (Forms\Get $get) => in_array($get('tipe'), ['pre-test', 'post-test'], true))
                             ->visible(fn (Forms\Get $get) => $get('tipe') !== 'survei')
-                            // jangan ikut disimpan kalau survei
                             ->dehydrated(fn (Forms\Get $get) => $get('tipe') !== 'survei')
-                            // ekstra aman: kalau survei, paksa null
-                            ->dehydrateStateUsing(fn ($state, Forms\Get $get) =>
-                                $get('tipe') === 'survei' ? null : $state
-                            )
-                            ->disabled(fn (?string $operation) =>
-                                $operation === 'edit' || request()->has('kompetensi_id')
-                            ),
+                            // opsional: kalau edit, kompetensi jangan diubah
+                            ->disabled(fn (?string $operation) => $operation === 'edit'),
 
                         Forms\Components\TextInput::make('durasi_menit')
                             ->numeric()
@@ -102,17 +123,11 @@ class TesResource extends Resource
                             ->after('tanggal_mulai'),
                     ]),
 
-                    Forms\Components\View::make(
-                        'filament.clusters.evaluasi.resources.tes-resource.partials.tips-card'
-                    ),
-
+                    Forms\Components\View::make('filament.clusters.evaluasi.resources.tes-resource.partials.tips-card'),
                 ])->columnSpan(1),
 
-                /* =====================
-                 * RIGHT COLUMN
-                 * ===================== */
+                // RIGHT
                 Forms\Components\Group::make()->schema([
-
                     Forms\Components\Section::make('Detail Tes')->schema([
                         Forms\Components\TextInput::make('judul')
                             ->required()
@@ -123,19 +138,38 @@ class TesResource extends Resource
                             ->columnSpanFull(),
                     ]),
 
-                    /* =====================
-                     * BANK SOAL
-                     * ===================== */
                     Forms\Components\Section::make('Bank Soal')->schema([
                         Forms\Components\Repeater::make('pertanyaan')
                             ->relationship()
                             ->schema([
 
-                                /* ===== KATEGORI / SUB SECTION ===== */
-                                Forms\Components\TextInput::make('kategori')
+                                /**
+                                 * ✅ KATEGORI (HANYA SURVEI):
+                                 * - dropdown auto dari kategori lain dalam repeater
+                                 * - bisa tambah kategori baru
+                                 * - pre/post: tidak muncul & tidak tersimpan
+                                 */
+                                Forms\Components\Select::make('kategori')
                                     ->label('Kategori / Bagian (Sub Section)')
-                                    ->placeholder('Contoh: PERSEPSI TERHADAP PROGRAM PELATIHAN')
-                                    ->maxLength(255),
+                                    ->placeholder('Pilih kategori atau tambah baru')
+                                    ->searchable()
+                                    ->live()
+                                    ->options(fn (Forms\Get $get) => self::getKategoriOptionsFromRepeater($get))
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('nama_kategori')
+                                            ->label('Kategori Baru')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->placeholder('Contoh: PERSEPSI TERHADAP PROGRAM PELATIHAN'),
+                                    ])
+                                    ->createOptionUsing(fn (array $data) => trim((string) ($data['nama_kategori'] ?? '')))
+                                    ->visible(fn (Forms\Get $get) => $get('../../tipe') === 'survei')
+                                    ->dehydrated(fn (Forms\Get $get) => $get('../../tipe') === 'survei')
+                                    ->dehydrateStateUsing(function ($state, Forms\Get $get) {
+                                        if ($get('../../tipe') !== 'survei') return null;
+                                        $v = trim((string) $state);
+                                        return $v === '' ? null : $v;
+                                    }),
 
                                 Forms\Components\RichEditor::make('teks_pertanyaan')
                                     ->label('Teks Pertanyaan')
@@ -153,54 +187,26 @@ class TesResource extends Resource
                                         'teks_bebas'    => 'Essay',
                                     ])
                                     ->default('pilihan_ganda')
-                                    ->reactive()
-                                    /**
-                                     * ✅ FIX UTAMA:
-                                     * - Auto isi default Likert HANYA saat CREATE
-                                     * - Tidak override saat EDIT
-                                     * - Tidak override kalau opsi sudah ada (user bisa edit)
-                                     */
+                                    ->live()
                                     ->afterStateHydrated(function ($state, Forms\Get $get, Forms\Set $set, $component) {
-                                        // hanya create
-                                        if ($component->getLivewire()->getOperation() !== 'create') {
-                                            return;
-                                        }
-
-                                        if ($state !== 'skala_likert') {
-                                            return;
-                                        }
+                                        if (!self::isCreating($component)) return;
+                                        if ($state !== 'skala_likert') return;
 
                                         $current = $get('opsiJawabans');
-                                        if (is_array($current) && count($current) > 0) {
-                                            return;
+                                        if (!is_array($current) || count($current) === 0) {
+                                            $set('opsiJawabans', self::defaultLikertOptions());
                                         }
-
-                                        $set('opsiJawabans', self::defaultLikertOptions());
                                     })
                                     ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set, $component) {
-                                        // hanya create
-                                        if ($component->getLivewire()->getOperation() !== 'create') {
-                                            return;
-                                        }
-
-                                        if ($state !== 'skala_likert') {
-                                            return;
-                                        }
+                                        if (!self::isCreating($component)) return;
+                                        if ($state !== 'skala_likert') return;
 
                                         $current = $get('opsiJawabans');
-                                        if (is_array($current) && count($current) > 0) {
-                                            return;
+                                        if (!is_array($current) || count($current) === 0) {
+                                            $set('opsiJawabans', self::defaultLikertOptions());
                                         }
-
-                                        $set('opsiJawabans', self::defaultLikertOptions());
                                     }),
 
-                                /**
-                                 * ✅ Opsi Jawaban:
-                                 * - tampil untuk pilihan_ganda dan skala_likert
-                                 * - likert: teks editable, tidak ada jawaban benar
-                                 * - PG: tetap bisa pilih jawaban benar (hanya satu)
-                                 */
                                 Forms\Components\Repeater::make('opsiJawabans')
                                     ->relationship()
                                     ->schema([
@@ -208,89 +214,61 @@ class TesResource extends Resource
                                             ->required()
                                             ->label('Teks Opsi'),
 
-                                        // ✅ hanya untuk PG
                                         Forms\Components\Toggle::make('apakah_benar')
                                             ->label('Jawaban Benar')
                                             ->default(false)
                                             ->live()
-                                            ->visible(fn (Forms\Get $get) =>
-                                                $get('../../tipe_jawaban') === 'pilihan_ganda'
-                                            )
-                                            ->afterStateUpdated(function (
-                                                $state,
-                                                Forms\Get $get,
-                                                Forms\Set $set,
-                                                Forms\Components\Toggle $component
-                                            ) {
+                                            ->visible(fn (Forms\Get $get) => $get('../../tipe_jawaban') === 'pilihan_ganda')
+                                            ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set, $component) {
                                                 if (!$state) return;
 
                                                 $path = $component->getStatePath();
                                                 $segments = explode('.', $path);
                                                 $currentKey = $segments[count($segments) - 2];
-                                                $items = $get('../../opsiJawabans');
 
+                                                $items = $get('../../opsiJawabans') ?? [];
                                                 foreach ($items as $key => $value) {
                                                     if ($key !== $currentKey && ($value['apakah_benar'] ?? false)) {
-                                                        $targetPath = str_replace(
-                                                            ".{$currentKey}.",
-                                                            ".{$key}.",
-                                                            $path
-                                                        );
+                                                        $targetPath = str_replace(".{$currentKey}.", ".{$key}.", $path);
                                                         $set($targetPath, false);
                                                     }
                                                 }
                                             }),
 
-                                        // optional gambar (boleh untuk PG & Likert)
                                         Forms\Components\FileUpload::make('gambar')
                                             ->image()
                                             ->directory('opsi-images')
                                             ->label('Gambar Opsi (Opsional)'),
+
+                                        Forms\Components\TextInput::make('emoji')
+                                            ->label('Emoji Likert')
+                                            ->visible(fn (Forms\Get $get) => $get('../../tipe_jawaban') === 'skala_likert'),
                                     ])
                                     ->columns(2)
                                     ->label('Opsi Jawaban')
-                                    ->visible(fn (Forms\Get $get) =>
-                                        in_array($get('tipe_jawaban'), ['pilihan_ganda', 'skala_likert'], true)
-                                    )
-                                    // default items hanya untuk PG (likert auto-fill)
-                                    ->defaultItems(fn (Forms\Get $get) =>
-                                        $get('tipe_jawaban') === 'pilihan_ganda' ? 4 : 0
-                                    )
-                                    // validasi khusus PG: hanya 1 jawaban benar
+                                    ->visible(fn (Forms\Get $get) => in_array($get('tipe_jawaban'), ['pilihan_ganda', 'skala_likert'], true))
+                                    ->defaultItems(fn (Forms\Get $get) => $get('tipe_jawaban') === 'pilihan_ganda' ? 4 : 0)
                                     ->rules([
-                                        fn (Forms\Get $get): \Closure => function (
-                                            string $attribute,
-                                            $value,
-                                            \Closure $fail
-                                        ) use ($get) {
-                                            if ($get('tipe_jawaban') !== 'pilihan_ganda') {
-                                                return;
-                                            }
-
-                                            $correctCount = collect($value)
-                                                ->where('apakah_benar', true)
-                                                ->count();
-
+                                        fn (Forms\Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                            if ($get('tipe_jawaban') !== 'pilihan_ganda') return;
+                                            $correctCount = collect($value)->where('apakah_benar', true)->count();
                                             if ($correctCount > 1) {
                                                 $fail('Hanya satu jawaban yang boleh ditandai sebagai benar.');
                                             }
                                         },
                                     ])
-                                    // saat likert: pastikan semua apakah_benar = false tersimpan
                                     ->mutateDehydratedStateUsing(function ($state, Forms\Get $get) {
                                         if ($get('tipe_jawaban') !== 'skala_likert' || !is_array($state)) {
                                             return $state;
                                         }
-
+                                        // pastikan semua opsi Likert tidak ada jawaban benar
                                         return array_map(function ($item) {
                                             $item['apakah_benar'] = false;
                                             return $item;
                                         }, $state);
                                     }),
                             ])
-                            ->itemLabel(fn (array $state): ?string =>
-                                strip_tags($state['teks_pertanyaan'] ?? null)
-                            )
+                            ->itemLabel(fn (array $state): ?string => Str::limit(strip_tags($state['teks_pertanyaan'] ?? ''), 40))
                             ->collapsible()
                             ->collapsed(),
                     ]),
@@ -299,17 +277,11 @@ class TesResource extends Resource
         ]);
     }
 
-    /* =========================================================
-     * TABLE
-     * ========================================================= */
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('judul')
-                    ->searchable()
-                    ->sortable(),
-
+                Tables\Columns\TextColumn::make('judul')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('tipe')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -318,29 +290,17 @@ class TesResource extends Resource
                         'survei'    => 'warning',
                         default     => 'gray',
                     }),
-
-                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('durasi_menit')
-                    ->numeric()
-                    ->label('Durasi'),
-
-                Tables\Columns\TextColumn::make('pertanyaan_count')
-                    ->counts('pertanyaan')
-                    ->label('Jumlah Soal'),
+                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('durasi_menit')->numeric()->label('Durasi'),
+                Tables\Columns\TextColumn::make('pertanyaan_count')->counts('pertanyaan')->label('Jumlah Soal'),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('tipe')
-                    ->options([
-                        'pre-test'  => 'Pre-Test',
-                        'post-test' => 'Post-Test',
-                        'survei'    => 'Survei',
-                    ]),
-
-                Tables\Filters\SelectFilter::make('pelatihan')
-                    ->relationship('pelatihan', 'nama_pelatihan'),
+                Tables\Filters\SelectFilter::make('tipe')->options([
+                    'pre-test'  => 'Pre-Test',
+                    'post-test' => 'Post-Test',
+                    'survei'    => 'Survei',
+                ]),
+                Tables\Filters\SelectFilter::make('pelatihan')->relationship('pelatihan', 'nama_pelatihan'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -355,7 +315,7 @@ class TesResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery();
+        return parent::getEloquentQuery()->with('pertanyaan.opsiJawabans');
     }
 
     public static function getRelations(): array
