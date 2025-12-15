@@ -78,7 +78,7 @@ class TesResource extends Resource
                             ->afterStateUpdated(function ($state, Forms\Set $set) {
                                 // kalau jadi survei, kompetensi harus kosong
                                 if ($state === 'survei') {
-                                    $set('kompetensi_id', null);
+                                    $set('kompetensi_pelatihan_id', null);
                                 }
                             }),
 
@@ -96,11 +96,11 @@ class TesResource extends Resource
                          * - pre/post: tampil + wajib + tersimpan + BISA DIEDIT
                          * - survei: hilang + tidak tersimpan + dipaksa null
                          */
-                        Forms\Components\Select::make('kompetensi_id')
+                        Forms\Components\Select::make('kompetensi_pelatihan_id')
                             ->relationship('kompetensi', 'nama_kompetensi')
                             ->searchable()
                             ->preload()
-                            ->default(fn () => request()->query('kompetensi_id'))
+                            ->default(fn () => request()->query('kompetensi_pelatihan_id'))
                             ->visible(fn (Forms\Get $get) => $get('tipe') !== 'survei')
                             ->required(fn (Forms\Get $get) => in_array($get('tipe'), ['pre-test', 'post-test'], true))
                             ->dehydrated(fn (Forms\Get $get) => $get('tipe') !== 'survei')

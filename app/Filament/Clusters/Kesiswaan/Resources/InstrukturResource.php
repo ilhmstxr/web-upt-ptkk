@@ -82,7 +82,7 @@ class InstrukturResource extends Resource
                     ->schema([
                         Forms\Components\Section::make('Akun & Kompetensi')
                             ->schema([
-                                Forms\Components\Select::make('kompetensi_id')
+                                Forms\Components\Select::make('kompetensi_pelatihan_id')
                                     ->relationship('kompetensi', 'nama_kompetensi')
                                     ->searchable()
                                     ->preload(),

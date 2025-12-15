@@ -199,7 +199,7 @@ class PendaftaranResource extends Resource
                         if (!$value) return $query;
 
                         return $query->whereHas('kompetensiPelatihan', function (Builder $q) use ($value) {
-                            $q->where('kompetensi_id', $value);
+                            $q->where('kompetensi_pelatihan_id', $value);
                         });
                     }),
             ])
