@@ -54,4 +54,9 @@ class Tes extends Model
     {
         return $this->hasMany(Percobaan::class, 'tes_id');
     }
+
+    public function tipeTes()
+    {
+        return $this->hasMany(TipeTes::class, 'tes_id');
+    }
 }

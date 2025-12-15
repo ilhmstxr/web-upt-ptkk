@@ -165,11 +165,10 @@ class TesResource extends Resource
                         Forms\Components\Select::make('kompetensi_pelatihan_id')
                             ->relationship('kompetensiPelatihan', 'kode_kompetensi_pelatihan')
                             ->searchable()
-                            ->required(fn (Forms\Get $get) => $get('tipe') !== 'survei')
-                            ->visible(fn (Forms\Get $get) => $get('tipe') !== 'survei')
-                            ->dehydrated(fn (Forms\Get $get) => $get('tipe') !== 'survei')
-                            ->dehydrateStateUsing(fn ($state, Forms\Get $get) =>
-                                $get('tipe') === 'survei' ? null : $state
+                            ->required()
+                            ->default(request()->query('kompetensi_id'))
+                            ->disabled(fn (?string $operation) =>
+                                $operation === 'edit' || request()->has('kompetensi_id')
                             ),
 
                         Forms\Components\TextInput::make('durasi_menit')
@@ -204,40 +203,107 @@ class TesResource extends Resource
                             ->columnSpanFull(),
                     ]),
 
-                    // ✅ SURVEI: kategori
-                    Forms\Components\Repeater::make('kelompokPertanyaan')
-                        ->label('Kategori Survei')
-                        ->relationship('kelompokPertanyaan')
-                        ->schema([
-                            Forms\Components\TextInput::make('nama_kategori')
-                                ->label('Nama Kategori')
-                                ->required(),
+                    /* =====================
+                     * BANK SOAL
+                     * ===================== */
+                    Forms\Components\Section::make('Bank Soal')->schema([
+                        Forms\Components\Repeater::make('pertanyaan')
+                            ->relationship()
+                            ->schema([
 
-                            Forms\Components\Repeater::make('pertanyaan')
-                                ->relationship('pertanyaan')
-                                ->schema(self::pertanyaanSchema())
-                                ->itemLabel(fn (array $state): ?string =>
-                                    strip_tags($state['teks_pertanyaan'] ?? 'Pertanyaan')
-                                )
-                                ->collapsible()
-                                ->collapsed(),
-                        ])
-                        ->visible(fn (Forms\Get $get) => $get('tipe') === 'survei')
-                        ->collapsible()
-                        ->collapsed()
-                        ->columnSpanFull(),
+                                /* ===== KATEGORI / SUB SECTION ===== */
+                                Forms\Components\TextInput::make('kategori')
+                                    ->label('Kategori / Bagian (Sub Section)')
+                                    ->placeholder('Contoh: PERSEPSI TERHADAP PROGRAM PELATIHAN')
+                                    ->maxLength(255),
 
-                    // ✅ PRE/POST: tanpa kategori
-                    Forms\Components\Repeater::make('pertanyaan')
-                        ->label('Soal Tes')
-                        ->relationship('pertanyaan')
-                        ->schema(self::pertanyaanSchema())
-                        ->visible(fn (Forms\Get $get) =>
-                            in_array($get('tipe'), ['pre-test', 'post-test'], true)
-                        )
-                        ->collapsible()
-                        ->collapsed()
-                        ->columnSpanFull(),
+                                Forms\Components\RichEditor::make('teks_pertanyaan')
+                                    ->label('Teks Pertanyaan')
+                                    ->required(),
+
+                                Forms\Components\FileUpload::make('gambar')
+                                    ->image()
+                                    ->directory('soal-images')
+                                    ->label('Gambar Soal (Opsional)'),
+
+                                Forms\Components\Select::make('tipe_jawaban')
+                                    ->options([
+                                        'pilihan_ganda' => 'Pilihan Ganda',
+                                        'skala_likert'  => 'Skala Likert (Survei)',
+                                        'teks_bebas'    => 'Essay',
+                                    ])
+                                    ->default('pilihan_ganda')
+                                    ->reactive(),
+
+                                /* ===== OPSI JAWABAN (KHUSUS PG) ===== */
+                                Forms\Components\Repeater::make('opsiJawabans')
+                                    ->relationship()
+                                    ->schema([
+                                        Forms\Components\TextInput::make('teks_opsi')
+                                            ->required()
+                                            ->label('Teks Opsi'),
+
+                                        Forms\Components\Toggle::make('apakah_benar')
+                                            ->label('Jawaban Benar')
+                                            ->default(false)
+                                            ->live()
+                                            ->afterStateUpdated(function (
+                                                $state,
+                                                Forms\Get $get,
+                                                Forms\Set $set,
+                                                Forms\Components\Toggle $component
+                                            ) {
+                                                if (!$state) return;
+
+                                                $path = $component->getStatePath();
+                                                $segments = explode('.', $path);
+                                                $currentKey = $segments[count($segments) - 2];
+                                                $items = $get('../../opsiJawabans');
+
+                                                foreach ($items as $key => $value) {
+                                                    if ($key !== $currentKey && ($value['apakah_benar'] ?? false)) {
+                                                        $targetPath = str_replace(
+                                                            ".{$currentKey}.",
+                                                            ".{$key}.",
+                                                            $path
+                                                        );
+                                                        $set($targetPath, false);
+                                                    }
+                                                }
+                                            }),
+
+                                        Forms\Components\FileUpload::make('gambar')
+                                            ->image()
+                                            ->directory('opsi-images')
+                                            ->label('Gambar Opsi (Opsional)'),
+                                    ])
+                                    ->columns(2)
+                                    ->label('Opsi Jawaban')
+                                    ->visible(fn (Forms\Get $get) =>
+                                        $get('tipe_jawaban') === 'pilihan_ganda'
+                                    )
+                                    ->defaultItems(4)
+                                    ->rules([
+                                        fn (): \Closure => function (
+                                            string $attribute,
+                                            $value,
+                                            \Closure $fail
+                                        ) {
+                                            $correctCount = collect($value)
+                                                ->where('apakah_benar', true)
+                                                ->count();
+                                            if ($correctCount > 1) {
+                                                $fail('Hanya satu jawaban yang boleh ditandai sebagai benar.');
+                                            }
+                                        },
+                                    ]),
+                            ])
+                            ->itemLabel(fn (array $state): ?string =>
+                                strip_tags($state['teks_pertanyaan'] ?? null)
+                            )
+                            ->collapsible()
+                            ->collapsed(),
+                    ]),
                 ])->columnSpan(2),
             ]),
         ]);
