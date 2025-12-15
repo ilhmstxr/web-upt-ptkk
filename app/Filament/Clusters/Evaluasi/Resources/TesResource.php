@@ -45,7 +45,6 @@ class TesResource extends Resource
      */
     protected static function getKategoriOptionsFromRepeater(Forms\Get $get): array
     {
-        // ini aman: kita ambil langsung dari repeater pada record tes ini
         $items = $get('../../pertanyaan') ?? [];
         if (!is_array($items)) $items = [];
 
@@ -75,9 +74,9 @@ class TesResource extends Resource
                                 'survei'    => 'Survei',
                             ])
                             ->required()
-                            ->live() // penting biar perubahan tipe langsung update field lain
+                            ->live()
                             ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                // kalau ganti ke survei, kompetensi harus bersih
+                                // kalau jadi survei, kompetensi harus kosong
                                 if ($state === 'survei') {
                                     $set('kompetensi_id', null);
                                 }
@@ -89,12 +88,12 @@ class TesResource extends Resource
                             ->preload()
                             ->required()
                             ->default(fn () => request()->query('pelatihan_id'))
-                            // opsional: kalau edit, pelatihan jangan diubah
+                            // pelatihan boleh kamu kunci saat edit (opsional)
                             ->disabled(fn (?string $operation) => $operation === 'edit'),
 
                         /**
                          * ✅ FIX KOMPETENSI:
-                         * - pre/post: tampil + wajib + tersimpan
+                         * - pre/post: tampil + wajib + tersimpan + BISA DIEDIT
                          * - survei: hilang + tidak tersimpan + dipaksa null
                          */
                         Forms\Components\Select::make('kompetensi_id')
@@ -102,11 +101,16 @@ class TesResource extends Resource
                             ->searchable()
                             ->preload()
                             ->default(fn () => request()->query('kompetensi_id'))
-                            ->required(fn (Forms\Get $get) => in_array($get('tipe'), ['pre-test', 'post-test'], true))
                             ->visible(fn (Forms\Get $get) => $get('tipe') !== 'survei')
+                            ->required(fn (Forms\Get $get) => in_array($get('tipe'), ['pre-test', 'post-test'], true))
                             ->dehydrated(fn (Forms\Get $get) => $get('tipe') !== 'survei')
-                            // opsional: kalau edit, kompetensi jangan diubah
-                            ->disabled(fn (?string $operation) => $operation === 'edit'),
+                            ->dehydrateStateUsing(function ($state, Forms\Get $get) {
+                                // kalau survei => simpan null
+                                if ($get('tipe') === 'survei') return null;
+                                return $state;
+                            })
+                            // ✅ INI PENTING: JANGAN disabled di edit, biar bisa diklik
+                            ->disabled(false),
 
                         Forms\Components\TextInput::make('durasi_menit')
                             ->numeric()
@@ -143,12 +147,7 @@ class TesResource extends Resource
                             ->relationship()
                             ->schema([
 
-                                /**
-                                 * ✅ KATEGORI (HANYA SURVEI):
-                                 * - dropdown auto dari kategori lain dalam repeater
-                                 * - bisa tambah kategori baru
-                                 * - pre/post: tidak muncul & tidak tersimpan
-                                 */
+                                // KATEGORI hanya survei
                                 Forms\Components\Select::make('kategori')
                                     ->label('Kategori / Bagian (Sub Section)')
                                     ->placeholder('Pilih kategori atau tambah baru')
@@ -261,7 +260,6 @@ class TesResource extends Resource
                                         if ($get('tipe_jawaban') !== 'skala_likert' || !is_array($state)) {
                                             return $state;
                                         }
-                                        // pastikan semua opsi Likert tidak ada jawaban benar
                                         return array_map(function ($item) {
                                             $item['apakah_benar'] = false;
                                             return $item;
