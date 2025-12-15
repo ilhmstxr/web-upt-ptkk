@@ -66,8 +66,8 @@ class PesertaPenempatanRelationManager extends RelationManager
                         return 'Belum dibagi';
                     }
 
-                    $asramaName = $penempatan->kamar->asrama->name ?? 'Asrama';
-                    $kamarNo    = $penempatan->kamar->nomor_kamar ?? '-';
+                    $asramaName = $penempatan->kamars->asramas->name ?? 'Asrama';
+                    $kamarNo    = $penempatan->kamars->nomor_kamar ?? '-';
 
                     return "{$asramaName} - Kamar {$kamarNo}";
                 })
@@ -104,7 +104,7 @@ class PesertaPenempatanRelationManager extends RelationManager
                             return;
                         }
 
-                        $kamarConfig = session('kamar') ?? config('kamar');
+                        $kamarConfig = session('kamars') ?? config('kamars');
                         $allocator->generateRoomsFromConfig($pelatihan->id, $kamarConfig);
 
                         $result = $allocator->allocatePesertaPerPelatihan($pelatihan->id);
@@ -131,7 +131,7 @@ class PesertaPenempatanRelationManager extends RelationManager
             ->where('pelatihan_id', $pelatihan->id)
             ->with([
                 'peserta.instansi',
-                'penempatanAsrama.kamar.asrama',
+                'penempatanAsrama.kamars.asramas',
             ]);
     }
 }
