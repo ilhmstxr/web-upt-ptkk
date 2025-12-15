@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\Model;
 
 class Tes extends Model
 {
@@ -24,38 +23,26 @@ class Tes extends Model
         'tanggal_selesai',
     ];
 
-    // Relasi ke Kompetensi
-    public function kompetensi()
+    public function kompetensiPelatihan()
     {
         return $this->belongsTo(Kompetensi::class, 'kompetensi_pelatihan_id');
     }
 
-    // Relasi ke Pelatihan
     public function pelatihan()
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
+    /**
+     * Semua pertanyaan ada di tabel pertanyaan (one-to-many).
+     * Pre/post: kelompok_pertanyaan_id NULL
+     * Survei  : masuk kelompok
+     */
     public function pertanyaan()
     {
-        // Fix: Pakai One-to-Many langsung karena data soal ada di tabel pertanyaan.
-        // Pivot (many-to-many) diabaikan dulu karena kosong.
         return $this->hasMany(Pertanyaan::class, 'tes_id');
-
-        /*
-        if (Schema::hasTable('tes_pertanyaan')) {
-            return $this->belongsToMany(
-                    Pertanyaan::class,
-                    'tes_pertanyaan',
-                    'tes_id',
-                    'pertanyaan_id'
-                )
-                ->withTimestamps();
-        }
-        */
     }
 
-    // (Opsional) Relasi ke Percobaan / hasil tes peserta
     public function percobaan()
     {
         return $this->hasMany(Percobaan::class, 'tes_id');

@@ -3,8 +3,8 @@
 
     <!-- INSTRUCTOR LIST SECTION -->
     <div class="mb-6">
-         <h3 class="font-bold text-gray-800 dark:text-white mb-3">Daftar Instruktur</h3>
-         <div class="flex flex-wrap gap-4">
+        <h3 class="font-bold text-gray-800 dark:text-white mb-3">Daftar Instruktur</h3>
+        <div class="flex flex-wrap gap-4">
             @foreach($this->instructors as $inst)
             <div class="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
                 <img src="https://ui-avatars.com/api/?name={{ urlencode($inst->instruktur->nama_instruktur ?? 'Instruktur') }}&background=random"
@@ -15,7 +15,7 @@
                 </div>
             </div>
             @endforeach
-         </div>
+        </div>
     </div>
 
     <!-- 3. TABS NAVIGATION -->
@@ -95,8 +95,8 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                         <!-- Placeholder for Circular Chart -->
-                         <div class="relative w-24 h-24 flex items-center justify-center border-4 border-green-500 rounded-full">
+                        <!-- Placeholder for Circular Chart -->
+                        <div class="relative w-24 h-24 flex items-center justify-center border-4 border-green-500 rounded-full">
                             <div class="flex flex-col items-center justify-center text-gray-700 dark:text-gray-200">
                                 <span class="text-2xl font-bold">{{ $this->statistik['posttest']['avg'] }}</span>
                                 <span class="text-[9px] text-gray-400 font-medium uppercase">Rata-rata</span>
@@ -111,8 +111,8 @@
                                 <span class="text-gray-500 dark:text-gray-400">Remedial</span>
                                 <span class="font-bold text-orange-600 dark:text-orange-400">{{ $this->statistik['posttest']['remedial'] }} Org</span>
                             </div>
-                          
-                             <div class="flex justify-between items-center text-xs border-t border-dashed border-gray-200 dark:border-gray-700 pt-1">
+
+                            <div class="flex justify-between items-center text-xs border-t border-dashed border-gray-200 dark:border-gray-700 pt-1">
                                 <span class="text-gray-500 dark:text-gray-400">Partisipasi</span>
                                 <span class="font-bold text-gray-800 dark:text-white">{{ $this->statistik['posttest']['count'] ?? 0 }}/{{ $this->statistik['monev']['total_peserta'] }}</span>
                             </div>
@@ -206,41 +206,15 @@
                 </div>
             </div>
 
-            <!-- Tabel Peserta -->
-            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-900/50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nama Peserta</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pretest</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Posttest</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                        @forelse($this->peserta as $peserta)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center gap-3">
-
-                                {{ $peserta->nama }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-gray-600 dark:text-gray-300">-</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-green-600 dark:text-green-400">-</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-xs px-2 py-0.5 rounded font-medium">Terdaftar</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right">
-                                <button class="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"><x-heroicon-o-ellipsis-vertical class="w-5 h-5" /></button>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Belum ada peserta di kelas ini.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <!-- Livewire Table Peserta -->
+            <div class="mt-4">
+                @livewire(
+                \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\PesertaPelatihanTable::class,
+                [
+                'record' => $record,
+                'kompetensiPelatihanId' => $kompetensiPelatihan->id
+                ]
+                )
             </div>
         </div>
 

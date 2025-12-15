@@ -62,7 +62,6 @@ class TesResource extends Resource
     {
         return $form->schema([
             Forms\Components\Grid::make(3)->schema([
-
                 // LEFT
                 Forms\Components\Group::make()->schema([
                     Forms\Components\Section::make('Pengaturan Tes')->schema([
@@ -182,7 +181,7 @@ class TesResource extends Resource
                                 Forms\Components\Select::make('tipe_jawaban')
                                     ->options([
                                         'pilihan_ganda' => 'Pilihan Ganda',
-                                        'skala_likert'  => 'Skala Likert (1–4)',
+                                        'skala_likert'  => 'Skala Likert (Survei)',
                                         'teks_bebas'    => 'Essay',
                                     ])
                                     ->default('pilihan_ganda')

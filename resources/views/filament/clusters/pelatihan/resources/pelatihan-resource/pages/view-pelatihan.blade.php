@@ -249,15 +249,16 @@
                     <h4 class="text-base font-semibold text-gray-950 dark:text-white mb-6">Rata-rata Pretest vs Posttest</h4>
                     <div class="flex items-end justify-center gap-8 h-32 mb-4 px-8">
                         <!-- Pretest Bar -->
-                        <div class="w-full flex flex-col justify-end items-center gap-2 group">
+                        <div class="w-full h-full flex flex-col justify-end items-center gap-2 group">
                             <span class="text-sm font-bold text-gray-600 dark:text-gray-300">{{ $evalData['avgPretest'] }}</span>
-                            <div class="w-full bg-blue-300 dark:bg-blue-500 rounded-t-lg transition-all group-hover:bg-blue-400" style="height: {{ min(100, max(10, ($evalData['avgPretest']/100)*100)) }}%;"></div>
+                            <div class="w-full bg-sky-300 dark:bg-sky-500 rounded-t-lg transition-all group-hover:bg-sky-400" style="height: 
+                            {{ min(100, max(10, ($evalData['avgPretest']/100)*100)) }}%;"></div>
                             <span class="text-xs font-medium text-gray-500">Pretest</span>
                         </div>
                         <!-- Posttest Bar -->
-                        <div class="w-full flex flex-col justify-end items-center gap-2 group">
+                        <div class="w-full h-full flex flex-col justify-end items-center gap-2 group">
                             <span class="text-sm font-bold text-blue-700 dark:text-blue-300">{{ $evalData['avgPosttest'] }}</span>
-                            <div class="w-full bg-blue-600 dark:bg-blue-400 rounded-t-lg transition-all group-hover:bg-blue-500 shadow-lg shadow-blue-600/20" style="height: {{ min(100, max(10, ($evalData['avgPosttest']/100)*100)) }}%;"></div>
+                            <div class="w-full bg-blue-600 dark:bg-blue-500 rounded-t-lg transition-all group-hover:bg-blue-500 shadow-lg shadow-blue-600/20" style="height: {{ min(100, max(10, ($evalData['avgPosttest']/100)*100)) }}%;"></div>
                             <span class="text-xs font-medium text-gray-500">Posttest</span>
                         </div>
                     </div>

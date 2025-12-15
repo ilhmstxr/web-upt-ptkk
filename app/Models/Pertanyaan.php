@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Pertanyaan extends Model
 {
@@ -15,7 +16,7 @@ class Pertanyaan extends Model
         'tes_id',
         'nomor',
         'teks_pertanyaan',
-        'kategori',
+        'kategori',      // keep kalau kolom masih ada di DB
         'gambar',
         'tipe_jawaban',
     ];
@@ -24,54 +25,71 @@ class Pertanyaan extends Model
         'nomor' => 'integer',
     ];
 
-    protected $hidden = ['templates'];
+    protected $hidden = [
+        'templates',
+    ];
 
-    // ---------------------------------
-    // BOOT: AUTO NOMOR PERTANYAAN
-    // ---------------------------------
+    /**
+     * AUTO nomor (per tes_id + kelompok_pertanyaan_id)
+     * - Pre/Post: kelompok_pertanyaan_id = null -> nomor urut untuk soal tanpa kategori
+     * - Survei: nomor urut per kategori
+     */
     protected static function booted()
     {
-        static::creating(function ($pertanyaan) {
-            if (is_null($pertanyaan->nomor)) {
-                $maxNomor = static::where('tes_id', $pertanyaan->tes_id)->max('nomor') ?? 0;
-                $pertanyaan->nomor = $maxNomor + 1;
+        static::creating(function (self $pertanyaan) {
+            if (! is_null($pertanyaan->nomor)) {
+                return;
             }
+
+            $query = static::where('tes_id', $pertanyaan->tes_id);
+
+            // Logic nomor urut sederhana per tes_id
+            $max = (int) ($query->max('nomor') ?? 0);
+            $pertanyaan->nomor = $max + 1;
         });
     }
 
-    // ---------------------------------
+    // =========================
     // RELATIONS
-    // ---------------------------------
+    // =========================
 
-    // Relasi ke Tes
     public function tes()
     {
         return $this->belongsTo(Tes::class, 'tes_id');
     }
 
-    // Opsi jawaban milik pertanyaan ini (relasi utama)
+    /**
+     * Relasi utama opsi (dipakai Filament: ->relationship('opsiJawabans'))
+     */
     public function opsiJawabans()
     {
         return $this->hasMany(OpsiJawaban::class, 'pertanyaan_id')
             ->orderBy('id');
     }
 
+    /**
+     * Alias kompatibilitas lama
+     */
     public function opsiJawaban()
     {
         return $this->opsiJawabans();
     }
 
-    // Relasi pivot ke template (kalau pertanyaan ini adalah "turunan" dari template)
+    /**
+     * Relasi pivot ke template (kalau pertanyaan ini turunan template)
+     */
     public function pivotTemplate()
     {
         return $this->hasOne(PivotJawaban::class, 'pertanyaan_id');
     }
 
-    // Pertanyaan template (parent) dari pertanyaan ini (self-referencing via pivot)
+    /**
+     * Pertanyaan template (parent) dari pertanyaan ini (self-referencing via pivot)
+     */
     public function templatePertanyaan()
     {
         return $this->hasOneThrough(
-            Pertanyaan::class,
+            self::class,
             PivotJawaban::class,
             'pertanyaan_id',          // FK di pivot -> pertanyaan ini
             'id',                     // PK pertanyaan template
@@ -80,13 +98,17 @@ class Pertanyaan extends Model
         );
     }
 
-    // Jawaban user untuk pertanyaan ini
+    /**
+     * Jawaban user untuk pertanyaan ini
+     */
     public function jawabanUsers()
     {
         return $this->hasMany(JawabanUser::class, 'pertanyaan_id');
     }
 
-    // Relasi many-to-many ke template pertanyaan lain (self referencing)
+    /**
+     * Relasi many-to-many ke template pertanyaan lain (self referencing)
+     */
     public function templates()
     {
         return $this->belongsToMany(
@@ -97,33 +119,48 @@ class Pertanyaan extends Model
         );
     }
 
-    // ---------------------------------
-    // ACCESSORS / ATTRIBUTE HELPERS
-    // ---------------------------------
+    // =========================
+    // ACCESSORS / HELPERS
+    // =========================
 
-    // URL gambar
     public function getGambarUrlAttribute(): ?string
     {
         return $this->gambar ? asset('storage/' . $this->gambar) : null;
     }
 
-    public function getOpsiJawabansAttribute()
+    /**
+     * ✅ Pengganti accessor getOpsiJawabansAttribute (yang rawan bentrok Filament).
+     *
+     * Pakai ini kalau kamu butuh:
+     * - Jika opsi milik pertanyaan ini kosong -> ambil opsi dari template pertama.
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\OpsiJawaban>
+     */
+    public function opsiJawabansFinal(): Collection
     {
-        // Ambil opsi milik sendiri (relasi sudah di-load oleh with())
-        $opsiMilikSendiri = $this->getRelationValue('opsiJawabans');
+        // pastikan relasi opsiJawabans sudah bisa dipakai
+        $opsiMilikSendiri = $this->relationLoaded('opsiJawabans')
+            ? $this->getRelation('opsiJawabans')
+            : $this->opsiJawabans()->get();
 
         if ($opsiMilikSendiri && $opsiMilikSendiri->isNotEmpty()) {
             return $opsiMilikSendiri;
         }
 
-        // Kalau kosong, ambil template pertama (kalau ada)
-        $templatesRelation = $this->getRelationValue('templates');
+        $templates = $this->relationLoaded('templates')
+            ? $this->getRelation('templates')
+            : $this->templates()->with('opsiJawabans')->get();
 
-        $template = $templatesRelation && $templatesRelation->isNotEmpty()
-            ? $templatesRelation->first()
-            : null;
+        $template = $templates->first();
 
-        return optional($template)->getRelationValue('opsiJawabans') ?? collect();
+        if (! $template) {
+            return collect();
+        }
+
+        // ambil opsi template
+        return $template->relationLoaded('opsiJawabans')
+            ? $template->getRelation('opsiJawabans')
+            : $template->opsiJawabans()->get();
     }
 
     public function hitungSkor(?int $jumlahBenar, ?int $jumlahTotal): int
@@ -138,18 +175,18 @@ class Pertanyaan extends Model
         return (int) round(($benar / $total) * 100);
     }
 
-    // ---------------------------------
+    // =========================
     // ANALISIS KESUKARAN SOAL
-    // ---------------------------------
+    // =========================
+
     public function getIndeksKesukaranAttribute(): ?float
     {
         $total = $this->jawabanUsers()->count();
 
         if ($total === 0) {
-            return null; // belum ada data siswa
+            return null;
         }
 
-        // hitung berapa jawaban user yang benar
         $benar = $this->jawabanUsers()
             ->whereHas('opsiJawaban', function ($q) {
                 $q->where('apakah_benar', true);
@@ -158,22 +195,14 @@ class Pertanyaan extends Model
 
         return round($benar / $total, 2);
     }
+
     public function getKategoriKesukaranAttribute(): string
     {
         $p = $this->indeks_kesukaran;
 
-        if ($p === null) {
-            return 'Belum Ada Data';
-        }
-
-        if ($p <= 0.30) {
-            return 'Sulit';
-        }
-
-        if ($p <= 0.70) {
-            return 'Sedang';
-        }
-
+        if ($p === null) return 'Belum Ada Data';
+        if ($p <= 0.30) return 'Sulit';
+        if ($p <= 0.70) return 'Sedang';
         return 'Mudah';
     }
 }

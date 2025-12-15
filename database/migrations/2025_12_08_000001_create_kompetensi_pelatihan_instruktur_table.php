@@ -16,8 +16,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('kompetensi_pelatihan_id')->constrained('kompetensi_pelatihan')->cascadeOnDelete();
             $table->foreignId('instruktur_id')->constrained('instruktur')->cascadeOnDelete();
+            $table->unique(['kompetensi_pelatihan_id', 'instruktur_id'], 'kp_instruktur_unique');
             $table->timestamps();
         });
+
 
         // Migrate existing data
         $existing = DB::table('kompetensi_pelatihan')
@@ -53,7 +55,7 @@ return new class extends Migration
         // Restore data (take first instructor found)
         $pivots = DB::table('kompetensi_pelatihan_instruktur')->get();
         foreach ($pivots as $pivot) {
-             // We can only restore one, so we just overwrite if multiple exist
+            // We can only restore one, so we just overwrite if multiple exist
             DB::table('kompetensi_pelatihan')
                 ->where('id', $pivot->kompetensi_pelatihan_id)
                 ->update(['instruktur_id' => $pivot->instruktur_id]);
