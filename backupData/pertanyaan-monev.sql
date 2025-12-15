@@ -39,3 +39,8 @@ INSERT INTO `pertanyaan` (`id`, `tes_id`, `nomor`, `kategori`, `teks_pertanyaan`
 (72, 2, 35, 'instruktur', 'Bagaimana pendapat saudara cara instruktur menjawab pertanyaan dari peserta pelatihan', NULL, 'skala_likert', '2025-12-15 08:40:26', '2025-12-15 08:40:26'),
 (73, 2, 36, 'instruktur', 'Intruktur terfavorit', NULL, 'teks_bebas', '2025-12-15 08:40:26', '2025-12-15 08:40:26'),
 (74, 2, 37, 'instruktur', 'Pesan dan Kesan', NULL, 'teks_bebas', '2025-12-15 08:40:26', '2025-12-15 08:40:26');
+
+
+jadi seperti ini. untuk data pertanyaan survei, akan tampil seperti list ini ( total 38 data)
+sedangkan yang ada di nsert data brkala masih 26 data. jadi saya ingin menambahkan data kekuranngannya dibwaahnya tanpa merusak id sebelumnya., namun tambahkan kategori sesuai yang ada di file ini 
+yang nantinya pertanyaan ini akan menjadi bank soal untuk tes monev lainnya
