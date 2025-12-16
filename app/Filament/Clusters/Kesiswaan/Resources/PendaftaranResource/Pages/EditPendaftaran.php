@@ -54,7 +54,7 @@ class EditPendaftaran extends EditRecord
         $data['kompetensi_keahlian'] = $record->kompetensi_pelatihan_id;
 
         // ====== AUTO nilai dari percobaan ======
-        $pesertaId  = (int) ($record->peserta_id ?? 0);
+        $pesertaId   = (int) ($record->peserta_id ?? 0);
         $pelatihanId = (int) ($record->pelatihan_id ?? 0);
 
         if ($pesertaId && $pelatihanId) {
