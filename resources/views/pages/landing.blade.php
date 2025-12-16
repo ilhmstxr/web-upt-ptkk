@@ -1146,14 +1146,6 @@ $latestBeritas = Berita::query()
           try { $pelatihanIndexUrl = route('pelatihan.index'); }
           catch (\Throwable $e) { $pelatihanIndexUrl = '/pelatihan'; }
         @endphp
-
-        <a href="{{ $pelatihanIndexUrl }}"
-           class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#1524AF] text-white text-[14px] mt-6 shadow-sm hover:shadow transition-all duration-200 self-start">
-          Cari Tahu Lebih
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-          </svg>
-        </a>
       </div>
 
       <!-- Right Column (Chart) -->
