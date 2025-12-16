@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Validation\ValidationException;
 
 class Tes extends Model
 {
@@ -25,13 +24,9 @@ class Tes extends Model
         'tanggal_selesai',
     ];
 
-    public function kompetensiPelatihan()
+    public function kompetensiPelatihan(): BelongsTo
     {
-<<<<<<<<< Temporary merge branch 1
         return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
-=========
-        return $this->belongsTo(Kompetensi::class, 'kompetensi_pelatihan_id');
->>>>>>>>> Temporary merge branch 2
     }
 
     public function pelatihan(): BelongsTo
