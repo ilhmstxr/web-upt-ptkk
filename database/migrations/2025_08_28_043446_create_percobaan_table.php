@@ -37,7 +37,7 @@ return new class extends Migration
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
 
-            $table->string('tipe')->nullable(); // pre-test / post-test / survei
+            $table->enum('tipe',['pre-test','post-test','survei'])->nullable(); // pre-test / post-test / survei
             $table->boolean('is_legacy')->default(false);
 
             $table->timestamp('waktu_mulai');

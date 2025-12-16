@@ -166,6 +166,9 @@ class PesertaPelatihanTable extends BaseWidget
                     ->form([
                         Forms\Components\Checkbox::make('dont_show_again')
                             ->label('Jangan tampilkan lagi (Sesi ini)'),
+                        Forms\Components\Checkbox::make('kirim_email_konfirmasi')
+                            ->label('Kirim Email Konfirmasi ke Peserta')
+                            ->default(true),
                     ])
                     ->action(function (PendaftaranPelatihan $record, array $data) {
                         if (($data['dont_show_again'] ?? false) === true) {
@@ -174,17 +177,41 @@ class PesertaPelatihanTable extends BaseWidget
 
                         $record->update(['status_pendaftaran' => 'diterima']);
 
-                        $email = $record->peserta?->user?->email;
-                        if ($email) {
-                            EmailService::send(
-                                $email,
-                                'Informasi Pendaftaran dan Undangan Pelatihan',
-                                '',
-                                [],
-                                'template_surat.informasi_kegiatan'
-                            );
+                        // SEND EMAIL IF CHECKED
+                        if ($data['kirim_email_konfirmasi'] ?? false) {
+                            $emailPeserta = $record->peserta?->user?->email;
+
+                            if ($emailPeserta) {
+                                // Prepare data
+                                $emailData = [
+                                    'nama_pelatihan' => $record->pelatihan->nama_pelatihan,
+                                    'id_peserta'     => $record->nomor_registrasi,
+                                    'nama_peserta'   => $record->peserta->nama,
+                                    'asal_lembaga'   => $record->peserta->instansi->asal_instansi ?? '-',
+                                    'cabang_dinas'   => $record->peserta->instansi->cabangDinas->nama_cabang ?? '-',
+                                    'kompetensi'     => $record->kompetensiPelatihan->kompetensi->nama_kompetensi ?? '-',
+                                    // Menggunakan helper penempatanAsramaAktif() yang ada di model PendaftaranPelatihan
+                                    'kamar_asrama'   => $record->penempatanAsramaAktif()?->kamarPelatihan->kamar->nama_kamar ?? 'Belum ditentukan',
+                                    'waktu_mulai'    => \Carbon\Carbon::parse($record->pelatihan->tanggal_mulai)->translatedFormat('d F Y'),
+                                    'waktu_selesai'  => \Carbon\Carbon::parse($record->pelatihan->tanggal_selesai)->translatedFormat('d F Y'),
+                                    'lokasi'         => $record->pelatihan->lokasi ?? 'UPT PTKK Surabaya',
+                                    'alamat'         => 'Jl. Menur No. 123, Surabaya',
+                                    'cp_nama'        => 'Sdri. Admin',
+                                    'cp_phone'       => '082249999447',
+                                    'email_penerima' => $emailPeserta,
+                                ];
+
+                                \Illuminate\Support\Facades\Mail::to($emailPeserta)->send(new \App\Mail\EmailKonfirmasi($emailData));
+
+                                Notification::make()
+                                    ->title('Peserta diterima & Email dikirim')
+                                    ->success()
+                                    ->send();
+                                return;
+                            }
                         }
 
+                        // Fallback if email not checked or no email found, just notify success
                         Notification::make()
                             ->title('Peserta diterima')
                             ->success()
