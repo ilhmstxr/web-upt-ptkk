@@ -107,6 +107,15 @@ class PendaftaranPelatihan extends Model
         );
     }
 
+    public function penempatanAsrama(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(
+            PenempatanAsrama::class,
+            'peserta_id',
+            'peserta_id'
+        )->latest();
+    }
+
     /**
      * ======================
      * ACCESSOR (LOGIKA AKTIF)
