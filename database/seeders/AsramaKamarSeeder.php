@@ -28,11 +28,8 @@ class AsramaKamarSeeder extends Seeder
 
                 /** @var Asrama $asrama */
                 $asrama = Asrama::query()->firstOrCreate(
-                    ['nama' => $namaAsrama],
-                    [
-                        'jenis_kelamin' => 'Campur',
-                        'alamat'        => null,
-                    ]
+                    ['name' => $namaAsrama],
+                    []
                 );
 
                 foreach ($kamars as $item) {
@@ -43,17 +40,15 @@ class AsramaKamarSeeder extends Seeder
                         continue;
                     }
 
-                    // default value kamar tidak siap
-                    $status    = 'Perbaikan';
+                    // Map status to is_active
+                    $isActive = true;
                     $totalBeds = 0;
-                    $available = 0;
 
                     if (is_numeric($bed)) {
                         $totalBeds = (int) $bed;
-                        $available = (int) $bed;
-                        $status    = 'Tersedia';
+                        $isActive  = true;
                     } elseif (is_string($bed) && strtolower($bed) === 'rusak') {
-                        $status    = 'Rusak';
+                        $isActive = false;
                     }
 
                     // ✅ updateOrCreate pakai koneksi model Kamar
@@ -63,10 +58,8 @@ class AsramaKamarSeeder extends Seeder
                             'nomor_kamar' => $no,
                         ],
                         [
-                            'lantai'         => (int) ($item['lantai'] ?? 1), // kalau nanti config punya lantai
-                            'total_beds'     => $totalBeds,
-                            'available_beds' => $available,
-                            'status'         => $status,
+                            'total_beds' => $totalBeds,
+                            'is_active'  => $isActive,
                         ]
                     );
                 }

@@ -14,9 +14,8 @@ class Asrama extends Model
 
     protected $fillable = [
         'name',
-        'alamat',
     ];
-    
+
     public function kamars(): HasMany
     {
         return $this->hasMany(Kamar::class, 'asrama_id');

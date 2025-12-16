@@ -45,7 +45,7 @@
 
         {{-- PERINGATAN UJIAN KETAT (anti-cheat) --}}
         <div class="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-800 flex gap-2">
-            <span class="text-lg leading-none mt-0.5">⚠️</span>
+            <span class="text-lg leading-none mt-0.5">⚠</span>
             <div>
                 <p class="font-semibold text-xs mb-1">Aturan Ujian:</p>
                 <ul class="list-disc list-inside space-y-0.5">
@@ -209,7 +209,7 @@
      class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-5 space-y-3 text-sm">
         <div class="flex items-start gap-3">
-            <span class="text-2xl mt-0.5">⚠️</span>
+            <span class="text-2xl mt-0.5">⚠</span>
             <div>
                 <h3 class="font-semibold text-slate-900 mb-1">
                     Aktivitas mencurigakan terdeteksi
@@ -273,7 +273,7 @@ function closeImageModal() {
         const h = pad(Math.floor(remaining/3600));
         const m = pad(Math.floor((remaining%3600)/60));
         const s = pad(remaining%60);
-        el.textContent = `${h}:${m}:${s}`;
+        el.textContent = ${h}:${m}:${s};
         remaining--;
     }
 
