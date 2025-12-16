@@ -212,6 +212,92 @@ class ViewPelatihan extends ViewRecord
                 ->count('percobaan.peserta_id');
         }
 
+        // --- NEW: Calculate Chart Data from $allAnswers ---
+        $totalCounts = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+        $categoryCounts = [];
+        $questionCounts = [];
+
+        // Fetch Question metadata (text, category)
+        $allPertanyaan = collect();
+        if ($pertanyaanIds->isNotEmpty()) {
+            $allPertanyaan = \App\Models\Pertanyaan::whereIn('id', $pertanyaanIds)->get()->keyBy('id');
+        }
+
+        if (isset($allAnswers) && $allAnswers->isNotEmpty()) {
+            foreach ($allAnswers as $ans) {
+                $pid = $ans['pertanyaan_id'];
+                $skala = $ans['skala'];
+
+                if (!$skala || $skala < 1 || $skala > 4) continue;
+
+                $p = $allPertanyaan->get($pid);
+                // Default 'Umum' if category is null/empty
+                $kategori = $p && !empty($p->kategori) ? $p->kategori : 'Umum';
+
+                // 1. Total Distribution
+                if (isset($totalCounts[$skala])) $totalCounts[$skala]++;
+
+                // 2. Category Distribution
+                if (!isset($categoryCounts[$kategori])) {
+                    $categoryCounts[$kategori] = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+                }
+                $categoryCounts[$kategori][$skala]++;
+
+                // 3. Question Breakdown
+                if (!isset($questionCounts[$pid])) {
+                    $questionCounts[$pid] = [
+                        'id' => $pid,
+                        'teks' => $p->teks ?? 'Pertanyaan #' . $pid,
+                        'kategori' => $kategori,
+                        'counts' => [1 => 0, 2 => 0, 3 => 0, 4 => 0]
+                    ];
+                }
+                $questionCounts[$pid]['counts'][$skala]++;
+            }
+        }
+
+        // Format for Chart.js (Frontend will consume this)
+        // Chart 1: Distribution Total
+        $totalChart = [
+            'labels' => ['Tidak Puas', 'Kurang Puas', 'Cukup Puas', 'Sangat Puas'],
+            'datasets' => [[
+                'data' => [$totalCounts[1], $totalCounts[2], $totalCounts[3], $totalCounts[4]],
+                'backgroundColor' => ['#ef4444', '#f97316', '#3b82f6', '#22c55e']
+            ]]
+        ];
+
+        // Chart 2: Stacked Bar Per Category
+        $catLabels = array_keys($categoryCounts);
+        $dataset1 = []; // Tidak Puas
+        $dataset2 = []; // Kurang Puas
+        $dataset3 = []; // Cukup Puas
+        $dataset4 = []; // Sangat Puas
+
+        foreach ($catLabels as $cat) {
+            $dataset1[] = $categoryCounts[$cat][1];
+            $dataset2[] = $categoryCounts[$cat][2];
+            $dataset3[] = $categoryCounts[$cat][3];
+            $dataset4[] = $categoryCounts[$cat][4];
+        }
+
+        $categoryChart = [
+            'labels' => $catLabels,
+            'datasets' => [
+                ['label' => 'Tidak Puas', 'data' => $dataset1, 'backgroundColor' => '#ef4444'],
+                ['label' => 'Kurang Puas', 'data' => $dataset2, 'backgroundColor' => '#f97316'],
+                ['label' => 'Cukup Puas', 'data' => $dataset3, 'backgroundColor' => '#3b82f6'],
+                ['label' => 'Sangat Puas', 'data' => $dataset4, 'backgroundColor' => '#22c55e'],
+            ]
+        ];
+
+        // Chart 3: Grouped Questions
+        $groupedQuestions = collect($questionCounts)->groupBy('kategori')->map(function ($group) {
+            return $group->map(function ($q) {
+                $q['total_responden'] = array_sum($q['counts']);
+                return $q;
+            })->values();
+        })->toArray();
+
         // 3. Competency Details
         $competencyStats = [];
         $sessions = $this->record->kompetensiPelatihan;
@@ -266,6 +352,9 @@ class ViewPelatihan extends ViewRecord
             'respondents' => $respondentsCount,
             'competencies' => $competencyStats,
             'hasData' => $hasData,
+            'total_chart' => $totalChart,
+            'category_chart' => $categoryChart,
+            'question_stats' => $groupedQuestions,
         ];
     }
     // =========================================================================

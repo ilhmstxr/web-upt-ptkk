@@ -327,12 +327,204 @@
                 </div>
             </div>
 
-            {{-- CHART LIVEWIRE (versi 2) --}}
-            <div class="grid grid-cols-1 gap-6">
-                @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\JawabanAkumulatifChart::class, ['record' => $record])
-                @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\JawabanPerKategoriChart::class, ['record' => $record])
-                @livewire(\App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\PiePerPertanyaanWidget::class, ['record' => $record])
+            {{-- CHART IMPLEMENTATION (Custom Chart.js via Alpine) --}}
+            <div x-data="surveyCharts(@js($evalData))" class="space-y-8 mt-8">
+                <!-- CDN Chart.js -->
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                <!-- Top Row Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Total Distribution -->
+                    <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10">
+                        <h4 class="text-base font-semibold text-gray-950 dark:text-white mb-6">Akumulasi Sebaran Jawaban</h4>
+                        <div class="relative h-64 w-full">
+                            <canvas id="totalChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Category Stacked Bar -->
+                    <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10">
+                        <h4 class="text-base font-semibold text-gray-950 dark:text-white mb-6">Kepuasan per Aspek</h4>
+                        <div class="relative h-64 w-full">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Question Charts -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white border-b pb-2 dark:border-gray-700">Detail Pertanyaan Survei</h3>
+
+                    <template x-for="(questions, category) in data.question_stats" :key="category">
+                        <div class="bg-gray-50/50 dark:bg-white/5 p-6 rounded-xl ring-1 ring-gray-950/5 dark:ring-white/10">
+                            <h4 class="font-bold text-primary-600 dark:text-primary-400 mb-6 text-lg flex items-center gap-2">
+                                <span class="w-2 h-8 bg-primary-600 rounded-full inline-block"></span>
+                                <span x-text="category"></span>
+                            </h4>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <template x-for="(q, qIndex) in questions" :key="q.id">
+                                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col">
+                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 min-h-[3rem] line-clamp-2" x-text="q.teks" :title="q.teks"></p>
+
+                                        <div class="flex items-center gap-4 mt-auto">
+                                            <!-- Chart (Left) -->
+                                            <div class="relative w-32 h-32 flex-shrink-0">
+                                                <canvas :id="'qChart-' + q.id"></canvas>
+                                            </div>
+
+                                            <!-- Legend (Right) -->
+                                            <div class="flex-1 text-[11px] space-y-2">
+                                                <template x-for="(item, index) in [
+                                                    {label: 'Tidak Memuaskan', val: 1},
+                                                    {label: 'Kurang Memuaskan', val: 2},
+                                                    {label: 'Memuaskan', val: 3},
+                                                    {label: 'Sangat Memuaskan', val: 4}
+                                                ]">
+                                                    <div class="flex items-center justify-between group">
+                                                        <div class="flex items-center gap-1.5 min-w-0">
+                                                            <!-- Color Box -->
+                                                            <span class="w-2.5 h-2.5 rounded-sm flex-shrink-0" :style="'background-color: ' + chartColors[index]"></span>
+                                                            <!-- Label Text with Color -->
+                                                            <span class="truncate font-medium transition-colors"
+                                                                :style="'color: ' + chartColors[index]"
+                                                                x-text="item.label"></span>
+                                                        </div>
+                                                        <div class="flex items-center gap-1 font-mono text-gray-700 dark:text-gray-300">
+                                                            <span class="font-bold" x-text="((q.counts[item.val] || 0) / (q.total_responden || 1) * 100).toFixed(1) + '%'"></span>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400">
+                                            <span x-text="q.total_responden + ' Responden'"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
+
+            <script>
+                document.addEventListener('alpine:init', () => {
+                    Alpine.data('surveyCharts', (incomingData) => ({
+                        data: incomingData,
+                        // Hex colors to ensure consistency between Chart JS and HTML styles
+                        chartColors: ['#ef4444', '#f97316', '#3b82f6', '#22c55e'], // Red, Orange, Blue, Green
+
+                        init() {
+                            let cx = 0;
+                            const checkChart = setInterval(() => {
+                                if (typeof Chart !== 'undefined') {
+                                    clearInterval(checkChart);
+                                    this.renderCharts();
+                                }
+                                cx++;
+                                if (cx > 50) clearInterval(checkChart);
+                            }, 100);
+                        },
+                        renderCharts() {
+                            // Common Options for Question Pies
+                            const pieOptions = {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                let label = context.label || '';
+                                                let value = context.parsed || 0;
+                                                let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                let percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
+                                                return `${label}: ${value} (${percentage})`;
+                                            }
+                                        }
+                                    }
+                                }
+                            };
+
+                            // 1. Total Chart
+                            if (document.getElementById('totalChart')) {
+                                new Chart(document.getElementById('totalChart'), {
+                                    type: 'doughnut',
+                                    data: this.data.total_chart,
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                position: 'bottom'
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+
+                            // 2. Category Chart
+                            if (document.getElementById('categoryChart')) {
+                                new Chart(document.getElementById('categoryChart'), {
+                                    type: 'bar',
+                                    data: this.data.category_chart,
+                                    options: {
+                                        indexAxis: 'y',
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        scales: {
+                                            x: {
+                                                stacked: true,
+                                                max: Math.max(...this.data.category_chart.datasets[0].data) * 5
+                                            },
+                                            y: {
+                                                stacked: true
+                                            }
+                                        },
+                                        plugins: {
+                                            legend: {
+                                                position: 'bottom'
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+
+                            // 3. Question Charts
+                            if (this.data.question_stats) {
+                                Object.values(this.data.question_stats).forEach(questions => {
+                                    questions.forEach(q => {
+                                        const el = document.getElementById('qChart-' + q.id);
+                                        if (el) {
+                                            new Chart(el, {
+                                                type: 'pie',
+                                                data: {
+                                                    labels: ['Tidak Memuaskan', 'Kurang Memuaskan', 'Memuaskan', 'Sangat Memuaskan'],
+                                                    datasets: [{
+                                                        data: [
+                                                            q.counts[1] || 0,
+                                                            q.counts[2] || 0,
+                                                            q.counts[3] || 0,
+                                                            q.counts[4] || 0
+                                                        ],
+                                                        backgroundColor: this.chartColors,
+                                                        borderWidth: 1
+                                                    }]
+                                                },
+                                                options: pieOptions
+                                            });
+                                        }
+                                    });
+                                });
+                            }
+                        }
+                    }));
+                });
+            </script>
             @else
             <div class="flex flex-col items-center justify-center py-12 px-4">
                 <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700/50 rounded-full flex items-center justify-center mb-4">
