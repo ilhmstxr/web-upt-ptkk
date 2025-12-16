@@ -26,7 +26,7 @@ class ViewPenempatanAsrama extends ViewRecord
 
                     $pelatihanId = $this->record->id;
 
-                    $kamarConfig = session('kamar') ?? config('kamar');
+                    $kamarConfig = session('kamars') ?? config('kamars');
                     $allocator->generateRoomsFromConfig($pelatihanId, $kamarConfig);
 
                     $result = $allocator->allocatePesertaPerPelatihan($pelatihanId);
@@ -66,7 +66,7 @@ class ViewPenempatanAsrama extends ViewRecord
             ->where('pelatihan_id', $pelatihanId)
             ->with([
                 'peserta.instansi',
-                'penempatanAsrama.kamar.asrama',
+                'penempatanAsrama.kamars.asramas',
             ])
             ->orderBy('id')
             ->get()
@@ -76,9 +76,9 @@ class ViewPenempatanAsrama extends ViewRecord
                 $peserta    = $pend->peserta;
                 $penempatan = $pend->penempatanAsramaAktif();
 
-                $asramaName = $penempatan?->kamar?->asrama?->name ?? null;
-                $kamarNo    = $penempatan?->kamar?->nomor_kamar ?? null;
-                $lantai     = $penempatan?->kamar?->lantai ?? null;
+                $asramaName = $penempatan?->kamars?->asrama?->name ?? null;
+                $kamarNo    = $penempatan?->kamars?->nomor_kamar ?? null;
+                $lantai     = $penempatan?->kamars?->lantai ?? null;
 
                 return [
                     'no'           => $i + 1,
@@ -87,9 +87,9 @@ class ViewPenempatanAsrama extends ViewRecord
                     'nik'          => $clean($peserta?->nik),
                     'jenis_kelamin'=> $clean($peserta?->jenis_kelamin),
                     'instansi'     => $clean($peserta?->instansi?->asal_instansi),
-                    'asrama'       => $clean($asramaName),
+                    'asramas'       => $clean($asramaName),
                     'lantai'       => $clean($lantai),
-                    'kamar'        => $clean($kamarNo),
+                    'kamars'        => $clean($kamarNo),
                 ];
             });
 
@@ -129,7 +129,7 @@ class ViewPenempatanAsrama extends ViewRecord
                     $r['instansi'],
                     $r['asrama'],
                     $r['lantai'],
-                    $r['kamar'],
+                    $r['kamars'],
                 ], ';');
             }
 
