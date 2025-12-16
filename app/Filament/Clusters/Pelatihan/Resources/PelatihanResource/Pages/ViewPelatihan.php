@@ -4,6 +4,9 @@ namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Pages;
 
 use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Blade;
 
 class ViewPelatihan extends ViewRecord
 {
@@ -11,9 +14,15 @@ class ViewPelatihan extends ViewRecord
 
     protected static string $resource = PelatihanResource::class;
 
-    protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-pelatihan';
+    protected static string $view =
+        'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-pelatihan';
 
-    public function getTitle(): string | \Illuminate\Contracts\Support\Htmlable
+    /**
+     * ======================
+     * TITLE & BREADCRUMB
+     * ======================
+     */
+    public function getTitle(): string|Htmlable
     {
         return $this->record->nama_pelatihan;
     }
@@ -21,11 +30,16 @@ class ViewPelatihan extends ViewRecord
     public function getBreadcrumbs(): array
     {
         return [
-            \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('index') => 'Manajemen Pelatihan',
-            '#' => \Illuminate\Support\Str::limit($this->record->nama_pelatihan, 40),
+            PelatihanResource::getUrl('index') => 'Manajemen Pelatihan',
+            '#' => \Str::limit($this->record->nama_pelatihan, 40),
         ];
     }
 
+    /**
+     * ======================
+     * HEADER ACTIONS
+     * ======================
+     */
     protected function getHeaderActions(): array
     {
         return [
@@ -33,22 +47,33 @@ class ViewPelatihan extends ViewRecord
                 \Filament\Actions\Action::make('export_rekap')
                     ->label('Rekap Peserta (PDF)')
                     ->icon('heroicon-o-document-text')
-                    ->url(fn() => route('export.template.rekap-pelatihan', ['pelatihanId' => $this->record->id]))
+                    ->url(fn () => route('export.template.rekap-pelatihan', [
+                        'pelatihanId' => $this->record->id,
+                    ]))
                     ->openUrlInNewTab(),
+
                 \Filament\Actions\Action::make('export_excel')
                     ->label('Peserta (Excel)')
                     ->icon('heroicon-o-table-cells')
-                    ->url(fn() => route('export.template.peserta-excel', ['pelatihanId' => $this->record->id]))
+                    ->url(fn () => route('export.template.peserta-excel', [
+                        'pelatihanId' => $this->record->id,
+                    ]))
                     ->openUrlInNewTab(),
+
                 \Filament\Actions\Action::make('export_instruktur')
                     ->label('Daftar Instruktur (PDF)')
                     ->icon('heroicon-o-users')
-                    ->url(fn() => route('export.template.daftar-instruktur', ['pelatihanId' => $this->record->id]))
+                    ->url(fn () => route('export.template.daftar-instruktur', [
+                        'pelatihanId' => $this->record->id,
+                    ]))
                     ->openUrlInNewTab(),
+
                 \Filament\Actions\Action::make('export_biodata')
                     ->label('Biodata Peserta (PDF)')
                     ->icon('heroicon-o-identification')
-                    ->url(fn() => route('export.template.biodata-peserta', ['pelatihanId' => $this->record->id]))
+                    ->url(fn () => route('export.template.biodata-peserta', [
+                        'pelatihanId' => $this->record->id,
+                    ]))
                     ->openUrlInNewTab(),
             ])
                 ->label('Export Data')
@@ -60,40 +85,68 @@ class ViewPelatihan extends ViewRecord
         ];
     }
 
-    public function getSubheading(): string | \Illuminate\Contracts\Support\Htmlable | null
+    /**
+     * ======================
+     * 🔥 HEADER WIDGETS
+     * ======================
+     */
+    protected function getHeaderWidgets(): array
     {
-        return new \Illuminate\Support\HtmlString(\Illuminate\Support\Facades\Blade::render(<<<'BLADE'
-            <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mt-2">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ match($record->status) {
-                    'aktif' => 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
-                    'belum dimulai' => 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
-                    'selesai' => 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600',
-                    default => 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
-                } }} border">
-                    <span class="w-1.5 h-1.5 {{ match($record->status) {
-                        'aktif' => 'bg-green-500',
-                        'belum dimulai' => 'bg-blue-500',
-                        'selesai' => 'bg-gray-500',
-                        default => 'bg-gray-500'
-                    } }} rounded-full mr-1.5 animate-pulse"></span>
-                    {{ ucfirst($record->status) }}
-                </span>
-                
-                <div class="flex items-center gap-1">
-                    <x-heroicon-o-calendar class="w-4 h-4" /> 
-                    {{ \Carbon\Carbon::parse($record->tanggal_mulai)->format('d M') }} - {{ \Carbon\Carbon::parse($record->tanggal_selesai)->format('d M Y') }}
-                </div>
-                
-                <span class="text-gray-300 dark:text-gray-600">|</span>
-                
-                <div class="flex items-center gap-1">
-                    <x-heroicon-o-users class="w-4 h-4" /> 
-                    Total Peserta: {{ $record->pendaftaranPelatihan()->count() }}
-                </div>
-            </div>
-        BLADE, ['record' => $this->record]));
+        return [
+            \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\PelatihanStatsOverview::class,
+            \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\PrePostTestChart::class,
+            \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\KelulusanChart::class,
+        ];
     }
 
+    /**
+     * ======================
+     * SUBHEADING
+     * ======================
+     */
+    public function getSubheading(): string|Htmlable|null
+    {
+        return new HtmlString(
+            Blade::render(<<<'BLADE'
+                <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ match($record->status) {
+                        'aktif' => 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
+                        'belum dimulai' => 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+                        'selesai' => 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600',
+                        default => 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                    } }} border">
+                        <span class="w-1.5 h-1.5 {{ match($record->status) {
+                            'aktif' => 'bg-green-500',
+                            'belum dimulai' => 'bg-blue-500',
+                            'selesai' => 'bg-gray-500',
+                            default => 'bg-gray-500'
+                        } }} rounded-full mr-1.5 animate-pulse"></span>
+                        {{ ucfirst($record->status) }}
+                    </span>
+
+                    <div class="flex items-center gap-1">
+                        <x-heroicon-o-calendar class="w-4 h-4" />
+                        {{ \Carbon\Carbon::parse($record->tanggal_mulai)->format('d M') }}
+                        -
+                        {{ \Carbon\Carbon::parse($record->tanggal_selesai)->format('d M Y') }}
+                    </div>
+
+                    <span class="text-gray-300 dark:text-gray-600">|</span>
+
+                    <div class="flex items-center gap-1">
+                        <x-heroicon-o-users class="w-4 h-4" />
+                        Total Peserta: {{ $record->pendaftaranPelatihan()->count() }}
+                    </div>
+                </div>
+            BLADE, ['record' => $this->record])
+        );
+    }
+
+    /**
+     * ======================
+     * ADD INSTRUCTOR ACTION
+     * ======================
+     */
     public function addInstructorAction(): \Filament\Actions\Action
     {
         return \Filament\Actions\Action::make('addInstructor')
@@ -106,32 +159,21 @@ class ViewPelatihan extends ViewRecord
                     ->options(\App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
                     ->searchable()
                     ->required(),
+
                 \Filament\Forms\Components\Select::make('instruktur_id')
                     ->label('Pilih Instruktur (Opsional)')
-                    ->options(\App\Models\Instruktur::query()->pluck('nama', 'id'))
+                    ->options(\App\Models\Instruktur::pluck('nama', 'id'))
                     ->searchable()
                     ->multiple(),
             ])
             ->action(function (array $data) {
-                $instructors = $data['instruktur_id'] ?? [];
-
-                // Cek apakah sudah ada data KompetensiPelatihan untuk kompetensi ini di pelatihan ini
                 $kompetensiPelatihan = $this->record->kompetensiPelatihan()
-                    ->where('kompetensi_id', $data['kompetensi_id'])
-                    ->first();
+                    ->firstOrCreate(['kompetensi_id' => $data['kompetensi_id']]);
 
-                if (!$kompetensiPelatihan) {
-                    // Jika belum ada, buat baru
-                    $createData = [
-                        'kompetensi_id' => $data['kompetensi_id'],
-                        // 'lokasi' => ... (jika ada input lokasi di form, tambahkan di sini)
-                    ];
-                    $kompetensiPelatihan = $this->record->kompetensiPelatihan()->create($createData);
-                }
-
-                if (!empty($instructors)) {
-                    // Gunakan syncWithoutDetaching agar instruktur lama tidak hilang jika record sudah ada
-                    $kompetensiPelatihan->instrukturs()->syncWithoutDetaching($instructors);
+                if (!empty($data['instruktur_id'])) {
+                    $kompetensiPelatihan
+                        ->instrukturs()
+                        ->syncWithoutDetaching($data['instruktur_id']);
                 }
 
                 \Filament\Notifications\Notification::make()
@@ -141,77 +183,40 @@ class ViewPelatihan extends ViewRecord
             });
     }
 
+    /**
+     * ======================
+     * EVALUATION DATA (LIKERT, PRE, POST)
+     * ======================
+     */
     public function getEvaluationData(): array
     {
         $pelatihanId = $this->record->id;
 
-        // 1. Calculate Pretest & Posttest (Using PendaftaranPelatihan)
-        $avgPretest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_pre_test') ?? 0;
-        $avgPosttest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_post_test') ?? 0;
+        $avgPre = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+            ->avg('nilai_pre_test') ?? 0;
 
-        $improvement = 0;
-        if ($avgPretest > 0) {
-            $improvement = (($avgPosttest - $avgPretest) / $avgPretest) * 100;
-        }
+        $avgPost = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+            ->avg('nilai_post_test') ?? 0;
 
-        // 2. Calculate CSAT (Survey)
+        $improvement = $avgPre > 0
+            ? (($avgPost - $avgPre) / $avgPre) * 100
+            : 0;
+
         $avgCsat = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
             ->whereNotNull('nilai_survey')
             ->avg('nilai_survey') ?? 0;
 
-        $respondentsCount = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+        $respondents = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
             ->whereNotNull('nilai_survey')
             ->count();
 
-        // 3. Competency Details
-        $competencyStats = [];
-        // Iterate through unique competencies associated with this training
-        $sessions = $this->record->kompetensiPelatihan;
-
-        foreach ($sessions as $session) {
-            $kompetensiId = $session->kompetensi_id;
-
-            // Calculate Pretest for this specific competency
-            $pre = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('kompetensi_id', $kompetensiId)
-                ->avg('nilai_pre_test') ?? 0;
-
-            // Calculate Posttest for this specific competency
-            $post = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('kompetensi_id', $kompetensiId)
-                ->avg('nilai_post_test') ?? 0;
-
-            // Calculate Satisfaction (if available per competency)
-            $sat = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('kompetensi_id', $kompetensiId)
-                ->avg('nilai_survey') ?? 0;
-
-            $competencyStats[] = [
-                'name' => $session->kompetensi->nama_kompetensi ?? 'Unknown',
-                'pretest' => number_format($pre, 1),
-                'posttest' => number_format($post, 1),
-                'kepuasan' => number_format($sat, 1),
-                'status' => $post >= 85 ? 'Sangat Baik' : ($post >= 75 ? 'Baik' : 'Cukup'),
-                'status_color' => $post >= 85 ? 'success' : ($post >= 75 ? 'info' : 'warning'),
-            ];
-        }
-
-        // Check data existence
-        $hasData = ($respondentsCount > 0) || ($avgPretest > 0) || ($avgPosttest > 0);
-        if (!$hasData) {
-            $hasData = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where(fn($q) => $q->whereNotNull('nilai_pre_test')->orWhereNotNull('nilai_post_test'))
-                ->exists();
-        }
-
         return [
-            'avgPretest' => number_format($avgPretest, 1),
-            'avgPosttest' => number_format($avgPosttest, 1),
-            'improvement' => number_format($improvement, 0) . '%',
-            'csat' => number_format($avgCsat, 1),
-            'respondents' => $respondentsCount,
-            'competencies' => $competencyStats,
-            'hasData' => $hasData,
+            'avgPretest'   => number_format($avgPre, 1),
+            'avgPosttest'  => number_format($avgPost, 1),
+            'improvement'  => number_format($improvement, 0) . '%',
+            'csat'         => number_format($avgCsat, 1),
+            'respondents'  => $respondents,
+            'hasData'      => $respondents > 0 || $avgPre > 0 || $avgPost > 0,
         ];
     }
 }
