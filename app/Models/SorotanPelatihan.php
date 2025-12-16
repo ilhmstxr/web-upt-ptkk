@@ -14,10 +14,9 @@ class SorotanPelatihan extends Model
     protected $table = 'sorotan_pelatihans';
 
     protected $fillable = [
-        'kelas',        // 'mtu', 'reguler', 'akselerasi'
         'title',
         'description',
-        'photos',
+        'photos',        // Foto disimpan sebagai JSON (Array)
         'is_published',
     ];
 
@@ -31,23 +30,28 @@ class SorotanPelatihan extends Model
     {
         $files = $this->photos ?? [];
 
+        if (is_string($files)) {
+            $files = json_decode($files, true) ?? [];
+        }
+
+        if (!is_array($files)) {
+            return [];
+        }
+
         return collect($files)
             ->filter()
             ->map(function ($path) {
-                // pastikan string dulu
-                if (! is_string($path)) {
+                if (!is_string($path)) {
                     return null;
                 }
 
-                // pakai Str::startsWith (bisa array)
                 if (Str::startsWith($path, ['http://', 'https://'])) {
                     return $path;
                 }
 
-                // anggap path relatif di disk public
                 return Storage::url($path);
             })
-            ->filter()   // buang hasil null kalau ada
+            ->filter() 
             ->values()
             ->all();
     }
