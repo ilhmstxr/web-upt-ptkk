@@ -1,6 +1,6 @@
 @echo off
 echo Refreshing database...
-call php artisan migrate:fresh
+call php artisan migrate:fresh --seed
 if %errorlevel% neq 0 (
     echo Migration failed.
     pause

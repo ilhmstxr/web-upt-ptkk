@@ -49,74 +49,32 @@ class PesertaPenempatanRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('peserta.jenis_kelamin')
                     ->label('Jenis Kelamin')
                     ->badge()
-                    ->color(fn ($state) => match (strtolower($state ?? '')) {
+                    ->color(fn($state) => match (strtolower($state ?? '')) {
                         'laki-laki', 'l' => 'info',
                         'perempuan', 'p' => 'warning',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn ($state) => $state ? ucfirst($state) : '-')
+                    ->formatStateUsing(fn($state) => $state ? ucfirst($state) : '-')
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('asrama_kamar')
-                ->label('Asrama / Kamar')
-                ->state(function (PendaftaranPelatihan $record) {
-                    $penempatan = $record->penempatanAsramaAktif();
+                    ->label('Asrama / Kamar')
+                    ->state(function (PendaftaranPelatihan $record) {
+                        $penempatan = $record->penempatanAsramaAktif();
 
-                    if (! $penempatan || ! $penempatan->kamar) {
-                        return 'Belum dibagi';
-                    }
+                        $kamar = $penempatan?->kamarPelatihan?->kamar;
 
-                    $asramaName = $penempatan->kamar->asrama->name ?? 'Asrama';
-                    $kamarNo    = $penempatan->kamar->nomor_kamar ?? '-';
-
-                    return "{$asramaName} - Kamar {$kamarNo}";
-                })
-                ->wrap(),
-
-            ])
-            ->headerActions([
-                TableAction::make('otomasi')
-                    ->label('Otomasi Penempatan Asrama')
-                    ->icon('heroicon-o-bolt')
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->action(function (AsramaAllocator $allocator) {
-
-                        /** @var Pelatihan $pelatihan */
-                        $pelatihan = $this->getOwnerRecord();
-                        if (! $pelatihan) {
-                            Notification::make()
-                                ->title('Pelatihan tidak ditemukan')
-                                ->danger()
-                                ->send();
-                            return;
+                        if (! $kamar) {
+                            return 'Belum dibagi';
                         }
 
-                        $pendaftaranIds = PendaftaranPelatihan::where('pelatihan_id', $pelatihan->id)
-                            ->pluck('peserta_id');
+                        $asramaName = $kamar->asrama->name ?? 'Asrama';
+                        $kamarNo    = $kamar->nomor_kamar ?? '-';
 
-                        $pesertaList = Peserta::whereIn('id', $pendaftaranIds)->get();
-                        if ($pesertaList->isEmpty()) {
-                            Notification::make()
-                                ->title('Tidak ada peserta untuk pelatihan ini')
-                                ->warning()
-                                ->send();
-                            return;
-                        }
+                        return "{$asramaName} - Kamar {$kamarNo}";
+                    })
+                    ->wrap(),
 
-                        $kamarConfig = session('kamar') ?? config('kamar');
-                        $allocator->generateRoomsFromConfig($pelatihan->id, $kamarConfig);
-
-                        $result = $allocator->allocatePesertaPerPelatihan($pelatihan->id);
-
-                        $this->dispatch('$refresh');
-
-                        Notification::make()
-                            ->title('Otomasi selesai')
-                            ->body("OK={$result['ok']} | skipped={$result['skipped_already_assigned']} | gagal={$result['failed_full']}")
-                            ->success()
-                            ->send();
-                    }),
             ])
             ->actions([])
             ->bulkActions([]);
