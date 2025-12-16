@@ -55,7 +55,7 @@ class CreatePendaftaran extends CreateRecord
                 [
                     // simpan nama kompetensi (bukan id) kalau kolom memang string
                     'kompetensi_keahlian' => $namaKompetensi,
-                    'cabang_dinas_id'     => $data['cabang_dinas_id'],
+                    'cabangDinas_id'     => $data['cabang_dinas_id'],
                 ]
             );
 
