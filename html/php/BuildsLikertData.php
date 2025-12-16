@@ -726,8 +726,33 @@ trait BuildsLikertData
             'actionDefinitions' => [],
         ];
     }
-}
 
+    
+    protected function collectPertanyaanIdsByKompetensi(?int $pelatihanId, ?int $bidangId, ?string $tipe = 'survei'): Collection
+    {
+        $localTipe = $tipe ?? 'survei';
+
+        return JawabanUser::query()
+            ->from('jawaban_user as ju')
+            ->join('percobaan as pr', 'pr.id', '=', 'ju.percobaan_id')
+            ->join('tes as t', 't.id', '=', 'pr.tes_id')
+            ->join('pertanyaan as p', 'p.id', '=', 'ju.pertanyaan_id')
+            // Join path ke Kompetensi: Jawaban -> Percobaan -> Peserta -> Pendaftaran(Bidang)
+            ->join('peserta as pst', 'pst.id', '=', 'pr.peserta_id')
+            ->join('pendaftaran_pelatihan as pp', 'pp.peserta_id', '=', 'pst.id')
+            ->where('t.tipe', $localTipe)
+            ->when($localTipe === 'survei', function ($query) {
+                return $query->where('p.tipe_jawaban', 'skala_likert');
+            })
+            ->when($pelatihanId, fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
+            // Pastikan pendaftaran juga match dengan pelatihan ini (validasi ganda data pendaftaran)
+            ->when($pelatihanId, fn($q) => $q->where('pp.pelatihan_id', $pelatihanId))
+            ->when($bidangId, fn($q) => $q->where('pp.bidang_pelatihan_id', $bidangId))
+            ->distinct()
+            ->pluck('ju.pertanyaan_id')
+            ->values();
+    }
+}
 
 
 
