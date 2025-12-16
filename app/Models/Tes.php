@@ -24,15 +24,12 @@ class Tes extends Model
         'passing_score',
     ];
 
-<<<<<<< HEAD
-=======
     // Relasi ke Kompetensi
     public function kompetensiPelatihan()
     {
         return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
     }
 
->>>>>>> 17c0002671caa9ab9ce12554222df7494cb63c14
     public function pelatihan()
     {
         return $this->belongsTo(Pelatihan::class);
