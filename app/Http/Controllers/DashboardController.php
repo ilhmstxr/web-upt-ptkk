@@ -539,7 +539,7 @@ class DashboardController extends Controller
             $request,
             $percobaan,
             'dashboard.pretest.show',
-            null // ⬅️ jangan ke result
+            'dashboard.pretest.result'
         );
 
         // kalau processTesSubmit return RedirectResponse
@@ -662,8 +662,8 @@ class DashboardController extends Controller
         $response = $this->processTesSubmit(
             $request,
             $percobaan,
-            'dashboard.pretest.show',
-            null // ⬅️ jangan ke result
+            'dashboard.posttest.show',
+            'dashboard.posttest.result'
         );
 
         // kalau processTesSubmit return RedirectResponse

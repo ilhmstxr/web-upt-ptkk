@@ -93,8 +93,7 @@
 
                 <div class="text-slate-800 font-medium leading-relaxed">
                     {{ $currentQuestionIndex + 1 }}.
-                    @php($plain = trim(strip_tags($pertanyaan->teks_pertanyaan ?? '')))
-                    {!! $plain !== '' ? $pertanyaan->teks_pertanyaan : '-' !!}
+                    {{ $pertanyaan->teks_pertanyaan ?? '-' }}
                 </div>
 
                 {{-- Gambar pertanyaan --}}
