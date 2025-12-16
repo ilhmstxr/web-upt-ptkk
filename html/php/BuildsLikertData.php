@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\JawabanSurveiResource\Widgets;
 
-use App\Models\Kompetensi;
+use App\Models\Bidang;
 use App\Models\Instruktur;
 use App\Models\JawabanUser;
 use App\Models\OpsiJawaban;
@@ -293,7 +293,7 @@ trait BuildsLikertData
     /**
      * FUNGSI HELPER BARU
      * Fungsi ini berisi logika spesifik untuk memetakan pertanyaan ke kategori
-     * berdasarkan tipe laporannya (survei vs pre/post-test).
+     * berdasarkan tipe laporannya (survey vs pre/post-test).
      */
     protected function buildKategoriMap(?int $pelatihanId, string $localTipe): array
     {
@@ -504,7 +504,7 @@ trait BuildsLikertData
             [
                 'label' => 'Total Peserta Diajar',
                 'value' => $jumlahPesertaDiajar,
-                'description' => 'Jumlah kompetensi keahlian',
+                'description' => 'Jumlah bidang keahlian',
                 'descriptionIcon' => 'heroicon-m-academic-cap',
                 'color' => 'primary',
             ],
@@ -546,15 +546,15 @@ trait BuildsLikertData
             [
                 'label' => 'Rata - rata Rating Pelatihan',
                 'value' => $rataRating ? round($rataRating, 2) : 0,
-                'description' => 'Jumlah kompetensi keahlian',
+                'description' => 'Jumlah bidang keahlian',
                 'descriptionIcon' => 'heroicon-m-academic-cap',
                 'color' => 'primary',
             ],
         ];
     }
 
-    // STATS kompetensi
-    public function kompetensi()
+    // STATS bidang
+    public function bidang()
     {
 
         $a = 'a';
@@ -584,9 +584,9 @@ trait BuildsLikertData
                 'color' => 'warning',
             ],
             [
-                'label' => 'Total Peserta Seluruh Kompetensi',
+                'label' => 'Total Peserta Seluruh Bidang',
                 'value' => $d,
-                'description' => 'Jumlah kompetensi keahlian',
+                'description' => 'Jumlah bidang keahlian',
                 'descriptionIcon' => 'heroicon-m-academic-cap',
                 'color' => 'primary',
             ],
@@ -620,9 +620,9 @@ trait BuildsLikertData
                 'color' => 'warning',
             ],
             [
-                'label' => 'Total Kompetensi',
-                'value' => Kompetensi::count(),
-                'description' => 'Jumlah kompetensi keahlian',
+                'label' => 'Total Bidang',
+                'value' => Bidang::count(),
+                'description' => 'Jumlah bidang keahlian',
                 'descriptionIcon' => 'heroicon-m-academic-cap',
                 'color' => 'primary',
             ],
@@ -671,13 +671,13 @@ trait BuildsLikertData
             'widgetHeading' => 'Manajemen Data Peserta',
             'description' => 'Tabel lengkap data peserta...',
             'model' => Peserta::class, // <-- Kirim nama kelas Model
-            'with' => ['kompetensi'],   // <-- Kirim relasi untuk eager loading
+            'with' => ['bidang'],   // <-- Kirim relasi untuk eager loading
             'columnDefinitions' => [
                 // 'kode' akan berasal dari relasi, kita ganti
                 'pendaftaranPelatihan.nomor_registrasi' => ['label' => 'KODE', 'searchable' => true],
                 'nama' => ['label' => 'NAMA PESERTA', 'searchable' => true],
-                // 'kompetensi.nama' sudah benar karena ada eager loading 'kompetensi'
-                'kompetensi.nama_kompetensi' => ['label' => 'BIDANG', 'sortable' => true],
+                // 'bidang.nama' sudah benar karena ada eager loading 'bidang'
+                'bidang.nama_bidang' => ['label' => 'BIDANG', 'sortable' => true],
                 'pendaftaranPelatihan.nilai_pre_test' => ['label' => 'PRE-TEST'],
                 'pendaftaranPelatihan.nilai_post_test' => ['label' => 'POST-TEST'],
                 'pendaftaranPelatihan.nilai_praktek' => ['label' => 'PRAKTEK'],
@@ -711,14 +711,14 @@ trait BuildsLikertData
             'widgetHeading' => 'Top Nilai Terbaik Per Peserta',
             'description' => 'Tabel ringkas yang menampilkan performa terbaik.',
             'model' => Peserta::class, // <-- Kirim nama kelas Model
-            'with' => ['kompetensi', 'pendaftaranPelatihan'], // <-- Eager load relasi
+            'with' => ['bidang', 'pendaftaranPelatihan'], // <-- Eager load relasi
             'orderByColumn' => 'pendaftaranPelatihan.rata_rata', // <-- Kirim kolom untuk diurutkan
             'orderByDirection' => 'desc',
             'limit' => 5, // <-- Kirim limit
             'columnDefinitions' => [
                 'pendaftaranPelatihan.nomor_registrasi' => ['label' => 'KODE PESERTA'],
                 'nama' => ['label' => 'NAMA PESERTA'],
-                'kompetensi.nama_kompetensi' => ['label' => 'BIDANG'],
+                'bidang.nama_bidang' => ['label' => 'BIDANG'],
                 'pendaftaranPelatihan.rata_rata' => ['label' => 'RATA-RATA NILAI'],
                 'pendaftaranPelatihan.nilai_pre_test' => ['label' => 'NILAI PRE-TEST'],
                 'pendaftaranPelatihan.nilai_post_test' => ['label' => 'NILAI POST-TEST'],

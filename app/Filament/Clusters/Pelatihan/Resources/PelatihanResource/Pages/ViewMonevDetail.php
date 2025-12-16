@@ -107,6 +107,7 @@ class ViewMonevDetail extends Page
             'total_chart' => $totalChart,
             'category_chart' => $categoryChart,
             'question_stats' => collect($questionStats), // Grouped by category key
+            'questions_flat' => collect($questionStats)->flatten(1)->values()->all(),
         ];
     }
 
