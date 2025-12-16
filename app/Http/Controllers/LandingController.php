@@ -114,11 +114,13 @@ class LandingController extends Controller
 
         // 6) SOROTAN PELATIHAN
         try {
+            // Hapus cache lama dulu biar fresh karena struktur DB berubah
+            Cache::forget('sorotan_pelatihan');
+
             $sorotans = Cache::remember('sorotan_pelatihan', 3600, function () {
                 return SorotanPelatihan::query()
                     ->where('is_published', true)
-                    ->whereIn('kelas', ['mtu', 'reguler', 'akselerasi'])
-                    ->orderByRaw("FIELD(kelas, 'mtu', 'reguler', 'akselerasi')")
+                    ->latest() // Ambil yang terbaru
                     ->get();
             });
         } catch (Throwable $e) {
