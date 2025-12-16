@@ -45,6 +45,7 @@ use App\Exports\LampiranSheet;
 /* ======================================================================
 |  SAFETY FALLBACK (Filament route mismatch workaround)
 ====================================================================== */
+
 if (! Route::has('filament.admin.resources.materi-pelatihans.index')) {
     Route::get('/_filament_stub/materi-pelatihans', function () {
         if (Route::has('filament.resources.materi-pelatihans.index')) {
@@ -61,7 +62,7 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 // Profil / Cerita Kami (public)
 Route::get('/cerita-kami', [CeritaKamiController::class, 'index'])->name('cerita-kami');
-Route::get('/story', fn () => redirect()->route('cerita-kami'))->name('story'); // alias lama
+Route::get('/story', fn() => redirect()->route('cerita-kami'))->name('story'); // alias lama
 
 // Program Pelatihan & Kompetensi Pelatihan (profil public)
 Route::get('/program-pelatihan', [KontenProgramPelatihanController::class, 'index'])->name('programs');
@@ -97,7 +98,9 @@ Route::get('/pelatihan/{slug}', [PelatihanDetailController::class, 'show'])
     ->name('pelatihan.show');
 
 // alias kompatibilitas lama
-Route::get('/detail-pelatihan/{slug}', fn ($slug) =>
+Route::get(
+    '/detail-pelatihan/{slug}',
+    fn($slug) =>
     redirect()->route('pelatihan.show', $slug)
 )->name('detail-pelatihan');
 
@@ -121,7 +124,7 @@ Route::get('pendaftaran/download-file', [PendaftaranController::class, 'download
 Route::get('cetak-massal', [PendaftaranController::class, 'generateMassal'])
     ->name('pendaftaran.generateMassal');
 
-Route::get('pendaftaran-baru', fn () => view('registration-form-new'))
+Route::get('pendaftaran-baru', fn() => view('registration-form-new'))
     ->name('pendaftaran.baru');
 
 Route::get('peserta/{peserta}/download-pdf', [PendaftaranController::class, 'download'])
@@ -203,58 +206,58 @@ Route::middleware(['web', 'assessment', 'training.session'])
     ->name('dashboard.')
     ->group(function () {
 
-    Route::get('/', [DashboardController::class, 'home'])->name('home');
-    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
-    Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
+        Route::get('/', [DashboardController::class, 'home'])->name('home');
+        Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+        Route::get('/progress', [DashboardController::class, 'progress'])->name('progress');
 
-    // Materi
-    Route::get('/materi', [DashboardController::class, 'materi'])->name('materi.index');
-    Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
-    Route::post('/materi/{materi}/complete', [DashboardController::class, 'materiComplete'])->name('materi.complete');
+        // Materi
+        Route::get('/materi', [DashboardController::class, 'materi'])->name('materi.index');
+        Route::get('/materi/{materi}', [DashboardController::class, 'materiShow'])->name('materi.show');
+        Route::post('/materi/{materi}/complete', [DashboardController::class, 'materiComplete'])->name('materi.complete');
 
-    // set/unset peserta (legacy UI)
-    Route::post('/set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
-    Route::post('/unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
+        // set/unset peserta (legacy UI)
+        Route::post('/set-peserta', [DashboardController::class, 'setPeserta'])->name('setPeserta');
+        Route::post('/unset-peserta', [DashboardController::class, 'unsetPeserta'])->name('unsetPeserta');
 
-    // AJAX helper
-    Route::get('/ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
-        ->name('ajax.peserta.instansiByNama');
+        // AJAX helper
+        Route::get('/ajax/peserta/instansi-by-nama', [DashboardController::class, 'lookupInstansiByNama'])
+            ->name('ajax.peserta.instansiByNama');
 
-    // logout dashboard -> satu pintu dengan assessment logout
-    Route::post('/logout', [AssessmentLoginController::class, 'logout'])->name('logout');
+        // logout dashboard -> satu pintu dengan assessment logout
+        Route::post('/logout', [AssessmentLoginController::class, 'logout'])->name('logout');
 
-    // Pretest
-    Route::prefix('pretest')->name('pretest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'pretest'])->name('index');
-        Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
-        Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
-        Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
-        Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
+        // Pretest
+        Route::prefix('pretest')->name('pretest.')->group(function () {
+            Route::get('/', [DashboardController::class, 'pretest'])->name('index');
+            Route::get('result/{percobaan}', [DashboardController::class, 'pretestResult'])->name('result');
+            Route::post('{percobaan}/submit', [DashboardController::class, 'pretestSubmit'])->name('submit');
+            Route::get('{tes}/start', [DashboardController::class, 'pretestStart'])->name('start');
+            Route::get('{tes}', [DashboardController::class, 'pretestShow'])->name('show');
+        });
+
+        // Posttest
+        Route::prefix('posttest')->name('posttest.')->group(function () {
+            Route::get('/', [DashboardController::class, 'posttest'])->name('index');
+            Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
+            Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
+            Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
+            Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
+        });
+
+        // Survei internal dashboard
+        Route::get('survei', [DashboardController::class, 'survei'])->name('survei');
+        Route::post('survei/submit', [DashboardController::class, 'surveiSubmit'])->name('survei.submit');
+
+        // Monev (jika dipakai)
+        Route::prefix('monev')->name('monev.')->group(function () {
+            Route::get('/', [DashboardController::class, 'monev'])->name('index');
+            Route::get('/{tes}/start', [DashboardController::class, 'monevStart'])->name('start');
+            Route::get('/{tes}/begin', [DashboardController::class, 'monevBegin'])->name('begin');
+            Route::get('/{tes}', [DashboardController::class, 'monevShow'])->name('show');
+            Route::post('/{percobaan}/submit', [DashboardController::class, 'monevSubmit'])->name('submit');
+            Route::get('/result/{percobaan}', [DashboardController::class, 'monevResult'])->name('result');
+        });
     });
-
-    // Posttest
-    Route::prefix('posttest')->name('posttest.')->group(function () {
-        Route::get('/', [DashboardController::class, 'posttest'])->name('index');
-        Route::get('result/{percobaan}', [DashboardController::class, 'posttestResult'])->name('result');
-        Route::post('{percobaan}/submit', [DashboardController::class, 'posttestSubmit'])->name('submit');
-        Route::get('{tes}/start', [DashboardController::class, 'posttestStart'])->name('start');
-        Route::get('{tes}', [DashboardController::class, 'posttestShow'])->name('show');
-    });
-
-    // Survei internal dashboard
-    Route::get('survei', [DashboardController::class, 'survei'])->name('survei');
-    Route::post('survei/submit', [DashboardController::class, 'surveiSubmit'])->name('survei.submit');
-
-    // Monev (jika dipakai)
-    Route::prefix('monev')->name('monev.')->group(function () {
-        Route::get('/', [DashboardController::class, 'monev'])->name('index');
-        Route::get('/{tes}/start', [DashboardController::class, 'monevStart'])->name('start');
-        Route::get('/{tes}/begin', [DashboardController::class, 'monevBegin'])->name('begin');
-        Route::get('/{tes}', [DashboardController::class, 'monevShow'])->name('show');
-        Route::post('/{percobaan}/submit', [DashboardController::class, 'monevSubmit'])->name('submit');
-        Route::get('/result/{percobaan}', [DashboardController::class, 'monevResult'])->name('result');
-    });
-});
 
 /* ======================================================================
 |  H. ADMIN / AUTH UTILITIES (auth)
@@ -293,11 +296,11 @@ Route::middleware(['auth'])->group(function () {
     // Rekap nilai tes
     Route::get('/admin/tes/{tes}/rekap-download', [TesRekapDownloadController::class, 'download'])
         ->name('tes.rekap.download');
-    
+
     // Export Data Pelatihan (Template Surat)
     Route::get('/export/template/rekap-pelatihan/{pelatihanId}', [ExportController::class, 'rekapPelatihan'])
         ->name('export.template.rekap-pelatihan');
-    
+
     Route::get('/export/template/peserta-excel/{pelatihanId}', [ExportController::class, 'pesertaExcel'])
         ->name('export.template.peserta-excel');
 
@@ -327,20 +330,20 @@ Route::get('/api/statistik-pelatihan', [StatistikPelatihanController::class, 'da
 /* ======================================================================
 |  J. EXPORT / TEST HELPERS / DEBUG
 ====================================================================== */
-Route::get('/test-peserta', fn () => dd((new PesertaSheet(null))->collection()->take(5)));
-Route::get('/test-lampiran', fn () => dd((new LampiranSheet(null))->collection()->take(5)));
-Route::get('/export-peserta', fn () => Excel::download(new PesertaExport(), 'peserta.xlsx'))
+Route::get('/test-peserta', fn() => dd((new PesertaSheet(null))->collection()->take(5)));
+Route::get('/test-lampiran', fn() => dd((new LampiranSheet(null))->collection()->take(5)));
+Route::get('/export-peserta', fn() => Excel::download(new PesertaExport(), 'peserta.xlsx'))
     ->name('export.peserta');
 Route::get('/admin/download-tokens', [TokenController::class, 'download'])
     ->name('admin.download.tokens');
 
-Route::get('/send', fn () => Mail::to('23082010166@student.upnjatim.ac.id')->send(new TestMail()));
+Route::get('/send', fn() => Mail::to('23082010166@student.upnjatim.ac.id')->send(new TestMail()));
 
 // debug API peserta
-Route::get('/api/peserta', fn () => Peserta::with('lampiran', 'kompetensi', 'pelatihan', 'instansi')->get());
+Route::get('/api/peserta', fn() => Peserta::with('lampiran', 'kompetensi', 'pelatihan', 'instansi')->get());
 
-Route::get('/cek_icon', fn () => view('cek_icon'));
-Route::get('test-pdf', fn () => view('test-pdf'));
+Route::get('/cek_icon', fn() => view('cek_icon'));
+Route::get('test-pdf', fn() => view('test-pdf'));
 
 /* ======================================================================
 |  K. AUTH ROUTES
@@ -359,4 +362,6 @@ if (App::isLocal()) {
         $result = countKompetensi();
         return response()->json($result);
     });
+
+
 }
