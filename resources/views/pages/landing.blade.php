@@ -460,102 +460,113 @@ $latestBeritas = Berita::query()
   })();
 </script>
 
-{{-- SECTION: Cerita Kami (DINAMIS) --}}
+{{-- SECTION: Cerita Kami (DINAMIS + FALLBACK DEFAULT) --}}
+@php
+    // Anggap "ada data" kalau minimal salah satu terisi
+    $hasCerita = !empty($cerita)
+        && (filled($cerita->title) || filled($cerita->excerpt) || filled($cerita->content) || filled($cerita->image_url));
+
+    // ===== IMAGE URL =====
+    if ($hasCerita && filled($cerita->image_url)) {
+        $imgSrc = \Illuminate\Support\Str::startsWith($cerita->image_url, ['http://', 'https://', '/'])
+            ? $cerita->image_url
+            : \Illuminate\Support\Facades\Storage::url($cerita->image_url);
+    } else {
+        $imgSrc = asset('images/cerita-kami.jpg'); // fallback
+    }
+
+    // ===== TITLE =====
+    $title = ($hasCerita && filled($cerita->title))
+        ? $cerita->title
+        : 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan';
+
+    // ===== CONTENT (HTML dari rich editor) =====
+    $contentHtml = ($hasCerita && filled($cerita->content)) ? $cerita->content : null;
+
+    if ($contentHtml) {
+        $contentHtml = preg_replace('/(&nbsp;)+/i', ' ', $contentHtml);
+    }
+
+    $fallbackHtml = '
+      <p>UPT PTKK merupakan salah satu Unit Pelaksana Teknis di bawah Dinas Pendidikan Provinsi Jawa Timur yang memiliki tugas dan fungsi dalam menyediakan fasilitas pelatihan berbasis kompetensi. Sebagai pelopor pelatihan vokasi, lembaga ini terus memperkuat perannya melalui penyelenggaraan program-program yang relevan, progresif, dan berdampak nyata.</p>
+      <p>Selain itu UPT PTKK diberi kepercayaan oleh Lembaga Sertifikasi Kompetensi (LSK) berbasis KKNI di bawah naungan KEMENDIKBUD Vokasi sebagai Tempat Uji Kompetensi (TUK) bidang keahlian sebagai berikut:</p>
+      <ol>
+        <li>Tata Boga</li>
+        <li>Tata Busana</li>
+        <li>Tata Kecantikan</li>
+        <li>Teknik Elektronika</li>
+        <li>Teknik Otomotif</li>
+        <li>Fotografi</li>
+        <li>Teknik Informasi Komunikasi (Web Desain/RPL, Desain Grafis, Animasi, Konten Kreator/Videografi)</li>
+      </ol>
+    ';
+
+    $bodyHtml = $contentHtml ?: $fallbackHtml;
+
+    $ceritaUrl = url('/cerita-kami');
+@endphp
+
+
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16">
-      {{-- Kolom Kiri: Foto --}}
-      <div class="shrink-0 flex justify-center md:justify-start">
+    <div class="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
+
+      {{-- KIRI: gambar (CENTER terhadap tinggi konten kanan) --}}
+      <div class="shrink-0 md:w-[420px] flex justify-center md:justify-start md:items-center">
         <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF]
-                    w-[300px] md:w-[360px] lg:w-[400px] aspect-[3/2] bg-slate-200">
-          @if(!empty($cerita) && $cerita->image_url)
-           <img
-  src="{{ (!empty($cerita) && $cerita->image_url) ? $cerita->image_url : asset('images/cerita-kami.svg') }}"
-  alt="{{ $cerita->title ?? 'Cerita Kami' }}"
-  class="absolute inset-0 w-full h-full object-cover"
-/>
-          @else
-            {{-- fallback static --}}
-           <img
-  src="{{ asset('images/cerita-kami.svg') }}"
-  alt="Kegiatan UPT PTKK"
-  class="absolute inset-0 w-full h-full object-cover"
-/>
-          @endif
+                    w-[300px] md:w-[380px] lg:w-[420px] aspect-[3/2] bg-slate-200">
+          <img
+            src="{{ $imgSrc }}"
+            alt="{{ $title }}"
+            class="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          />
         </div>
       </div>
 
-      {{-- Kolom Kanan: Teks --}}
+      {{-- KANAN: konten --}}
       <div class="flex-1 flex flex-col w-full items-center md:items-start">
-        {{-- Badge Cerita Kami --}}
+        {{-- Badge --}}
         <div class="w-full flex mb-[15px] justify-center md:justify-start">
-          <span class="inline-flex items-center
-                    px-0 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
-                    font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
-                    Cerita Kami</span>
+          <span class="inline-flex items-center px-4 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
+                       font-[Volkhov] font-bold text-base md:text-lg lg:text-[20px] shadow-sm leading-tight">
+            Cerita Kami
+          </span>
         </div>
 
-       {{-- Heading (tetap / statis) --}}
-          <h2 class="mb-[15px] font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch] text-center md:text-left">
-            UPT Pengembangan Teknis Dan Keterampilan Kejuruan
-          </h2>
+        {{-- Title --}}
+        <h2 class="mb-[15px] font-[Volkhov] font-bold text-[22px] md:text-[26px] leading-tight
+                   text-[#1524AF] heading-stroke max-w-[32ch] text-center md:text-left">
+          {{ $title }}
+        </h2>
 
+        {{-- Body: render HTML (dengan styling prose biar list rapi) --}}
+        <div class="prose max-w-none prose-p:my-3 prose-ol:my-3 prose-li:my-1
+                    prose-p:text-[#081526] prose-li:text-[#081526]
+                    prose-p:font-[Montserrat] prose-li:font-[Montserrat]
+                    prose-p:font-medium prose-li:font-medium
+                    prose-p:text-[14px] md:prose-p:text-[15px] lg:prose-p:text-[16px]">
+          {!! $bodyHtml !!}
+        </div>
 
-                  {{-- Excerpt / Content ringkas --}}
-                <p class="mb-[15px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-snug text-[14px] md:text-[15px] lg:text-[16px] text-justify">
-            @if(!empty($cerita) && !empty($cerita->excerpt))
-              {{ $cerita->excerpt }}
-            @elseif(!empty($cerita) && !empty($cerita->content))
-              {{ strip_tags($cerita->content) }}
-            @else
-              Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi
-              memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung
-              oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi,
-              UPT PTKK terus memperkuat posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata.
-              Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada
-              kemajuan pendidikan di Jawa Timur.
-            @endif
-          </p>
-
-        {{-- Tombol: ke halaman cerita lengkap (jika ada slug / route) --}}
-        @php
-          $ceritaUrl = '#';
-          if(!empty($cerita)) {
-              if(!empty($cerita->slug) && \Illuminate\Support\Facades\Route::has('cerita-kami.show')) {
-                  $ceritaUrl = route('cerita-kami.show', $cerita->slug);
-              } elseif(\Illuminate\Support\Facades\Route::has('cerita-kami')) {
-                  $ceritaUrl = route('cerita-kami');
-              } elseif(\Illuminate\Support\Facades\Route::has('story')) {
-                  $ceritaUrl = route('story');
-              } else {
-                  $ceritaUrl = url('/cerita-kami');
-              }
-          } else {
-              $ceritaUrl = \Illuminate\Support\Facades\Route::has('cerita-kami') ? route('cerita-kami') : '#';
-          }
-        @endphp
-
+        {{-- Button --}}
         <a href="{{ $ceritaUrl }}"
-          class=" inline-flex items-center justify-center gap-2 w-max
-                  px-4 py-1
-                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
-                  text-[14px] md:text-[15px] lg:text-[16px]
-                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
-
+           class="mt-4 inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-2 rounded-lg bg-[#1524AF] text-white font-[Montserrat] font-medium
+                  text-[14px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all">
           <span class="leading-none">Cari tahu lebih</span>
-
-          {{-- Ikon diperbesar responsif (w-4 sm:w-5 md:w-6) --}}
-          <svg xmlns="http://www.w3.org/2000/svg"
-              class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
           </svg>
         </a>
+
       </div>
     </div>
   </div>
 </section>
 {{-- /SECTION: Cerita Kami --}}
+
+
 
 {{-- SECTION: Jatim Bangkit (oval slim, bigger icons, tighter gap) --}}
 <section class="relative bg-[#F1F9FC]">
