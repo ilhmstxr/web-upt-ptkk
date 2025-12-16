@@ -4,10 +4,10 @@ namespace App\Filament\Clusters\Kesiswaan\Resources;
 
 use App\Filament\Clusters\Kesiswaan;
 use App\Filament\Clusters\Kesiswaan\Resources\PendaftaranResource\Pages;
-use App\Models\PendaftaranPelatihan;
-use App\Models\Kompetensi;
 use App\Models\CabangDinas;
+use App\Models\Kompetensi;
 use App\Models\KompetensiPelatihan;
+use App\Models\PendaftaranPelatihan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,32 +15,40 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Log;
 
 class PendaftaranResource extends Resource
 {
     protected static ?string $model = PendaftaranPelatihan::class;
     protected static ?string $cluster = Kesiswaan::class;
 
-    protected static ?string $navigationIcon  = 'heroicon-o-users';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationLabel = 'Peserta';
-    protected static ?string $modelLabel      = 'Peserta';
+    protected static ?string $modelLabel = 'Peserta';
     protected static ?string $pluralModelLabel = 'Peserta';
 
+    /**
+     * Eager load supaya table/view lebih cepat & menghindari N+1.
+     */
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->with([
-                'peserta.lampiran',
-                'pelatihan',
-                'kompetensiPelatihan.kompetensi',
-            ]);
+        return parent::getEloquentQuery()->with([
+            'peserta.lampiran',
+            'peserta.instansi.cabangDinas',
+            'peserta.user',
+            'pelatihan',
+            'kompetensiPelatihan.kompetensi',
+            'penempatanAsramas.kamarPelatihan.kamar',
+        ]);
     }
 
     public static function form(Form $form): Form
     {
         return $form->schema([
             /**
+             * =========================
              * CREATE: Wizard
+             * =========================
              */
             Forms\Components\Wizard::make([
                 Forms\Components\Wizard\Step::make('Pelatihan')
@@ -50,18 +58,22 @@ class PendaftaranResource extends Resource
                             ->relationship('pelatihan', 'nama_pelatihan')
                             ->reactive()
                             ->required(),
+
                         Forms\Components\Select::make('kompetensi_pelatihan_id')
                             ->label('Kompetensi Keahlian')
                             ->options(function (Forms\Get $get) {
                                 $pelatihanId = $get('pelatihan_id');
-                                if (!$pelatihanId) return [];
+                                if (! $pelatihanId) return [];
 
-                                return KompetensiPelatihan::where('pelatihan_id', $pelatihanId)
+                                return KompetensiPelatihan::query()
+                                    ->where('pelatihan_id', $pelatihanId)
                                     ->with('kompetensi')
                                     ->get()
                                     ->pluck('kompetensi.nama_kompetensi', 'id')
                                     ->all();
                             })
+                            ->searchable()
+                            ->preload()
                             ->required(),
                     ]),
 
@@ -127,6 +139,7 @@ class PendaftaranResource extends Resource
                                 ->label('Cabang Dinas')
                                 ->options(CabangDinas::query()->pluck('nama', 'id')->all())
                                 ->searchable()
+                                ->preload()
                                 ->required(),
 
                             Forms\Components\TextInput::make('kelas')
@@ -183,7 +196,9 @@ class PendaftaranResource extends Resource
                 ->visible(fn ($record) => blank($record)),
 
             /**
-             * EDIT: Tampilan verifikasi + status
+             * =========================
+             * EDIT: Info + Lampiran + Status
+             * =========================
              */
             Forms\Components\Group::make()
                 ->schema([
@@ -201,6 +216,10 @@ class PendaftaranResource extends Resource
                             Forms\Components\Placeholder::make('pelatihan_name')
                                 ->label('Pelatihan')
                                 ->content(fn ($record) => $record?->pelatihan?->nama_pelatihan ?? '-'),
+
+                            Forms\Components\Placeholder::make('kompetensi_name')
+                                ->label('Kompetensi')
+                                ->content(fn ($record) => $record?->kompetensiPelatihan?->kompetensi?->nama_kompetensi ?? '-'),
 
                             Forms\Components\TextInput::make('kelas')
                                 ->label('Kelas')
@@ -221,7 +240,7 @@ class PendaftaranResource extends Resource
                                 ->content(function ($record) {
                                     $lampiran = $record?->peserta?->lampiran;
 
-                                    if (!$lampiran) {
+                                    if (! $lampiran) {
                                         return 'Belum ada berkas lampiran.';
                                     }
 
@@ -231,15 +250,15 @@ class PendaftaranResource extends Resource
                                     $foto  = $lampiran->pas_foto_url ?? null;
 
                                     $link = fn ($url) => $url
-                                        ? '<a href="'.$url.'" target="_blank" class="text-primary-600 hover:underline">Lihat File</a>'
+                                        ? '<a href="' . $url . '" target="_blank" class="text-primary-600 hover:underline">Lihat File</a>'
                                         : '<span class="text-gray-500">Tidak ada</span>';
 
                                     return new HtmlString('
                                         <div class="grid grid-cols-2 gap-4">
-                                            <div><strong>KTP:</strong> '.$link($ktp).'</div>
-                                            <div><strong>Ijazah:</strong> '.$link($ijaz).'</div>
-                                            <div><strong>Surat Sehat:</strong> '.$link($sehat).'</div>
-                                            <div><strong>Pas Foto:</strong> '.$link($foto).'</div>
+                                            <div><strong>KTP:</strong> ' . $link($ktp) . '</div>
+                                            <div><strong>Ijazah:</strong> ' . $link($ijaz) . '</div>
+                                            <div><strong>Surat Sehat:</strong> ' . $link($sehat) . '</div>
+                                            <div><strong>Pas Foto:</strong> ' . $link($foto) . '</div>
                                         </div>
                                     ');
                                 })
@@ -256,10 +275,10 @@ class PendaftaranResource extends Resource
                             Forms\Components\Select::make('status_pendaftaran')
                                 ->label('Status Pendaftaran')
                                 ->options([
-                                    'Pending'    => 'Pending',
-                                    'Verifikasi' => 'Verifikasi',
-                                    'Diterima'   => 'Diterima',
-                                    'Ditolak'    => 'Ditolak',
+                                    'pending'    => 'Pending',
+                                    'verifikasi' => 'Verifikasi',
+                                    'diterima'   => 'Diterima',
+                                    'ditolak'    => 'Ditolak',
                                 ])
                                 ->required()
                                 ->native(false),
@@ -304,11 +323,18 @@ class PendaftaranResource extends Resource
                     ->label('Status')
                     ->icon('heroicon-o-shield-check')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'Pending'    => 'warning',
-                        'Verifikasi' => 'info',
-                        'Diterima'   => 'success',
-                        'Ditolak'    => 'danger',
+                    ->formatStateUsing(fn ($state) => match (strtolower((string) $state)) {
+                        'pending'    => 'Pending',
+                        'verifikasi' => 'Verifikasi',
+                        'diterima'   => 'Diterima',
+                        'ditolak'    => 'Ditolak',
+                        default      => (string) $state,
+                    })
+                    ->color(fn (?string $state): string => match (strtolower((string) $state)) {
+                        'pending'    => 'warning',
+                        'verifikasi' => 'info',
+                        'diterima'   => 'success',
+                        'ditolak'    => 'danger',
                         default      => 'gray',
                     })
                     ->sortable(),
@@ -323,10 +349,10 @@ class PendaftaranResource extends Resource
                 Tables\Filters\SelectFilter::make('status_pendaftaran')
                     ->label('Filter Status')
                     ->options([
-                        'Pending'    => 'Pending',
-                        'Verifikasi' => 'Verifikasi',
-                        'Diterima'   => 'Diterima',
-                        'Ditolak'    => 'Ditolak',
+                        'pending'    => 'Pending',
+                        'verifikasi' => 'Verifikasi',
+                        'diterima'   => 'Diterima',
+                        'ditolak'    => 'Ditolak',
                     ]),
 
                 Tables\Filters\SelectFilter::make('pelatihan_id')
@@ -337,22 +363,126 @@ class PendaftaranResource extends Resource
                     ->label('Kompetensi')
                     ->options(fn () => Kompetensi::query()->pluck('nama_kompetensi', 'id')->all())
                     ->query(function (Builder $query, array $data) {
-                        $value = $data['value'] ?? null;
-                        if (!$value) return $query;
+                        $kompetensiId = $data['value'] ?? null;
+                        if (! $kompetensiId) return $query;
 
-                        return $query->whereHas('kompetensiPelatihan', function (Builder $q) use ($value) {
-                            $q->where('kompetensi_pelatihan_id', $value);
-                        });
+                        // ✅ Lebih stabil karena kolom kompetensi_id ada di pendaftaran_pelatihan
+                        return $query->where('kompetensi_id', $kompetensiId);
                     }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
+
+                Tables\Actions\Action::make('accept')
+                    ->label('Terima')
+                    ->icon('heroicon-o-check')
+                    ->color('success')
+                    ->requiresConfirmation(fn () => ! session()->get('suppress_pendaftaran_approval'))
+                    ->modalIcon('heroicon-o-check')
+                    ->modalHeading('Terima Peserta')
+                    ->modalDescription('Apakah Anda yakin ingin menerima peserta ini? Status akan berubah menjadi Diterima.')
+                    ->modalSubmitActionLabel('Ya, Terima')
+                    ->form([
+                        Forms\Components\Checkbox::make('dont_show_again')
+                            ->label('Jangan tampilkan lagi (Sesi ini)'),
+                    ])
+                    ->action(function (PendaftaranPelatihan $record, array $data) {
+                        if (($data['dont_show_again'] ?? false) === true) {
+                            session()->put('suppress_pendaftaran_approval', true);
+                        }
+
+                        // ✅ enum lowercase
+                        $record->update(['status_pendaftaran' => 'diterima']);
+
+                        try {
+                            $record->load([
+                                'peserta.instansi.cabangDinas',
+                                'peserta.user',
+                                'kompetensiPelatihan.kompetensi',
+                                'pelatihan',
+                                'penempatanAsramas.kamarPelatihan.kamar',
+                            ]);
+
+                            $kamarAsrama =
+                                $record->penempatanAsramaAktif?->kamarPelatihan?->kamar?->nomor_kamar
+                                    ? 'Kamar ' . $record->penempatanAsramaAktif->kamarPelatihan->kamar->nomor_kamar
+                                    : 'Belum Ditentukan';
+
+                            $emailData = [
+                                'id_peserta'     => $record->nomor_registrasi,
+                                'nama_peserta'   => $record->peserta?->nama ?? '-',
+                                'asal_lembaga'   => $record->peserta?->instansi?->asal_instansi ?? '-',
+                                'cabang_dinas'   => $record->peserta?->instansi?->cabangDinas?->nama ?? '-',
+                                'kompetensi'     => $record->kompetensiPelatihan?->kompetensi?->nama_kompetensi ?? '-',
+                                'kamar_asrama'   => $kamarAsrama,
+                                'waktu_mulai'    => $record->pelatihan?->tanggal_mulai
+                                    ? $record->pelatihan->tanggal_mulai->translatedFormat('d F Y')
+                                    : '-',
+                                'waktu_selesai'  => $record->pelatihan?->tanggal_selesai
+                                    ? $record->pelatihan->tanggal_selesai->translatedFormat('d F Y')
+                                    : '-',
+                                'lokasi'         => 'UPT PTKK Surabaya',
+                                'alamat_lengkap' => $record->pelatihan?->lokasi_text ?? 'Jl. Menur No. 123, Surabaya',
+                            ];
+
+                            $email = $record->peserta?->user?->email ?? null;
+                            if ($email) {
+                                \App\Services\EmailService::send(
+                                    $email,
+                                    'Informasi Pendaftaran dan Undangan Pelatihan',
+                                    '',
+                                    $emailData,
+                                    'template_surat.informasi_kegiatan'
+                                );
+                            }
+                        } catch (\Throwable $e) {
+                            Log::error('Failed to send accept email: ' . $e->getMessage());
+                        }
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Peserta diterima & Email dikirim')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+
+                Tables\Actions\Action::make('reject')
+                    ->label('Tolak')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('danger')
+                    ->requiresConfirmation(fn () => ! session()->get('suppress_pendaftaran_approval'))
+                    ->modalIcon('heroicon-o-x-mark')
+                    ->modalHeading('Tolak Peserta')
+                    ->modalDescription('Apakah Anda yakin ingin menolak peserta ini? Status akan berubah menjadi Ditolak.')
+                    ->modalSubmitActionLabel('Ya, Tolak')
+                    ->form([
+                        Forms\Components\Checkbox::make('dont_show_again')
+                            ->label('Jangan tampilkan lagi (Sesi ini)'),
+                    ])
+                    ->action(function (PendaftaranPelatihan $record, array $data) {
+                        if (($data['dont_show_again'] ?? false) === true) {
+                            session()->put('suppress_pendaftaran_approval', true);
+                        }
+
+                        // ✅ enum lowercase
+                        $record->update(['status_pendaftaran' => 'ditolak']);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Peserta ditolak')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
-                    ->icon('heroicon-o-pencil-square'),
+                    ->icon('heroicon-o-pencil-square')
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
 
                 Tables\Actions\DeleteAction::make()
                     ->label('Hapus')
-                    ->icon('heroicon-o-trash'),
+                    ->icon('heroicon-o-trash')
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

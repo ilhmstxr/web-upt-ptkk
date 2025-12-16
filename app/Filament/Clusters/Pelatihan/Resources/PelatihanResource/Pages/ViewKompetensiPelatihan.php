@@ -7,12 +7,47 @@ use App\Models\KompetensiPelatihan;
 use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\HtmlString;
 
 class ViewKompetensiPelatihan extends Page
 {
     protected static string $resource = PelatihanResource::class;
 
     protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-kompetensi-pelatihan';
+
+    public Pelatihan $record;
+    public KompetensiPelatihan $kompetensiPelatihan;
+
+    /**
+     * Route: /{record}/kompetensi/{kompetensi_pelatihan_id}
+     */
+    public function mount(Pelatihan $record, int $kompetensi_pelatihan_id): void
+    {
+        $this->record = $record;
+
+        $this->kompetensiPelatihan = KompetensiPelatihan::query()
+            ->with(['kompetensi', 'instrukturs'])
+            ->whereKey($kompetensi_pelatihan_id)
+            ->where('pelatihan_id', $record->getKey())
+            ->firstOrFail();
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('detail_monev')
+                ->label('Detail Survei Monev')
+                ->icon('heroicon-o-chart-pie')
+                ->color('primary')
+                ->url(fn () => ViewMonevDetail::getUrl([
+                    'record' => $this->record,
+                    'kompetensi_pelatihan_id' => $this->kompetensiPelatihan->getKey(),
+                ])),
+
+            $this->addParticipantAction(),
+            $this->addInstructorAction(),
+        ];
+    }
 
     public function addParticipantAction(): \Filament\Actions\Action
     {
@@ -28,9 +63,10 @@ class ViewKompetensiPelatihan extends Page
                     ->required(),
             ])
             ->action(function (array $data) {
-                // Check if already registered
-                $exists = \App\Models\PendaftaranPelatihan::where('peserta_id', $data['peserta_id'])
-                    ->where('kompetensi_pelatihan_id', $this->kompetensiPelatihan->id)
+                $exists = \App\Models\PendaftaranPelatihan::query()
+                    ->where('peserta_id', $data['peserta_id'])
+                    ->where('pelatihan_id', $this->record->getKey())
+                    ->where('kompetensi_pelatihan_id', $this->kompetensiPelatihan->getKey())
                     ->exists();
 
                 if ($exists) {
@@ -43,10 +79,10 @@ class ViewKompetensiPelatihan extends Page
 
                 \App\Models\PendaftaranPelatihan::create([
                     'peserta_id' => $data['peserta_id'],
-                    'pelatihan_id' => $this->record->id,
-                    'kompetensi_pelatihan_id' => $this->kompetensiPelatihan->id,
+                    'pelatihan_id' => $this->record->getKey(),
+                    'kompetensi_pelatihan_id' => $this->kompetensiPelatihan->getKey(),
                     'tanggal_pendaftaran' => now(),
-                    'status_pendaftaran' => 'Diterima',
+                    'status_pendaftaran' => 'diterima', // konsisten
                     'nomor_registrasi' => 'REG-' . time() . '-' . $data['peserta_id'],
                 ]);
 
@@ -55,18 +91,6 @@ class ViewKompetensiPelatihan extends Page
                     ->success()
                     ->send();
             });
-    }
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            \Filament\Actions\Action::make('detail_monev')
-                ->label('Detail Survei Monev')
-                ->icon('heroicon-o-chart-pie')
-                ->url(fn() => ViewMonevDetail::getUrl(['record' => $this->record->id, 'kompetensi_id' => $this->kompetensiPelatihan->id]))
-                ->color('primary'),
-            $this->addInstructorAction(),
-        ];
     }
 
     public function addInstructorAction(): \Filament\Actions\Action
@@ -79,14 +103,19 @@ class ViewKompetensiPelatihan extends Page
                     ->label('Pilih Instruktur')
                     ->options(\App\Models\Instruktur::query()->pluck('nama', 'id'))
                     ->searchable()
+                    ->multiple()
                     ->required(),
             ])
             ->action(function (array $data) {
-                // Replicate current record but with new instructor
-                $newRecord = $this->kompetensiPelatihan->replicate();
-                $newRecord->instruktur_id = $data['instruktur_id'];
-                // Ensure unique code or handle it? Assuming auto-increment ID handling
-                $newRecord->push(); // Save
+                $ids = $data['instruktur_id'] ?? [];
+
+                if (! empty($ids)) {
+                    // ✅ benar: tambahkan instruktur ke pivot, bukan replicate kompetensiPelatihan
+                    $this->kompetensiPelatihan->instrukturs()->syncWithoutDetaching($ids);
+                }
+
+                // refresh relasi biar tampilan langsung update
+                $this->kompetensiPelatihan->load('instrukturs');
 
                 \Filament\Notifications\Notification::make()
                     ->title('Instruktur berhasil ditambahkan')
@@ -95,44 +124,50 @@ class ViewKompetensiPelatihan extends Page
             });
     }
 
+    /**
+     * Tetap ada fitur lama: ambil semua sesi (kompetensi_pelatihan) yang satu kompetensi master
+     * dalam pelatihan ini beserta instruktursnya.
+     */
     public function getInstructorsProperty()
     {
-        return KompetensiPelatihan::with('instrukturs')
-            ->where('pelatihan_id', $this->record->id)
+        return KompetensiPelatihan::query()
+            ->with('instrukturs')
+            ->where('pelatihan_id', $this->record->getKey())
             ->where('kompetensi_id', $this->kompetensiPelatihan->kompetensi_id)
             ->get();
     }
 
-    public Pelatihan $record;
-    public KompetensiPelatihan $kompetensiPelatihan;
-
-    public function mount(Pelatihan $record, $kompetensi_id): void
-    {
-        $this->record = $record;
-        $this->kompetensiPelatihan = KompetensiPelatihan::findOrFail($kompetensi_id);
-    }
-
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
         return $this->record->nama_pelatihan;
     }
 
-    public function getSubheading(): string | Htmlable | null
+    public function getSubheading(): string|Htmlable|null
     {
-        return new \Illuminate\Support\HtmlString(\Illuminate\Support\Facades\Blade::render(<<<'BLADE'
+        return new HtmlString(\Illuminate\Support\Facades\Blade::render(<<<'BLADE'
             <div class="flex flex-col gap-2 mt-2">
-                <h2 class="text-xl font-bold text-primary-600 dark:text-primary-400">{{ $kompetensi->kompetensi->nama_kompetensi ?? 'Nama Kompetensi' }}</h2>
+                <h2 class="text-xl font-bold text-primary-600 dark:text-primary-400">
+                    {{ $kompetensi->kompetensi->nama_kompetensi ?? 'Nama Kompetensi' }}
+                </h2>
+
                 <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                     <span class="flex items-center gap-1">
-                        <x-heroicon-o-clock class="w-4 h-4" /> 
-                        {{ \Carbon\Carbon::parse($kompetensi->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($kompetensi->jam_selesai)->format('H:i') }} WIB
+                        <x-heroicon-o-clock class="w-4 h-4" />
+                        {{ $kompetensi->jam_mulai ? \Carbon\Carbon::parse($kompetensi->jam_mulai)->format('H:i') : '-' }}
+                        -
+                        {{ $kompetensi->jam_selesai ? \Carbon\Carbon::parse($kompetensi->jam_selesai)->format('H:i') : '-' }}
+                        WIB
                     </span>
+
                     <span class="text-gray-300 dark:text-gray-600">|</span>
+
                     <span class="flex items-center gap-1">
-                        <x-heroicon-o-map-pin class="w-4 h-4" /> 
+                        <x-heroicon-o-map-pin class="w-4 h-4" />
                         {{ $kompetensi->lokasi ?? 'Ruang Kelas' }}
                     </span>
+
                     <span class="text-gray-300 dark:text-gray-600">|</span>
+
                     <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2.5 py-0.5 rounded-full font-medium border border-green-200 dark:border-green-800">
                         Sedang Berlangsung
                     </span>
@@ -141,30 +176,41 @@ class ViewKompetensiPelatihan extends Page
         BLADE, ['kompetensi' => $this->kompetensiPelatihan]));
     }
 
+    /**
+     * Fitur lama tetap: daftar tes per sesi (kompetensi_pelatihan)
+     */
     public function getTesProperty()
     {
-        return \App\Models\Tes::where('pelatihan_id', $this->record->id)
-            ->where('kompetensi_pelatihan_id', $this->kompetensiPelatihan->id)
+        return \App\Models\Tes::query()
+            ->where('pelatihan_id', $this->record->getKey())
+            ->where('kompetensi_pelatihan_id', $this->kompetensiPelatihan->getKey())
             ->get();
     }
 
+    /**
+     * Fitur lama tetap: peserta di sesi ini
+     */
     public function getPesertaProperty()
     {
         return $this->kompetensiPelatihan->peserta;
     }
 
+    /**
+     * Fitur lama tetap: statistik pretest/posttest/monev
+     */
     public function getStatistikProperty()
     {
         $tes = $this->tes;
 
         $pretestIds = $tes->where('tipe', 'pre-test')->pluck('id');
         $posttestIds = $tes->where('tipe', 'post-test')->pluck('id');
-        $surveiIds = $tes->where('tipe', 'survei')->pluck('id');
+        $surveiIds  = $tes->where('tipe', 'survei')->pluck('id');
 
-        // Pretest Stats
-        $pretestAttempts = \App\Models\Percobaan::whereIn('tes_id', $pretestIds)->get();
+        // Pretest
+        $pretestAttempts = \App\Models\Percobaan::query()->whereIn('tes_id', $pretestIds)->get();
         $pretestAvg = $pretestAttempts->avg('skor') ?? 0;
         $pretestUniqueCount = $pretestAttempts->pluck('peserta_id')->unique()->count();
+
         $pretestStats = [
             'avg' => number_format($pretestAvg, 1),
             'max' => $pretestAttempts->max('skor') ?? 0,
@@ -172,30 +218,32 @@ class ViewKompetensiPelatihan extends Page
             'count' => $pretestUniqueCount,
         ];
 
-        // Posttest Stats
-        $posttestAttempts = \App\Models\Percobaan::whereIn('tes_id', $posttestIds)->get();
+        // Posttest
+        $posttestAttempts = \App\Models\Percobaan::query()->whereIn('tes_id', $posttestIds)->get();
         $posttestAvg = $posttestAttempts->avg('skor') ?? 0;
         $posttestUniqueCount = $posttestAttempts->pluck('peserta_id')->unique()->count();
+
         $posttestStats = [
             'avg' => number_format($posttestAvg, 1),
             'lulus' => $posttestAttempts->where('lulus', true)->pluck('peserta_id')->unique()->count(),
             'remedial' => $posttestAttempts->where('lulus', false)->pluck('peserta_id')->unique()->count(),
-            'kenaikan' => number_format($posttestAvg - $pretestAvg, 1), // Simple diff of averages
+            'kenaikan' => number_format($posttestAvg - $pretestAvg, 1),
             'count' => $posttestUniqueCount,
         ];
 
-        // Monev Stats
-        $surveiAttempts = \App\Models\Percobaan::whereIn('tes_id', $surveiIds)->get();
+        // Monev (skala 0-100 => 0-5)
+        $surveiAttempts = \App\Models\Percobaan::query()->whereIn('tes_id', $surveiIds)->get();
         $surveiAvg = $surveiAttempts->avg('skor') ?? 0;
-        // Convert 0-100 scale to 0-5 scale
         $surveiScale5 = ($surveiAvg / 20);
         $surveiUniqueCount = $surveiAttempts->pluck('peserta_id')->unique()->count();
+
+        $totalPeserta = $this->peserta->count();
 
         $monevStats = [
             'avg' => number_format($surveiScale5, 1),
             'responden' => $surveiUniqueCount,
-            'total_peserta' => $this->peserta->count(),
-            'percentage' => $this->peserta->count() > 0 ? ($surveiUniqueCount / $this->peserta->count()) * 100 : 0,
+            'total_peserta' => $totalPeserta,
+            'percentage' => $totalPeserta > 0 ? ($surveiUniqueCount / $totalPeserta) * 100 : 0,
         ];
 
         return [

@@ -11,7 +11,7 @@ class Kamar extends Model
 {
     use HasFactory;
 
-    protected $table = 'kamar'; // ✅ sesuai migration kamu
+    protected $table = 'kamars'; // Updated to match migration 'kamars'
 
     protected $fillable = [
         'asrama_id',

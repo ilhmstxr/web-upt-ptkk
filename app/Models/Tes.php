@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Validation\ValidationException;
 
 class Tes extends Model
 {
@@ -24,30 +27,29 @@ class Tes extends Model
 
     public function kompetensiPelatihan()
     {
-        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
+<<<<<<<<< Temporary merge branch 1
+        return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
+=========
+        return $this->belongsTo(Kompetensi::class, 'kompetensi_pelatihan_id');
+>>>>>>>>> Temporary merge branch 2
     }
 
-    public function pelatihan()
+    public function pelatihan(): BelongsTo
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
-    /**
-     * Semua pertanyaan ada di tabel pertanyaan (one-to-many).
-     * Pre/post: kelompok_pertanyaan_id NULL
-     * Survei  : masuk kelompok
-     */
-    public function pertanyaan()
+    public function pertanyaan(): HasMany
     {
         return $this->hasMany(Pertanyaan::class, 'tes_id');
     }
 
-    public function percobaan()
+    public function percobaans(): HasMany
     {
         return $this->hasMany(Percobaan::class, 'tes_id');
     }
 
-    public function tipeTes()
+    public function tipeTes(): HasMany
     {
         return $this->hasMany(TipeTes::class, 'tes_id');
     }

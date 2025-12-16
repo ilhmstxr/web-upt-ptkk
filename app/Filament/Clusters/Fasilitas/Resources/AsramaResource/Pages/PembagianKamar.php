@@ -71,7 +71,7 @@ class PembagianKamar extends Page
         $peserta = Peserta::find($pesertaId);
         $kamar = Kamar::with('asrama')->withCount('pesertas')->find($kamarId);
 
-        if (!$peserta || !$kamar) {
+        if (!$peserta || !$kamars) {
             Filament::notify('danger', 'Data peserta atau kamar tidak ditemukan.', true);
             return;
         }
@@ -89,8 +89,8 @@ class PembagianKamar extends Page
         }
 
         // Validasi gender: jika asrama bukan Campur, harus sama gender
-        if ($kamar->asrama && $kamar->asrama->gender !== 'Campur' && $kamar->asrama->gender !== $peserta->jenis_kelamin) {
-            Filament::notify('danger', 'Kamar ini khusus untuk gender: ' . $kamar->asrama->gender, true);
+        if ($kamars->asrama && $kamars->asrama->gender !== 'Campur' && $kamars->asramas->gender !== $peserta->jenis_kelamin) {
+            Filament::notify('danger', 'Kamar ini khusus untuk gender: ' . $kamars->asramas->gender, true);
             return;
         }
 
