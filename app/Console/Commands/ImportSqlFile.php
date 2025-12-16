@@ -109,7 +109,6 @@ class ImportSqlFile extends Command
 
             DB::transaction(function () use ($tableOrder, $groupedInserts) {
                 $this->info('Starting database import...');
-                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
                 // $tableOrder sekarang berisi $tableOrder1 atau $tableOrder2
                 // sesuai hasil deteksi di atas.
@@ -121,7 +120,6 @@ class ImportSqlFile extends Command
                         }
                     }
                 }
-                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             });
 
             $this->info('🎉 SQL file imported successfully!');

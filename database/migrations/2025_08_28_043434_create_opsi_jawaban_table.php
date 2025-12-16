@@ -13,18 +13,14 @@ return new class extends Migration
     {
         Schema::create('opsi_jawaban', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pertanyaan_id')
-                ->constrained('pertanyaan')
-                ->cascadeOnDelete();
-
+            $table->foreignId('pertanyaan_id')->constrained('pertanyaan')->onDelete('cascade');
             $table->text('teks_opsi');
             $table->string('gambar')->nullable();
             $table->boolean('apakah_benar')->default(false);
-
-            $table->index(['pertanyaan_id', 'apakah_benar']);
+            // IMPROVE: tambahkan index untuk pertanyaan_id dan apakah_benar
+            // $table->index(['pertanyaan_id', 'apakah_benar']);
             $table->timestamps();
         });
-
     }
 
     /**

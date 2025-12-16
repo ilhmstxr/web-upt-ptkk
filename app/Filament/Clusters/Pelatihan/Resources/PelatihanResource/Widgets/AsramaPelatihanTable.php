@@ -56,13 +56,13 @@ class AsramaPelatihanTable extends BaseWidget
                     ->searchable()
                     ->wrap(),
 
-                Tables\Columns\TextColumn::make('penempatanAsrama.kamars.nama_kamar')
+                Tables\Columns\TextColumn::make('penempatanAsrama.kamar.nama_kamar')
                     ->label('Kamar')
                     ->formatStateUsing(fn ($state) => $state ?: 'Belum dibagi')
                     ->badge()
                     ->color(fn ($state) => $state ? 'success' : 'gray'),
 
-                Tables\Columns\TextColumn::make('penempatanAsrama.kamars.asrama.nama_asrama')
+                Tables\Columns\TextColumn::make('penempatanAsrama.kamar.asrama.nama_asrama')
                     ->label('Asrama')
                     ->formatStateUsing(fn ($state) => $state ?: 'Belum dibagi')
                     ->badge()
@@ -89,7 +89,7 @@ class AsramaPelatihanTable extends BaseWidget
 
                         \Filament\Forms\Components\Select::make('kamar_id')
                             ->label('Kamar')
-                            ->relationship('kamars', 'nama_kamar')
+                            ->relationship('kamar', 'nama_kamar')
                             ->searchable()
                             ->preload()
                             ->required(),

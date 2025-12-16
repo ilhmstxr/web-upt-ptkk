@@ -279,85 +279,92 @@
   @endisset
 
   {{-- SECTION: Sertifikasi Berbasis KKNI Bertaraf Nasional --}}
-@isset($sertifikasi)
-<section id="sertifikasi-kkni" class="relative bg-[#F1F9FC]">
-  <div class="section-container">
+  @isset($sertifikasi)
+  <section id="sertifikasi-kkni" class="relative bg-[#F1F9FC]">
+    <div class="section-container">
 
-    @php
-      $galeriSertifikasi = is_array($sertifikasi->galeri)
-        ? $sertifikasi->galeri
-        : (json_decode($sertifikasi->galeri ?? '[]', true) ?? []);
-    @endphp
+      @php
+        $galeriSertifikasi = is_array($sertifikasi->galeri)
+          ? $sertifikasi->galeri
+          : (json_decode($sertifikasi->galeri ?? '[]', true) ?? []);
+      @endphp
 
-    {{-- ========== MOBILE (HP) ========== --}}
-    <div class="block md:hidden mb-8">
+      {{-- MOBILE --}}
+      <div class="block md:hidden mb-8">
 
-      {{-- Judul --}}
-      <h2 class="font-['Volkhov'] font-bold text-[24px]
-                 text-[#1524AF] yellow-stroke mb-3 text-center">
-        {{ $sertifikasi->judul }}
-      </h2>
-
-      {{-- Gambar Utama --}}
-      @if($sertifikasi->hero_image)
-        <div class="flex justify-center mb-3">
-          <img src="{{ asset('storage/' . $sertifikasi->hero_image) }}"
-               alt="{{ $sertifikasi->judul }}"
-               class="w-full h-[330px] object-cover border-[3px] border-[#1524AF] rounded-xl"
-               loading="lazy">
-        </div>
-      @endif
-
-      {{-- Deskripsi --}}
-      <p class="font-[Montserrat] text-[15px]
-                text-[#081526] leading-relaxed text-justify">
-        {{ $sertifikasi->deskripsi }}
-      </p>
-    </div>
-
-    {{-- ========== TABLET & DESKTOP (MD+) ========== --}}
-    <div class="hidden md:grid md:grid-cols-2 gap-8 md:gap-14 items-center mb-8">
-
-      {{-- KIRI: Judul + Deskripsi --}}
-      <div>
-        <h2 class="font-['Volkhov'] font-bold
-                   md:text-[24px] lg:text-[26px]
-                   text-[#1524AF] yellow-stroke mb-3">
+        <h2 class="font-['Volkhov'] font-bold text-[24px]
+                   text-[#1524AF] yellow-stroke leading-tight mb-3 text-center">
           {{ $sertifikasi->judul }}
         </h2>
 
-        <p class="font-[Montserrat]
-                  md:text-[15px] lg:text-[17px]
-                  text-[#081526] leading-relaxed text-justify">
-          {{ $sertifikasi->deskripsi }}
-        </p>
-      </div>
+        <div class="flex justify-center mb-4">
+          @if($sertifikasi->hero_image)
+            <img src="{{ asset('storage/' . $sertifikasi->hero_image) }}"
+                 alt="{{ $sertifikasi->judul }}"
+                 class="w-full h-[330px] object-cover border-[3px] border-[#1524AF] rounded-xl"
+                 loading="lazy">
+          @endif
+        </div>
 
-      {{-- KANAN: Gambar Utama --}}
-      <div class="flex justify-center md:justify-end">
-        @if($sertifikasi->hero_image)
-          <img src="{{ asset('storage/' . $sertifikasi->hero_image) }}"
-               alt="{{ $sertifikasi->judul }}"
-               class="w-full h-[330px] object-cover border-[3px] border-[#1524AF] rounded-xl"
+        <div class="flex gap-4 items-center">
+          <img src="{{ asset('images/profil/logosertifikasi.svg') }}"
+               alt="Logo Sertifikasi KKNI"
+               class="w-[40px] h-auto object-contain shrink-0"
                loading="lazy">
-        @endif
+          <p class="font-[Montserrat] text-[16px]
+                    text-[#081526] leading-relaxed text-justify">
+            {{ $sertifikasi->deskripsi }}
+          </p>
+        </div>
       </div>
 
-    </div>
+      {{-- TABLET & DESKTOP --}}
+      <div class="hidden md:grid grid-cols-12 gap-6 items-start mb-10">
 
-    {{-- GALERI BAWAH --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-      @foreach($galeriSertifikasi as $foto)
-        <img src="{{ asset('storage/' . $foto) }}"
-             alt="Foto {{ $sertifikasi->judul }}"
-             class="w-full h-[220px] object-cover border-[3px] border-[#1524AF] rounded-xl"
-             loading="lazy">
-      @endforeach
-    </div>
+        {{-- LOGO --}}
+        <div class="flex justify-center md:justify-start md:col-span-1">
+          <img src="{{ asset('images/profil/logosertifikasi.svg') }}"
+               alt="Logo Sertifikasi KKNI"
+               class="w-fit md:w-[100px] md:max-h-[330px] object-contain"
+               loading="lazy">
+        </div>
 
-  </div>
-</section>
-@endisset
+        {{-- TEKS --}}
+        <div class="md:col-span-5 md:pl-4 lg:pl-6 md:pr-6">
+          <h2 class="font-['Volkhov'] font-bold text-[24px] lg:text-[26px]
+                     text-[#1524AF] yellow-stroke leading-tight mb-3">
+            {{ $sertifikasi->judul }}
+          </h2>
+          <p class="font-[Montserrat] text-[16px] lg:text-[17px]
+                    text-[#081526] leading-relaxed text-justify">
+            {{ $sertifikasi->deskripsi }}
+          </p>
+        </div>
+
+        {{-- GAMBAR UTAMA --}}
+        <div class="flex justify-center md:justify-end md:col-span-6">
+          @if($sertifikasi->hero_image)
+            <img src="{{ asset('storage/' . $sertifikasi->hero_image) }}"
+                 alt="{{ $sertifikasi->judul }}"
+                 class="w-full max-h-[330px] object-cover border-[3px] border-[#1524AF] rounded-xl"
+                 loading="lazy">
+          @endif
+        </div>
+
+      </div>
+
+      {{-- FOTO BAWAH --}}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        @foreach($galeriSertifikasi as $foto)
+          <img src="{{ asset('storage/' . $foto) }}"
+               alt="Foto {{ $sertifikasi->judul }}"
+               class="w-full h-[220px] object-cover border-[3px] border-[#1524AF] rounded-xl"
+               loading="lazy">
+        @endforeach
+      </div>
+    </div>
+  </section>
+  @endisset
 
   {{-- FOOTER --}}
   @include('components.layouts.app.footer')

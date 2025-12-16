@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Fasilitas\Resources\PenempatanAsramaResource\Rel
 
 use App\Models\PendaftaranPelatihan;
 use App\Models\Peserta;
+use App\Models\Pelatihan;
 use App\Services\AsramaAllocator;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -20,18 +21,6 @@ class PesertaPenempatanRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
-                $owner = $this->getOwnerRecord();
-                $pelatihanId = $owner->pelatihan_id ?? null;
-
-                $query
-                    ->when($pelatihanId, fn (Builder $q) => $q->where('pelatihan_id', $pelatihanId))
-                    ->with([
-                        'peserta.instansi',
-                        'penempatanAsramas.kamarPelatihan.kamar.asrama',
-                    ]);
-            })
-
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_registrasi')
                     ->label('Kode Regis')
@@ -69,34 +58,22 @@ class PesertaPenempatanRelationManager extends RelationManager
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('asrama_kamar')
-                    ->label('Asrama / Kamar')
-                    ->state(function (PendaftaranPelatihan $row) {
-                        $penempatan = $row->relationLoaded('penempatanAsramaAktif')
-                            ? $row->penempatanAsramaAktif
-                            : $row->penempatanAsramaAktif()->first();
+                ->label('Asrama / Kamar')
+                ->state(function (PendaftaranPelatihan $record) {
+                    $penempatan = $record->penempatanAsramaAktif();
 
-                        if (! $penempatan) return 'Belum dibagi';
+                    if (! $penempatan || ! $penempatan->kamar) {
+                        return 'Belum dibagi';
+                    }
 
-                        $kamar = $penempatan->kamarPelatihan?->kamar;
-                        if (! $kamar) return 'Belum dibagi';
+                    $asramaName = $penempatan->kamar->asrama->name ?? 'Asrama';
+                    $kamarNo    = $penempatan->kamar->nomor_kamar ?? '-';
 
-                        $asramaName =
-                            $kamar->asrama?->nama
-                            ?? $kamar->asrama?->name
-                            ?? $kamar->asrama?->nama_asrama
-                            ?? 'Asrama';
+                    return "{$asramaName} - Kamar {$kamarNo}";
+                })
+                ->wrap(),
 
-                        $kamarNo =
-                            $kamar->nomor_kamar
-                            ?? $kamar->nomor
-                            ?? $kamar->no_kamar
-                            ?? '-';
-
-                        return "{$asramaName} - Kamar {$kamarNo}";
-                    })
-                    ->wrap(),
             ])
-
             ->headerActions([
                 TableAction::make('otomasi')
                     ->label('Otomasi Penempatan Asrama')
@@ -104,28 +81,21 @@ class PesertaPenempatanRelationManager extends RelationManager
                     ->color('success')
                     ->requiresConfirmation()
                     ->action(function (AsramaAllocator $allocator) {
-                        $owner = $this->getOwnerRecord();
-                        $pelatihanId = $owner->pelatihan_id ?? null;
 
-                        if (! $pelatihanId) {
+                        /** @var Pelatihan $pelatihan */
+                        $pelatihan = $this->getOwnerRecord();
+                        if (! $pelatihan) {
                             Notification::make()
-                                ->title('Pelatihan tidak ditemukan pada record Penempatan Asrama')
+                                ->title('Pelatihan tidak ditemukan')
                                 ->danger()
                                 ->send();
                             return;
                         }
 
-                        $pesertaIds = PendaftaranPelatihan::query()
-                            ->where('pelatihan_id', $pelatihanId)
-                            ->pluck('peserta_id')
-                            ->filter()
-                            ->unique()
-                            ->values();
+                        $pendaftaranIds = PendaftaranPelatihan::where('pelatihan_id', $pelatihan->id)
+                            ->pluck('peserta_id');
 
-                        $pesertaList = Peserta::query()
-                            ->whereIn('id', $pesertaIds)
-                            ->get();
-
+                        $pesertaList = Peserta::whereIn('id', $pendaftaranIds)->get();
                         if ($pesertaList->isEmpty()) {
                             Notification::make()
                                 ->title('Tidak ada peserta untuk pelatihan ini')
@@ -134,25 +104,34 @@ class PesertaPenempatanRelationManager extends RelationManager
                             return;
                         }
 
-                        $kamarConfig = session('kamars') ?? config('kamars');
+                        $kamarConfig = session('kamar') ?? config('kamar');
+                        $allocator->generateRoomsFromConfig($pelatihan->id, $kamarConfig);
 
-                        $allocator->generateRoomsFromConfig($pelatihanId, $kamarConfig);
-                        $result = $allocator->allocatePesertaPerPelatihan($pelatihanId);
+                        $result = $allocator->allocatePesertaPerPelatihan($pelatihan->id);
 
                         $this->dispatch('$refresh');
 
                         Notification::make()
                             ->title('Otomasi selesai')
-                            ->body(
-                                'OK=' . ($result['ok'] ?? 0) .
-                                ' | skipped=' . ($result['skipped_already_assigned'] ?? 0) .
-                                ' | gagal=' . ($result['failed_full'] ?? 0)
-                            )
+                            ->body("OK={$result['ok']} | skipped={$result['skipped_already_assigned']} | gagal={$result['failed_full']}")
                             ->success()
                             ->send();
                     }),
             ])
             ->actions([])
             ->bulkActions([]);
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        /** @var Pelatihan $pelatihan */
+        $pelatihan = $this->getOwnerRecord();
+
+        return PendaftaranPelatihan::query()
+            ->where('pelatihan_id', $pelatihan->id)
+            ->with([
+                'peserta.instansi',
+                'penempatanAsrama.kamar.asrama',
+            ]);
     }
 }

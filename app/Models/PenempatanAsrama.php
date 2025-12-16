@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PenempatanAsrama extends Model
 {
     use HasFactory;
 
-    protected $table = 'penempatan_asramas';
+    protected $table = 'penempatan_asrama';
 
     protected $fillable = [
         'peserta_id',
@@ -21,8 +20,8 @@ class PenempatanAsrama extends Model
     ];
 
     protected $casts = [
-        'peserta_id'         => 'integer',
-        'pelatihan_id'       => 'integer',
+        'peserta_id' => 'integer',
+        'pelatihan_id' => 'integer',
         'kamar_pelatihan_id' => 'integer',
     ];
 
@@ -39,10 +38,5 @@ class PenempatanAsrama extends Model
     public function kamarPelatihan(): BelongsTo
     {
         return $this->belongsTo(KamarPelatihan::class, 'kamar_pelatihan_id');
-    }
-
-    public function scopePenghuniAktif(Builder $query): Builder
-    {
-        return $query->whereHas('pelatihan', fn (Builder $q) => $q->where('status', 'aktif'));
     }
 }

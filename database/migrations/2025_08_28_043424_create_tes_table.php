@@ -13,16 +13,18 @@ return new class extends Migration
             $table->string('judul');
             $table->text('deskripsi')->nullable();
 
-            $table->enum('tipe', ['pre-test', 'post-test', 'survei']);
+            $table->enum('tipe', ['post-test', 'pre-test', 'survei']);
 
             $table->foreignId('kompetensi_pelatihan_id')
                 ->nullable()
                 ->constrained('kompetensi_pelatihan')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('pelatihan_id')
                 ->constrained('pelatihan')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->integer('durasi_menit')->nullable();
             $table->timestamp('tanggal_mulai')->nullable();

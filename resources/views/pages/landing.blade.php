@@ -460,113 +460,102 @@ $latestBeritas = Berita::query()
   })();
 </script>
 
-{{-- SECTION: Cerita Kami (DINAMIS + FALLBACK DEFAULT) --}}
-@php
-    // Anggap "ada data" kalau minimal salah satu terisi
-    $hasCerita = !empty($cerita)
-        && (filled($cerita->title) || filled($cerita->excerpt) || filled($cerita->content) || filled($cerita->image_url));
-
-    // ===== IMAGE URL =====
-    if ($hasCerita && filled($cerita->image_url)) {
-        $imgSrc = \Illuminate\Support\Str::startsWith($cerita->image_url, ['http://', 'https://', '/'])
-            ? $cerita->image_url
-            : \Illuminate\Support\Facades\Storage::url($cerita->image_url);
-    } else {
-        $imgSrc = asset('images/cerita-kami.jpg'); // fallback
-    }
-
-    // ===== TITLE =====
-    $title = ($hasCerita && filled($cerita->title))
-        ? $cerita->title
-        : 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan';
-
-    // ===== CONTENT (HTML dari rich editor) =====
-    $contentHtml = ($hasCerita && filled($cerita->content)) ? $cerita->content : null;
-
-    if ($contentHtml) {
-        $contentHtml = preg_replace('/(&nbsp;)+/i', ' ', $contentHtml);
-    }
-
-    $fallbackHtml = '
-      <p>UPT PTKK merupakan salah satu Unit Pelaksana Teknis di bawah Dinas Pendidikan Provinsi Jawa Timur yang memiliki tugas dan fungsi dalam menyediakan fasilitas pelatihan berbasis kompetensi. Sebagai pelopor pelatihan vokasi, lembaga ini terus memperkuat perannya melalui penyelenggaraan program-program yang relevan, progresif, dan berdampak nyata.</p>
-      <p>Selain itu UPT PTKK diberi kepercayaan oleh Lembaga Sertifikasi Kompetensi (LSK) berbasis KKNI di bawah naungan KEMENDIKBUD Vokasi sebagai Tempat Uji Kompetensi (TUK) bidang keahlian sebagai berikut:</p>
-      <ol>
-        <li>Tata Boga</li>
-        <li>Tata Busana</li>
-        <li>Tata Kecantikan</li>
-        <li>Teknik Elektronika</li>
-        <li>Teknik Otomotif</li>
-        <li>Fotografi</li>
-        <li>Teknik Informasi Komunikasi (Web Desain/RPL, Desain Grafis, Animasi, Konten Kreator/Videografi)</li>
-      </ol>
-    ';
-
-    $bodyHtml = $contentHtml ?: $fallbackHtml;
-
-    $ceritaUrl = url('/cerita-kami');
-@endphp
-
-
+{{-- SECTION: Cerita Kami (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
-
-      {{-- KIRI: gambar (CENTER terhadap tinggi konten kanan) --}}
-      <div class="shrink-0 md:w-[420px] flex justify-center md:justify-start md:items-center">
+    <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16">
+      {{-- Kolom Kiri: Foto --}}
+      <div class="shrink-0 flex justify-center md:justify-start">
         <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF]
-                    w-[300px] md:w-[380px] lg:w-[420px] aspect-[3/2] bg-slate-200">
-          <img
-            src="{{ $imgSrc }}"
-            alt="{{ $title }}"
-            class="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
+                    w-[300px] md:w-[360px] lg:w-[400px] aspect-[3/2] bg-slate-200">
+          @if(!empty($cerita) && $cerita->image_url)
+           <img
+  src="{{ (!empty($cerita) && $cerita->image_url) ? $cerita->image_url : asset('images/cerita-kami.svg') }}"
+  alt="{{ $cerita->title ?? 'Cerita Kami' }}"
+  class="absolute inset-0 w-full h-full object-cover"
+/>
+          @else
+            {{-- fallback static --}}
+           <img
+  src="{{ asset('images/cerita-kami.svg') }}"
+  alt="Kegiatan UPT PTKK"
+  class="absolute inset-0 w-full h-full object-cover"
+/>
+          @endif
         </div>
       </div>
 
-      {{-- KANAN: konten --}}
+      {{-- Kolom Kanan: Teks --}}
       <div class="flex-1 flex flex-col w-full items-center md:items-start">
-        {{-- Badge --}}
+        {{-- Badge Cerita Kami --}}
         <div class="w-full flex mb-[15px] justify-center md:justify-start">
-          <span class="inline-flex items-center px-4 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
-                       font-[Volkhov] font-bold text-base md:text-lg lg:text-[20px] shadow-sm leading-tight">
-            Cerita Kami
-          </span>
+          <span class="inline-flex items-center
+                    px-0 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
+                    font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+                    Cerita Kami</span>
         </div>
 
-        {{-- Title --}}
-        <h2 class="mb-[15px] font-[Volkhov] font-bold text-[22px] md:text-[26px] leading-tight
-                   text-[#1524AF] heading-stroke max-w-[32ch] text-center md:text-left">
-          {{ $title }}
-        </h2>
+       {{-- Heading (tetap / statis) --}}
+          <h2 class="mb-[15px] font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch] text-center md:text-left">
+            UPT Pengembangan Teknis Dan Keterampilan Kejuruan
+          </h2>
 
-        {{-- Body: render HTML (dengan styling prose biar list rapi) --}}
-        <div class="prose max-w-none prose-p:my-3 prose-ol:my-3 prose-li:my-1
-                    prose-p:text-[#081526] prose-li:text-[#081526]
-                    prose-p:font-[Montserrat] prose-li:font-[Montserrat]
-                    prose-p:font-medium prose-li:font-medium
-                    prose-p:text-[14px] md:prose-p:text-[15px] lg:prose-p:text-[16px]">
-          {!! $bodyHtml !!}
-        </div>
 
-        {{-- Button --}}
+                  {{-- Excerpt / Content ringkas --}}
+                <p class="mb-[15px] md:mb-[28px] font-['Montserrat'] font-medium text-[#081526] leading-snug text-[14px] md:text-[15px] lg:text-[16px] text-justify">
+            @if(!empty($cerita) && !empty($cerita->excerpt))
+              {{ $cerita->excerpt }}
+            @elseif(!empty($cerita) && !empty($cerita->content))
+              {{ strip_tags($cerita->content) }}
+            @else
+              Adalah salah satu Unit Pelaksana Teknis dari Dinas Pendidikan Provinsi Jawa Timur yang mempunyai tugas dan fungsi
+              memberikan fasilitas melalui pelatihan berbasis kompetensi dengan dilengkapi Tempat Uji Kompetensi (TUK) yang didukung
+              oleh Lembaga Sertifikasi Kompetensi (LSK) di beberapa kompetensi keahlian strategis. Sebagai pelopor pelatihan vokasi,
+              UPT PTKK terus memperkuat posisinya dengan menghadirkan program yang relevan, progresif, dan berdampak nyata.
+              Melalui upaya tersebut, UPT PTKK berkomitmen mencetak lulusan yang terampil sehingga mampu berkontribusi pada
+              kemajuan pendidikan di Jawa Timur.
+            @endif
+          </p>
+
+        {{-- Tombol: ke halaman cerita lengkap (jika ada slug / route) --}}
+        @php
+          $ceritaUrl = '#';
+          if(!empty($cerita)) {
+              if(!empty($cerita->slug) && \Illuminate\Support\Facades\Route::has('cerita-kami.show')) {
+                  $ceritaUrl = route('cerita-kami.show', $cerita->slug);
+              } elseif(\Illuminate\Support\Facades\Route::has('cerita-kami')) {
+                  $ceritaUrl = route('cerita-kami');
+              } elseif(\Illuminate\Support\Facades\Route::has('story')) {
+                  $ceritaUrl = route('story');
+              } else {
+                  $ceritaUrl = url('/cerita-kami');
+              }
+          } else {
+              $ceritaUrl = \Illuminate\Support\Facades\Route::has('cerita-kami') ? route('cerita-kami') : '#';
+          }
+        @endphp
+
         <a href="{{ $ceritaUrl }}"
-           class="mt-4 inline-flex items-center justify-center gap-2 w-max
-                  px-4 py-2 rounded-lg bg-[#1524AF] text-white font-[Montserrat] font-medium
-                  text-[14px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all">
+          class=" inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-1
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
+                  text-[14px] md:text-[15px] lg:text-[16px]
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+
           <span class="leading-none">Cari tahu lebih</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+          {{-- Ikon diperbesar responsif (w-4 sm:w-5 md:w-6) --}}
+          <svg xmlns="http://www.w3.org/2000/svg"
+              class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
           </svg>
         </a>
-
       </div>
     </div>
   </div>
 </section>
 {{-- /SECTION: Cerita Kami --}}
-
-
 
 {{-- SECTION: Jatim Bangkit (oval slim, bigger icons, tighter gap) --}}
 <section class="relative bg-[#F1F9FC]">
@@ -725,6 +714,7 @@ $latestBeritas = Berita::query()
             $row = $collection->firstWhere('kelas', $key);
             if (!$row) return null;
 
+            // photos di Filament biasanya array; tapi kita amankan juga untuk string JSON
             $photos = $row->photos;
             if (is_string($photos)) {
                 $decoded = json_decode($photos, true);
@@ -732,29 +722,12 @@ $latestBeritas = Berita::query()
             }
             if (!is_array($photos)) $photos = [];
 
-$files = collect($photos)
-    ->filter(fn ($p) => is_string($p) && trim($p) !== '')
-    ->map(function ($p) {
-        $p = trim($p);
-
-        // kalau sudah full URL
-        if (Str::startsWith($p, ['http://', 'https://'])) {
-            return $p;
-        }
-
-        // kalau sudah /storage/xxx
-        if (Str::startsWith($p, '/storage/')) {
-            return $p;
-        }
-
-        // kalau masih ada prefix public/
-        $p = Str::replaceFirst('public/', '', $p);
-
-        // default: path relatif storage public
-        return asset('storage/' . $p);
-    })
-    ->values()
-    ->toArray();
+            // convert ke URL publik
+            $files = collect($photos)
+                ->filter(fn ($p) => is_string($p) && trim($p) !== '')
+                ->map(fn ($p) => \Illuminate\Support\Facades\Storage::disk('public')->url($p))
+                ->values()
+                ->toArray();
 
             return [
                 'key'   => $key,
@@ -773,9 +746,15 @@ $files = collect($photos)
         @media (prefers-reduced-motion: reduce) {
             #sorotanPelatihan .js-marquee { animation: none !important; transform: none !important; }
         }
-        #sorotanPelatihan .pane-enter { opacity: 0; transform: translateY(6px); }
+
+        /* animasi saat ganti kategori */
+        #sorotanPelatihan .pane-enter {
+            opacity: 0;
+            transform: translateY(6px);
+        }
         #sorotanPelatihan .pane-enter-active {
-            opacity: 1; transform: translateY(0);
+            opacity: 1;
+            transform: translateY(0);
             transition: opacity 220ms ease, transform 220ms ease;
         }
     </style>
@@ -823,6 +802,7 @@ $files = collect($photos)
             @foreach($sorotanData as $i => $cat)
                 @php
                     $files = $cat['files'] ?? [];
+                    // kalau files kosong: tetap render placeholder biar layout gak jebol
                     $hasFiles = is_array($files) && count($files) > 0;
                 @endphp
 
@@ -847,6 +827,7 @@ $files = collect($photos)
                                     @endforeach
                                 @endfor
                             @else
+                                {{-- fallback kalau admin belum upload --}}
                                 @for($x = 0; $x < 6; $x++)
                                     <div class="relative h-[130px] md:h-[150px] lg:h-[170px]
                                                 w-[220px] md:w-[260px] lg:w-[280px]
@@ -858,6 +839,7 @@ $files = collect($photos)
                             @endif
                         </div>
 
+                        {{-- fade kiri–kanan --}}
                         <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
                     </div>
                 </div>
@@ -869,167 +851,169 @@ $files = collect($photos)
             <button id="sorotan-prev" type="button"
                     class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
                            text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition"
-                    aria-label="Sorotan sebelumnya">‹</button>
+                    aria-label="Sorotan sebelumnya">
+                ‹
+            </button>
 
             <div id="sorotan-dots" class="flex items-center gap-2" aria-label="Indikator sorotan"></div>
 
             <button id="sorotan-next" type="button"
                     class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
                            text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition"
-                    aria-label="Sorotan berikutnya">›</button>
+                    aria-label="Sorotan berikutnya">
+                ›
+            </button>
         </div>
     </div>
 
-<script>
-(function () {
-  const root = document.getElementById('sorotanPelatihan');
-  if (!root) return;
+    <script>
+    (function () {
+        const root = document.getElementById('sorotanPelatihan');
+        if (!root) return;
 
-  const tabOrder = @json($sorotanData->pluck('key')->values());
-  if (!tabOrder.length) return;
+        const tabOrder = @json($sorotanData->pluck('key')->values());
+        if (!tabOrder.length) return;
 
-  const meta = @json(
-    $sorotanData->mapWithKeys(fn($s) => [
-      $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']]
-    ])
-  );
+        const meta = @json(
+            $sorotanData->mapWithKeys(fn($s) => [
+                $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']]
+            ])
+        );
 
-  const panes    = Array.from(root.querySelectorAll('.sorotan-pane'));
-  const labelEl  = root.querySelector('.sorotan-label');
-  const descEl   = root.querySelector('#sorotan-desc');
-  const dotsWrap = root.querySelector('#sorotan-dots');
-  const prevBtn  = root.querySelector('#sorotan-prev');
-  const nextBtn  = root.querySelector('#sorotan-next');
+        const panes    = Array.from(root.querySelectorAll('.sorotan-pane'));
+        const labelEl  = root.querySelector('.sorotan-label');
+        const descEl   = root.querySelector('#sorotan-desc');
+        const dotsWrap = root.querySelector('#sorotan-dots');
+        const prevBtn  = root.querySelector('#sorotan-prev');
+        const nextBtn  = root.querySelector('#sorotan-next');
 
-  const tracks = Array.from(root.querySelectorAll('.sorotan-track'));
-  const SPEED = 0.8;
-  const animState = new Map(); // track -> { rafId, offset, paused }
+        // ====== helper active ======
+        function currentKey() {
+            const active = panes.find(p => !p.classList.contains('hidden'));
+            return active ? active.dataset.pane : tabOrder[0];
+        }
+        function currentIndex() {
+            return Math.max(0, tabOrder.indexOf(currentKey()));
+        }
 
-  function ensureState(track) {
-    if (!animState.has(track)) {
-      animState.set(track, { rafId: null, offset: 0, paused: false });
+        // ====== dots ======
+        function paintDots() {
+            if (!dotsWrap) return;
+            const idx = currentIndex();
+            dotsWrap.innerHTML = '';
 
-      track.addEventListener('mouseenter', () => animState.get(track).paused = true);
-      track.addEventListener('mouseleave', () => animState.get(track).paused = false);
-    }
-    return animState.get(track);
-  }
+            tabOrder.forEach((k, i) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className =
+                    'w-2.5 h-2.5 rounded-full transition ' +
+                    (i === idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
+                b.setAttribute('aria-label', (meta[k]?.label ?? k));
+                b.setAttribute('aria-current', i === idx ? 'true' : 'false');
+                b.addEventListener('click', () => setActive(k, true));
+                dotsWrap.appendChild(b);
+            });
+        }
 
-  function startMarquee(track) {
-    if (!track) return;
-    if (track.dataset.hasFiles !== '1') return;
+        // ====== pane switch anim ======
+        function setActive(key, userAction = false) {
+            panes.forEach(p => {
+                const isTarget = p.dataset.pane === key;
+                if (isTarget && p.classList.contains('hidden')) {
+                    // animate in
+                    p.classList.remove('hidden');
+                    p.classList.add('pane-enter');
+                    requestAnimationFrame(() => {
+                        p.classList.add('pane-enter-active');
+                        p.classList.remove('pane-enter');
+                        setTimeout(() => p.classList.remove('pane-enter-active'), 240);
+                    });
+                } else if (!isTarget) {
+                    p.classList.add('hidden');
+                }
+            });
 
-    const state = ensureState(track);
-    if (state.rafId) return;
+            if (meta[key]) {
+                if (labelEl) labelEl.textContent = meta[key].label ?? '';
+                if (descEl)  descEl.textContent  = meta[key].desc ?? '';
+            }
 
-    function step() {
-      const halfWidth = track.scrollWidth / 2;
-      if (!halfWidth) { state.rafId = requestAnimationFrame(step); return; }
+            paintDots();
 
-      if (!state.paused) {
-        state.offset -= SPEED;
-        if (Math.abs(state.offset) >= halfWidth) state.offset += halfWidth;
-        track.style.transform = `translateX(${state.offset}px)`;
-      }
-      state.rafId = requestAnimationFrame(step);
-    }
+            // kalau user pindah kategori, reset posisi marquee kategori aktif biar gak loncat
+            if (userAction) resetTrackForKey(key);
+        }
 
-    state.rafId = requestAnimationFrame(step);
-  }
+        // ====== controls ======
+        function move(delta) {
+            const idx = currentIndex();
+            const nextIdx = (idx + delta + tabOrder.length) % tabOrder.length;
+            setActive(tabOrder[nextIdx], true);
+        }
 
-  function stopMarquee(track) {
-    const state = animState.get(track);
-    if (!state) return;
-    if (state.rafId) cancelAnimationFrame(state.rafId);
-    state.rafId = null;
-  }
+        if (prevBtn) prevBtn.addEventListener('click', () => move(-1));
+        if (nextBtn) nextBtn.addEventListener('click', () => move(1));
 
-  function resetMarquee(track) {
-    const state = ensureState(track);
-    state.offset = 0;
-    track.style.transform = 'translateX(0px)';
-  }
+        // ====== marquee engine (pause on hover) ======
+        const tracks = Array.from(root.querySelectorAll('.sorotan-track'));
+        const SPEED = 0.8; // px per frame
 
-  function currentKey() {
-    const active = panes.find(p => !p.classList.contains('hidden'));
-    return active ? active.dataset.pane : tabOrder[0];
-  }
+        const animState = new Map(); // track -> { rafId, offset, paused }
 
-  function currentIndex() {
-    return Math.max(0, tabOrder.indexOf(currentKey()));
-  }
+        function startMarquee(track) {
+            if (!track) return;
 
-  function paintDots() {
-    if (!dotsWrap) return;
-    const idx = currentIndex();
-    dotsWrap.innerHTML = '';
+            // jangan jalan kalau tidak ada files
+            if (track.dataset.hasFiles !== '1') return;
 
-    tabOrder.forEach((k, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'w-2.5 h-2.5 rounded-full transition ' + (i === idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
-      b.setAttribute('aria-label', (meta[k]?.label ?? k));
-      b.setAttribute('aria-current', i === idx ? 'true' : 'false');
-      b.addEventListener('click', () => setActive(k, true));
-      dotsWrap.appendChild(b);
-    });
-  }
+            // init state
+            if (!animState.has(track)) {
+                animState.set(track, { rafId: null, offset: 0, paused: false });
+            }
+            const state = animState.get(track);
 
-  function syncMarqueeToActive(key) {
-    tracks.forEach(t => {
-      const active = t.dataset.key === key;
-      if (active) {
-        resetMarquee(t);
-        startMarquee(t);
-      } else {
-        stopMarquee(t);
-      }
-    });
-  }
+            // pause on hover (biar nyaman)
+            track.addEventListener('mouseenter', () => state.paused = true);
+            track.addEventListener('mouseleave', () => state.paused = false);
 
-  function setActive(key, userAction = false) {
-    panes.forEach(p => {
-      const isTarget = p.dataset.pane === key;
-      if (isTarget && p.classList.contains('hidden')) {
-        p.classList.remove('hidden');
-        p.classList.add('pane-enter');
-        requestAnimationFrame(() => {
-          p.classList.add('pane-enter-active');
-          p.classList.remove('pane-enter');
-          setTimeout(() => p.classList.remove('pane-enter-active'), 240);
-        });
-      } else if (!isTarget) {
-        p.classList.add('hidden');
-      }
-    });
+            function step() {
+                const halfWidth = track.scrollWidth / 2;
+                if (!halfWidth) {
+                    state.rafId = requestAnimationFrame(step);
+                    return;
+                }
 
-    if (meta[key]) {
-      if (labelEl) labelEl.textContent = meta[key].label ?? '';
-      if (descEl)  descEl.textContent  = meta[key].desc ?? '';
-    }
+                if (!state.paused) {
+                    state.offset -= SPEED;
+                    if (Math.abs(state.offset) >= halfWidth) {
+                        state.offset += halfWidth;
+                    }
+                    track.style.transform = `translateX(${state.offset}px)`;
+                }
+                state.rafId = requestAnimationFrame(step);
+            }
 
-    paintDots();
-    syncMarqueeToActive(key);
-  }
+            if (!state.rafId) state.rafId = requestAnimationFrame(step);
+        }
 
-  function move(delta) {
-    const idx = currentIndex();
-    const nextIdx = (idx + delta + tabOrder.length) % tabOrder.length;
-    setActive(tabOrder[nextIdx], true);
-  }
+        function resetTrackForKey(key) {
+            const track = root.querySelector(`.sorotan-track[data-key="${key}"]`);
+            if (!track) return;
+            const state = animState.get(track);
+            if (state) {
+                state.offset = 0;
+                track.style.transform = 'translateX(0px)';
+            }
+        }
 
-  if (prevBtn) prevBtn.addEventListener('click', () => move(-1));
-  if (nextBtn) nextBtn.addEventListener('click', () => move(1));
-
-  setActive(tabOrder[0], false);
-  window.addEventListener('resize', () => syncMarqueeToActive(currentKey()));
-})();
-</script>
-
+        // init
+        setActive(tabOrder[0], false);
+        tracks.forEach(startMarquee);
+    })();
+    </script>
 </section>
 @endif
 {{-- /SECTION: Sorotan Pelatihan --}}
-
 
 {{-- SECTION: Kompetensi Pelatihan (gambar dari DB Bidang) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">

@@ -19,13 +19,13 @@ class AsramaOtomasiController extends Controller
         $pelatihan = Pelatihan::findOrFail($pelatihanId);
 
         // 1) generate kamar dari config/session untuk pelatihan ini
-        $allocator->generateRoomsFromConfig($pelatihan->id, session('kamars') ?? config('kamars'));
+        $allocator->generateRoomsFromConfig($pelatihan->id, session('kamar') ?? config('kamar'));
 
         // 2) allocate peserta
         $result = $allocator->allocatePesertaPerPelatihan($pelatihan->id);
 
         // 3) kirim email ke yang baru ditempatkan
-        $penempatanBaru = PenempatanAsrama::with('pendaftaran.peserta', 'kamars.asramas', 'pelatihan')
+        $penempatanBaru = PenempatanAsrama::with('pendaftaran.peserta', 'kamar.asrama', 'pelatihan')
             ->whereIn('pendaftaran_id', collect($result['details'])->pluck('pendaftaran_id'))
             ->get();
 

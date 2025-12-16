@@ -7,7 +7,6 @@ use App\Models\KompetensiPelatihan;
 use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\HtmlString;
 
 class ViewKompetensiPelatihan extends Page
 {
@@ -64,7 +63,7 @@ class ViewKompetensiPelatihan extends Page
             \Filament\Actions\Action::make('detail_monev')
                 ->label('Detail Survei Monev')
                 ->icon('heroicon-o-chart-pie')
-                ->url(fn() => ViewMonevDetail::getUrl(['record' => $this->record->id, 'kompetensi_id' => $this->kompetensiPelatihan->id]))
+                ->url(fn () => ViewMonevDetail::getUrl(['record' => $this->record->id, 'kompetensi_id' => $this->kompetensiPelatihan->id]))
                 ->color('primary'),
             $this->addInstructorAction(),
         ];
@@ -104,37 +103,36 @@ class ViewKompetensiPelatihan extends Page
             ->get();
     }
 
-    public function getTitle(): string|Htmlable
+    public Pelatihan $record;
+    public KompetensiPelatihan $kompetensiPelatihan;
+
+    public function mount(Pelatihan $record, $kompetensi_id): void
+    {
+        $this->record = $record;
+        $this->kompetensiPelatihan = KompetensiPelatihan::findOrFail($kompetensi_id);
+    }
+
+    public function getTitle(): string | Htmlable
     {
         return $this->record->nama_pelatihan;
     }
 
-    public function getSubheading(): string|Htmlable|null
+    public function getSubheading(): string | Htmlable | null
     {
-        return new HtmlString(\Illuminate\Support\Facades\Blade::render(<<<'BLADE'
+        return new \Illuminate\Support\HtmlString(\Illuminate\Support\Facades\Blade::render(<<<'BLADE'
             <div class="flex flex-col gap-2 mt-2">
-                <h2 class="text-xl font-bold text-primary-600 dark:text-primary-400">
-                    {{ $kompetensi->kompetensi->nama_kompetensi ?? 'Nama Kompetensi' }}
-                </h2>
-
+                <h2 class="text-xl font-bold text-primary-600 dark:text-primary-400">{{ $kompetensi->kompetensi->nama_kompetensi ?? 'Nama Kompetensi' }}</h2>
                 <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                     <span class="flex items-center gap-1">
-                        <x-heroicon-o-clock class="w-4 h-4" />
-                        {{ $kompetensi->jam_mulai ? \Carbon\Carbon::parse($kompetensi->jam_mulai)->format('H:i') : '-' }}
-                        -
-                        {{ $kompetensi->jam_selesai ? \Carbon\Carbon::parse($kompetensi->jam_selesai)->format('H:i') : '-' }}
-                        WIB
+                        <x-heroicon-o-clock class="w-4 h-4" /> 
+                        {{ \Carbon\Carbon::parse($kompetensi->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($kompetensi->jam_selesai)->format('H:i') }} WIB
                     </span>
-
                     <span class="text-gray-300 dark:text-gray-600">|</span>
-
                     <span class="flex items-center gap-1">
-                        <x-heroicon-o-map-pin class="w-4 h-4" />
+                        <x-heroicon-o-map-pin class="w-4 h-4" /> 
                         {{ $kompetensi->lokasi ?? 'Ruang Kelas' }}
                     </span>
-
                     <span class="text-gray-300 dark:text-gray-600">|</span>
-
                     <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2.5 py-0.5 rounded-full font-medium border border-green-200 dark:border-green-800">
                         Sedang Berlangsung
                     </span>
@@ -146,7 +144,7 @@ class ViewKompetensiPelatihan extends Page
     public function getTesProperty()
     {
         return \App\Models\Tes::where('pelatihan_id', $this->record->id)
-            ->where('kompetensi_pelatihan_id', $this->kompetensiPelatihan->id)
+            ->where('kompetensi_id', $this->kompetensiPelatihan->kompetensi_id)
             ->get();
     }
 
@@ -155,97 +153,55 @@ class ViewKompetensiPelatihan extends Page
         return $this->kompetensiPelatihan->peserta;
     }
 
-    /**
-     * Fitur lama tetap: statistik pretest/posttest/monev
-     */
     public function getStatistikProperty()
     {
-        $pelatihanId = $this->record->id;
-        $kompetensiId = $this->kompetensiPelatihan->id;
+        $tes = $this->tes;
+        
+        $pretestIds = $tes->where('tipe', 'pre-test')->pluck('id');
+        $posttestIds = $tes->where('tipe', 'post-test')->pluck('id');
+        $surveiIds = $tes->where('tipe', 'survei')->pluck('id');
 
-        // Base query joins for competency filtering
-        $baseJoin = function ($query) use ($pelatihanId, $kompetensiId) {
-            $query->join('pendaftaran_pelatihan as pp', 'pp.peserta_id', '=', 'percobaan.peserta_id')
-                ->join('tes as t', 't.id', '=', 'percobaan.tes_id')
-                ->where('pp.pelatihan_id', $pelatihanId)
-                ->where('pp.kompetensi_pelatihan_id', $kompetensiId)
-                ->where('t.kompetensi_pelatihan_id', $kompetensiId); // Ensure test belongs to competency
-        };
+        // Pretest Stats
+        $pretestAttempts = \App\Models\Percobaan::whereIn('tes_id', $pretestIds)->get();
+        $pretestAvg = $pretestAttempts->avg('skor') ?? 0;
+        $pretestUniqueCount = $pretestAttempts->pluck('peserta_id')->unique()->count();
+        $pretestStats = [
+            'avg' => number_format($pretestAvg, 1),
+            'max' => $pretestAttempts->max('skor') ?? 0,
+            'min' => $pretestAttempts->min('skor') ?? 0,
+            'count' => $pretestUniqueCount,
+        ];
 
-        // 1. PRETEST
-        $pretestQuery = \App\Models\Percobaan::query()
-            ->whereHas('tes', fn($q) => $q->where('tipe', 'pretest'))
-            ->tap($baseJoin);
+        // Posttest Stats
+        $posttestAttempts = \App\Models\Percobaan::whereIn('tes_id', $posttestIds)->get();
+        $posttestAvg = $posttestAttempts->avg('skor') ?? 0;
+        $posttestUniqueCount = $posttestAttempts->pluck('peserta_id')->unique()->count();
+        $posttestStats = [
+            'avg' => number_format($posttestAvg, 1),
+            'lulus' => $posttestAttempts->where('lulus', true)->pluck('peserta_id')->unique()->count(),
+            'remedial' => $posttestAttempts->where('lulus', false)->pluck('peserta_id')->unique()->count(),
+            'kenaikan' => number_format($posttestAvg - $pretestAvg, 1), // Simple diff of averages
+            'count' => $posttestUniqueCount,
+        ];
 
-        $pretestAvg = $pretestQuery->avg('nilai') ?? 0;
-        $pretestMax = $pretestQuery->max('nilai') ?? 0;
-        $pretestMin = $pretestQuery->min('nilai') ?? 0;
-        $pretestCount = $pretestQuery->count();
+        // Monev Stats
+        $surveiAttempts = \App\Models\Percobaan::whereIn('tes_id', $surveiIds)->get();
+        $surveiAvg = $surveiAttempts->avg('skor') ?? 0;
+        // Convert 0-100 scale to 0-5 scale
+        $surveiScale5 = ($surveiAvg / 20); 
+        $surveiUniqueCount = $surveiAttempts->pluck('peserta_id')->unique()->count();
 
-        // 2. POSTTEST
-        $posttestQuery = \App\Models\Percobaan::query()
-            ->whereHas('tes', fn($q) => $q->where('tipe', 'posttest'))
-            ->tap($baseJoin);
-
-        $posttestAvg = $posttestQuery->avg('nilai') ?? 0;
-        $posttestCount = $posttestQuery->count();
-        $lulus = (clone $posttestQuery)->where('nilai', '>=', 75)->count();
-        $remedial = (clone $posttestQuery)->where('nilai', '<', 75)->count();
-
-        // 3. MONEV (SURVEI) - Simple Avg Calculation
-        $monevRespondents = \App\Models\Percobaan::query()
-            ->tap($baseJoin)
-            ->whereHas('tes', fn($q) => $q->where('tipe', 'survei'))
-            ->distinct('peserta_id')
-            ->count();
-
-        $totalPeserta = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-            ->where('kompetensi_pelatihan_id', $kompetensiId)
-            ->where('status_pendaftaran', '!=', 'Batal')
-            ->count();
-
-        // Calculate rough average if possible, else 0 placeholder as requested for simplified view
-        // Using average of all answers simply:
-        $monevAvg = \App\Models\JawabanUser::query()
-            ->join('percobaan as pr', 'pr.id', '=', 'jawaban_user.percobaan_id')
-            ->join('tes as t', 't.id', '=', 'pr.tes_id')
-            ->join('pertanyaan as p', 'p.id', '=', 'jawaban_user.pertanyaan_id')
-            ->join('pendaftaran_pelatihan as pp', 'pp.peserta_id', '=', 'pr.peserta_id') // Filter join
-            ->where('t.tipe', 'survei')
-            ->where('p.tipe_jawaban', 'skala_likert')
-            ->where('pp.pelatihan_id', $pelatihanId)
-            ->where('pp.kompetensi_pelatihan_id', $kompetensiId)
-            // Need to join opsi_jawaban to value, or assume standard 1-4
-            // Since we reverted explicit buildsLikertData, we can accept 0 or try to calculate if needed.
-            // Let's stick to safe 0 and respondents count if raw calculation is too complex without trait.
-            // Actually, let's keep it simple: 0.0 placeholder is fine if charts are moved.
-            // OR re-implement the simple calc:
-            ->selectRaw('count(*) as count') // Just checking validity
-            ->exists() ? 0 : 0; // Keeping it 0 for now as 'Monev Detail' has the real data.
-
-        // Correcting: If we want to show *something* on the card (like progress bar), we need a value.
-        // But the previous implementation had complex logic. Let's just return what's needed for the VIEW.
-        // The view expects `monev.avg` and `monev.responden`.
+        $monevStats = [
+            'avg' => number_format($surveiScale5, 1),
+            'responden' => $surveiUniqueCount,
+            'total_peserta' => $this->peserta->count(),
+            'percentage' => $this->peserta->count() > 0 ? ($surveiUniqueCount / $this->peserta->count()) * 100 : 0,
+        ];
 
         return [
-            'pretest' => [
-                'avg' => number_format($pretestAvg, 1),
-                'max' => $pretestMax,
-                'min' => $pretestMin,
-                'count' => $pretestCount,
-            ],
-            'posttest' => [
-                'avg' => number_format($posttestAvg, 1),
-                'lulus' => $lulus,
-                'remedial' => $remedial,
-                'count' => $posttestCount,
-            ],
-            'monev' => [
-                'avg' => 0,
-                'responden' => $monevRespondents,
-                'total_peserta' => $totalPeserta,
-                'percentage' => $totalPeserta > 0 ? ($monevRespondents / $totalPeserta) * 100 : 0
-            ]
+            'pretest' => $pretestStats,
+            'posttest' => $posttestStats,
+            'monev' => $monevStats,
         ];
     }
 }

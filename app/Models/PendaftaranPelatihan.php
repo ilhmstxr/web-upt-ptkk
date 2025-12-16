@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PendaftaranPelatihan extends Model
 {
@@ -13,28 +13,30 @@ class PendaftaranPelatihan extends Model
 
     protected $table = 'pendaftaran_pelatihan';
 
-    /**
-     * ======================
-     * MASS ASSIGNMENT
-     * ======================
-     */
     protected $fillable = [
+        // Identitas & Relasi
         'peserta_id',
         'pelatihan_id',
         'kompetensi_id',
         'kompetensi_pelatihan_id',
-
         'nomor_registrasi',
         'tanggal_pendaftaran',
         'kelas',
 
+        // Urutan / grouping
+        // 'urutan_per_bidang',
+        // 'urutan_per_kompetensi',
+
+        // Status
         'status',
         'status_pendaftaran',
 
+        // Token assessment
         'assessment_token',
         'assessment_token_sent_at',
         'token_expires_at',
 
+        // Nilai & Survei
         'nilai_pre_test',
         'nilai_post_test',
         'nilai_praktek',
@@ -42,28 +44,15 @@ class PendaftaranPelatihan extends Model
         'nilai_survey',
     ];
 
-    /**
-     * ======================
-     * CASTS
-     * ======================
-     */
     protected $casts = [
         'tanggal_pendaftaran'      => 'datetime',
         'assessment_token_sent_at' => 'datetime',
         'token_expires_at'         => 'datetime',
-
-        'nilai_pre_test'   => 'float',
-        'nilai_post_test'  => 'float',
-        'nilai_praktek'    => 'float',
-        'rata_rata'        => 'float',
-        'nilai_survey'     => 'float',
     ];
 
-    /**
-     * ======================
-     * RELASI UTAMA
-     * ======================
-     */
+    // ======================
+    // RELATIONS UTAMA
+    // ======================
 
     public function peserta(): BelongsTo
     {
@@ -75,80 +64,30 @@ class PendaftaranPelatihan extends Model
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
     }
 
+    public function kompetensiPelatihan(): BelongsTo
+    {
+        return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
+    }
+
     public function kompetensi(): BelongsTo
     {
         return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 
-    public function kompetensiPelatihan(): BelongsTo
+    // ======================
+    // RELASI ASRAMA
+    // ======================
+
+    public function penempatanAsrama(): HasOne
     {
-        return $this->belongsTo(
-            KompetensiPelatihan::class,
-            'kompetensi_pelatihan_id'
-        );
+        return $this->hasOne(PenempatanAsrama::class, 'peserta_id', 'peserta_id');
     }
 
-    /**
-     * ======================
-     * RELASI ASRAMA (BERSIH)
-     * ======================
-     */
-
-    /**
-     * Semua penempatan asrama peserta ini
-     * (bisa lebih dari satu jika ikut banyak pelatihan).
-     */
-    public function penempatanAsramas(): HasMany
+    public function penempatanAsramaAktif(): ?PenempatanAsrama
     {
-        return $this->hasMany(
-            PenempatanAsrama::class,
-            'peserta_id',
-            'peserta_id'
-        );
-    }
-
-    /**
-     * ======================
-     * ACCESSOR (LOGIKA AKTIF)
-     * ======================
-     */
-
-    /**
-     * Penempatan asrama AKTIF untuk pendaftaran ini.
-     *
-     * ❗ BUKAN relasi
-     * ❗ TIDAK dipakai di with()
-     * ✅ Aman & jelas
-     */
-    public function getPenempatanAsramaAktifAttribute(): ?PenempatanAsrama
-    {
-        if (! $this->relationLoaded('penempatanAsramas')) {
-            $this->load('penempatanAsramas');
-        }
-
-        return $this->penempatanAsramas
+        return $this->penempatanAsrama()
             ->where('pelatihan_id', $this->pelatihan_id)
-            ->sortByDesc('id')
+            ->latest()
             ->first();
-    }
-
-    /**
-     * ======================
-     * HELPER STATUS
-     * ======================
-     */
-
-    public function isPending(): bool
-    {
-        return strtolower((string) $this->status_pendaftaran) === 'pending';
-    }
-
-    public function isVerified(): bool
-    {
-        return in_array(
-            strtolower((string) $this->status_pendaftaran),
-            ['verifikasi', 'diterima'],
-            true
-        );
     }
 }

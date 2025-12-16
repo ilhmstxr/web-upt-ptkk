@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Pelatihan\Resources;
 
 use App\Filament\Clusters\Pelatihan;
 use App\Filament\Clusters\Pelatihan\Resources\KompetensiResource\Pages;
+use App\Filament\Clusters\Pelatihan\Resources\KompetensiResource\RelationManagers;
 use App\Models\Kompetensi;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -21,17 +22,6 @@ class KompetensiResource extends Resource
 
     // Hide from sidebar navigation (akses via tab cluster saja)
     protected static bool $shouldRegisterNavigation = false;
-
-    /**
-     * Satu sumber kebenaran label untuk kelompok (hindari dobel).
-     */
-    protected static function kelompokOptions(): array
-    {
-        return [
-            1 => 'Kelas Keterampilan & Teknik',
-            0 => 'Milenial Job Center (MJC)',
-        ];
-    }
 
     public static function form(Form $form): Form
     {
@@ -56,11 +46,24 @@ class KompetensiResource extends Resource
 
                                         Forms\Components\Select::make('kelas_keterampilan')
                                             ->label('Kelompok')
-                                            ->options(self::kelompokOptions())
+                                            ->options(function ($get, $state) {
+                                                $options = [
+                                                    1 => 'Kelas Keterampilan & Teknik',
+                                                    0 => 'Milenial Job Center',
+                                                ];
+
+                                                if ($state !== null && array_key_exists($state, $options)) {
+                                                    unset($options[$state]);
+                                                }
+
+                                                return $options;
+                                            })
+                                            ->getOptionLabelUsing(fn($value) => [
+                                                1 => 'Kelas Keterampilan & Teknik',
+                                                0 => 'Milenial Job Center',
+                                            ][$value] ?? null)
                                             ->required()
                                             ->native(false)
-                                            // pastikan yang tersimpan tetap integer 0/1
-                                            ->dehydrateStateUsing(fn ($state) => (int) $state)
                                             ->columnSpanFull(),
 
                                         Forms\Components\Textarea::make('deskripsi')
@@ -89,8 +92,8 @@ class KompetensiResource extends Resource
                                     ])
                                     ->maxSize(2048) // 2MB
                                     ->directory('kompetensi-images')
-                                    ->disk('public')
-                                    ->visibility('public'),
+                                    ->visibility('public')
+                                    ->disk('public'),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -109,7 +112,8 @@ class KompetensiResource extends Resource
                     Tables\Columns\ImageColumn::make('gambar')
                         ->disk('public')
                         ->height(150)
-                        ->defaultImageUrl(fn ($record) =>
+                        ->defaultImageUrl(
+                            fn($record) =>
                             'https://ui-avatars.com/api/?name=' . urlencode($record->nama_kompetensi) . '&size=300&background=random'
                         )
                         ->extraAttributes(['class' => 'rounded-lg object-cover w-full mb-3']),
@@ -123,11 +127,13 @@ class KompetensiResource extends Resource
 
                     Tables\Columns\TextColumn::make('kelas_keterampilan')
                         ->label('Kelompok')
-                        ->formatStateUsing(fn ($state) =>
-                            self::kelompokOptions()[(int) $state] ?? '-'
+                        ->formatStateUsing(
+                            fn($state) => $state
+                                ? 'Kelas Keterampilan & Teknik'
+                                : 'Milenial Job Center'
                         )
                         ->badge()
-                        ->color(fn ($state) => ((int) $state === 1) ? 'success' : 'warning'),
+                        ->color(fn($state) => $state ? 'success' : 'warning'),
 
                     Tables\Columns\TextColumn::make('deskripsi')
                         ->limit(100)
