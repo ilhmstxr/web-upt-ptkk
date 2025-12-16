@@ -57,7 +57,7 @@ class RoomAssignmentService
                         $assignments[] = [
                             'pendaftaran_id' => $pend->id,
                             'peserta_nama' => $pend->peserta->nama,
-                            'kamar' => $kamar->nomor_kamar,
+                            'kamars' => $kamar->nomor_kamar,
                             'asrama' => $kamar->asrama->nama,
                         ];
                         $idx++;
