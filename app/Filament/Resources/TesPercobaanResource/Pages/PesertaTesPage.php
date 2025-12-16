@@ -16,6 +16,7 @@ class PesertaTesPage extends Page implements Tables\Contracts\HasTable
     use Tables\Concerns\InteractsWithTable;
 
     protected static string $resource = 'App\\Filament\\Resources\\TesPercobaanResource';
+    protected static string $view = 'filament-panels::pages.page';
 
     public Pelatihan $pelatihan;
     public Angkatan $angkatan;

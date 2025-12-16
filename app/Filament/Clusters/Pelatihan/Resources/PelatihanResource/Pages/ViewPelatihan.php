@@ -4,6 +4,8 @@ namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Pages;
 
 use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\DB;
 use App\Models\JawabanUser;
 use App\Models\OpsiJawaban;
@@ -17,7 +19,7 @@ class ViewPelatihan extends ViewRecord
     protected static string $resource = PelatihanResource::class;
 
     protected static string $view =
-        'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-pelatihan';
+    'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-pelatihan';
 
     public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
     {
@@ -44,7 +46,7 @@ class ViewPelatihan extends ViewRecord
                 \Filament\Actions\Action::make('export_rekap')
                     ->label('Rekap Peserta (PDF)')
                     ->icon('heroicon-o-document-text')
-                    ->url(fn () => route('export.template.rekap-pelatihan', [
+                    ->url(fn() => route('export.template.rekap-pelatihan', [
                         'pelatihanId' => $this->record->id,
                     ]))
                     ->openUrlInNewTab(),
@@ -52,7 +54,7 @@ class ViewPelatihan extends ViewRecord
                 \Filament\Actions\Action::make('export_excel')
                     ->label('Peserta (Excel)')
                     ->icon('heroicon-o-table-cells')
-                    ->url(fn () => route('export.template.peserta-excel', [
+                    ->url(fn() => route('export.template.peserta-excel', [
                         'pelatihanId' => $this->record->id,
                     ]))
                     ->openUrlInNewTab(),
@@ -60,7 +62,7 @@ class ViewPelatihan extends ViewRecord
                 \Filament\Actions\Action::make('export_instruktur')
                     ->label('Daftar Instruktur (PDF)')
                     ->icon('heroicon-o-users')
-                    ->url(fn () => route('export.template.daftar-instruktur', [
+                    ->url(fn() => route('export.template.daftar-instruktur', [
                         'pelatihanId' => $this->record->id,
                     ]))
                     ->openUrlInNewTab(),
@@ -68,7 +70,7 @@ class ViewPelatihan extends ViewRecord
                 \Filament\Actions\Action::make('export_biodata')
                     ->label('Biodata Peserta (PDF)')
                     ->icon('heroicon-o-identification')
-                    ->url(fn () => route('export.template.biodata-peserta', [
+                    ->url(fn() => route('export.template.biodata-peserta', [
                         'pelatihanId' => $this->record->id,
                     ]))
                     ->openUrlInNewTab(),
