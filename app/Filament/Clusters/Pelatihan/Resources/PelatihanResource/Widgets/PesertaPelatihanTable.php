@@ -168,7 +168,20 @@ class PesertaPelatihanTable extends BaseWidget
                             ->label('Jangan tampilkan lagi (Sesi ini)'),
                         Forms\Components\Checkbox::make('kirim_email_konfirmasi')
                             ->label('Kirim Email Konfirmasi ke Peserta')
-                            ->default(true),
+                            ->default(true)
+                            ->reactive(), // Agar input dibawah bisa conditional (opsional, tapi bagus practice)
+
+                        Forms\Components\TextInput::make('cp_nama')
+                            ->label('Nama CP')
+                            ->default('Sdri. Admin')
+                            ->required()
+                            ->visible(fn(Forms\Get $get) => $get('kirim_email_konfirmasi')), // Hanya muncul jika kirim email
+
+                        Forms\Components\TextInput::make('cp_phone')
+                            ->label('No. Telp CP')
+                            ->default('082249999447')
+                            ->required()
+                            ->visible(fn(Forms\Get $get) => $get('kirim_email_konfirmasi')),
                     ])
                     ->action(function (PendaftaranPelatihan $record, array $data) {
                         if (($data['dont_show_again'] ?? false) === true) {
@@ -188,7 +201,7 @@ class PesertaPelatihanTable extends BaseWidget
                                     'id_peserta'     => $record->nomor_registrasi,
                                     'nama_peserta'   => $record->peserta->nama,
                                     'asal_lembaga'   => $record->peserta->instansi->asal_instansi ?? '-',
-                                    'cabang_dinas'   => $record->peserta->instansi->cabangDinas->nama_cabang ?? '-',
+                                    'cabang_dinas'   => $record->peserta->instansi->cabangDinas->nama ?? '-',
                                     'kompetensi'     => $record->kompetensiPelatihan->kompetensi->nama_kompetensi ?? '-',
                                     // Menggunakan helper penempatanAsramaAktif() yang ada di model PendaftaranPelatihan
                                     'kamar_asrama'   => $record->penempatanAsramaAktif()?->kamarPelatihan->kamar->nama_kamar ?? 'Belum ditentukan',
@@ -196,17 +209,26 @@ class PesertaPelatihanTable extends BaseWidget
                                     'waktu_selesai'  => \Carbon\Carbon::parse($record->pelatihan->tanggal_selesai)->translatedFormat('d F Y'),
                                     'lokasi'         => $record->pelatihan->lokasi ?? 'UPT PTKK Surabaya',
                                     'alamat'         => 'Jl. Menur No. 123, Surabaya',
-                                    'cp_nama'        => 'Sdri. Admin',
-                                    'cp_phone'       => '082249999447',
+                                    'cp_nama'        => $data['cp_nama'] ?? 'Sdri. Admin',
+                                    'cp_phone'       => $data['cp_phone'] ?? '082249999447',
                                     'email_penerima' => $emailPeserta,
                                 ];
 
-                                \Illuminate\Support\Facades\Mail::to($emailPeserta)->send(new \App\Mail\EmailKonfirmasi($emailData));
+                                try {
+                                    \Illuminate\Support\Facades\Mail::to($emailPeserta)->send(new \App\Mail\EmailKonfirmasi($emailData));
 
-                                Notification::make()
-                                    ->title('Peserta diterima & Email dikirim')
-                                    ->success()
-                                    ->send();
+                                    Notification::make()
+                                        ->title('Peserta diterima & Email dikirim')
+                                        ->success()
+                                        ->send();
+                                } catch (\Exception $e) {
+                                    Notification::make()
+                                        ->title('Peserta diterima, namun GAGAL mengirim email')
+                                        ->body('Error: ' . $e->getMessage())
+                                        ->danger()
+                                        ->persistent()
+                                        ->send();
+                                }
                                 return;
                             }
                         }
