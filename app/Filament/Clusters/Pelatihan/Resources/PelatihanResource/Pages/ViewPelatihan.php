@@ -4,6 +4,11 @@ namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Pages;
 
 use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Support\Facades\DB;
+use App\Models\JawabanUser;
+use App\Models\OpsiJawaban;
+use App\Models\Pertanyaan;
+use App\Models\Tes;
 
 class ViewPelatihan extends ViewRecord
 {
@@ -13,7 +18,7 @@ class ViewPelatihan extends ViewRecord
 
     protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-pelatihan';
 
-    public function getTitle(): string | \Illuminate\Contracts\Support\Htmlable
+    public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
     {
         return $this->record->nama_pelatihan;
     }
@@ -60,7 +65,7 @@ class ViewPelatihan extends ViewRecord
         ];
     }
 
-    public function getSubheading(): string | \Illuminate\Contracts\Support\Htmlable | null
+    public function getSubheading(): string|\Illuminate\Contracts\Support\Htmlable|null
     {
         return new \Illuminate\Support\HtmlString(\Illuminate\Support\Facades\Blade::render(<<<'BLADE'
             <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mt-2">
@@ -145,7 +150,7 @@ class ViewPelatihan extends ViewRecord
     {
         $pelatihanId = $this->record->id;
 
-        // 1. Calculate Pretest & Posttest (Using PendaftaranPelatihan)
+        // 1. Calculate Pretest & Posttest (Existing Logic is fine for scores)
         $avgPretest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_pre_test') ?? 0;
         $avgPosttest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_post_test') ?? 0;
 
@@ -154,37 +159,91 @@ class ViewPelatihan extends ViewRecord
             $improvement = (($avgPosttest - $avgPretest) / $avgPretest) * 100;
         }
 
-        // 2. Calculate CSAT (Survey)
-        $avgCsat = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-            ->whereNotNull('nilai_survey')
-            ->avg('nilai_survey') ?? 0;
+        // 2. Calculate CSAT (Survey) - UPGRADE TO LIKERT LOGIC
+        // Instead of simple avg('nilai_survey'), we use the buildsLikert logic basics
+        // Or we keep simple avg if 'nilai_survey' is reliable. The user request implied using BuildsLikertData logic.
+        // Let's assume 'nilai_survey' column in PendaftaranPelatihan IS the aggregate cache.
+        // If it's 0, we might need to calc from JawabanUser.
+        // BUT, for the "Main View", let's stick to the column if possible for performance, 
+        // OR recalc if the user insists on "BuildsLikertData" logic.
+        // User said: "seharusbya ini muncul diagramnya, berdasarkan skala likert yang ada di opsi jawabn"
+        // This likely refers to the Detail view mostly, but let's check if the Main view relies on it.
+        // Main view uses $evalData['csat'] and $evalData['total_chart'] etc? 
+        // The blade `view-pelatihan.blade.php` uses `csat` (number) and charts.
+        // Wait, `view-pelatihan.blade.php` has code for `chartTotalAccumulation` and `chartCategories`??
+        // Let's check `view-pelatihan.blade.php` content again from history.
+        // No, `view-pelatihan.blade.php` earlier showed basic stats in `getEvaluationData`.
+        // There were NO charts in `view-pelatihan.blade.php` except the simple Pre/Post bar and CSAT star rating.
+        // AND table "Rincian Nilai per Kompetensi".
+        // The "Charts" (Total Distribution, Categories, Pie) were in `ViewMonevDetail`.
 
-        $respondentsCount = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-            ->whereNotNull('nilai_survey')
-            ->count();
+        // So for `ViewPelatihan`, we just need to ensure `csat` and `kepuasan` per competency are correct.
+        // If `nilai_survey` in PendaftaranPelatihan is empty/null, we should calculate it from JawabanUser.
+
+        // CALCULATE GLOBAL CSAT FROM JAWABAN USER
+        $surveiTesIds = \App\Models\Tes::where('pelatihan_id', $pelatihanId)
+            ->where('tipe', 'survei')
+            ->pluck('id');
+
+        $pertanyaanIds = \App\Models\Pertanyaan::whereIn('tes_id', $surveiTesIds)
+            ->where('tipe_jawaban', 'skala_likert')
+            ->pluck('id');
+
+        $avgCsat = 0;
+        $respondentsCount = 0;
+
+        if ($pertanyaanIds->isNotEmpty()) {
+            // Build Maps
+            [$pivot, $opsiIdToSkala, $opsiTextToId] = $this->buildLikertMaps($pertanyaanIds);
+            $allAnswers = $this->normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId); // No competency filter for global
+
+            $avgScale = $allAnswers->avg('skala') ?? 0;
+            $avgCsat = ($avgScale / 4) * 100;
+
+            // Count unique respondents (percobaan_id or user_id? Answer table has percobaan_id)
+            // normalizedAnswers returns mapped collection. We need access to original distinct users?
+            // normalizedAnswers loses user context.
+            // Let's count from distinct percobaan_id in range.
+            $respondentsCount = \App\Models\JawabanUser::whereIn('pertanyaan_id', $pertanyaanIds)
+                ->join('percobaan', 'percobaan.id', '=', 'jawaban_user.percobaan_id')
+                ->join('tes', 'tes.id', '=', 'percobaan.tes_id')
+                ->where('tes.pelatihan_id', $pelatihanId)
+                ->distinct('percobaan.peserta_id')
+                ->count('percobaan.peserta_id');
+        }
 
         // 3. Competency Details
         $competencyStats = [];
-        // Iterate through unique competencies associated with this training
         $sessions = $this->record->kompetensiPelatihan;
 
         foreach ($sessions as $session) {
             $kompetensiId = $session->kompetensi_id;
+            $kompetensiPelatihanId = $session->id; // This is the ID in pivot table usually? Or kompetensi_pelatihan table id.
 
-            // Calculate Pretest for this specific competency
+            // Pre/Post can stay from PendaftaranPelatihan
             $pre = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('kompetensi_id', $kompetensiId)
+                ->where('kompetensi_pelatihan_id', $kompetensiPelatihanId) // Use correct column
                 ->avg('nilai_pre_test') ?? 0;
 
-            // Calculate Posttest for this specific competency
             $post = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('kompetensi_id', $kompetensiId)
+                ->where('kompetensi_pelatihan_id', $kompetensiPelatihanId)
                 ->avg('nilai_post_test') ?? 0;
 
-            // Calculate Satisfaction (if available per competency)
-            $sat = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('kompetensi_id', $kompetensiId)
-                ->avg('nilai_survey') ?? 0;
+            // Calculate Satisfaction per Competency using LIKERT Logic
+            $compPertanyaanIds = $this->collectPertanyaanIds($pelatihanId, $kompetensiPelatihanId);
+
+            // FALLBACK: If specific competency survey is empty, use generic
+            if ($compPertanyaanIds->isEmpty()) {
+                $compPertanyaanIds = $this->collectPertanyaanIds($pelatihanId, null);
+            }
+
+            $sat = 0;
+            if ($compPertanyaanIds->isNotEmpty()) {
+                [$cPivot, $cOpsiIdToSkala, $cOpsiTextToId] = $this->buildLikertMaps($compPertanyaanIds);
+                $cAnswers = $this->normalizedAnswers($pelatihanId, $compPertanyaanIds, $cPivot, $cOpsiIdToSkala, $cOpsiTextToId, $kompetensiPelatihanId);
+                $cAvgScale = $cAnswers->avg('skala') ?? 0;
+                $sat = ($cAvgScale / 4) * 100;
+            }
 
             $competencyStats[] = [
                 'name' => $session->kompetensi->nama_kompetensi ?? 'Unknown',
@@ -198,11 +257,6 @@ class ViewPelatihan extends ViewRecord
 
         // Check data existence
         $hasData = ($respondentsCount > 0) || ($avgPretest > 0) || ($avgPosttest > 0);
-        if (!$hasData) {
-            $hasData = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where(fn($q) => $q->whereNotNull('nilai_pre_test')->orWhereNotNull('nilai_post_test'))
-                ->exists();
-        }
 
         return [
             'avgPretest' => number_format($avgPretest, 1),
@@ -213,5 +267,106 @@ class ViewPelatihan extends ViewRecord
             'competencies' => $competencyStats,
             'hasData' => $hasData,
         ];
+    }
+    // =========================================================================
+    // OVERRIDE/CUSTOM LIKERT LOGIC (Supports Competency Filter)
+    // =========================================================================
+
+    protected function collectPertanyaanIds(?int $pelatihanId, ?int $kompetensiPelatihanId = null): \Illuminate\Support\Collection
+    {
+        return JawabanUser::query()
+            ->from('jawaban_user as ju')
+            ->join('percobaan as pr', 'pr.id', '=', 'ju.percobaan_id')
+            ->join('tes as t', 't.id', '=', 'pr.tes_id')
+            ->join('pertanyaan as p', 'p.id', '=', 'ju.pertanyaan_id')
+            ->where('t.tipe', 'survei')
+            ->where('p.tipe_jawaban', 'skala_likert')
+            ->when($pelatihanId, fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
+            ->when($kompetensiPelatihanId, fn($q) => $q->where('t.kompetensi_pelatihan_id', $kompetensiPelatihanId))
+            ->distinct()
+            ->pluck('ju.pertanyaan_id')
+            ->values();
+    }
+
+    protected function normalizePertanyaanIds(mixed $input): \Illuminate\Support\Collection
+    {
+        return collect($input)
+            ->flatten()
+            ->map(fn($v) => is_numeric($v) ? (int) $v : $v)
+            ->unique()
+            ->values();
+    }
+
+    protected function buildLikertMaps($pertanyaanIds): array
+    {
+        $ids = $this->normalizePertanyaanIds($pertanyaanIds);
+        if ($ids->isEmpty())
+            return [collect(), collect(), collect()];
+
+        $pivot = DB::table('pivot_jawaban')
+            ->whereIn('pertanyaan_id', $ids->all())
+            ->pluck('template_pertanyaan_id', 'pertanyaan_id');
+
+        $opsi = OpsiJawaban::whereIn(
+            'pertanyaan_id',
+            $ids->merge($pivot->values())->unique()->all()
+        )->orderBy('id')->get();
+
+        $opsiIdToSkala = $opsi->groupBy('pertanyaan_id')->map(function ($rows) {
+            $map = [];
+            foreach ($rows->pluck('id')->values() as $i => $id) {
+                $map[$id] = $i + 1;
+            }
+            return $map;
+        });
+
+        $opsiTextToId = $opsi->groupBy('pertanyaan_id')
+            ->map(fn($rows) => $rows->pluck('id', 'teks_opsi')->mapWithKeys(
+                fn($id, $teks) => [trim($teks) => $id]
+            ));
+
+        return [$pivot, $opsiIdToSkala, $opsiTextToId];
+    }
+
+    protected function normalizedAnswers($pelatihanId, $pertanyaanIds, $pivot, $opsiIdToSkala, $opsiTextToId, $kompetensiPelatihanId = null)
+    {
+        $ids = $this->normalizePertanyaanIds($pertanyaanIds);
+        if ($ids->isEmpty())
+            return collect();
+
+        $jawaban = JawabanUser::query()
+            ->join('percobaan as pr', 'pr.id', '=', 'jawaban_user.percobaan_id')
+            ->join('tes as t', 't.id', '=', 'pr.tes_id')
+            ->whereIn('jawaban_user.pertanyaan_id', $ids->all())
+            ->when($pelatihanId, fn($q) => $q->where('t.pelatihan_id', $pelatihanId))
+            ->when($kompetensiPelatihanId, fn($q) => $q->where('t.kompetensi_pelatihan_id', $kompetensiPelatihanId))
+            ->select([
+                'jawaban_user.pertanyaan_id',
+                'jawaban_user.opsi_jawaban_id',
+                'jawaban_user.jawaban_teks',
+            ])
+            ->get();
+
+        return $jawaban->map(function ($j) use ($pivot, $opsiIdToSkala, $opsiTextToId) {
+            $pid = (int) $j->pertanyaan_id;
+            $source = $opsiIdToSkala->get($pid) ? $pid : ($pivot[$pid] ?? $pid);
+
+            $opsiId = $j->opsi_jawaban_id;
+            if (!$opsiId && $j->jawaban_teks) {
+                $opsiId = optional($opsiTextToId->get($source))->get(trim((string) $j->jawaban_teks));
+            }
+
+            $skalaMap = $opsiIdToSkala->get($source, []);
+            $skala = $opsiId ? ($skalaMap[$opsiId] ?? null) : null;
+            if ($skala !== null) {
+                $maxScale = count($skalaMap);
+                $skala = $maxScale > 0 ? max(1, min($maxScale, (int) $skala)) : (int) $skala;
+            }
+
+            return [
+                'pertanyaan_id' => $pid,
+                'skala' => $skala,
+            ];
+        });
     }
 }
