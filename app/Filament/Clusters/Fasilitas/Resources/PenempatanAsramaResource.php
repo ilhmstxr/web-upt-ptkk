@@ -22,11 +22,17 @@ class PenempatanAsramaResource extends Resource
     protected static ?string $modelLabel       = 'Pelatihan';
     protected static ?string $pluralModelLabel = 'Pelatihan';
 
+    /**
+     * Tidak ada form (resource berbasis view)
+     */
     public static function form(Form $form): Form
     {
         return $form->schema([]);
     }
 
+    /**
+     * Query utama (dipakai tabel & view)
+     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -34,6 +40,9 @@ class PenempatanAsramaResource extends Resource
             ->orderByDesc('tanggal_mulai');
     }
 
+    /**
+     * TABEL INDEX
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -51,10 +60,10 @@ class PenempatanAsramaResource extends Resource
                     ->label('Status')
                     ->badge()
                     ->color(fn (?string $state): string => match (strtolower($state ?? '')) {
-                        'aktif' => 'success',
-                        'belum dimulai' => 'info',
-                        'selesai' => 'gray',
-                        default => 'gray',
+                        'aktif'          => 'success',
+                        'belum dimulai'  => 'info',
+                        'selesai'        => 'gray',
+                        default          => 'gray',
                     })
                     ->formatStateUsing(fn (?string $state) => $state ? ucfirst($state) : '-')
                     ->alignCenter(),
@@ -79,9 +88,13 @@ class PenempatanAsramaResource extends Resource
                     ->label('Kelola Asrama')
                     ->icon('heroicon-o-home-modern'),
             ])
-            ->bulkActions([]);
+            ->bulkActions([]); // tetap kosong seperti versi baru
     }
 
+    /**
+     * RELATION MANAGER
+     * (tetap dipakai, tidak dibuang)
+     */
     public static function getRelations(): array
     {
         return [
@@ -89,6 +102,9 @@ class PenempatanAsramaResource extends Resource
         ];
     }
 
+    /**
+     * PAGES
+     */
     public static function getPages(): array
     {
         return [

@@ -11,7 +11,7 @@ class KamarPelatihan extends Model
 {
     use HasFactory;
 
-    protected $table = 'kamar_pelatihan';
+    protected $table = 'kamar_pelatihans';
 
     protected $fillable = [
         'kamar_id',
@@ -22,8 +22,9 @@ class KamarPelatihan extends Model
 
     protected $casts = [
         'available_beds' => 'integer',
-        'is_active' => 'boolean',
+        'is_active'      => 'boolean',
     ];
+
 
     public function kamar(): BelongsTo
     {

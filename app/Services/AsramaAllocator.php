@@ -22,7 +22,7 @@ class AsramaAllocator
         DB::transaction(function () use ($pelatihanId, $kamars, $reset) {
 
             foreach ($kamars as $kamar) {
-                $exists = DB::table('kamar_pelatihan')
+                $exists = DB::table('kamar_pelatihans')
                     ->where('kamar_id', $kamar->id)
                     ->where('pelatihan_id', $pelatihanId)
                     ->exists();
@@ -30,7 +30,7 @@ class AsramaAllocator
                 // kalau sudah ada dan tidak reset -> skip (jaga edit manual)
                 if ($exists && !$reset) {
                     // tetap sync status aktif mengikuti kamar global
-                    DB::table('kamar_pelatihan')
+                    DB::table('kamar_pelatihans')
                         ->where('kamar_id', $kamar->id)
                         ->where('pelatihan_id', $pelatihanId)
                         ->update([
@@ -41,7 +41,7 @@ class AsramaAllocator
                 }
 
                 // insert / update
-                DB::table('kamar_pelatihan')->updateOrInsert(
+                DB::table('kamar_pelatihans')->updateOrInsert(
                     [
                         'kamar_id'     => $kamar->id,
                         'pelatihan_id' => $pelatihanId,
@@ -110,9 +110,9 @@ class AsramaAllocator
                  * Ambil 1 kamar_pelatihan yang tersedia.
                  * Kalau mau urutan tertentu, join kamar + asrama untuk sorting.
                  */
-                $kp = DB::table('kamar_pelatihan as kp')
+                $kp = DB::table('kamar_pelatihans as kp')
                     ->join($kamarTable . ' as k', 'k.id', '=', 'kp.kamar_id')
-                    ->join('asrama as a', 'a.id', '=', 'k.asrama_id')
+                    ->join('asramas as a', 'a.id', '=', 'k.asrama_id')
                     ->where('kp.pelatihan_id', $pelatihanId)
                     ->where('kp.is_active', true)
                     ->where('k.is_active', true)
@@ -120,7 +120,14 @@ class AsramaAllocator
                     ->orderBy('a.name')
                     ->orderBy('k.nomor_kamar')
                     ->lockForUpdate()
+                    ->select([
+                        'kp.id',          // ✅ PENTING
+                        'kp.kamar_id',
+                        'kp.available_beds',
+                    ])
                     ->first();
+
+
 
                 if (!$kp) {
                     $result['failed_full']++;
@@ -138,7 +145,7 @@ class AsramaAllocator
                     'gender'             => $gender,
                 ]);
 
-                DB::table('kamar_pelatihan')
+                DB::table('kamar_pelatihans')
                     ->where('id', $kp->id)
                     ->decrement('available_beds');
 

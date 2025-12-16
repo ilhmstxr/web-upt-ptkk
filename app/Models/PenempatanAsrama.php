@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class PenempatanAsrama extends Model
 {
@@ -28,21 +29,24 @@ class PenempatanAsrama extends Model
 
     public function peserta(): BelongsTo
     {
-        return $this->belongsTo(Peserta::class, 'peserta_id');
+        return $this->belongsTo(Peserta::class);
     }
 
     public function pelatihan(): BelongsTo
     {
-        return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
+        return $this->belongsTo(Pelatihan::class);
     }
 
+    /**
+     * RELASI UTAMA (SATU-SATUNYA)
+     */
     public function kamarPelatihan(): BelongsTo
     {
-        return $this->belongsTo(KamarPelatihan::class, 'kamar_pelatihan_id');
+        return $this->belongsTo(KamarPelatihan::class);
     }
 
     public function scopePenghuniAktif(Builder $query): Builder
     {
-        return $query->whereHas('pelatihan', fn (Builder $q) => $q->where('status', 'aktif'));
+        return $query->whereNotNull('kamar_pelatihan_id');
     }
 }

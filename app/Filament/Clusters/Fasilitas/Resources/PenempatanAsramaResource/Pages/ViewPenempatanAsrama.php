@@ -14,6 +14,13 @@ class ViewPenempatanAsrama extends ViewRecord
 {
     protected static string $resource = PenempatanAsramaResource::class;
 
+    protected static ?string $title = 'Penempatan Asrama';
+
+    /**
+     * =========================
+     * HEADER ACTIONS
+     * =========================
+     */
     protected function getHeaderActions(): array
     {
         return [
@@ -26,16 +33,22 @@ class ViewPenempatanAsrama extends ViewRecord
 
                     $pelatihanId = $this->record->id;
 
-                    $kamarConfig = session('kamars') ?? config('kamars');
-                    $allocator->generateRoomsFromConfig($pelatihanId, $kamarConfig);
+                    // sinkron kamar global -> kamar_pelatihan
+                    $allocator->attachKamarToPelatihan($pelatihanId);
 
-                    $result = $allocator->allocatePesertaPerPelatihan($pelatihanId);
+                    // auto-allocate peserta
+                    $result = $allocator->allocatePeserta($pelatihanId);
 
+                    // refresh Livewire
                     $this->dispatch('$refresh');
 
                     Notification::make()
                         ->title('Penempatan selesai')
-                        ->body("OK={$result['ok']} | skipped={$result['skipped_already_assigned']} | gagal={$result['failed_full']}")
+                        ->body(
+                            "OK={$result['ok']} | " .
+                            "Skipped={$result['skipped_already_assigned']} | " .
+                            "Gagal={$result['failed_full']}"
+                        )
                         ->success()
                         ->send();
                 }),
@@ -48,17 +61,22 @@ class ViewPenempatanAsrama extends ViewRecord
         ];
     }
 
+    /**
+     * =========================
+     * EXPORT CSV (FULL FEATURE)
+     * =========================
+     */
     protected function exportCsv(): StreamedResponse
     {
         $pelatihan   = $this->record;
         $pelatihanId = $pelatihan->id;
 
+        // helper sanitasi cell
         $clean = function ($v) {
             $v = (string) ($v ?? '');
             $v = trim($v);
-            // hapus enter, tab, dan spasi dobel
-            $v = preg_replace("/\r|\n|\t/", " ", $v);
-            $v = preg_replace("/\s{2,}/", " ", $v);
+            $v = preg_replace("/\r|\n|\t/", ' ', $v);
+            $v = preg_replace("/\s{2,}/", ' ', $v);
             return $v === '' ? '-' : $v;
         };
 
@@ -66,7 +84,8 @@ class ViewPenempatanAsrama extends ViewRecord
             ->where('pelatihan_id', $pelatihanId)
             ->with([
                 'peserta.instansi',
-                'penempatanAsrama.kamars.asramas',
+                // ⬇️ INI KUNCI: JANGAN PAKAI penempatanAsrama.kamar
+                'penempatanAsrama.kamarPelatihan.kamar.asrama',
             ])
             ->orderBy('id')
             ->get()
@@ -76,26 +95,24 @@ class ViewPenempatanAsrama extends ViewRecord
                 $peserta    = $pend->peserta;
                 $penempatan = $pend->penempatanAsramaAktif();
 
-                $asramaName = $penempatan?->kamars?->asrama?->name ?? null;
-                $kamarNo    = $penempatan?->kamars?->nomor_kamar ?? null;
-                $lantai     = $penempatan?->kamars?->lantai ?? null;
+                $kamar      = $penempatan?->kamarPelatihan?->kamar;
+                $asrama     = $kamar?->asrama;
 
                 return [
-                    'no'           => $i + 1,
-                    'kode_regis'   => $clean($pend->nomor_registrasi),
-                    'nama'         => $clean($peserta?->nama),
-                    'nik'          => $clean($peserta?->nik),
-                    'jenis_kelamin'=> $clean($peserta?->jenis_kelamin),
-                    'instansi'     => $clean($peserta?->instansi?->asal_instansi),
-                    'asramas'       => $clean($asramaName),
-                    'lantai'       => $clean($lantai),
-                    'kamars'        => $clean($kamarNo),
+                    'no'            => $i + 1,
+                    'kode_regis'    => $clean($pend->nomor_registrasi),
+                    'nama'          => $clean($peserta?->nama),
+                    'nik'           => $clean($peserta?->nik),
+                    'jenis_kelamin' => $clean($peserta?->jenis_kelamin),
+                    'instansi'      => $clean($peserta?->instansi?->asal_instansi),
+                    'asrama'        => $clean($asrama?->name),
+                    'lantai'        => $clean($kamar?->lantai),
+                    'kamar'         => $clean($kamar?->nomor_kamar),
                 ];
             });
 
-        $baseName = $pelatihan->slug ?? str($pelatihan->nama_pelatihan ?? 'pelatihan')
-            ->slug()
-            ->toString();
+        $baseName = $pelatihan->slug
+            ?? str($pelatihan->nama_pelatihan ?? 'pelatihan')->slug()->toString();
 
         $filename = 'penempatan-asrama-' . $baseName . '-' . now()->format('Ymd-His') . '.csv';
 
@@ -103,10 +120,10 @@ class ViewPenempatanAsrama extends ViewRecord
 
             $handle = fopen('php://output', 'w');
 
-            // UTF-8 BOM biar Excel aman
-            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+            // UTF-8 BOM (Excel safe)
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-            // header pakai delimiter ;
+            // header
             fputcsv($handle, [
                 'No',
                 'Kode Registrasi',
@@ -129,7 +146,7 @@ class ViewPenempatanAsrama extends ViewRecord
                     $r['instansi'],
                     $r['asrama'],
                     $r['lantai'],
-                    $r['kamars'],
+                    $r['kamar'],
                 ], ';');
             }
 
@@ -137,8 +154,7 @@ class ViewPenempatanAsrama extends ViewRecord
 
         }, $filename, [
             'Content-Type'        => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ]);
     }
-
 }
