@@ -29,110 +29,6 @@ class TesResource extends Resource
         ];
     }
 
-<<<<<<<<< Temporary merge branch 1
-    /**
-     * Reusable schema 1 pertanyaan + opsi.
-     */
-    protected static function pertanyaanSchema(): array
-    {
-        return [
-            Forms\Components\RichEditor::make('teks_pertanyaan')
-                ->label('Teks Pertanyaan')
-                ->required(),
-
-            Forms\Components\FileUpload::make('gambar')
-                ->image()
-                ->directory('soal-images')
-                ->label('Gambar Soal (Opsional)'),
-
-            Forms\Components\Select::make('tipe_jawaban')
-                ->options([
-                    'pilihan_ganda' => 'Pilihan Ganda',
-                    'skala_likert'  => 'Skala Likert (1–4)',
-                    'teks_bebas'    => 'Essay',
-                ])
-                ->default('pilihan_ganda')
-                ->reactive()
-                ->afterStateHydrated(function ($state, Forms\Get $get, Forms\Set $set, $component) {
-                    if ($component->getLivewire()->getOperation() !== 'create') return;
-                    if ($state !== 'skala_likert') return;
-
-                    $current = $get('opsiJawabans');
-                    if (is_array($current) && count($current) > 0) return;
-
-                    $set('opsiJawabans', self::defaultLikertOptions());
-                })
-                ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set, $component) {
-                    if ($component->getLivewire()->getOperation() !== 'create') return;
-                    if ($state !== 'skala_likert') return;
-
-                    $current = $get('opsiJawabans');
-                    if (is_array($current) && count($current) > 0) return;
-
-                    $set('opsiJawabans', self::defaultLikertOptions());
-                }),
-
-            Forms\Components\Repeater::make('opsiJawabans')
-                ->relationship()
-                ->schema([
-                    Forms\Components\TextInput::make('teks_opsi')
-                        ->required()
-                        ->label('Teks Opsi'),
-
-                    Forms\Components\Toggle::make('apakah_benar')
-                        ->label('Jawaban Benar')
-                        ->default(false)
-                        ->live()
-                        ->visible(fn (Forms\Get $get) => $get('../tipe_jawaban') === 'pilihan_ganda')
-                        ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set, Forms\Components\Toggle $component) {
-                            if (!$state) return;
-
-                            // pastikan hanya satu true
-                            $path = $component->getStatePath();
-                            $segments = explode('.', $path);
-                            $currentKey = $segments[count($segments) - 2];
-
-                            $items = $get('../opsiJawabans') ?? [];
-                            foreach ($items as $key => $value) {
-                                if ($key !== $currentKey && ($value['apakah_benar'] ?? false)) {
-                                    $targetPath = str_replace(".{$currentKey}.", ".{$key}.", $path);
-                                    $set($targetPath, false);
-                                }
-                            }
-                        }),
-
-                    Forms\Components\FileUpload::make('gambar')
-                        ->image()
-                        ->directory('opsi-images')
-                        ->label('Gambar Opsi (Opsional)'),
-                ])
-                ->columns(2)
-                ->label('Opsi Jawaban')
-                ->visible(fn (Forms\Get $get) =>
-                    in_array($get('tipe_jawaban'), ['pilihan_ganda', 'skala_likert'], true)
-                )
-                ->defaultItems(fn (Forms\Get $get) =>
-                    $get('tipe_jawaban') === 'pilihan_ganda' ? 4 : 0
-                )
-                ->rules([
-                    fn (Forms\Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
-                        if ($get('tipe_jawaban') !== 'pilihan_ganda') return;
-
-                        $correctCount = collect($value)->where('apakah_benar', true)->count();
-                        if ($correctCount > 1) $fail('Hanya satu jawaban yang boleh ditandai sebagai benar.');
-                    },
-                ])
-                ->mutateDehydratedStateUsing(function ($state, Forms\Get $get) {
-                    // likert: jangan ada jawaban benar
-                    if ($get('tipe_jawaban') !== 'skala_likert' || !is_array($state)) return $state;
-
-                    return array_map(function ($item) {
-                        $item['apakah_benar'] = false;
-                        return $item;
-                    }, $state);
-                }),
-        ];
-=========
     protected static function isCreating($component): bool
     {
         $livewire = $component->getLivewire();
@@ -150,17 +46,17 @@ class TesResource extends Resource
     protected static function getKategoriOptionsFromRepeater(Forms\Get $get): array
     {
         $items = $get('../../pertanyaan') ?? [];
-        if (!is_array($items)) $items = [];
+        if (!is_array($items))
+            $items = [];
 
         $list = collect($items)
             ->pluck('kategori')
-            ->map(fn ($v) => trim((string) $v))
-            ->filter(fn ($v) => $v !== '')
+            ->map(fn($v) => trim((string) $v))
+            ->filter(fn($v) => $v !== '')
             ->unique()
             ->values();
 
-        return $list->mapWithKeys(fn ($v) => [$v => $v])->toArray();
->>>>>>>>> Temporary merge branch 2
+        return $list->mapWithKeys(fn($v) => [$v => $v])->toArray();
     }
 
     public static function form(Form $form): Form
@@ -191,42 +87,31 @@ class TesResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->default(fn () => request()->query('pelatihan_id'))
+                            ->default(fn() => request()->query('pelatihan_id'))
                             // pelatihan boleh kamu kunci saat edit (opsional)
-                            ->disabled(fn (?string $operation) => $operation === 'edit'),
+                            ->disabled(fn(?string $operation) => $operation === 'edit'),
 
-<<<<<<<<< Temporary merge branch 1
-                        // ✅ SELARAS dengan migration tes: kompetensi_pelatihan_id
-                        Forms\Components\Select::make('kompetensi_pelatihan_id')
-                            ->relationship('kompetensiPelatihan', 'kode_kompetensi_pelatihan')
-                            ->searchable()
-                            ->required()
-                            ->default(request()->query('kompetensi_id'))
-                            ->disabled(fn (?string $operation) =>
-                                $operation === 'edit' || request()->has('kompetensi_id')
-                            ),
-=========
                         /**
                          * ✅ FIX KOMPETENSI:
                          * - pre/post: tampil + wajib + tersimpan + BISA DIEDIT
                          * - survei: hilang + tidak tersimpan + dipaksa null
                          */
                         Forms\Components\Select::make('kompetensi_pelatihan_id')
-                            ->relationship('kompetensi', 'nama_kompetensi')
+                            ->relationship('kompetensiPelatihan', 'nama_kompetensi')
                             ->searchable()
                             ->preload()
-                            ->default(fn () => request()->query('kompetensi_pelatihan_id'))
-                            ->visible(fn (Forms\Get $get) => $get('tipe') !== 'survei')
-                            ->required(fn (Forms\Get $get) => in_array($get('tipe'), ['pre-test', 'post-test'], true))
-                            ->dehydrated(fn (Forms\Get $get) => $get('tipe') !== 'survei')
+                            ->default(fn() => request()->query('kompetensi_pelatihan_id'))
+                            ->visible(fn(Forms\Get $get) => $get('tipe') !== 'survei')
+                            ->required(fn(Forms\Get $get) => in_array($get('tipe'), ['pre-test', 'post-test'], true))
+                            ->dehydrated(fn(Forms\Get $get) => $get('tipe') !== 'survei')
                             ->dehydrateStateUsing(function ($state, Forms\Get $get) {
                                 // kalau survei => simpan null
-                                if ($get('tipe') === 'survei') return null;
+                                if ($get('tipe') === 'survei')
+                                    return null;
                                 return $state;
                             })
                             // ✅ INI PENTING: JANGAN disabled di edit, biar bisa diklik
                             ->disabled(false),
->>>>>>>>> Temporary merge branch 2
 
                         Forms\Components\TextInput::make('durasi_menit')
                             ->numeric()
@@ -243,13 +128,7 @@ class TesResource extends Resource
                             ->after('tanggal_mulai'),
                     ]),
 
-<<<<<<<<< Temporary merge branch 1
-                    Forms\Components\View::make(
-                        'filament.clusters.evaluasi.resources.tes-resource.partials.tips-card'
-                    ),
-=========
                     Forms\Components\View::make('filament.clusters.evaluasi.resources.tes-resource.partials.tips-card'),
->>>>>>>>> Temporary merge branch 2
                 ])->columnSpan(1),
 
                 // RIGHT
@@ -309,15 +188,12 @@ class TesResource extends Resource
                                         'teks_bebas' => 'Essay',
                                     ])
                                     ->default('pilihan_ganda')
-<<<<<<<<< Temporary merge branch 1
-                                    ->reactive(),
-
-                                /* ===== OPSI JAWABAN (KHUSUS PG) ===== */
-=========
                                     ->live()
                                     ->afterStateHydrated(function ($state, Forms\Get $get, Forms\Set $set, $component) {
-                                        if (!self::isCreating($component)) return;
-                                        if ($state !== 'skala_likert') return;
+                                        if (!self::isCreating($component))
+                                            return;
+                                        if ($state !== 'skala_likert')
+                                            return;
 
                                         $current = $get('opsiJawabans');
                                         if (!is_array($current) || count($current) === 0) {
@@ -325,8 +201,10 @@ class TesResource extends Resource
                                         }
                                     })
                                     ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set, $component) {
-                                        if (!self::isCreating($component)) return;
-                                        if ($state !== 'skala_likert') return;
+                                        if (!self::isCreating($component))
+                                            return;
+                                        if ($state !== 'skala_likert')
+                                            return;
 
                                         $current = $get('opsiJawabans');
                                         if (!is_array($current) || count($current) === 0) {
@@ -334,7 +212,6 @@ class TesResource extends Resource
                                         }
                                     }),
 
->>>>>>>>> Temporary merge branch 2
                                 Forms\Components\Repeater::make('opsiJawabans')
                                     ->relationship()
                                     ->schema([
@@ -346,18 +223,10 @@ class TesResource extends Resource
                                             ->label('Jawaban Benar')
                                             ->default(false)
                                             ->live()
-<<<<<<<<< Temporary merge branch 1
-                                            ->afterStateUpdated(function (
-                                                $state,
-                                                Forms\Get $get,
-                                                Forms\Set $set,
-                                                Forms\Components\Toggle $component
-                                            ) {
-=========
-                                            ->visible(fn (Forms\Get $get) => $get('../../tipe_jawaban') === 'pilihan_ganda')
+                                            ->visible(fn(Forms\Get $get) => $get('../../tipe_jawaban') === 'pilihan_ganda')
                                             ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set, $component) {
->>>>>>>>> Temporary merge branch 2
-                                                if (!$state) return;
+                                                if (!$state)
+                                                    return;
 
                                                 $path = $component->getStatePath();
                                                 $segments = explode('.', $path);
@@ -383,35 +252,17 @@ class TesResource extends Resource
                                     ])
                                     ->columns(2)
                                     ->label('Opsi Jawaban')
-<<<<<<<<< Temporary merge branch 1
-                                    ->visible(fn (Forms\Get $get) =>
-                                        $get('tipe_jawaban') === 'pilihan_ganda'
-                                    )
-                                    ->defaultItems(4)
+                                    ->visible(fn(Forms\Get $get) => in_array($get('tipe_jawaban'), ['pilihan_ganda', 'skala_likert'], true))
+                                    ->defaultItems(fn(Forms\Get $get) => $get('tipe_jawaban') === 'pilihan_ganda' ? 4 : 0)
                                     ->rules([
-                                        fn (): \Closure => function (
-                                            string $attribute,
-                                            $value,
-                                            \Closure $fail
-                                        ) {
-                                            $correctCount = collect($value)
-                                                ->where('apakah_benar', true)
-                                                ->count();
-=========
-                                    ->visible(fn (Forms\Get $get) => in_array($get('tipe_jawaban'), ['pilihan_ganda', 'skala_likert'], true))
-                                    ->defaultItems(fn (Forms\Get $get) => $get('tipe_jawaban') === 'pilihan_ganda' ? 4 : 0)
-                                    ->rules([
-                                        fn (Forms\Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
-                                            if ($get('tipe_jawaban') !== 'pilihan_ganda') return;
+                                        fn(Forms\Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                            if ($get('tipe_jawaban') !== 'pilihan_ganda')
+                                                return;
                                             $correctCount = collect($value)->where('apakah_benar', true)->count();
->>>>>>>>> Temporary merge branch 2
                                             if ($correctCount > 1) {
                                                 $fail('Hanya satu jawaban yang boleh ditandai sebagai benar.');
                                             }
                                         },
-<<<<<<<<< Temporary merge branch 1
-                                    ]),
-=========
                                     ])
                                     ->mutateDehydratedStateUsing(function ($state, Forms\Get $get) {
                                         if ($get('tipe_jawaban') !== 'skala_likert' || !is_array($state)) {
@@ -422,7 +273,6 @@ class TesResource extends Resource
                                             return $item;
                                         }, $state);
                                     }),
->>>>>>>>> Temporary merge branch 2
                             ])
                             ->itemLabel(fn(array $state): ?string => Str::limit(strip_tags($state['teks_pertanyaan'] ?? ''), 40))
                             ->collapsible()
@@ -438,10 +288,6 @@ class TesResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('judul')->searchable()->sortable(),
-<<<<<<<<< Temporary merge branch 1
-
-=========
->>>>>>>>> Temporary merge branch 2
                 Tables\Columns\TextColumn::make('tipe')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
@@ -450,22 +296,9 @@ class TesResource extends Resource
                         'survei' => 'warning',
                         default => 'gray',
                     }),
-<<<<<<<<< Temporary merge branch 1
-
-                Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('durasi_menit')->numeric()->label('Durasi'),
-
-                Tables\Columns\TextColumn::make('pertanyaan_count')
-                    ->counts('pertanyaan')
-                    ->label('Jumlah Soal'),
-=========
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('durasi_menit')->numeric()->label('Durasi'),
                 Tables\Columns\TextColumn::make('pertanyaan_count')->counts('pertanyaan')->label('Jumlah Soal'),
->>>>>>>>> Temporary merge branch 2
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('tipe')->options([
@@ -473,12 +306,7 @@ class TesResource extends Resource
                     'post-test' => 'Post-Test',
                     'survei' => 'Survei',
                 ]),
-<<<<<<<<< Temporary merge branch 1
-                Tables\Filters\SelectFilter::make('pelatihan')
-                    ->relationship('pelatihan', 'nama_pelatihan'),
-=========
                 Tables\Filters\SelectFilter::make('pelatihan')->relationship('pelatihan', 'nama_pelatihan'),
->>>>>>>>> Temporary merge branch 2
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
