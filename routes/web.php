@@ -293,11 +293,11 @@ Route::middleware(['auth'])->group(function () {
     // Rekap nilai tes
     Route::get('/admin/tes/{tes}/rekap-download', [TesRekapDownloadController::class, 'download'])
         ->name('tes.rekap.download');
-    
+
     // Export Data Pelatihan (Template Surat)
     Route::get('/export/template/rekap-pelatihan/{pelatihanId}', [ExportController::class, 'rekapPelatihan'])
         ->name('export.template.rekap-pelatihan');
-    
+
     Route::get('/export/template/peserta-excel/{pelatihanId}', [ExportController::class, 'pesertaExcel'])
         ->name('export.template.peserta-excel');
 
