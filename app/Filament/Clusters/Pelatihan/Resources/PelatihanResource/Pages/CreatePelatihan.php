@@ -26,10 +26,10 @@ class CreatePelatihan extends CreateRecord
             foreach ($data['kompetensi_items'] as $item) {
                 // $item['instruktur_id'] is an array due to multiple()
                 $instructorIds = $item['instruktur_id'] ?? [];
-                
+
                 // Common fields for all rows in this group
                 $commonData = [
-                    'kompetensi_pelatihan_id' => $item['kompetensi_pelatihan_id'],
+                    'kompetensi_id' => $item['kompetensi_id'],
                     'lokasi' => $item['lokasi'] ?? 'UPT-PTKK',
                     // Add other fields if present in schema
                 ];
@@ -39,7 +39,7 @@ class CreatePelatihan extends CreateRecord
 
                 // Attach instructors via Pivot
                 if (!empty($instructorIds) && is_array($instructorIds)) {
-                     $kompetensiPelatihan->instrukturs()->attach($instructorIds);
+                    $kompetensiPelatihan->instrukturs()->attach($instructorIds);
                 }
             }
         }

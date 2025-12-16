@@ -27,11 +27,7 @@ class Tes extends Model
 
     public function kompetensiPelatihan()
     {
-<<<<<<<<< Temporary merge branch 1
         return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
-=========
-        return $this->belongsTo(Kompetensi::class, 'kompetensi_pelatihan_id');
->>>>>>>>> Temporary merge branch 2
     }
 
     public function pelatihan(): BelongsTo

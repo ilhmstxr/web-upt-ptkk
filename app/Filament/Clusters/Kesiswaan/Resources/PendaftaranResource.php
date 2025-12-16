@@ -38,7 +38,7 @@ class PendaftaranResource extends Resource
             'peserta.user',
             'pelatihan',
             'kompetensiPelatihan.kompetensi',
-            'penempatanAsramas.kamarPelatihan.kamar',
+            'penempatanAsrama.kamarPelatihan.kamar',
         ]);
     }
 
@@ -193,7 +193,7 @@ class PendaftaranResource extends Resource
                     ]),
             ])
                 ->columnSpanFull()
-                ->visible(fn ($record) => blank($record)),
+                ->visible(fn($record) => blank($record)),
 
             /**
              * =========================
@@ -206,7 +206,7 @@ class PendaftaranResource extends Resource
                         ->schema([
                             Forms\Components\Placeholder::make('peserta_name')
                                 ->label('Nama Peserta')
-                                ->content(fn ($record) => $record?->peserta?->nama ?? '-'),
+                                ->content(fn($record) => $record?->peserta?->nama ?? '-'),
 
                             Forms\Components\TextInput::make('nomor_registrasi')
                                 ->label('Nomor Registrasi')
@@ -215,11 +215,11 @@ class PendaftaranResource extends Resource
 
                             Forms\Components\Placeholder::make('pelatihan_name')
                                 ->label('Pelatihan')
-                                ->content(fn ($record) => $record?->pelatihan?->nama_pelatihan ?? '-'),
+                                ->content(fn($record) => $record?->pelatihan?->nama_pelatihan ?? '-'),
 
                             Forms\Components\Placeholder::make('kompetensi_name')
                                 ->label('Kompetensi')
-                                ->content(fn ($record) => $record?->kompetensiPelatihan?->kompetensi?->nama_kompetensi ?? '-'),
+                                ->content(fn($record) => $record?->kompetensiPelatihan?->kompetensi?->nama_kompetensi ?? '-'),
 
                             Forms\Components\TextInput::make('kelas')
                                 ->label('Kelas')
@@ -249,7 +249,7 @@ class PendaftaranResource extends Resource
                                     $sehat = $lampiran->fc_surat_sehat_url ?? null;
                                     $foto  = $lampiran->pas_foto_url ?? null;
 
-                                    $link = fn ($url) => $url
+                                    $link = fn($url) => $url
                                         ? '<a href="' . $url . '" target="_blank" class="text-primary-600 hover:underline">Lihat File</a>'
                                         : '<span class="text-gray-500">Tidak ada</span>';
 
@@ -266,7 +266,7 @@ class PendaftaranResource extends Resource
                         ]),
                 ])
                 ->columnSpan(['lg' => 2])
-                ->visible(fn ($record) => filled($record)),
+                ->visible(fn($record) => filled($record)),
 
             Forms\Components\Group::make()
                 ->schema([
@@ -285,7 +285,7 @@ class PendaftaranResource extends Resource
                         ]),
                 ])
                 ->columnSpan(['lg' => 1])
-                ->visible(fn ($record) => filled($record)),
+                ->visible(fn($record) => filled($record)),
         ]);
     }
 
@@ -323,14 +323,14 @@ class PendaftaranResource extends Resource
                     ->label('Status')
                     ->icon('heroicon-o-shield-check')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => match (strtolower((string) $state)) {
+                    ->formatStateUsing(fn($state) => match (strtolower((string) $state)) {
                         'pending'    => 'Pending',
                         'verifikasi' => 'Verifikasi',
                         'diterima'   => 'Diterima',
                         'ditolak'    => 'Ditolak',
                         default      => (string) $state,
                     })
-                    ->color(fn (?string $state): string => match (strtolower((string) $state)) {
+                    ->color(fn(?string $state): string => match (strtolower((string) $state)) {
                         'pending'    => 'warning',
                         'verifikasi' => 'info',
                         'diterima'   => 'success',
@@ -361,7 +361,7 @@ class PendaftaranResource extends Resource
 
                 Tables\Filters\SelectFilter::make('kompetensi_id')
                     ->label('Kompetensi')
-                    ->options(fn () => Kompetensi::query()->pluck('nama_kompetensi', 'id')->all())
+                    ->options(fn() => Kompetensi::query()->pluck('nama_kompetensi', 'id')->all())
                     ->query(function (Builder $query, array $data) {
                         $kompetensiId = $data['value'] ?? null;
                         if (! $kompetensiId) return $query;
@@ -377,7 +377,7 @@ class PendaftaranResource extends Resource
                     ->label('Terima')
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->requiresConfirmation(fn () => ! session()->get('suppress_pendaftaran_approval'))
+                    ->requiresConfirmation(fn() => ! session()->get('suppress_pendaftaran_approval'))
                     ->modalIcon('heroicon-o-check')
                     ->modalHeading('Terima Peserta')
                     ->modalDescription('Apakah Anda yakin ingin menerima peserta ini? Status akan berubah menjadi Diterima.')
@@ -400,13 +400,13 @@ class PendaftaranResource extends Resource
                                 'peserta.user',
                                 'kompetensiPelatihan.kompetensi',
                                 'pelatihan',
-                                'penempatanAsramas.kamarPelatihan.kamar',
+                                'penempatanAsrama.kamarPelatihan.kamar',
                             ]);
 
                             $kamarAsrama =
                                 $record->penempatanAsramaAktif?->kamarPelatihan?->kamar?->nomor_kamar
-                                    ? 'Kamar ' . $record->penempatanAsramaAktif->kamarPelatihan->kamar->nomor_kamar
-                                    : 'Belum Ditentukan';
+                                ? 'Kamar ' . $record->penempatanAsramaAktif->kamarPelatihan->kamar->nomor_kamar
+                                : 'Belum Ditentukan';
 
                             $emailData = [
                                 'id_peserta'     => $record->nomor_registrasi,
@@ -444,13 +444,13 @@ class PendaftaranResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
 
                 Tables\Actions\Action::make('reject')
                     ->label('Tolak')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
-                    ->requiresConfirmation(fn () => ! session()->get('suppress_pendaftaran_approval'))
+                    ->requiresConfirmation(fn() => ! session()->get('suppress_pendaftaran_approval'))
                     ->modalIcon('heroicon-o-x-mark')
                     ->modalHeading('Tolak Peserta')
                     ->modalDescription('Apakah Anda yakin ingin menolak peserta ini? Status akan berubah menjadi Ditolak.')
@@ -472,17 +472,17 @@ class PendaftaranResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
 
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
 
                 Tables\Actions\DeleteAction::make()
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

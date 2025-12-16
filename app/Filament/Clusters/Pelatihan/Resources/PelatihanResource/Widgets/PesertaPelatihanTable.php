@@ -53,14 +53,14 @@ class PesertaPelatihanTable extends BaseWidget
             ->where('pelatihan_id', $this->record->getKey())
             ->when(
                 $this->kompetensiPelatihanId,
-                fn (Builder $q) => $q->where('kompetensi_pelatihan_id', $this->kompetensiPelatihanId)
+                fn(Builder $q) => $q->where('kompetensi_pelatihan_id', $this->kompetensiPelatihanId)
             )
             ->with([
                 'peserta.user',
                 'peserta.instansi.cabangDinas',
                 'kompetensiPelatihan.kompetensi',
                 'pelatihan',
-                'penempatanAsramas.kamarPelatihan.kamar',
+                'penempatanAsrama.kamarPelatihan.kamar',
             ]);
     }
 
@@ -90,7 +90,7 @@ class PesertaPelatihanTable extends BaseWidget
     {
         return $table
             // ✅ lazy query closure -> dipanggil setelah mount
-            ->query(fn () => $this->pesertaQuery())
+            ->query(fn() => $this->pesertaQuery())
 
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_registrasi')
@@ -100,9 +100,9 @@ class PesertaPelatihanTable extends BaseWidget
 
                 Tables\Columns\TextColumn::make('peserta.nama')
                     ->label('Info Peserta')
-                    ->description(fn (PendaftaranPelatihan $record) =>
-                        ($record->peserta?->user?->email ?? '-') . ' | ' .
-                        ($record->peserta?->no_hp ?? '-')
+                    ->description(
+                        fn(PendaftaranPelatihan $record) => ($record->peserta?->user?->email ?? '-') . ' | ' .
+                            ($record->peserta?->no_hp ?? '-')
                     )
                     ->sortable()
                     ->searchable(),
@@ -119,7 +119,7 @@ class PesertaPelatihanTable extends BaseWidget
                 Tables\Columns\TextColumn::make('status_pendaftaran')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (?string $state) => match (strtolower($state ?? '')) {
+                    ->color(fn(?string $state) => match (strtolower($state ?? '')) {
                         'pending'    => 'warning',
                         'verifikasi' => 'info',
                         'diterima'   => 'success',
@@ -142,14 +142,15 @@ class PesertaPelatihanTable extends BaseWidget
 
                 Tables\Filters\SelectFilter::make('kompetensi_pelatihan_id')
                     ->label('Kompetensi')
-                    ->options(fn () => $this->getKompetensiOptions())
-                    ->query(fn (Builder $query, array $data) =>
+                    ->options(fn() => $this->getKompetensiOptions())
+                    ->query(
+                        fn(Builder $query, array $data) =>
                         $query->when(
                             $data['value'] ?? null,
-                            fn (Builder $q, $value) => $q->where('kompetensi_pelatihan_id', $value)
+                            fn(Builder $q, $value) => $q->where('kompetensi_pelatihan_id', $value)
                         )
                     )
-                    ->visible(fn () => is_null($this->kompetensiPelatihanId)),
+                    ->visible(fn() => is_null($this->kompetensiPelatihanId)),
             ])
 
             ->headerActions([])
@@ -161,7 +162,7 @@ class PesertaPelatihanTable extends BaseWidget
                     ->label('Terima')
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->requiresConfirmation(fn () => ! session()->get('suppress_peserta_approval_confirmation'))
+                    ->requiresConfirmation(fn() => ! session()->get('suppress_peserta_approval_confirmation'))
                     ->form([
                         Forms\Components\Checkbox::make('dont_show_again')
                             ->label('Jangan tampilkan lagi (Sesi ini)'),
@@ -189,7 +190,8 @@ class PesertaPelatihanTable extends BaseWidget
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (PendaftaranPelatihan $record) =>
+                    ->visible(
+                        fn(PendaftaranPelatihan $record) =>
                         strtolower((string) $record->status_pendaftaran) === 'pending'
                     ),
 
@@ -198,17 +200,20 @@ class PesertaPelatihanTable extends BaseWidget
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn (PendaftaranPelatihan $record) =>
+                    ->action(
+                        fn(PendaftaranPelatihan $record) =>
                         $record->update(['status_pendaftaran' => 'ditolak'])
                     )
-                    ->visible(fn (PendaftaranPelatihan $record) =>
+                    ->visible(
+                        fn(PendaftaranPelatihan $record) =>
                         strtolower((string) $record->status_pendaftaran) === 'pending'
                     ),
 
                 Tables\Actions\EditAction::make()->slideOver(),
 
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn (PendaftaranPelatihan $record) =>
+                    ->visible(
+                        fn(PendaftaranPelatihan $record) =>
                         strtolower((string) $record->status_pendaftaran) !== 'pending'
                     ),
             ]);
