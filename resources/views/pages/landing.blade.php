@@ -714,7 +714,6 @@ $latestBeritas = Berita::query()
             $row = $collection->firstWhere('kelas', $key);
             if (!$row) return null;
 
-            // photos di Filament biasanya array; tapi kita amankan juga untuk string JSON
             $photos = $row->photos;
             if (is_string($photos)) {
                 $decoded = json_decode($photos, true);
@@ -722,12 +721,29 @@ $latestBeritas = Berita::query()
             }
             if (!is_array($photos)) $photos = [];
 
-            // convert ke URL publik
-            $files = collect($photos)
-                ->filter(fn ($p) => is_string($p) && trim($p) !== '')
-                ->map(fn ($p) => \Illuminate\Support\Facades\Storage::disk('public')->url($p))
-                ->values()
-                ->toArray();
+$files = collect($photos)
+    ->filter(fn ($p) => is_string($p) && trim($p) !== '')
+    ->map(function ($p) {
+        $p = trim($p);
+
+        // kalau sudah full URL
+        if (Str::startsWith($p, ['http://', 'https://'])) {
+            return $p;
+        }
+
+        // kalau sudah /storage/xxx
+        if (Str::startsWith($p, '/storage/')) {
+            return $p;
+        }
+
+        // kalau masih ada prefix public/
+        $p = Str::replaceFirst('public/', '', $p);
+
+        // default: path relatif storage public
+        return asset('storage/' . $p);
+    })
+    ->values()
+    ->toArray();
 
             return [
                 'key'   => $key,
@@ -746,15 +762,9 @@ $latestBeritas = Berita::query()
         @media (prefers-reduced-motion: reduce) {
             #sorotanPelatihan .js-marquee { animation: none !important; transform: none !important; }
         }
-
-        /* animasi saat ganti kategori */
-        #sorotanPelatihan .pane-enter {
-            opacity: 0;
-            transform: translateY(6px);
-        }
+        #sorotanPelatihan .pane-enter { opacity: 0; transform: translateY(6px); }
         #sorotanPelatihan .pane-enter-active {
-            opacity: 1;
-            transform: translateY(0);
+            opacity: 1; transform: translateY(0);
             transition: opacity 220ms ease, transform 220ms ease;
         }
     </style>
@@ -802,7 +812,6 @@ $latestBeritas = Berita::query()
             @foreach($sorotanData as $i => $cat)
                 @php
                     $files = $cat['files'] ?? [];
-                    // kalau files kosong: tetap render placeholder biar layout gak jebol
                     $hasFiles = is_array($files) && count($files) > 0;
                 @endphp
 
@@ -827,7 +836,6 @@ $latestBeritas = Berita::query()
                                     @endforeach
                                 @endfor
                             @else
-                                {{-- fallback kalau admin belum upload --}}
                                 @for($x = 0; $x < 6; $x++)
                                     <div class="relative h-[130px] md:h-[150px] lg:h-[170px]
                                                 w-[220px] md:w-[260px] lg:w-[280px]
@@ -839,7 +847,6 @@ $latestBeritas = Berita::query()
                             @endif
                         </div>
 
-                        {{-- fade kiri–kanan --}}
                         <div class="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"></div>
                     </div>
                 </div>
@@ -851,169 +858,167 @@ $latestBeritas = Berita::query()
             <button id="sorotan-prev" type="button"
                     class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
                            text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition"
-                    aria-label="Sorotan sebelumnya">
-                ‹
-            </button>
+                    aria-label="Sorotan sebelumnya">‹</button>
 
             <div id="sorotan-dots" class="flex items-center gap-2" aria-label="Indikator sorotan"></div>
 
             <button id="sorotan-next" type="button"
                     class="w-8 h-8 flex items-center justify-center rounded-full border border-[#B6BBE6]
                            text-[#1524AF] hover:bg-[#1524AF] hover:text-white transition"
-                    aria-label="Sorotan berikutnya">
-                ›
-            </button>
+                    aria-label="Sorotan berikutnya">›</button>
         </div>
     </div>
 
-    <script>
-    (function () {
-        const root = document.getElementById('sorotanPelatihan');
-        if (!root) return;
+<script>
+(function () {
+  const root = document.getElementById('sorotanPelatihan');
+  if (!root) return;
 
-        const tabOrder = @json($sorotanData->pluck('key')->values());
-        if (!tabOrder.length) return;
+  const tabOrder = @json($sorotanData->pluck('key')->values());
+  if (!tabOrder.length) return;
 
-        const meta = @json(
-            $sorotanData->mapWithKeys(fn($s) => [
-                $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']]
-            ])
-        );
+  const meta = @json(
+    $sorotanData->mapWithKeys(fn($s) => [
+      $s['key'] => ['label' => $s['label'], 'desc' => $s['desc']]
+    ])
+  );
 
-        const panes    = Array.from(root.querySelectorAll('.sorotan-pane'));
-        const labelEl  = root.querySelector('.sorotan-label');
-        const descEl   = root.querySelector('#sorotan-desc');
-        const dotsWrap = root.querySelector('#sorotan-dots');
-        const prevBtn  = root.querySelector('#sorotan-prev');
-        const nextBtn  = root.querySelector('#sorotan-next');
+  const panes    = Array.from(root.querySelectorAll('.sorotan-pane'));
+  const labelEl  = root.querySelector('.sorotan-label');
+  const descEl   = root.querySelector('#sorotan-desc');
+  const dotsWrap = root.querySelector('#sorotan-dots');
+  const prevBtn  = root.querySelector('#sorotan-prev');
+  const nextBtn  = root.querySelector('#sorotan-next');
 
-        // ====== helper active ======
-        function currentKey() {
-            const active = panes.find(p => !p.classList.contains('hidden'));
-            return active ? active.dataset.pane : tabOrder[0];
-        }
-        function currentIndex() {
-            return Math.max(0, tabOrder.indexOf(currentKey()));
-        }
+  const tracks = Array.from(root.querySelectorAll('.sorotan-track'));
+  const SPEED = 0.8;
+  const animState = new Map(); // track -> { rafId, offset, paused }
 
-        // ====== dots ======
-        function paintDots() {
-            if (!dotsWrap) return;
-            const idx = currentIndex();
-            dotsWrap.innerHTML = '';
+  function ensureState(track) {
+    if (!animState.has(track)) {
+      animState.set(track, { rafId: null, offset: 0, paused: false });
 
-            tabOrder.forEach((k, i) => {
-                const b = document.createElement('button');
-                b.type = 'button';
-                b.className =
-                    'w-2.5 h-2.5 rounded-full transition ' +
-                    (i === idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
-                b.setAttribute('aria-label', (meta[k]?.label ?? k));
-                b.setAttribute('aria-current', i === idx ? 'true' : 'false');
-                b.addEventListener('click', () => setActive(k, true));
-                dotsWrap.appendChild(b);
-            });
-        }
+      track.addEventListener('mouseenter', () => animState.get(track).paused = true);
+      track.addEventListener('mouseleave', () => animState.get(track).paused = false);
+    }
+    return animState.get(track);
+  }
 
-        // ====== pane switch anim ======
-        function setActive(key, userAction = false) {
-            panes.forEach(p => {
-                const isTarget = p.dataset.pane === key;
-                if (isTarget && p.classList.contains('hidden')) {
-                    // animate in
-                    p.classList.remove('hidden');
-                    p.classList.add('pane-enter');
-                    requestAnimationFrame(() => {
-                        p.classList.add('pane-enter-active');
-                        p.classList.remove('pane-enter');
-                        setTimeout(() => p.classList.remove('pane-enter-active'), 240);
-                    });
-                } else if (!isTarget) {
-                    p.classList.add('hidden');
-                }
-            });
+  function startMarquee(track) {
+    if (!track) return;
+    if (track.dataset.hasFiles !== '1') return;
 
-            if (meta[key]) {
-                if (labelEl) labelEl.textContent = meta[key].label ?? '';
-                if (descEl)  descEl.textContent  = meta[key].desc ?? '';
-            }
+    const state = ensureState(track);
+    if (state.rafId) return;
 
-            paintDots();
+    function step() {
+      const halfWidth = track.scrollWidth / 2;
+      if (!halfWidth) { state.rafId = requestAnimationFrame(step); return; }
 
-            // kalau user pindah kategori, reset posisi marquee kategori aktif biar gak loncat
-            if (userAction) resetTrackForKey(key);
-        }
+      if (!state.paused) {
+        state.offset -= SPEED;
+        if (Math.abs(state.offset) >= halfWidth) state.offset += halfWidth;
+        track.style.transform = `translateX(${state.offset}px)`;
+      }
+      state.rafId = requestAnimationFrame(step);
+    }
 
-        // ====== controls ======
-        function move(delta) {
-            const idx = currentIndex();
-            const nextIdx = (idx + delta + tabOrder.length) % tabOrder.length;
-            setActive(tabOrder[nextIdx], true);
-        }
+    state.rafId = requestAnimationFrame(step);
+  }
 
-        if (prevBtn) prevBtn.addEventListener('click', () => move(-1));
-        if (nextBtn) nextBtn.addEventListener('click', () => move(1));
+  function stopMarquee(track) {
+    const state = animState.get(track);
+    if (!state) return;
+    if (state.rafId) cancelAnimationFrame(state.rafId);
+    state.rafId = null;
+  }
 
-        // ====== marquee engine (pause on hover) ======
-        const tracks = Array.from(root.querySelectorAll('.sorotan-track'));
-        const SPEED = 0.8; // px per frame
+  function resetMarquee(track) {
+    const state = ensureState(track);
+    state.offset = 0;
+    track.style.transform = 'translateX(0px)';
+  }
 
-        const animState = new Map(); // track -> { rafId, offset, paused }
+  function currentKey() {
+    const active = panes.find(p => !p.classList.contains('hidden'));
+    return active ? active.dataset.pane : tabOrder[0];
+  }
 
-        function startMarquee(track) {
-            if (!track) return;
+  function currentIndex() {
+    return Math.max(0, tabOrder.indexOf(currentKey()));
+  }
 
-            // jangan jalan kalau tidak ada files
-            if (track.dataset.hasFiles !== '1') return;
+  function paintDots() {
+    if (!dotsWrap) return;
+    const idx = currentIndex();
+    dotsWrap.innerHTML = '';
 
-            // init state
-            if (!animState.has(track)) {
-                animState.set(track, { rafId: null, offset: 0, paused: false });
-            }
-            const state = animState.get(track);
+    tabOrder.forEach((k, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'w-2.5 h-2.5 rounded-full transition ' + (i === idx ? 'bg-[#1524AF]' : 'bg-[#C7D3F5]');
+      b.setAttribute('aria-label', (meta[k]?.label ?? k));
+      b.setAttribute('aria-current', i === idx ? 'true' : 'false');
+      b.addEventListener('click', () => setActive(k, true));
+      dotsWrap.appendChild(b);
+    });
+  }
 
-            // pause on hover (biar nyaman)
-            track.addEventListener('mouseenter', () => state.paused = true);
-            track.addEventListener('mouseleave', () => state.paused = false);
+  function syncMarqueeToActive(key) {
+    tracks.forEach(t => {
+      const active = t.dataset.key === key;
+      if (active) {
+        resetMarquee(t);
+        startMarquee(t);
+      } else {
+        stopMarquee(t);
+      }
+    });
+  }
 
-            function step() {
-                const halfWidth = track.scrollWidth / 2;
-                if (!halfWidth) {
-                    state.rafId = requestAnimationFrame(step);
-                    return;
-                }
+  function setActive(key, userAction = false) {
+    panes.forEach(p => {
+      const isTarget = p.dataset.pane === key;
+      if (isTarget && p.classList.contains('hidden')) {
+        p.classList.remove('hidden');
+        p.classList.add('pane-enter');
+        requestAnimationFrame(() => {
+          p.classList.add('pane-enter-active');
+          p.classList.remove('pane-enter');
+          setTimeout(() => p.classList.remove('pane-enter-active'), 240);
+        });
+      } else if (!isTarget) {
+        p.classList.add('hidden');
+      }
+    });
 
-                if (!state.paused) {
-                    state.offset -= SPEED;
-                    if (Math.abs(state.offset) >= halfWidth) {
-                        state.offset += halfWidth;
-                    }
-                    track.style.transform = `translateX(${state.offset}px)`;
-                }
-                state.rafId = requestAnimationFrame(step);
-            }
+    if (meta[key]) {
+      if (labelEl) labelEl.textContent = meta[key].label ?? '';
+      if (descEl)  descEl.textContent  = meta[key].desc ?? '';
+    }
 
-            if (!state.rafId) state.rafId = requestAnimationFrame(step);
-        }
+    paintDots();
+    syncMarqueeToActive(key);
+  }
 
-        function resetTrackForKey(key) {
-            const track = root.querySelector(`.sorotan-track[data-key="${key}"]`);
-            if (!track) return;
-            const state = animState.get(track);
-            if (state) {
-                state.offset = 0;
-                track.style.transform = 'translateX(0px)';
-            }
-        }
+  function move(delta) {
+    const idx = currentIndex();
+    const nextIdx = (idx + delta + tabOrder.length) % tabOrder.length;
+    setActive(tabOrder[nextIdx], true);
+  }
 
-        // init
-        setActive(tabOrder[0], false);
-        tracks.forEach(startMarquee);
-    })();
-    </script>
+  if (prevBtn) prevBtn.addEventListener('click', () => move(-1));
+  if (nextBtn) nextBtn.addEventListener('click', () => move(1));
+
+  setActive(tabOrder[0], false);
+  window.addEventListener('resize', () => syncMarqueeToActive(currentKey()));
+})();
+</script>
+
 </section>
 @endif
 {{-- /SECTION: Sorotan Pelatihan --}}
+
 
 {{-- SECTION: Kompetensi Pelatihan (gambar dari DB Bidang) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
