@@ -160,7 +160,7 @@ final class PelatihanResource extends Resource
     {
         return $table
             ->columns([
-            
+
                 Tables\Columns\TextColumn::make('nama_pelatihan')
                     ->label('Nama Pelatihan')
                     ->searchable()
@@ -171,8 +171,8 @@ final class PelatihanResource extends Resource
                     ->description(
                         fn($record) =>
                         trim((string) ($record->jenis_program ?? '')) !== ''
-                            ? ($record->jenis_program . ' • Angkatan ' . ($record->angkatan ?? '—'))
-                            : ('Angkatan ' . ($record->angkatan ?? '—'))
+                        ? ($record->jenis_program . ' • Angkatan ' . ($record->angkatan ?? '—'))
+                        : ('Angkatan ' . ($record->angkatan ?? '—'))
                     )
                     ->weight('medium'),
 
@@ -203,8 +203,8 @@ final class PelatihanResource extends Resource
                     ->description(
                         fn($record) =>
                         $record->tanggal_selesai
-                            ? 'S/d ' . $record->tanggal_selesai->format('d M Y')
-                            : null
+                        ? 'S/d ' . $record->tanggal_selesai->format('d M Y')
+                        : null
                     ),
             ])
             ->filters([
@@ -249,8 +249,8 @@ final class PelatihanResource extends Resource
             'create' => Pages\CreatePelatihan::route('/create'),
             'view' => Pages\ViewPelatihan::route('/{record}'),
             'edit' => Pages\EditPelatihan::route('/{record}/edit'),
-            'view-kompetensi' => Pages\ViewKompetensiPelatihan::route('/{record}/kompetensi/{kompetensi_pelatihan_id}'),
-            'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/kompetensi/{kompetensi_pelatihan_id}/monev'),
+            'view-kompetensi' => Pages\ViewKompetensiPelatihan::route('/{record}/kompetensi/{kompetensi_id}'),
+            'view-monev-detail' => Pages\ViewMonevDetail::route('/{record}/kompetensi/{kompetensi_id}/monev'),
         ];
     }
     public static function updateStatus(Forms\Get $get, Forms\Set $set)
@@ -258,7 +258,7 @@ final class PelatihanResource extends Resource
         $mulai = $get('tanggal_mulai');
         $selesai = $get('tanggal_selesai');
 
-        if (! $mulai || ! $selesai) {
+        if (!$mulai || !$selesai) {
             return;
         }
 

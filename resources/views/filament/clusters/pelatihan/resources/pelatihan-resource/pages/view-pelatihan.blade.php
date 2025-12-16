@@ -92,7 +92,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($record->kompetensiPelatihan as $kompetensi)
                 <a
-                    href="{{ \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('view-kompetensi', ['record' => $record, 'kompetensi_pelatihan_id' => $kompetensi->id]) }}"
+                    href="{{ \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource::getUrl('view-kompetensi', ['record' => $record, 'kompetensi_id' => $kompetensi->id]) }}"
                     class="group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md transition-all relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30"></div>
 
