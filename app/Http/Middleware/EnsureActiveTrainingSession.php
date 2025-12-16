@@ -15,7 +15,7 @@ class EnsureActiveTrainingSession
         if (
             session('pendaftaran_pelatihan_id') &&
             session('pelatihan_id') &&
-            session('kompetensi_id')
+            session('kompetensi_pelatihan_id')
         ) {
             return $next($request);
         }
@@ -36,7 +36,7 @@ class EnsureActiveTrainingSession
                     session([
                         'pendaftaran_pelatihan_id' => $pendaftaran->id,
                         'pelatihan_id'            => $pendaftaran->pelatihan_id,
-                        'kompetensi_id'           => $pendaftaran->kompetensi_id ?? null,
+                        'kompetensi_pelatihan_id' => $pendaftaran->kompetensi_pelatihan_id ?? null,
                     ]);
                 }
             }

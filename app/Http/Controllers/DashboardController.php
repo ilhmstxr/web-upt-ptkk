@@ -113,14 +113,16 @@ class DashboardController extends Controller
             session([
                 'pendaftaran_pelatihan_id' => $pendaftaran->id,
                 'pelatihan_id'             => $pendaftaran->pelatihan_id,
-                'kompetensi_id'            => $pendaftaran->kompetensi_id,
+                'pendaftaran_pelatihan_id' => $pendaftaran->id,
+                'pelatihan_id'             => $pendaftaran->pelatihan_id,
+                'kompetensi_pelatihan_id'  => $pendaftaran->kompetensi_pelatihan_id,
             ]);
 
             Log::debug('[ensureActiveTrainingSession] source=pendaftaran', [
                 'peserta_id' => $pesertaAktif->id,
                 'pendaftaran_id' => $pendaftaran->id,
                 'pelatihan_id' => $pendaftaran->pelatihan_id,
-                'kompetensi_id' => $pendaftaran->kompetensi_id,
+                'kompetensi_pelatihan_id' => $pendaftaran->kompetensi_pelatihan_id,
             ]);
             return;
         }
@@ -152,17 +154,17 @@ class DashboardController extends Controller
     protected function baseTesQuery()
     {
         $pelatihanId = session('pelatihan_id');
-        $kompetensiId = session('kompetensi_id');
+        $kompetensiPelatihanId = session('kompetensi_pelatihan_id');
 
         return Tes::query()
             ->when(
                 $pelatihanId && Schema::hasColumn('tes', 'pelatihan_id'),
-                fn ($q) => $q->where('pelatihan_id', $pelatihanId)
+                fn($q) => $q->where('pelatihan_id', $pelatihanId)
             )
-            // KUNCI: Filter soal berdasarkan Kompetensi ID dari pendaftaran peserta
+            // KUNCI: Filter soal berdasarkan Kompetensi Pelatihan ID dari pendaftaran peserta
             ->when(
-                $kompetensiId && Schema::hasColumn('tes', 'kompetensi_id'),
-                fn ($q) => $q->where('kompetensi_id', $kompetensiId)
+                $kompetensiPelatihanId && Schema::hasColumn('tes', 'kompetensi_pelatihan_id'),
+                fn($q) => $q->where('kompetensi_pelatihan_id', $kompetensiPelatihanId)
             );
     }
 
@@ -250,9 +252,9 @@ class DashboardController extends Controller
 
             $doneIds = $pendaftaranId
                 ? MateriProgress::where('pendaftaran_pelatihan_id', $pendaftaranId)
-                    ->where('is_completed', true)
-                    ->pluck('materi_id')
-                    ->toArray()
+                ->where('is_completed', true)
+                ->pluck('materi_id')
+                ->toArray()
                 : [];
 
             $materiDoneCount = count($doneIds);
@@ -312,54 +314,54 @@ class DashboardController extends Controller
      * STATS
      * ========================================================= */
     private function getTestStats(): array
-{
-    ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
+    {
+        ['key' => $key, 'id' => $id] = $this->getParticipantKeyAndId();
 
-    $stats = [
-        'preTestAttempts' => 0,
-        'postTestAttempts' => 0,
-        'monevAttempts' => 0,
+        $stats = [
+            'preTestAttempts' => 0,
+            'postTestAttempts' => 0,
+            'monevAttempts' => 0,
 
-        'preTestScore' => null,
-        'postTestScore' => null,
-        'monevScore' => null,
+            'preTestScore' => null,
+            'postTestScore' => null,
+            'monevScore' => null,
 
-        'preTestDone' => false,
-        'postTestDone' => false,
-        'monevDone' => false,
-    ];
+            'preTestDone' => false,
+            'postTestDone' => false,
+            'monevDone' => false,
+        ];
 
-    if (!$key || !$id) return $stats;
+        if (!$key || !$id) return $stats;
 
-    $preTes  = $this->getTesByType('pre');
-    $postTes = $this->getTesByType('post');
-    $monevTes = $this->getTesByType('monev');
+        $preTes  = $this->getTesByType('pre');
+        $postTes = $this->getTesByType('post');
+        $monevTes = $this->getTesByType('monev');
 
-    $basePerc = $this->basePercobaanQuery();
+        $basePerc = $this->basePercobaanQuery();
 
-    $map = [
-        'pre'  => ['tes' => $preTes,  'attemptKey' => 'preTestAttempts',  'scoreKey' => 'preTestScore',  'doneKey' => 'preTestDone'],
-        'post' => ['tes' => $postTes, 'attemptKey' => 'postTestAttempts', 'scoreKey' => 'postTestScore', 'doneKey' => 'postTestDone'],
-        'monev'=> ['tes' => $monevTes,'attemptKey' => 'monevAttempts',    'scoreKey' => 'monevScore',    'doneKey' => 'monevDone'],
-    ];
+        $map = [
+            'pre'  => ['tes' => $preTes,  'attemptKey' => 'preTestAttempts',  'scoreKey' => 'preTestScore',  'doneKey' => 'preTestDone'],
+            'post' => ['tes' => $postTes, 'attemptKey' => 'postTestAttempts', 'scoreKey' => 'postTestScore', 'doneKey' => 'postTestDone'],
+            'monev' => ['tes' => $monevTes, 'attemptKey' => 'monevAttempts',    'scoreKey' => 'monevScore',    'doneKey' => 'monevDone'],
+        ];
 
-    foreach ($map as $k => $cfg) {
-        $t = $cfg['tes'];
-        if (!$t) continue;
+        foreach ($map as $k => $cfg) {
+            $t = $cfg['tes'];
+            if (!$t) continue;
 
-        $done = (clone $basePerc)
-            ->where('tes_id', $t->id)
-            ->whereNotNull('waktu_selesai')
-            ->latest('waktu_selesai')
-            ->first();
+            $done = (clone $basePerc)
+                ->where('tes_id', $t->id)
+                ->whereNotNull('waktu_selesai')
+                ->latest('waktu_selesai')
+                ->first();
 
-        $stats[$cfg['attemptKey']] = (clone $basePerc)->where('tes_id', $t->id)->count();
-        $stats[$cfg['scoreKey']]   = $done?->skor;
-        $stats[$cfg['doneKey']]    = (bool) $done;
+            $stats[$cfg['attemptKey']] = (clone $basePerc)->where('tes_id', $t->id)->count();
+            $stats[$cfg['scoreKey']]   = $done?->skor;
+            $stats[$cfg['doneKey']]    = (bool) $done;
+        }
+
+        return $stats;
     }
-
-    return $stats;
-}
 
     /* =========================================================
      * GENERIC START HANDLER
@@ -439,7 +441,7 @@ class DashboardController extends Controller
         return Tes::query()
             ->when(
                 $pelatihanId && Schema::hasColumn('tes', 'pelatihan_id'),
-                fn ($q) => $q->where('pelatihan_id', $pelatihanId)
+                fn($q) => $q->where('pelatihan_id', $pelatihanId)
             );
     }
 
@@ -736,8 +738,8 @@ class DashboardController extends Controller
 
         // Kategori list = urutan kemunculan (stabil)
         $kategoriList = $all->pluck('kategori')
-            ->map(fn ($k) => trim((string) $k))
-            ->map(fn ($k) => $k !== '' ? $k : 'Tanpa Kategori')
+            ->map(fn($k) => trim((string) $k))
+            ->map(fn($k) => $k !== '' ? $k : 'Tanpa Kategori')
             ->unique()
             ->values();
 
@@ -1051,7 +1053,8 @@ class DashboardController extends Controller
         // AMBIL PERTANYAAN & CURRENT INDEX
         // ===================================================
         $pertanyaanList = $tes->pertanyaan()
-            ->with('opsiJawabans') // ✅ biar essay/likert/pg bisa dipakai konsisten
+            ->with('opsiJawabans')
+            ->orderBy('nomor')
             ->get();
 
         $currentQuestionIndex = (int) $request->query('q', 0);
@@ -1206,7 +1209,7 @@ class DashboardController extends Controller
         if ($total === 0) return 0;
 
         $benar = $jawabanCollection
-            ->filter(fn ($j) => (bool) optional($j->opsiJawaban)->apakah_benar)
+            ->filter(fn($j) => (bool) optional($j->opsiJawaban)->apakah_benar)
             ->count();
 
         return (int) round(($benar / $total) * 100);
@@ -1272,10 +1275,10 @@ class DashboardController extends Controller
 
         $doneIds = $pendaftaranId
             ? MateriProgress::query()
-                ->where('pendaftaran_pelatihan_id', $pendaftaranId)
-                ->where('is_completed', true)
-                ->pluck('materi_id')
-                ->toArray()
+            ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+            ->where('is_completed', true)
+            ->pluck('materi_id')
+            ->toArray()
             : [];
 
         $materis->each(function ($materi) use ($doneIds) {
@@ -1303,17 +1306,17 @@ class DashboardController extends Controller
 
         $progress = $pendaftaranId
             ? MateriProgress::query()
-                ->where('pendaftaran_pelatihan_id', $pendaftaranId)
-                ->where('materi_id', $m->id)
-                ->first()
+            ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+            ->where('materi_id', $m->id)
+            ->first()
             : null;
 
         $doneIds = $pendaftaranId
             ? MateriProgress::query()
-                ->where('pendaftaran_pelatihan_id', $pendaftaranId)
-                ->where('is_completed', true)
-                ->pluck('materi_id')
-                ->toArray()
+            ->where('pendaftaran_pelatihan_id', $pendaftaranId)
+            ->where('is_completed', true)
+            ->pluck('materi_id')
+            ->toArray()
             : [];
 
         $relatedMateris = MateriPelatihan::query()

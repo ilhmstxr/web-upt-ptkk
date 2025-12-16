@@ -25,12 +25,11 @@ class Tes extends Model
     ];
 
     // Relasi ke Kompetensi
-    public function kompetensi()
+    public function kompetensiPelatihan()
     {
-        return $this->belongsTo(Kompetensi::class, 'kompetensi_pelatihan_id');
+        return $this->belongsTo(KompetensiPelatihan::class, 'kompetensi_pelatihan_id');
     }
 
-    // Relasi ke Pelatihan
     public function pelatihan()
     {
         return $this->belongsTo(Pelatihan::class, 'pelatihan_id');
