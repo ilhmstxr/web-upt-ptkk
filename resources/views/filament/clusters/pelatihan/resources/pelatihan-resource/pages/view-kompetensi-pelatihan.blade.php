@@ -1,190 +1,52 @@
 <x-filament-panels::page>
-
-    {{-- ============================
-        1) INSTRUCTOR LIST SECTION (atas)
-        - pakai $this->instructors (dari getInstructorsProperty())
-        - PERBAIKAN: nama field instruktur -> "nama" (bukan nama_instruktur) sesuai model kamu
-    ============================ --}}
-    <div class="mb-6">
-        <h3 class="font-bold text-gray-800 dark:text-white mb-3">Daftar Instruktur</h3>
-
-        <div class="flex flex-wrap gap-4">
-            @forelse($this->instructors as $kpRow)
-                @foreach($kpRow->instrukturs as $instruktur)
-                    <div class="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm min-w-[220px]">
-                        <img
-                            src="https://ui-avatars.com/api/?name={{ urlencode($instruktur->nama ?? 'Instruktur') }}&background=random"
-                            class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-600 shadow-sm"
-                            alt="avatar"
-                        >
-                        <div>
-                            <p class="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">
-                                Instruktur / Asisten
-                            </p>
-                            <p class="text-sm font-bold text-gray-900 dark:text-white">
-                                {{ $instruktur->nama ?? 'Belum ditentukan' }}
-                            </p>
-                            <p class="text-[11px] text-gray-500 dark:text-gray-400">
-                                {{ $this->kompetensiPelatihan->kompetensi->nama_kompetensi ?? 'Kompetensi' }}
-                            </p>
-                        </div>
-                    </div>
-                @endforeach
-            @empty
-                <div class="text-sm text-gray-500 dark:text-gray-400">
-                    Belum ada instruktur di kompetensi ini.
-                </div>
-            @endforelse
-        </div>
-    </div>
-
-    {{-- ============================
-        2) TAB WRAPPER (gabungan)
-        - default tab: evaluasi (sesuai UI yang kamu minta)
-        - tetap mempertahankan tab lain (kompetensi/admin/materi/asrama/hasil)
-    ============================ --}}
-    <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden min-h-[600px]"
-        x-data="{ activeTab: 'evaluasi' }"
-    >
-        {{-- TAB HEADER --}}
-        <div class="border-b border-gray-200 dark:border-gray-700 px-6 overflow-x-auto">
-            <nav class="-mb-px flex space-x-8">
-
-                {{-- TAB: EVALUASI --}}
+    <div x-data="{ activeTab: 'hasil' }" class="space-y-6">
+        <!-- Navigation Tabs -->
+        <div class="border-b border-gray-200 dark:border-gray-700">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                 <button
-                    @click="activeTab = 'evaluasi'"
-                    :class="{
-                        'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'evaluasi',
-                        'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'evaluasi'
-                    }"
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center"
-                >
-                    <x-heroicon-o-chart-pie class="w-4 h-4 mr-2" />
+                    @click="activeTab = 'hasil'"
+                    :class="{ 'border-primary-500 text-primary-600 dark:text-primary-400': activeTab === 'hasil', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300': activeTab !== 'hasil' }"
+                    class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <x-heroicon-o-chart-bar class="w-5 h-5 mr-2" :class="{ 'text-primary-500': activeTab === 'hasil', 'text-gray-400 group-hover:text-gray-500': activeTab !== 'hasil' }" />
                     Hasil Tes & Survei
                 </button>
 
-                {{-- TAB: PESERTA --}}
                 <button
                     @click="activeTab = 'peserta'"
-                    :class="{
-                        'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'peserta',
-                        'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'peserta'
-                    }"
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center"
-                >
-                    <x-heroicon-o-users class="w-4 h-4 mr-2" />
-                    Data Peserta ({{ $this->statistik['monev']['total_peserta'] ?? 0 }})
+                    :class="{ 'border-primary-500 text-primary-600 dark:text-primary-400': activeTab === 'peserta', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300': activeTab !== 'peserta' }"
+                    class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <x-heroicon-o-users class="w-5 h-5 mr-2" :class="{ 'text-primary-500': activeTab === 'peserta', 'text-gray-400 group-hover:text-gray-500': activeTab !== 'peserta' }" />
+                    Peserta Kelas
                 </button>
 
-                {{-- TAB: KURIKULUM --}}
                 <button
                     @click="activeTab = 'kurikulum'"
-                    :class="{
-                        'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'kurikulum',
-                        'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'kurikulum'
-                    }"
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center"
-                >
-                    <x-heroicon-o-clipboard-document-list class="w-4 h-4 mr-2" />
-                    Kurikulum & Sesi
-                </button>
-
-                {{-- TAB TAMBAHAN (tidak menghilangkan fitur lama dari ViewPelatihan) --}}
-                <button
-                    @click="activeTab = 'kompetensi'"
-                    :class="{
-                        'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'kompetensi',
-                        'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'kompetensi'
-                    }"
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center"
-                >
-                    <x-heroicon-o-academic-cap class="w-4 h-4 mr-2" />
-                    Daftar Kompetensi
-                </button>
-
-                <button
-                    @click="activeTab = 'admin'"
-                    :class="{
-                        'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'admin',
-                        'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'admin'
-                    }"
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center"
-                >
-                    <x-heroicon-o-user-group class="w-4 h-4 mr-2" />
-                    Instruktur
-                </button>
-
-                <button
-                    @click="activeTab = 'materi'"
-                    :class="{
-                        'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'materi',
-                        'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'materi'
-                    }"
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center"
-                >
-                    <x-heroicon-o-book-open class="w-4 h-4 mr-2" />
-                    Materi
-                </button>
-
-                <button
-                    @click="activeTab = 'asrama'"
-                    :class="{
-                        'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'asrama',
-                        'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'asrama'
-                    }"
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center"
-                >
-                    <x-heroicon-o-home-modern class="w-4 h-4 mr-2" />
-                    Asrama
-                </button>
-
-                <button
-                    @click="activeTab = 'hasil'"
-                    :class="{
-                        'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'hasil',
-                        'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'hasil'
-                    }"
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center"
-                >
-                    <x-heroicon-o-chart-pie class="w-4 h-4 mr-2" />
-                    Ringkasan Hasil (Global)
+                    :class="{ 'border-primary-500 text-primary-600 dark:text-primary-400': activeTab === 'kurikulum', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300': activeTab !== 'kurikulum' }"
+                    class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <x-heroicon-o-book-open class="w-5 h-5 mr-2" :class="{ 'text-primary-500': activeTab === 'kurikulum', 'text-gray-400 group-hover:text-gray-500': activeTab !== 'kurikulum' }" />
+                    Jadwal & Kurikulum
                 </button>
 
             </nav>
         </div>
 
-        {{-- =========================================================
-            TAB: EVALUASI (Statistik + Daftar Tes & Kuesioner)
-        ========================================================= --}}
-        <div x-show="activeTab === 'evaluasi'" class="p-6 bg-gray-50/50 dark:bg-gray-900/50">
-
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="font-bold text-gray-800 dark:text-white text-lg">Statistik Evaluasi Pembelajaran</h3>
-                <div class="flex gap-2">
-                    <button class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center">
-                        <x-heroicon-o-printer class="w-4 h-4 mr-1" /> Cetak Laporan
-                    </button>
-                </div>
-            </div>
-
-            {{-- Statistik Cards --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-                {{-- PRETEST --}}
-                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start mb-4">
+        <!-- TAB CONTENT: HASIL TES & SURVEI -->
+        <div x-show="activeTab === 'hasil'" class="space-y-6">
+            <!-- A. Statistik Utama (Cards) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 1. PRETEST STATS -->
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-3">
                         <div>
-                            <h3 class="font-bold text-gray-800 dark:text-white text-lg">Pretest</h3>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Evaluasi Awal</p>
+                            <h3 class="font-bold text-gray-800 dark:text-white text-lg">Pre-Test</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Nilai Awal Peserta</p>
                         </div>
-                        <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide">Selesai</span>
+                        <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide">Selesai</span>
                     </div>
-
-                    <div class="flex items-center gap-4">
-                        <div class="relative w-24 h-24 flex items-center justify-center border-4 border-blue-500 rounded-full">
-                            <div class="flex flex-col items-center justify-center">
-                                <span class="text-2xl font-bold text-gray-800 dark:text-white">{{ $this->statistik['pretest']['avg'] ?? 0 }}</span>
+                    <div class="flex gap-4 items-center">
+                        <div class="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center border-4 border-blue-100 dark:border-blue-800">
+                            <div class="flex flex-col items-center justify-center text-gray-700 dark:text-gray-200">
+                                <span class="text-2xl font-bold">{{ $this->statistik['pretest']['avg'] }}</span>
                                 <span class="text-[9px] text-gray-400 font-medium uppercase">Rata-rata</span>
                             </div>
                         </div>
@@ -192,36 +54,33 @@
                         <div class="flex-1 space-y-2">
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-gray-500 dark:text-gray-400">Tertinggi</span>
-                                <span class="font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-1.5 rounded">{{ $this->statistik['pretest']['max'] ?? 0 }}</span>
+                                <span class="font-bold text-gray-800 dark:text-white">{{ $this->statistik['pretest']['max'] }}</span>
                             </div>
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-gray-500 dark:text-gray-400">Terendah</span>
-                                <span class="font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-1.5 rounded">{{ $this->statistik['pretest']['min'] ?? 0 }}</span>
+                                <span class="font-bold text-gray-800 dark:text-white">{{ $this->statistik['pretest']['min'] }}</span>
                             </div>
                             <div class="flex justify-between items-center text-xs border-t border-dashed border-gray-200 dark:border-gray-700 pt-1">
                                 <span class="text-gray-500 dark:text-gray-400">Partisipasi</span>
-                                <span class="font-bold text-gray-800 dark:text-white">
-                                    {{ $this->statistik['pretest']['count'] ?? 0 }}/{{ $this->statistik['monev']['total_peserta'] ?? 0 }}
-                                </span>
+                                <span class="font-bold text-gray-800 dark:text-white">{{ $this->statistik['pretest']['count'] ?? 0 }} Org</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- POSTTEST --}}
-                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start mb-4">
+                <!-- 2. POSTTEST STATS -->
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-3">
                         <div>
-                            <h3 class="font-bold text-gray-800 dark:text-white text-lg">Posttest</h3>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Evaluasi Akhir</p>
+                            <h3 class="font-bold text-gray-800 dark:text-white text-lg">Post-Test</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Nilai Akhir & Kelulusan</p>
                         </div>
-                        <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide">On Progress</span>
+                        <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide">Final</span>
                     </div>
-
-                    <div class="flex items-center gap-4">
-                        <div class="relative w-24 h-24 flex items-center justify-center border-4 border-green-500 rounded-full">
-                            <div class="flex flex-col items-center justify-center">
-                                <span class="text-2xl font-bold text-gray-800 dark:text-white">{{ $this->statistik['posttest']['avg'] ?? 0 }}</span>
+                    <div class="flex gap-4 items-center">
+                        <div class="w-16 h-16 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center border-4 border-green-100 dark:border-green-800">
+                            <div class="flex flex-col items-center justify-center text-gray-700 dark:text-gray-200">
+                                <span class="text-2xl font-bold">{{ $this->statistik['posttest']['avg'] }}</span>
                                 <span class="text-[9px] text-gray-400 font-medium uppercase">Rata-rata</span>
                             </div>
                         </div>
@@ -245,44 +104,30 @@
                     </div>
                 </div>
 
-                {{-- MONEV --}}
-                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start mb-4">
+                <!-- 3. MONEV STATS (SURVEI) - Restored Simple Card -->
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-3">
                         <div>
                             <h3 class="font-bold text-gray-800 dark:text-white text-lg">Survei Monev</h3>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Kepuasan Peserta</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Analisis Kepuasan</p>
                         </div>
                         <span class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide">Aktif</span>
                     </div>
 
-                    <div class="flex flex-col gap-3">
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-500 dark:text-gray-400">Kepuasan Materi</span>
-                                <span class="font-bold text-gray-800 dark:text-white">
-                                    {{ $this->statistik['monev']['avg'] ?? 0 }}
-                                    <span class="text-gray-400 font-normal">/ 5.0</span>
-                                </span>
-                            </div>
-                            <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
-                                @php
-                                    $avg = (float) ($this->statistik['monev']['avg'] ?? 0);
-                                    $width = max(0, min(100, ($avg / 5) * 100));
-                                @endphp
-                                <div class="bg-yellow-500 h-1.5 rounded-full" style="width: {{ $width }}%"></div>
-                            </div>
+                    <div class="flex gap-4 items-center">
+                        <div class="w-16 h-16 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center border-4 border-purple-100 dark:border-purple-800">
+                            <!-- Simple Star Icon instead of value if 0 -->
+                            <x-heroicon-o-star class="w-8 h-8 text-purple-600 dark:text-purple-400" />
                         </div>
-
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-500 dark:text-gray-400">Partisipasi</span>
-                                <span class="font-bold text-purple-600 dark:text-purple-400">
-                                    {{ $this->statistik['monev']['responden'] ?? 0 }}/{{ $this->statistik['monev']['total_peserta'] ?? 0 }}
-                                </span>
+                        <div class="flex-1 space-y-2">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500 dark:text-gray-400">Total Responden</span>
+                                <span class="font-bold text-gray-800 dark:text-white">{{ $this->statistik['monev']['responden'] }} Org</span>
                             </div>
-                            <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
-                                <div class="bg-purple-400 h-1.5 rounded-full" style="width: {{ $this->statistik['monev']['percentage'] ?? 0 }}%"></div>
+                            <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 mt-2">
+                                <div class="bg-purple-500 h-1.5 rounded-full" style="width: {{ $this->statistik['monev']['percentage'] }}%"></div>
                             </div>
+                            <p class="text-[10px] text-gray-400 text-right">{{ number_format($this->statistik['monev']['percentage'], 0) }}% Partisipasi</p>
                         </div>
                     </div>
                 </div>
