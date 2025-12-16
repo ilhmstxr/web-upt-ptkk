@@ -1,20 +1,27 @@
-/* =========================================================
-   POST TEST AKSELERASI MJC - UPT PTKK
-   Bank Soal Terpusat (FINAL)
-   ========================================================= */
+/* =====================================================================
+   BANK SOAL TERPUSAT — MJC / UPT PTKK (FINAL)
+   - Akselerasi (Post Test)
+   - Reguler (Post Test)
+   ===================================================================== */
 
-/* =======================
-   1. TES
-   ======================= */
+START TRANSACTION;
+
+/* =====================================================================
+   A. POST TEST AKSELERASI MJC - UPT PTKK
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   A1. TES (Akselerasi)
+   --------------------------------------------------------------------- */
 INSERT INTO tes (id, judul, tipe, pelatihan_id, kompetensi_pelatihan_id, durasi_menit) VALUES
-(1001, 'Post Test Aksel MJC - Fotografi', 'post-test', 1, 101, 60),
-(1002, 'Post Test Aksel MJC - Desain Grafis', 'post-test', 1, 102, 60),
+(1001, 'Post Test Aksel MJC - Fotografi',        'post-test', 1, 101, 60),
+(1002, 'Post Test Aksel MJC - Desain Grafis',    'post-test', 1, 102, 60),
 (1003, 'Post Test Aksel MJC - Animation Motion', 'post-test', 1, 103, 60),
-(1004, 'Post Test Aksel MJC - Videografi', 'post-test', 1, 104, 60);
+(1004, 'Post Test Aksel MJC - Videografi',       'post-test', 1, 104, 60);
 
-/* =========================================================
-   2. FOTOGRAFI (tes_id = 1001)
-   ========================================================= */
+/* ---------------------------------------------------------------------
+   A2. FOTOGRAFI (tes_id = 1001)
+   --------------------------------------------------------------------- */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (2001,1001,1,'Hal yang TIDAK diperlukan untuk berkembang di industri kreatif adalah …','pilihan_ganda'),
 (2002,1001,2,'Yang bukan termasuk tujuan berkolaborasi adalah …','pilihan_ganda'),
@@ -23,40 +30,39 @@ INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (2005,1001,5,'Shutter Speed rendah tanpa tripod akan membuat foto …','pilihan_ganda');
 
 INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
--- Q1
 (2001,'Komunikasi yang baik',false),
 (2001,'Attitude',false),
 (2001,'Tujuan yang jelas',false),
 (2001,'Beli kamera setiap bulan',true),
 (2001,'Jalin relasi',false),
--- Q2
+
 (2002,'Menguntungkan diri sendiri',true),
 (2002,'Mempermudah pekerjaan',false),
 (2002,'Meningkatkan kepercayaan',false),
 (2002,'Belajar hal baru',false),
 (2002,'Meningkatkan kepercayaan diri',false),
--- Q3
+
 (2003,'Kamera dengan sensor 35mm',true),
 (2003,'Sensor 50mm',false),
 (2003,'Lensa wide',false),
 (2003,'Lensa tele',false),
 (2003,'Semua benar',false),
--- Q4
+
 (2004,'Tingkat kecerahan',true),
 (2004,'Tingkat blur',false),
 (2004,'Tingkat fokus',false),
 (2004,'Warna foto',false),
 (2004,'Resolusi',false),
--- Q5
+
 (2005,'Semakin detail',false),
 (2005,'Semakin terang',false),
 (2005,'Semakin gelap',false),
 (2005,'Blur / goyang',true),
 (2005,'Berwarna',false);
 
-/* =========================================================
-   3. DESAIN GRAFIS (tes_id = 1002)
-   ========================================================= */
+/* ---------------------------------------------------------------------
+   A3. DESAIN GRAFIS (tes_id = 1002)
+   --------------------------------------------------------------------- */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (3001,1002,1,'Mengapa identitas visual penting bagi brand?','pilihan_ganda'),
 (3002,1002,2,'Bagaimana identitas visual memperkuat hubungan emosional?','pilihan_ganda'),
@@ -95,9 +101,9 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (3005,'Shape Tool',false),
 (3005,'Text Tool',false);
 
-/* =========================================================
-   4. ANIMATION MOTION (tes_id = 1003)
-   ========================================================= */
+/* ---------------------------------------------------------------------
+   A4. ANIMATION MOTION (tes_id = 1003)
+   --------------------------------------------------------------------- */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (4001,1003,1,'Ada berapa prinsip animasi?','pilihan_ganda'),
 (4002,1003,2,'Clay animation disebut juga …','pilihan_ganda'),
@@ -136,9 +142,9 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (4005,'Menambah audio',false),
 (4005,'Mengedit warna',false);
 
-/* =========================================================
-   5. VIDEOGRAFI (tes_id = 1004)
-   ========================================================= */
+/* ---------------------------------------------------------------------
+   A5. VIDEOGRAFI (tes_id = 1004)
+   --------------------------------------------------------------------- */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (5001,1004,1,'Aplikasi media sosial berbasis video adalah …','pilihan_ganda'),
 (5002,1004,2,'FPS adalah singkatan dari …','pilihan_ganda'),
@@ -177,128 +183,96 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (5005,'Semakin kecil',false),
 (5005,'Semakin berat kamera',false);
 
-/* ========================================================= */
-/* TES REGULER MJC                                                      */
-/* ========================================================= */
-INSERT INTO tes (id, judul, tipe, durasi_menit)
-VALUES
+/* =====================================================================
+   B. TES REGULER MJC (Desain Grafis Reguler MJC 2025)
+   ===================================================================== */
+INSERT INTO tes (id, judul, tipe, durasi_menit) VALUES
 (40001,'Post Test Desain Grafis Reguler MJC 2025','post-test',20);
 
-/* ========================================================= */
-/* PERTANYAAN + OPSI JAWABAN                                 */
-/* ========================================================= */
-
--- 1
+/* PERTANYAAN + OPSI JAWABAN */
 INSERT INTO pertanyaan VALUES
-(40011,40001,1,'Kata logo yang diserap dari Bahasa Yunani (logos) artinya adalah ....','pilihan_ganda');
+(40011,40001,1,'Kata logo yang diserap dari Bahasa Yunani (logos) artinya adalah ....','pilihan_ganda'),
+(40012,40001,2,'Gambar berikut ini yang merupakan jenis logo Letter Mark adalah ….','pilihan_ganda'),
+(40013,40001,3,'Gambar berikut ini yang merupakan jenis logo Pictorial Mark adalah ….','pilihan_ganda'),
+(40014,40001,4,'Berikut fungsi dari logo, kecuali ….','pilihan_ganda'),
+(40015,40001,5,'Yang bukan merupakan kriteria logo yang baik dan efektif adalah ….','pilihan_ganda'),
+(40016,40001,6,'Yang bukan merupakan pencetus teori Gestalt adalah ….','pilihan_ganda'),
+(40017,40001,7,'Di bawah ini merupakan prinsip Gestalt yaitu ….','pilihan_ganda'),
+(40018,40001,8,'Apa yang dimaksud dengan typeface?','pilihan_ganda'),
+(40019,40001,9,'Di bawah ini merupakan 4 dasar jenis font, kecuali ….','pilihan_ganda'),
+(40020,40001,10,'Shortcut Tool yang digunakan untuk Shape Builder adalah ….','pilihan_ganda');
+
 INSERT INTO opsi_jawaban VALUES
 (NULL,40011,'otak, budi, wajah, akal, serta pembicaraan',true),
 (NULL,40011,'gambar, budi, kalimat, akal, serta perwujudan',false),
 (NULL,40011,'pikiran, budi, kata, akal, serta pembicaraan',false),
 (NULL,40011,'pikiran, budi, kata, jiwa, serta informasi',false),
-(NULL,40011,'pikiran, perbuatan, kata, akal, serta penampilan',false);
+(NULL,40011,'pikiran, perbuatan, kata, akal, serta penampilan',false),
 
--- 2
-INSERT INTO pertanyaan VALUES
-(40012,40001,2,'Gambar berikut ini yang merupakan jenis logo Letter Mark adalah ….','pilihan_ganda');
-INSERT INTO opsi_jawaban VALUES
 (NULL,40012,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q03_A.png',true),
 (NULL,40012,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q03_B.png',false),
 (NULL,40012,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q03_C.png',false),
 (NULL,40012,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q03_D.png',false),
-(NULL,40012,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q03_E.png',false);
+(NULL,40012,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q03_E.png',false),
 
--- 3
-INSERT INTO pertanyaan VALUES
-(40013,40001,3,'Gambar berikut ini yang merupakan jenis logo Pictorial Mark adalah ….','pilihan_ganda');
-INSERT INTO opsi_jawaban VALUES
 (NULL,40013,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q04_A.png',true),
 (NULL,40013,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q04_B.png',false),
 (NULL,40013,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q04_C.png',false),
 (NULL,40013,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q04_D.png',false),
-(NULL,40013,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q04_E.png',false);
+(NULL,40013,'images/opsi-jawaban/post-test-siswa-desain-grafis-angkatan-ii-tahun-2025/Q04_E.png',false),
 
--- 4
-INSERT INTO pertanyaan VALUES
-(40014,40001,4,'Berikut fungsi dari logo, kecuali ….','pilihan_ganda');
-INSERT INTO opsi_jawaban VALUES
 (NULL,40014,'Salah satu sarana branding',true),
 (NULL,40014,'Sarana presentasi dan promosi',false),
 (NULL,40014,'Sarana informasi dan pengawas',false),
 (NULL,40014,'Sarana motivasi',false),
-(NULL,40014,'Melindungi produk dari cuaca',false);
+(NULL,40014,'Melindungi produk dari cuaca',false),
 
--- 5
-INSERT INTO pertanyaan VALUES
-(40015,40001,5,'Yang bukan merupakan kriteria logo yang baik dan efektif adalah ….','pilihan_ganda');
-INSERT INTO opsi_jawaban VALUES
 (NULL,40015,'Simple (sederhana)',false),
 (NULL,40015,'Original dan unik',false),
 (NULL,40015,'Mudah diingat',false),
 (NULL,40015,'Bagus',true),
-(NULL,40015,'Relevan',false);
+(NULL,40015,'Relevan',false),
 
--- 6
-INSERT INTO pertanyaan VALUES
-(40016,40001,6,'Yang bukan merupakan pencetus teori Gestalt adalah ….','pilihan_ganda');
-INSERT INTO opsi_jawaban VALUES
 (NULL,40016,'Kurt Koffka',false),
 (NULL,40016,'Max Wertheimer',false),
 (NULL,40016,'Wolfgang Köhler',false),
 (NULL,40016,'Thomas Knoll',true),
-(NULL,40016,'Semua jawaban benar',false);
+(NULL,40016,'Semua jawaban benar',false),
 
--- 7
-INSERT INTO pertanyaan VALUES
-(40017,40001,7,'Di bawah ini merupakan prinsip Gestalt yaitu ….','pilihan_ganda');
-INSERT INTO opsi_jawaban VALUES
 (NULL,40017,'Continuity',true),
 (NULL,40017,'Figure Ground',false),
 (NULL,40017,'Closure',false),
 (NULL,40017,'Similarity',false),
-(NULL,40017,'Proximity',false);
+(NULL,40017,'Proximity',false),
 
--- 8
-INSERT INTO pertanyaan VALUES
-(40018,40001,8,'Apa yang dimaksud dengan typeface?','pilihan_ganda');
-INSERT INTO opsi_jawaban VALUES
 (NULL,40018,'File format digital dari keseluruhan typeface',true),
 (NULL,40018,'Tipografi',false),
 (NULL,40018,'Bentuk tulisan tangan',false),
 (NULL,40018,'Jenis huruf dekoratif',false),
-(NULL,40018,'Kerning',false);
+(NULL,40018,'Kerning',false),
 
--- 9
-INSERT INTO pertanyaan VALUES
-(40019,40001,9,'Di bawah ini merupakan 4 dasar jenis font, kecuali ….','pilihan_ganda');
-INSERT INTO opsi_jawaban VALUES
 (NULL,40019,'Serif',false),
 (NULL,40019,'Sans Serif',false),
 (NULL,40019,'Script',false),
 (NULL,40019,'Dekoratif',false),
-(NULL,40019,'Kerning',true);
+(NULL,40019,'Kerning',true),
 
--- 10
-INSERT INTO pertanyaan VALUES
-(40020,40001,10,'Shortcut Tool yang digunakan untuk Shape Builder adalah ….','pilihan_ganda');
-INSERT INTO opsi_jawaban VALUES
 (NULL,40020,'Shift + M',true),
 (NULL,40020,'Shift + O',false),
 (NULL,40020,'Shift + S',false),
 (NULL,40020,'Shift + B',false),
 (NULL,40020,'Shift + 7',false);
 
-/* ========================================================= */
-/* END                                                       */
-/* ========================================================= */
+/* =====================================================================
+   C. TES AKSELERASI (TATA) — PRE & POST
+   ===================================================================== */
+INSERT INTO tes (id, judul, tipe, durasi_menit) VALUES
+(60001,'Pre & Post Test Tata Kecantikan Akselerasi 2025','post-test',20),
+(60002,'Pre & Post Test Teknik Pendingin Akselerasi 2025','post-test',20),
+(60003,'Pre & Post Test Tata Busana Akselerasi 2025','post-test',20),
+(60004,'Pre & Post Test Tata Boga Akselerasi 2025','post-test',20);
 
-/* ========================================================= */
-/* TES 1 : TATA KECANTIKAN - AKSELERASI                       */
-/* ========================================================= */
-INSERT INTO tes (id, judul, tipe, durasi_menit)
-VALUES
-(60001,'Pre & Post Test Tata Kecantikan Akselerasi 2025','post-test',20);
-
+/* C1. TATA KECANTIKAN (60001) */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (60011,60001,1,'Tindakan analisis kulit kepala dan rambut melalui pengamatan adalah…','pilihan_ganda'),
 (60012,60001,2,'Ciri rambut kusam, kemerah-merahan, elastisitas kurang menunjukkan jenis rambut…','pilihan_ganda'),
@@ -323,13 +297,7 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (60019,'Menyehatkan kulit kepala dan rambut',true),(60019,'Merangsang pertumbuhan',false),(60019,'Melancarkan peredaran darah',false),(60019,'Merileksasi kulit kepala',false),(60019,'Mengubah warna rambut',false),
 (60020,'Kering',true),(60020,'Normal',false),(60020,'Berminyak',false),(60020,'Berketombe',false),(60020,'Bercabang',false);
 
-/* ========================================================= */
-/* TES 2 : TEKNIK PENDINGIN & TATA UDARA - AKSELERASI        */
-/* ========================================================= */
-INSERT INTO tes (id, judul, tipe, durasi_menit)
-VALUES
-(60002,'Pre & Post Test Teknik Pendingin Akselerasi 2025','post-test',20);
-
+/* C2. TEKNIK PENDINGIN (60002) */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (60021,60002,1,'Kapasitor pada blower fan outdoor adalah…','pilihan_ganda'),
 (60022,60002,2,'Mesin 3R bekerja secara…','pilihan_ganda'),
@@ -342,13 +310,7 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (60023,'Tahanan isolasi',true),(60023,'Tahanan resistance',false),(60023,'Tahanan kumparan',false),(60023,'Tahanan start',false),(60023,'Common & starting',false),
 (60024,'Unit rusak dan perlu penggantian part',true),(60024,'Refrigerant lancar',false),(60024,'Normal',false),(60024,'Tidak bocor',false),(60024,'Semua salah',false);
 
-/* ========================================================= */
-/* TES 3 : TATA BUSANA - AKSELERASI                          */
-/* ========================================================= */
-INSERT INTO tes (id, judul, tipe, durasi_menit)
-VALUES
-(60003,'Pre & Post Test Tata Busana Akselerasi 2025','post-test',20);
-
+/* C3. TATA BUSANA (60003) */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (60031,60003,1,'Mencari langganan dapat dilakukan dengan cara…','pilihan_ganda'),
 (60032,60003,2,'Bahan kapas cocok di daerah tropis karena…','pilihan_ganda'),
@@ -361,13 +323,7 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (60033,'Standart',true),(60033,'Bagian atas',false),(60033,'Sudah diubah',false),(60033,'Belum diubah',false),(60033,'Dekoratif',false),
 (60034,'Maxi',true),(60034,'Mini',false),(60034,'Floor',false),(60034,'Ankle',false),(60034,'Midi',false);
 
-/* ========================================================= */
-/* TES 4 : TATA BOGA - AKSELERASI                            */
-/* ========================================================= */
-INSERT INTO tes (id, judul, tipe, durasi_menit)
-VALUES
-(60004,'Pre & Post Test Tata Boga Akselerasi 2025','post-test',20);
-
+/* C4. TATA BOGA (60004) */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (60041,60004,1,'Margarin khusus untuk adonan lipat disebut…','pilihan_ganda'),
 (60042,60004,2,'Suhu panggang puff pastry yang baik adalah…','pilihan_ganda'),
@@ -380,23 +336,16 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (60043,'Mengembangkan adonan',true),(60043,'Memberi aroma',false),(60043,'Memadatkan',false),(60043,'Mengikat air',false),(60043,'Mengubah warna',false),
 (60044,'Sheeter',true),(60044,'Oven',false),(60044,'Mixer',false),(60044,'Divider',false),(60044,'Blender',false);
 
-/* ========================================================= */
-/* END FILE                                                  */
-/* ========================================================= */
-
-
-/* ============================= */
-/* TES REGULER TATA              */
-/* ============================= */
+/* =====================================================================
+   D. TES REGULER TATA (pakai pelatihan_id & kompetensi_pelatihan_id)
+   ===================================================================== */
 INSERT INTO tes (id, judul, tipe, pelatihan_id, kompetensi_pelatihan_id, durasi_menit) VALUES
 (10001,'Post Test Reguler Tata Kecantikan','post-test',3,301,20),
 (10002,'Post Test Reguler Teknik Pendingin','post-test',3,302,20),
 (10003,'Post Test Reguler Tata Busana','post-test',3,303,20),
 (10004,'Post Test Reguler Tata Boga','post-test',3,304,20);
 
-/* ============================= */
-/* TATA KECANTIKAN                */
-/* ============================= */
+/* D1. TATA KECANTIKAN (10001) */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (11001,10001,1,'Kosmetika pratata disebut juga','pilihan_ganda'),
 (11002,10001,2,'Gerakan pengurutan pada creambath adalah untuk','pilihan_ganda'),
@@ -425,9 +374,7 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (11005,'Trichoclasia',false),
 (11005,'Trichondosis',false);
 
-/* ============================= */
-/* TEKNIK PENDINGIN & TATA UDARA */
-/* ============================= */
+/* D2. TEKNIK PENDINGIN (10002) */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (12001,10002,1,'Mesin 3R digunakan untuk proses','pilihan_ganda'),
 (12002,10002,2,'Recovery pada mesin pendingin adalah','pilihan_ganda'),
@@ -456,9 +403,7 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (12005,'Kompresor',false),
 (12005,'Kondensor',false);
 
-/* ============================= */
-/* TATA BUSANA                    */
-/* ============================= */
+/* D3. TATA BUSANA (10003) */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (13001,10003,1,'Tujuan merendam bahan sebelum digunting','pilihan_ganda'),
 (13002,10003,2,'Gaun punggung terbuka disebut model','pilihan_ganda'),
@@ -487,9 +432,7 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (13005,'Rok lipit kipas',false),
 (13005,'Rok lipit pipih',false);
 
-/* ============================= */
-/* TATA BOGA                      */
-/* ============================= */
+/* D4. TATA BOGA (10004) */
 INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban) VALUES
 (14001,10004,1,'Bahan pengembang roti adalah','pilihan_ganda'),
 (14002,10004,2,'Tepung terigu untuk roti berprotein','pilihan_ganda'),
@@ -518,9 +461,11 @@ INSERT INTO opsi_jawaban (pertanyaan_id, teks_opsi, apakah_benar) VALUES
 (14005,'Pastry renyah',false),
 (14005,'Pastry tanpa lemak',false);
 
-/* =====================================================
-   TES 1 : TATA BOGA REGULER
-   ===================================================== */
+/* =====================================================================
+   E. TES REGULER (format berbeda: tes.kategori + pertanyaan.soal)
+   ===================================================================== */
+
+/* E1. TATA BOGA REGULER */
 INSERT INTO tes (id, judul, kategori, durasi_menit) VALUES
 (70001,'Post Test Tata Boga Reguler 2025','tata_boga',20);
 
@@ -548,9 +493,7 @@ INSERT INTO opsi_jawaban VALUES
 (700019,'Bintik hitam dan berlubang',1),(700019,'Fermentasi lama',0),(700019,'Tidak mengembang',0),(700019,'Terlalu manis',0),
 (700020,'Shortening',1),(700020,'Mentega putih',0),(700020,'Korsvet',0),(700020,'Mentega cair',0);
 
-/* =====================================================
-   TES 2 : TATA BUSANA REGULER
-   ===================================================== */
+/* E2. TATA BUSANA REGULER */
 INSERT INTO tes (id, judul, kategori, durasi_menit) VALUES
 (70002,'Post Test Tata Busana Reguler 2025','tata_busana',20);
 
@@ -568,9 +511,7 @@ INSERT INTO opsi_jawaban VALUES
 (700024,'Standar',1),(700024,'Dasar',0),(700024,'Ukuran perorangan',0),(700024,'Drapping',0),
 (700025,'Lembut',1),(700025,'Kaku',0),(700025,'Lentur',0),(700025,'Tipis',0);
 
-/* =====================================================
-   TES 3 : TEKNIK PENDINGIN REGULER
-   ===================================================== */
+/* E3. TEKNIK PENDINGIN REGULER */
 INSERT INTO tes (id, judul, kategori, durasi_menit) VALUES
 (70003,'Post Test Teknik Pendingin Reguler 2025','pendingin',20);
 
@@ -586,9 +527,7 @@ INSERT INTO opsi_jawaban VALUES
 (700033,'Unit rusak dan perlu perbaikan',1),(700033,'Normal',0),(700033,'Baru dipasang',0),(700033,'AC mati',0),
 (700034,'Manifold gauge & vacuum pump',1),(700034,'Obeng',0),(700034,'Tang',0),(700034,'Kunci L',0);
 
-/* =====================================================
-   TES 4 : TATA KECANTIKAN REGULER
-   ===================================================== */
+/* E4. TATA KECANTIKAN REGULER */
 INSERT INTO tes (id, judul, kategori, durasi_menit) VALUES
 (70004,'Post Test Tata Kecantikan Reguler 2025','tata_kecantikan',20);
 
@@ -603,3 +542,5 @@ INSERT INTO opsi_jawaban VALUES
 (700042,'Menggetar',1),(700042,'Mengusap',0),(700042,'Menepuk',0),(700042,'Memijat',0),
 (700043,'Iritasi kulit',1),(700043,'Panas',0),(700043,'Kusam',0),(700043,'Kribo',0),
 (700044,'Tricology',1),(700044,'Trichoclasia',0),(700044,'Trichoptilosis',0),(700044,'Trichondosis',0);
+
+COMMIT;

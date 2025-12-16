@@ -38,7 +38,7 @@ class PendaftaranResource extends Resource
             'peserta.user',
             'pelatihan',
             'kompetensiPelatihan.kompetensi',
-            'penempatanAsramaAktif.kamarPelatihan.kamar',
+            'penempatanAsramas.kamarPelatihan.kamar',
         ]);
     }
 
@@ -400,7 +400,7 @@ class PendaftaranResource extends Resource
                                 'peserta.user',
                                 'kompetensiPelatihan.kompetensi',
                                 'pelatihan',
-                                'penempatanAsramaAktif.kamarPelatihan.kamar',
+                                'penempatanAsramas.kamarPelatihan.kamar',
                             ]);
 
                             $kamarAsrama =
