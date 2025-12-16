@@ -500,6 +500,18 @@ class DashboardController extends Controller
 
     public function pretestStart(Tes $tes)
     {
+
+        // if ($tes) {
+        //     // if ($pertanyaanList->isEmpty()) {
+        //     dd(
+        //         'DEBUG: Pertanyaan KOSONG (0)',
+        //         'Tes ID: ' . $tes->id,
+        //         'Judul: ' . $tes->judul,
+        //         'Query SQL: select * from pertanyaan where tes_id = ' . $tes->id,
+        //         'Total di DB per ID ini: ' . \App\Models\Pertanyaan::where('tes_id', $tes->id)->count()
+
+        //     );
+        // }
         return $this->startByTes(
             $tes,
             'pre-test',
@@ -1077,15 +1089,15 @@ class DashboardController extends Controller
             ->get();
 
         // DEBUG: Cek apakah data terbaca
-        if ($pertanyaanList->isEmpty()) {
-            dd(
-                'DEBUG: Pertanyaan KOSONG (0)',
-                'Tes ID: ' . $tes->id,
-                'Judul: ' . $tes->judul,
-                'Query SQL: select * from pertanyaan where tes_id = ' . $tes->id,
-                'Total di DB per ID ini: ' . \App\Models\Pertanyaan::where('tes_id', $tes->id)->count()
-            );
-        }
+        // if ($pertanyaanList->isEmpty()) {
+        //     dd(
+        //         'DEBUG: Pertanyaan KOSONG (0)',
+        //         'Tes ID: ' . $tes->id,
+        //         'Judul: ' . $tes->judul,
+        //         'Query SQL: select * from pertanyaan where tes_id = ' . $tes->id,
+        //         'Total di DB per ID ini: ' . \App\Models\Pertanyaan::where('tes_id', $tes->id)->count()
+        //     );
+        // }
 
         $currentQuestionIndex = (int) $request->query('q', 0);
         if ($currentQuestionIndex < 0) $currentQuestionIndex = 0;
