@@ -15,6 +15,20 @@ class ViewKompetensiPelatihan extends Page
 
     protected static string $view = 'filament.clusters.pelatihan.resources.pelatihan-resource.pages.view-kompetensi-pelatihan';
 
+    public $record;
+    public $kompetensiPelatihan;
+
+    public function mount($record, $kompetensi_id = null)
+    {
+        $this->record = Pelatihan::findOrFail($record);
+
+        if ($kompetensi_id) {
+            $this->kompetensiPelatihan = KompetensiPelatihan::with(['kompetensi', 'instrukturs'])
+                ->where('pelatihan_id', $this->record->id)
+                ->findOrFail($kompetensi_id);
+        }
+    }
+
     public function addParticipantAction(): \Filament\Actions\Action
     {
         return \Filament\Actions\Action::make('addParticipant')
@@ -177,9 +191,9 @@ class ViewKompetensiPelatihan extends Page
             ->whereHas('tes', fn($q) => $q->where('tipe', 'pretest'))
             ->tap($baseJoin);
 
-        $pretestAvg = $pretestQuery->avg('nilai') ?? 0;
-        $pretestMax = $pretestQuery->max('nilai') ?? 0;
-        $pretestMin = $pretestQuery->min('nilai') ?? 0;
+        $pretestAvg = $pretestQuery->avg('skor') ?? 0;
+        $pretestMax = $pretestQuery->max('skor') ?? 0;
+        $pretestMin = $pretestQuery->min('skor') ?? 0;
         $pretestCount = $pretestQuery->count();
 
         // 2. POSTTEST
@@ -187,17 +201,17 @@ class ViewKompetensiPelatihan extends Page
             ->whereHas('tes', fn($q) => $q->where('tipe', 'posttest'))
             ->tap($baseJoin);
 
-        $posttestAvg = $posttestQuery->avg('nilai') ?? 0;
+        $posttestAvg = $posttestQuery->avg('skor') ?? 0;
         $posttestCount = $posttestQuery->count();
-        $lulus = (clone $posttestQuery)->where('nilai', '>=', 75)->count();
-        $remedial = (clone $posttestQuery)->where('nilai', '<', 75)->count();
+        $lulus = (clone $posttestQuery)->where('skor', '>=', 75)->count();
+        $remedial = (clone $posttestQuery)->where('skor', '<', 75)->count();
 
         // 3. MONEV (SURVEI) - Simple Avg Calculation
         $monevRespondents = \App\Models\Percobaan::query()
             ->tap($baseJoin)
             ->whereHas('tes', fn($q) => $q->where('tipe', 'survei'))
-            ->distinct('peserta_id')
-            ->count();
+            ->distinct('percobaan.peserta_id')
+            ->count('percobaan.peserta_id');
 
         $totalPeserta = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
             ->where('kompetensi_pelatihan_id', $kompetensiId)
