@@ -158,3 +158,4 @@ class ViewPenempatanAsrama extends ViewRecord
         ]);
     }
 }
+

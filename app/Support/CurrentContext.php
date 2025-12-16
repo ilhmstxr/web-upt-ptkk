@@ -26,6 +26,6 @@ class CurrentContext
 
     public static function kompetensiId(): ?int
     {
-        return session('kompetensi_id');
+        return session('kompetensi_pelatihan_id');
     }
 }

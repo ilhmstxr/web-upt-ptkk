@@ -180,7 +180,10 @@
               </a>
             </h2>
 
-            <p class="font-[Montserrat] text-[14.5px] md:text-[15px] text-slate-800 leading-relaxed mb-3 max-w-[60ch]">
+           <p class="font-[Montserrat] text-[14.5px] md:text-[15px]
+          text-slate-800 leading-relaxed mb-3
+          max-w-[60ch] break-words overflow-hidden">
+
               @if($fIsModel)
                 {{ Str::limit(strip_tags($featured->content ?? ''), 320) }}
               @else
@@ -269,9 +272,16 @@
             </h3>
 
             {{-- Excerpt --}}
-            <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-[#374151] mb-3 leading-relaxed">
-              {!! $excerpt !!}
-            </p>
+           <p class="font-[Montserrat]
+          text-[13px] sm:text-[14px]
+          text-[#374151]
+          mb-3
+          leading-relaxed
+          break-words
+          overflow-hidden
+          line-clamp-3">
+  {{ $excerpt }}
+</p>
 
             {{-- Baca Selengkapnya --}}
             <a href="{{ $slugOrUrl }}"
