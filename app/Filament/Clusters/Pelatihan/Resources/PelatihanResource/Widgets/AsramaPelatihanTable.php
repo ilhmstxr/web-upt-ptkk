@@ -24,7 +24,7 @@ class AsramaPelatihanTable extends BaseWidget
                 PendaftaranPelatihan::query()
                     ->with([
                         'peserta.instansi',
-                        'penempatanAsrama.kamar.asrama',
+                        'penempatanAsrama.kamarPelatihan.kamar.asrama',
                     ])
                     ->where('pelatihan_id', $this->record->id)
             )

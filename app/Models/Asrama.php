@@ -10,19 +10,18 @@ class Asrama extends Model
 {
     use HasFactory;
 
-    protected $table = 'asramas'; // ✅ sesuai migration
+    protected $table = 'asramas';
 
     protected $fillable = [
         'name',
         'alamat',
     ];
-
+    
     public function kamars(): HasMany
     {
         return $this->hasMany(Kamar::class, 'asrama_id');
     }
 
-    // ✅ helper count (DB-based)
     public function totalKamar(): int
     {
         return $this->kamars()->count();

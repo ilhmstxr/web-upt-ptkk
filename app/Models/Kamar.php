@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Kamar extends Model
 {
     use HasFactory;
 
-    protected $table = 'kamars'; // ✅ sesuai migration kamu
+    protected $table = 'kamars';
 
     protected $fillable = [
         'asrama_id',
@@ -21,9 +22,9 @@ class Kamar extends Model
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'is_active'   => 'boolean',
         'nomor_kamar' => 'integer',
-        'total_beds' => 'integer',
+        'total_beds'  => 'integer',
     ];
 
     public function asrama(): BelongsTo
@@ -31,15 +32,16 @@ class Kamar extends Model
         return $this->belongsTo(Asrama::class, 'asrama_id');
     }
 
-    /**
-     * Relasi kamar dipakai di banyak pelatihan (pivot: kamar_pelatihan)
-     * available_beds dan is_active per pelatihan disimpan di pivot.
-     */
+    public function kamarPelatihans(): HasMany
+    {
+        return $this->hasMany(KamarPelatihan::class, 'kamar_id');
+    }
+
     public function pelatihans(): BelongsToMany
     {
         return $this->belongsToMany(
                 Pelatihan::class,
-                'kamar_pelatihan',
+                'kamar_pelatihans',
                 'kamar_id',
                 'pelatihan_id'
             )

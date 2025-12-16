@@ -47,18 +47,18 @@ class InformasiAsramaWidget extends Widget
         // 2) Penghuni aktif
         $placements = PenempatanAsrama::query()
             ->penghuniAktif()
-            ->with(['pendaftaranPelatihan.peserta'])
+            ->with(['peserta'])
             ->get();
 
         $occupied = $placements->count();
 
         $this->male = $placements->filter(function ($placement) {
-            $jk = $placement->pendaftaranPelatihan?->peserta?->jenis_kelamin;
+            $jk = $placement->peserta?->jenis_kelamin;
             return in_array($jk, ['Laki-laki', 'L', 'Pria'], true);
         })->count();
 
         $this->female = $placements->filter(function ($placement) {
-            $jk = $placement->pendaftaranPelatihan?->peserta?->jenis_kelamin;
+            $jk = $placement->peserta?->jenis_kelamin;
             return in_array($jk, ['Perempuan', 'P', 'Wanita'], true);
         })->count();
 

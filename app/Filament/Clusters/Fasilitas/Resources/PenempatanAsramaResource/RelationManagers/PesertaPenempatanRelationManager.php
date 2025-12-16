@@ -131,7 +131,7 @@ class PesertaPenempatanRelationManager extends RelationManager
             ->where('pelatihan_id', $pelatihan->id)
             ->with([
                 'peserta.instansi',
-                'penempatanAsrama.kamar.asrama',
+                'penempatanAsrama.kamarPelatihan.kamar.asrama',
             ]);
     }
 }
