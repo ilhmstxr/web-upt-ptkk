@@ -6,13 +6,31 @@
 
 @section('content')
 @php
+    // ✅ biar gak error kalau $tes null / bukan collection
+    $tes = $tes ?? collect();
+    if (!($tes instanceof \Illuminate\Support\Collection)) {
+        $tes = collect($tes);
+    }
+
     $tesFiltered = $tes->filter(function($t){
-        $okPelatihan  = !session('pelatihan_id') || $t->pelatihan_id == session('pelatihan_id');
+        // session bisa null, jadi amanin casting
+        $sessionPelatihanId  = session('pelatihan_id');
+        $sessionKompetensiId = session('kompetensi_id');
 
-        $okKompetensi = !session('kompetensi_id')
-            || $t->kompetensi_id == session('kompetensi_id');
+        $okPelatihan = empty($sessionPelatihanId)
+            || (int)($t->pelatihan_id ?? 0) === (int)$sessionPelatihanId;
 
-        $okTipe = ($t->tipe ?? null) === 'pre-test';
+        // ✅ kompetensi bisa dari kompetensi_id atau kompetensi_pelatihan_id
+        $kompetensiResolvedId = (int) (
+            $t->kompetensi_id
+            ?? $t->kompetensi_pelatihan_id
+            ?? 0
+        );
+
+        $okKompetensi = empty($sessionKompetensiId)
+            || $kompetensiResolvedId === (int)$sessionKompetensiId;
+
+        $okTipe = ((string)($t->tipe ?? '')) === 'pre-test';
 
         return $okPelatihan && $okKompetensi && $okTipe;
     });
@@ -23,11 +41,28 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
     @if($t)
+        @php
+            // ✅ aman ambil status property (kalau gak ada, gak error)
+            $alreadyDone = (bool) data_get($t, '__already_done', false);
+            $lastScore   = data_get($t, '__last_score', null);
+            $runningId   = data_get($t, '__running_id', null);
+            $doneId      = data_get($t, '__done_id', null);
+            $aboveAvg    = (bool) data_get($t, '__above_avg', false);
+
+            // optional field lain, aman
+            $postScore   = data_get($t, '__post_score', null);
+            $imprPoints  = data_get($t, '__improvement_points', null);
+            $imprPercent = data_get($t, '__improvement_percent', null);
+
+            // ✅ aman untuk relasi pelatihan (kalau null gak error)
+            $pelatihanNama = optional($t->pelatihan)->nama_pelatihan ?? '-';
+        @endphp
+
         <div class="p-6 bg-white rounded-xl shadow-md hover:shadow-xl transition card-hover">
 
             <div class="flex justify-between items-start gap-4">
                 <div class="min-w-0">
-                    <h3 class="font-bold text-lg mb-2 truncate">{{ $t->judul }}</h3>
+                    <h3 class="font-bold text-lg mb-2 truncate">{{ $t->judul ?? '-' }}</h3>
                     <p class="text-gray-600 mb-3">
                         {!! \Illuminate\Support\Str::limit($t->deskripsi ?? '-', 140) !!}
                     </p>
@@ -35,7 +70,7 @@
                     <div class="text-sm text-gray-500 space-y-1">
                         <div>Pelatihan:
                             <strong class="text-gray-700">
-                                {{ $t->pelatihan->nama_pelatihan ?? '-' }}
+                                {{ $pelatihanNama }}
                             </strong>
                         </div>
                         @if(!empty($t->durasi_menit))
@@ -58,7 +93,7 @@
             {{-- STATUS AREA --}}
             <div class="mt-5 border-t pt-4">
 
-                @if($t->__already_done)
+                @if($alreadyDone)
                     {{-- SUDAH SELESAI --}}
                     <div class="flex flex-col gap-2">
                         <div class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-2 rounded-lg w-fit">
@@ -67,27 +102,27 @@
 
                         <div class="text-sm text-slate-700">
                             Nilai Pre-Test:
-                            <span class="font-bold text-emerald-700">{{ $t->__last_score ?? '-' }}</span>
+                            <span class="font-bold text-emerald-700">{{ $lastScore ?? '-' }}</span>
                         </div>
 
-                        {{-- OPTIONAL: tampilkan nilai post-test bila tersedia untuk perbandingan --}}
-                        @if(!empty($t->__post_score))
+                        {{-- OPTIONAL: nilai post-test --}}
+                        @if(!empty($postScore))
                             <div class="text-sm text-slate-700">
                                 Nilai Post-Test:
-                                <span class="font-bold text-blue-700">{{ $t->__post_score ?? '-' }}</span>
+                                <span class="font-bold text-blue-700">{{ $postScore }}</span>
                             </div>
                         @endif
 
-                        {{-- improvement tetap dipakai --}}
-                        @if($t->__improvement_points !== null)
+                        {{-- improvement --}}
+                        @if($imprPoints !== null)
                             <div class="text-sm">
                                 Peningkatan:
-                                <span class="font-semibold {{ $t->__improvement_points >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
-                                    {{ $t->__improvement_points >= 0 ? '+' : '' }}{{ $t->__improvement_points }}
+                                <span class="font-semibold {{ $imprPoints >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
+                                    {{ $imprPoints >= 0 ? '+' : '' }}{{ $imprPoints }}
                                 </span>
-                                @if($t->__improvement_percent !== null)
+                                @if($imprPercent !== null)
                                     <span class="text-slate-500">
-                                        ({{ $t->__improvement_percent >= 0 ? '+' : '' }}{{ $t->__improvement_percent }}%)
+                                        ({{ $imprPercent >= 0 ? '+' : '' }}{{ $imprPercent }}%)
                                     </span>
                                 @endif
                             </div>
@@ -95,29 +130,29 @@
 
                         <div class="text-sm">
                             Status:
-                            @if($t->__above_avg)
+                            @if($aboveAvg)
                                 <span class="font-semibold text-emerald-700">Aman / di atas passing</span>
                             @else
                                 <span class="font-semibold text-amber-700">Di bawah passing</span>
                             @endif
                         </div>
 
-                        @if(!empty($t->__done_id))
-                            <a href="{{ route('dashboard.pretest.result', ['percobaan' => $t->__done_id]) }}"
+                        @if(!empty($doneId))
+                            <a href="{{ route('dashboard.pretest.result', ['percobaan' => $doneId]) }}"
                                class="text-sm text-blue-600 font-semibold underline w-fit">
                                 Lihat hasil detail →
                             </a>
                         @endif
                     </div>
 
-                @elseif($t->__running_id)
+                @elseif(!empty($runningId))
                     {{-- SUDAH MULAI TAPI BELUM SELESAI --}}
                     <div class="flex items-center justify-between gap-3">
                         <div class="text-sm text-slate-600">
                             ⏳ Tes sedang berjalan
                         </div>
 
-                        <a href="{{ route('dashboard.pretest.show', $t->id).'?percobaan='.$t->__running_id }}"
+                        <a href="{{ route('dashboard.pretest.show', $t->id).'?percobaan='.$runningId }}"
                            class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm font-semibold">
                             Lanjutkan
                         </a>

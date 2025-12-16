@@ -523,13 +523,23 @@ class DashboardController extends Controller
 
     public function pretestSubmit(Request $request, Percobaan $percobaan)
     {
-        return $this->processTesSubmit(
+        $response = $this->processTesSubmit(
             $request,
             $percobaan,
             'dashboard.pretest.show',
-            'dashboard.pretest.result'
+            null // ⬅️ jangan ke result
         );
+
+        // kalau processTesSubmit return RedirectResponse
+        if ($response instanceof \Illuminate\Http\RedirectResponse) {
+            return redirect()
+                ->route('dashboard.home')
+                ->with('success', 'Pre-test berhasil disubmit.');
+        }
+
+        return $response;
     }
+
 
     public function pretestResult(Percobaan $percobaan)
     {
@@ -637,12 +647,21 @@ class DashboardController extends Controller
 
     public function posttestSubmit(Request $request, Percobaan $percobaan)
     {
-        return $this->processTesSubmit(
+        $response = $this->processTesSubmit(
             $request,
             $percobaan,
-            'dashboard.posttest.show',
-            'dashboard.posttest.result'
+            'dashboard.pretest.show',
+            null // ⬅️ jangan ke result
         );
+
+        // kalau processTesSubmit return RedirectResponse
+        if ($response instanceof \Illuminate\Http\RedirectResponse) {
+            return redirect()
+                ->route('dashboard.home')
+                ->with('success', 'Pre-test berhasil disubmit.');
+        }
+
+        return $response;
     }
 
     public function posttestResult(Percobaan $percobaan)

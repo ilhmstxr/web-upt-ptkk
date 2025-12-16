@@ -10,16 +10,15 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 
 class KontenProgramPelatihanResource extends Resource
 {
     protected static ?string $model = KontenProgramPelatihan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-photo';
-    protected static ?string $navigationLabel = 'Foto Program Pelatihan';
-    protected static ?string $modelLabel = 'Foto Program Pelatihan';
-    protected static ?string $pluralModelLabel = 'Foto Program Pelatihan';
+    protected static ?string $navigationLabel = 'Program Pelatihan';
+    protected static ?string $modelLabel = 'Program Pelatihan';
+    protected static ?string $pluralModelLabel = 'Program Pelatihan';
     protected static ?string $cluster = KontenWebsite::class;
 
     public static function form(Form $form): Form
@@ -28,9 +27,7 @@ class KontenProgramPelatihanResource extends Resource
             Forms\Components\TextInput::make('judul')
                 ->label('Judul Program')
                 ->required()
-                ->maxLength(255)
-                // saat create: bisa diisi, saat edit: dikunci
-                ->disabled(fn (?Model $record) => $record !== null),
+                ->maxLength(255),
 
             Forms\Components\Textarea::make('deskripsi')
                 ->label('Deskripsi')
@@ -40,18 +37,21 @@ class KontenProgramPelatihanResource extends Resource
             Forms\Components\FileUpload::make('hero_image')
                 ->label('Foto Utama (Hero)')
                 ->image()
-                ->disk('public') // ⬅ simpan di storage/app/public
-                ->directory('konten-website/program-pelatihan/hero') // ⬅ folder rapi
+                ->disk('public')
+                ->directory('konten-website/program-pelatihan/hero')
                 ->maxSize(4096),
 
             Forms\Components\FileUpload::make('galeri')
-                ->label('Galeri Foto')
+                ->label('Galeri Foto (Maksimal 3 Foto)')
                 ->multiple()
                 ->reorderable()
+                ->maxFiles(3)                 // ✅ limit UI
                 ->image()
+                ->imagePreviewHeight('150')
                 ->disk('public')
                 ->directory('konten-website/program-pelatihan/galeri')
-                ->maxSize(4096),
+                ->maxSize(4096)
+                ->helperText('Upload maksimal 3 foto untuk galeri bawah.'),
         ]);
     }
 
@@ -60,21 +60,23 @@ class KontenProgramPelatihanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('judul')
-                    ->label('Program')
-                    ->searchable(),
+                    ->label('Judul')
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('deskripsi')
+                    ->label('Deskripsi')
                     ->limit(60),
+
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Update')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+            // ❌ Jangan tambah CreateAction di sini biar gak double
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-            ])
-            ->headerActions([
-                //
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -85,26 +87,16 @@ class KontenProgramPelatihanResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListKontenProgramPelatihans::route('/'),
-            'edit'  => Pages\EditKontenProgramPelatihan::route('/{record}/edit'),
+            'index'  => Pages\ListKontenProgramPelatihans::route('/'),
+            'create' => Pages\CreateKontenProgramPelatihan::route('/create'),
+            'edit'   => Pages\EditKontenProgramPelatihan::route('/{record}/edit'),
         ];
     }
-
-    public static function canCreate(): bool
-    {
-        return true;
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        return true; // boleh dibiarkan, tapi sebenarnya default-nya juga true
-    }
 }
+

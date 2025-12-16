@@ -13,11 +13,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\FileUpload;
+use Carbon\Carbon;
 
 class BeritaResource extends Resource
 {
     protected static ?string $model = Berita::class;
-
     protected static ?string $cluster = KontenWebsite::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -34,64 +34,74 @@ class BeritaResource extends Resource
                     ->description('Informasi utama, konten, dan gambar berita.')
                     ->columns(2)
                     ->schema([
-                        // KIRI: Judul, slug, konten
+                        /* ================= KIRI ================= */
                         Forms\Components\Group::make()
                             ->columnSpan(['sm' => 2, 'lg' => 1])
                             ->schema([
-                                Forms\Components\TextInput::make('title')
-                                    ->label('Judul Berita')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(function (?string $state, callable $set) {
-                                        $set('slug', Str::slug($state));
-                                    }),
+                               Forms\Components\TextInput::make('title')
+    ->label('Judul Berita')
+    ->required()
+    ->maxLength(255)
+    ->reactive()
+    ->afterStateUpdated(function (?string $state, callable $set) {
+        $set('slug', Str::slug($state ?? ''));
+    }),
 
-                                Forms\Components\TextInput::make('slug')
-                                    ->label('Slug (URL)')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->unique(Berita::class, 'slug', ignoreRecord: true)
-                                    ->helperText('Biarkan terisi otomatis dari judul atau ubah jika perlu.'),
+Forms\Components\TextInput::make('slug')
+    ->required()
+    ->maxLength(255)
+    ->unique(Berita::class, 'slug', ignoreRecord: true)
+    ->hidden()                 // ✅ tidak tampil
+    ->dehydrated(true),        // ✅ tetap ikut submit ke DB
 
                                 Forms\Components\RichEditor::make('content')
                                     ->label('Konten Berita')
                                     ->required()
-                                    ->fileAttachmentsDisk('public') // ⬅ simpan lampiran di disk public
-                                    ->fileAttachmentsDirectory('konten-website/berita/content') // ⬅ folder rapi
+                                    ->fileAttachmentsDisk('public')
+                                    ->fileAttachmentsDirectory('konten-website/berita/content')
                                     ->columnSpanFull(),
                             ]),
 
-                        // KANAN: Gambar, publish toggle & tanggal
+                        /* ================= KANAN ================= */
                         Forms\Components\Group::make()
                             ->columnSpan(['sm' => 2, 'lg' => 1])
                             ->schema([
                                 FileUpload::make('image')
                                     ->label('Gambar Utama')
                                     ->image()
-                                    ->disk('public') // ⬅ simpan di storage/app/public
-                                    ->directory('konten-website/berita/thumbnail') // ⬅ folder khusus thumbnail berita
+                                    ->disk('public')
+                                    ->directory('konten-website/berita/thumbnail')
                                     ->imageCropAspectRatio('16:9')
                                     ->imageEditor()
                                     ->maxSize(4096)
                                     ->helperText('Unggah gambar utama (maks 4MB) dengan rasio 16:9.'),
 
-                                Forms\Components\Toggle::make('is_published')
-                                    ->label('Publikasikan Segera')
-                                    ->default(false)
-                                    ->reactive()
-                                    ->helperText('Aktifkan untuk menampilkan berita di website.'),
+                              Forms\Components\Toggle::make('is_published')
+    ->label('Publikasikan Segera')
+    ->default(false)
+    ->reactive()
+    ->afterStateUpdated(function (bool $state, callable $set, callable $get) {
+        if ($state && blank($get('published_at'))) {
+            $set('published_at', now());
+        }
 
-                                Forms\Components\DateTimePicker::make('published_at')
-                                    ->label('Tanggal & Waktu Publikasi')
-                                    ->nullable()
-                                    ->default(now())
-                                    ->withoutSeconds()
-                                    ->displayFormat('d F Y H:i')
-                                    ->placeholder('Pilih tanggal & jam publikasi (opsional)')
-                                    ->visible(fn (Forms\Get $get): bool => (bool) $get('is_published'))
-                                    ->required(fn (Forms\Get $get): bool => (bool) $get('is_published'))
-                                    ->helperText('Wajib diisi jika status publikasi diaktifkan.'),
+        if (! $state) {
+            $set('published_at', null);
+        }
+    }),
+
+Forms\Components\DateTimePicker::make('published_at')
+    ->label('Tanggal & Waktu Publikasi')
+    ->nullable()
+    ->withoutSeconds()
+    ->displayFormat('d F Y H:i')
+    ->visible(fn (Forms\Get $get): bool => (bool) $get('is_published'))
+    ->required(fn (Forms\Get $get): bool => (bool) $get('is_published'))
+    ->maxDate(Carbon::now('Asia/Jakarta')->endOfDay()) // ✅ tanggal 17 pasti bisa diklik
+    ->rule('before_or_equal:now'),
+
+
+
                             ]),
                     ]),
             ]);
@@ -103,13 +113,15 @@ class BeritaResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Gambar')
-                    ->disk('public') // ⬅ ambil dari disk public
+                    ->disk('public')
                     ->size(80)
                     ->square(),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Judul Berita')
-                    ->description(fn (Berita $record): string => Str::limit(strip_tags($record->content ?? ''), 70))
+                    ->description(fn (Berita $record) =>
+                        Str::limit(strip_tags($record->content ?? ''), 70)
+                    )
                     ->searchable()
                     ->sortable()
                     ->wrap(),
@@ -122,12 +134,7 @@ class BeritaResource extends Resource
                 Tables\Columns\TextColumn::make('published_at')
                     ->label('Tgl Publikasi')
                     ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->tooltip(fn (Berita $record): ?string =>
-                        $record->published_at
-                            ? $record->published_at->format('d M Y H:i')
-                            : null
-                    ),
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
@@ -143,10 +150,9 @@ class BeritaResource extends Resource
 
                 Tables\Filters\Filter::make('published_recently')
                     ->label('Baru Dipublikasi (7 hari)')
-                    ->query(fn (Builder $query): Builder =>
+                    ->query(fn (Builder $query) =>
                         $query->where('published_at', '>=', now()->subDays(7))
-                    )
-                    ->toggle(),
+                    ),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -158,13 +164,6 @@ class BeritaResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

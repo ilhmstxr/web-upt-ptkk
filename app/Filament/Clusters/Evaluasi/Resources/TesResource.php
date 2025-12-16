@@ -78,7 +78,7 @@ class TesResource extends Resource
                             ->afterStateUpdated(function ($state, Forms\Set $set) {
                                 // kalau jadi survei, kompetensi harus kosong
                                 if ($state === 'survei') {
-                                    $set('kompetensi_pelatihan_id', null);
+                                    $set('kompetensi_id', null);
                                 }
                             }),
 
@@ -88,29 +88,25 @@ class TesResource extends Resource
                             ->preload()
                             ->required()
                             ->default(fn () => request()->query('pelatihan_id'))
-                            // pelatihan boleh kamu kunci saat edit (opsional)
                             ->disabled(fn (?string $operation) => $operation === 'edit'),
 
                         /**
-                         * ✅ FIX KOMPETENSI:
-                         * - pre/post: tampil + wajib + tersimpan + BISA DIEDIT
-                         * - survei: hilang + tidak tersimpan + dipaksa null
+                         * ✅ FIX KOMPETENSI (sesuai DashboardController):
+                         * - pre/post: tampil + wajib + tersimpan
+                         * - survei: hilang + dipaksa null + tidak ikut tersimpan
                          */
-                        Forms\Components\Select::make('kompetensi_pelatihan_id')
+                        Forms\Components\Select::make('kompetensi_id')
+                            ->label('Kompetensi')
                             ->relationship('kompetensi', 'nama_kompetensi')
                             ->searchable()
                             ->preload()
-                            ->default(fn () => request()->query('kompetensi_pelatihan_id'))
+                            ->default(fn () => request()->query('kompetensi_id'))
                             ->visible(fn (Forms\Get $get) => $get('tipe') !== 'survei')
                             ->required(fn (Forms\Get $get) => in_array($get('tipe'), ['pre-test', 'post-test'], true))
                             ->dehydrated(fn (Forms\Get $get) => $get('tipe') !== 'survei')
-                            ->dehydrateStateUsing(function ($state, Forms\Get $get) {
-                                // kalau survei => simpan null
-                                if ($get('tipe') === 'survei') return null;
-                                return $state;
-                            })
-                            // ✅ INI PENTING: JANGAN disabled di edit, biar bisa diklik
-                            ->disabled(false),
+                            ->dehydrateStateUsing(fn ($state, Forms\Get $get) =>
+                                $get('tipe') === 'survei' ? null : $state
+                            ),
 
                         Forms\Components\TextInput::make('durasi_menit')
                             ->numeric()
