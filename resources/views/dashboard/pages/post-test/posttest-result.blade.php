@@ -37,10 +37,10 @@
 
     if (!empty($percobaan->peserta_id)) {
     $participantKey = 'peserta_id';
-    } elseif (!empty($percobaan->pesertaSurvei_id)) {
-    // NOTE: pastikan nama field bener (bisa jadi peserta_survei_id)
-    $participantKey = 'peserta_survei_id';
+    } elseif (!empty($percobaan->peserta_survei_id)) {
+        $participantKey = 'peserta_survei_id';
     }
+
 
     $participantId = $participantKey ? $percobaan->{$participantKey} : null;
 
@@ -107,7 +107,7 @@
     </div>
 
     {{-- Ringkasan Hasil --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {{-- Skor --}}
         <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
             <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
@@ -134,66 +134,70 @@
             </div>
         </div>
 
-        {{-- Status --}}
-        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Status
+    {{-- Perkembangan dari Pre-Test --}}
+    <div class="mb-6">
+        <div class="p-5 rounded-2xl border border-slate-100 bg-white">
+
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-slate-800">
+                    Perkembangan dari Pre-Test
+                </h3>
             </div>
-            <div class="text-xl font-bold mt-2 {{ $lulus ? 'text-emerald-600' : 'text-red-600' }}">
-                {{ $lulus ? 'Lulus' : 'Belum Lulus' }}
-            </div>
-            <div class="text-xs text-slate-500 mt-1">
-                {{ $lulus ? 'Nilai memenuhi batas minimum' : 'Nilai masih di bawah passing' }}
-            </div>
+
+            @if($preScore === null)
+                <div class="text-sm text-slate-500">
+                    Nilai Pre-Test belum ditemukan, sehingga perkembangan belum dapat dihitung.
+                </div>
+            @else
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                    {{-- Skor Pre-Test --}}
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="text-xs uppercase font-semibold text-slate-500">
+                            Skor Pre-Test
+                        </div>
+                        <div class="mt-2 text-xl font-bold text-blue-700">
+                            {{ rtrim(rtrim(number_format((float) $preScore, 2), '0'), '.') }}
+                        </div>
+                    </div>
+
+                    {{-- Peningkatan Nilai --}}
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="text-xs uppercase font-semibold text-slate-500">
+                            Peningkatan Nilai
+                        </div>
+                        <div class="mt-2 text-xl font-bold {{ $improveClass }}">
+                            {{ $improvementPoints >= 0 ? '+' : '' }}
+                            {{ rtrim(rtrim(number_format($improvementPoints, 2), '0'), '.') }}
+                        </div>
+                        <div class="mt-1 text-xs text-slate-500">
+                            Selisih Post vs Pre
+                        </div>
+                    </div>
+
+                    {{-- Persentase --}}
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="text-xs uppercase font-semibold text-slate-500">
+                            Persentase
+                        </div>
+                        <div class="mt-2 text-xl font-bold {{ $improveClass }}">
+                            @if($improvementPercent !== null)
+                                {{ $improvementPercent >= 0 ? '+' : '' }}{{ $improvementPercent }}%
+                            @else
+                                -
+                            @endif
+                        </div>
+                        <div class="mt-1 text-xs text-slate-500">
+                            Relatif terhadap Pre-Test
+                        </div>
+                    </div>
+
+                </div>
+            @endif
+
         </div>
     </div>
 
-    {{-- Perkembangan --}}
-    <div class="p-4 rounded-xl border border-slate-100 bg-white mb-6">
-        <div class="text-sm font-semibold text-slate-800 mb-3">
-            Perkembangan dari Pre-Test
-        </div>
-
-        @if($preScore === null)
-        <div class="text-sm text-slate-500">
-            Nilai Pre-Test belum ditemukan, jadi perkembangan belum bisa dihitung.
-        </div>
-        @else
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div class="text-xs text-slate-500 uppercase font-semibold">Skor Pre-Test</div>
-                <div class="text-lg font-bold text-blue-700 mt-1">
-                    {{ rtrim(rtrim(number_format((float)$preScore, 2), '0'), '.') }}
-                </div>
-            </div>
-
-            <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div class="text-xs text-slate-500 uppercase font-semibold">Peningkatan Nilai</div>
-                <div class="text-lg font-bold mt-1 {{ $improveClass }}">
-                    {{ $improvementPoints >= 0 ? '+' : '' }}
-                    {{ rtrim(rtrim(number_format($improvementPoints, 2), '0'), '.') }}
-                </div>
-                <div class="text-xs text-slate-500 mt-1">
-                    Selisih Post vs Pre
-                </div>
-            </div>
-
-            <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div class="text-xs text-slate-500 uppercase font-semibold">Persentase</div>
-                <div class="text-lg font-bold mt-1 {{ $improveClass }}">
-                    @if($improvementPercent !== null)
-                    {{ $improvementPercent >= 0 ? '+' : '' }}{{ $improvementPercent }}%
-                    @else
-                    -
-                    @endif
-                </div>
-                <div class="text-xs text-slate-500 mt-1">
-                    Relatif ke Pre-Test
-                </div>
-            </div>
-        </div>
-        @endif
-    </div>
 
     {{-- Detail waktu --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

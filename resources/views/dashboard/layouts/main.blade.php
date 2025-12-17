@@ -61,7 +61,7 @@
         <div class="flex flex-1 relative">
 
             {{-- Overlay mobile --}}
-            <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden"></div>
+            <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden pointer-events-none"></div>
 
             {{-- ===================== SIDEBAR ===================== --}}
             <aside id="sidebar"
@@ -288,15 +288,17 @@
         const overlay = document.getElementById('sidebar-overlay');
 
         function openSidebar() {
-            if (sidebar) sidebar.classList.remove('-translate-x-full');
-            if (overlay) overlay.classList.remove('hidden');
-            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+        sidebar?.classList.remove('-translate-x-full');
+        overlay?.classList.remove('hidden');
+        overlay?.classList.remove('pointer-events-none');
+        toggleBtn?.setAttribute('aria-expanded', 'true');
         }
 
         function closeSidebar() {
-            if (sidebar) sidebar.classList.add('-translate-x-full');
-            if (overlay) overlay.classList.add('hidden');
-            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+        sidebar?.classList.add('-translate-x-full');
+        overlay?.classList.add('hidden');
+        overlay?.classList.add('pointer-events-none');
+        toggleBtn?.setAttribute('aria-expanded', 'false');
         }
 
         if (toggleBtn) {

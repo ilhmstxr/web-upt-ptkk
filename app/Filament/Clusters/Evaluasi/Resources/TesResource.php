@@ -113,17 +113,6 @@ class TesResource extends Resource
         return $row?->skor !== null ? (float) $row->skor : null;
     }
 
-    /**
-     * ✅ FIX yang dibutuhkan:
-     * Masalah "TesResource salah kompetensi" biasanya karena penentuan tes_id-nya
-     * cuma berdasarkan pelatihan+tipe (tanpa ngunci kompetensi), jadi ketuker antar kompetensi.
-     *
-     * Helper ini cari tes_id yang tepat:
-     * - berdasarkan pelatihan_id + tipe
-     * - untuk pre/post: WAJIB ngunci kompetensi_id bila ada
-     * - survei: kompetensi dipaksa null (abaikan kompetensi)
-     * - legacy 'survey' dinormalisasi ke 'survei'
-     */
     public static function cariTesIdByKonteks(
         int $pelatihanId,
         ?int $kompetensiId,
@@ -136,19 +125,12 @@ class TesResource extends Resource
             ->where('tipe', $tipe)
             ->when(
                 $tipe !== 'survei' && !empty($kompetensiId),
-                fn (Builder $q) => $q->where('kompetensi_id', $kompetensiId)
+                fn (Builder $q) => $q->where('kompetensi_pelatihan_id', $kompetensiId)
             )
             ->orderByDesc('id')
             ->value('id');
     }
 
-    /**
-     * ✅ Helper skor yang "pasti benar" untuk konteks pelatihan+kompetensi+tipe.
-     * Pakai ini kalau kamu sebelumnya ambil tes_id secara "longgar" (cuma pelatihan+tipe).
-     *
-     * Contoh:
-     *  TesResource::ambilSkorTerakhirByKonteks($pelatihanId, $kompetensiId, 'pre-test', $pesertaId, $pesertaSurveiId)
-     */
     public static function ambilSkorTerakhirByKonteks(
         int $pelatihanId,
         ?int $kompetensiId,
@@ -161,8 +143,6 @@ class TesResource extends Resource
 
         return self::ambilSkorTerakhir($tesId, $pesertaId, $pesertaSurveiId);
     }
-
-    // =====================================================================
 
     public static function form(Form $form): Form
     {
@@ -186,7 +166,7 @@ class TesResource extends Resource
                             ->afterStateUpdated(function ($state, Forms\Set $set) {
                                 // kalau jadi survei/survey, kompetensi harus kosong
                                 if (in_array($state, ['survei', 'survey'], true)) {
-                                    $set('kompetensi_id', null);
+                                    $set('kompetensi_pelatihan_id', null);
                                 }
                             })
                             // Normalisasi: kalau user pilih "survey", simpan sebagai "survei"
@@ -201,17 +181,22 @@ class TesResource extends Resource
                             ->default(fn () => request()->query('pelatihan_id'))
                             ->disabled(fn (?string $operation) => $operation === 'edit'),
 
-                        /**
-                         * ✅ FIX KOMPETENSI:
-                         * - pre/post: tampil + wajib + tersimpan
-                         * - survei: hilang + dipaksa null + tidak ikut tersimpan
-                         */
-                        Forms\Components\Select::make('kompetensi_id')
+                        Forms\Components\Select::make('kompetensi_pelatihan_id')
                             ->label('Kompetensi')
-                            ->relationship('kompetensi', 'nama_kompetensi')
+                            ->relationship(
+                                name: 'kompetensiPelatihan',
+                                titleAttribute: 'id', 
+                                modifyQueryUsing: fn ($query) =>
+                                    $query->with('kompetensi')
+                            )
+                            ->getOptionLabelFromRecordUsing(
+                                fn ($record) =>
+                                    $record->kompetensi?->nama_kompetensi
+                                    ?? 'Kompetensi #' . $record->id
+                            )
                             ->searchable()
                             ->preload()
-                            ->default(fn () => request()->query('kompetensi_id'))
+                            ->default(fn () => request()->query('kompetensi_pelatihan_id'))
                             ->visible(fn (Forms\Get $get) => !in_array($get('tipe'), ['survei', 'survey'], true))
                             ->required(fn (Forms\Get $get) => in_array($get('tipe'), ['pre-test', 'post-test'], true))
                             ->dehydrated(fn (Forms\Get $get) => !in_array($get('tipe'), ['survei', 'survey'], true))
@@ -409,7 +394,6 @@ class TesResource extends Resource
                     'pre-test'  => 'Pre-Test',
                     'post-test' => 'Post-Test',
                     'survei'    => 'Survei',
-                    'survey'    => 'Survey (Legacy)',
                 ]),
                 Tables\Filters\SelectFilter::make('pelatihan')->relationship('pelatihan', 'nama_pelatihan'),
             ])

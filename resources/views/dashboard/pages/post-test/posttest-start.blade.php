@@ -1,48 +1,46 @@
 {{-- resources/views/dashboard/pages/post-test/posttest-start.blade.php --}}
 @extends('dashboard.layouts.main')
 
-@section('title', 'Post-Test')
-@section('page-title', 'Post-Test: Soal '.($currentQuestionIndex + 1))
+@section('title', 'post-Test')
+@section('page-title', 'post-Test: Soal '.($currentQuestionIndex + 1))
 
 @section('content')
 <div class="bg-white p-6 rounded-2xl shadow-md fade-in">
 
     @if(isset($pertanyaan))
-        @php
-            $jawabanCollection = $percobaan->jawabanUser ?? collect();
-            $totalSoal  = $pertanyaanList->count();
-            $terjawab   = $jawabanCollection->count();
-            $progress   = $totalSoal > 0 ? round(($terjawab / $totalSoal) * 100, 2) : 0;
+    @php
+    $jawabanCollection = $percobaan->jawabanUser ?? collect();
+    $totalSoal = $pertanyaanList->count();
+    $terjawab = $jawabanCollection->count();
+    $progress = $totalSoal > 0 ? round(($terjawab / $totalSoal) * 100, 2) : 0;
 
-            $durasiMenit = (int) ($tes->durasi_menit ?? 0);
-            if ($durasiMenit <= 0) $durasiMenit = 30;
+    // default durasi 30 menit kalau null / 0
+    $durasiMenit = (int) ($tes->durasi_menit ?? 0);
+    if ($durasiMenit <= 0) $durasiMenit=30;
 
-            $existing = $jawabanCollection->firstWhere('pertanyaan_id', $pertanyaan->id);
-            $existingOpsiId = $existing->opsi_jawaban_id ?? null;
+        $existing=$jawabanCollection->firstWhere('pertanyaan_id', $pertanyaan->id);
+        $existingOpsiId = $existing->opsi_jawaban_id ?? null;
 
-            $soalImgUrl = !empty($pertanyaan->gambar)
-                ? asset('storage/'.$pertanyaan->gambar)
-                : null;
+        $soalImgUrl = !empty($pertanyaan->gambar)
+        ? asset('storage/'.$pertanyaan->gambar)
+        : null;
         @endphp
 
-        {{-- Header progress + timer --}}
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+        {{-- HEADER: Timer + Progress --}}
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
             <div class="text-sm text-slate-600">
-                Terjawab <b>{{ $terjawab }}</b> / {{ $totalSoal }}
+                Sisa waktu: <span id="timer" class="font-semibold text-slate-900"></span>
             </div>
 
-            <div class="text-sm text-slate-600">
-                Sisa waktu:
-                <span id="timer" class="font-bold text-blue-700"></span>
+            <div class="w-full md:w-1/2">
+                <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                    <div class="bg-blue-600 h-3 rounded-full transition-all"
+                        style="width: {{ $progress }}%;"></div>
+                </div>
+                <p class="text-xs mt-1 text-slate-500">
+                    Terjawab: {{ $terjawab }} / {{ $totalSoal }} ({{ $progress }}%)
+                </p>
             </div>
-        </div>
-
-        {{-- Progress Bar --}}
-        <div class="mb-5">
-            <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-                <div class="bg-blue-600 h-3 rounded-full" style="width: {{ $progress }}%;"></div>
-            </div>
-            <p class="text-xs mt-1 text-slate-500">Progress: {{ $progress }}%</p>
         </div>
 
         {{-- PERINGATAN UJIAN KETAT (anti-cheat) --}}
@@ -58,86 +56,92 @@
             </div>
         </div>
 
+        {{-- FORM --}}
         <form id="form-tes"
-              action="{{ route('dashboard.posttest.submit', ['percobaan' => $percobaan->id]) }}"
-              method="POST"
-              class="space-y-5">
+            action="{{ route('dashboard.posttest.submit', ['percobaan' => $percobaan->id]) }}"
+            method="POST"
+            class="space-y-5">
             @csrf
 
             {{-- GRID NOMOR SOAL: tampil 1-20 / 1-N --}}
             <div class="flex flex-wrap gap-2">
                 @foreach($pertanyaanList as $idx => $p)
-                    @php
-                        $answered = $jawabanCollection->contains('pertanyaan_id', $p->id);
-                        $isActive = $idx === $currentQuestionIndex;
+                @php
+                $answered = $jawabanCollection->contains('pertanyaan_id', $p->id);
+                $isActive = $idx === $currentQuestionIndex;
 
-                        $btnClass = $isActive
-                            ? 'bg-blue-600 text-white ring-2 ring-blue-200'
-                            : ($answered
-                                ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200');
-                    @endphp
+                $btnClass = $isActive
+                ? 'bg-blue-600 text-white ring-2 ring-blue-200'
+                : ($answered
+                ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200');
+                @endphp
 
-                    <button type="button"
-                            onclick="goToQuestion({{ $idx }})"
-                            class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-semibold transition {{ $btnClass }}">
-                        {{ $loop->iteration }}
-                    </button>
+                <button type="button"
+                    onclick="goToQuestion({{ $idx }})"
+                    class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-semibold transition {{ $btnClass }}">
+                    {{ $loop->iteration }}
+                </button>
                 @endforeach
             </div>
 
-            {{-- Pertanyaan --}}
+            {{-- PERTANYAAN --}}
             <div class="bg-slate-50 border border-slate-100 rounded-xl p-4">
                 <div class="text-sm text-slate-500 mb-1">
                     Soal {{ $currentQuestionIndex + 1 }} dari {{ $totalSoal }}
                 </div>
-                <div class="text-slate-800 font-semibold text-base md:text-lg">
+
+                <div class="text-slate-800 font-medium leading-relaxed">
                     {{ $currentQuestionIndex + 1 }}.
-                    @php($plain = trim(strip_tags($pertanyaan->teks_pertanyaan ?? '')))
-                    {!! $plain !== '' ? $pertanyaan->teks_pertanyaan : '-' !!}
+                    {{ $pertanyaan->teks_pertanyaan ?? '-' }}
                 </div>
+
+                {{-- Gambar pertanyaan --}}
+                @if($soalImgUrl)
+                <div class="mt-3">
+                    <img src="{{ $soalImgUrl }}"
+                        alt="Gambar soal"
+                        class="max-h-72 rounded-lg shadow cursor-zoom-in hover:opacity-95 transition"
+                        onclick="openImageModal('{{ $soalImgUrl }}')">
+                </div>
+                @endif
             </div>
 
-            {{-- Gambar pertanyaan --}}
-            @if($soalImgUrl)
-                <img src="{{ $soalImgUrl }}"
-                     class="mb-4 rounded-lg shadow cursor-pointer hover:scale-[1.01] transition"
-                     onclick="openImageModal('{{ $soalImgUrl }}')">
-            @endif
-
-            {{-- Opsi jawaban --}}
-            <div class="space-y-2 mb-6">
+            {{-- OPSI JAWABAN --}}
+            <div class="space-y-2">
                 @forelse($pertanyaan->opsiJawabans ?? [] as $opsi)
-                    @php
-                        $checked = $existingOpsiId == $opsi->id;
-                        $opsiImgUrl = !empty($opsi->gambar)
-                            ? asset('storage/'.$opsi->gambar)
-                            : null;
-                    @endphp
+                @php
+                $checked = $existingOpsiId == $opsi->id;
+                $opsiImgUrl = !empty($opsi->gambar)
+                ? asset('storage/'.$opsi->gambar)
+                : null;
+                @endphp
 
-                    <label class="flex items-start gap-3 p-3 border rounded-lg hover:bg-slate-50 cursor-pointer transition">
-                        <input
-                            type="radio"
-                            name="jawaban[{{ $pertanyaan->id }}]"
-                            value="{{ $opsi->id }}"
-                            class="mt-1"
-                            {{ $checked ? 'checked' : '' }}
-                            required
-                        />
+                <label class="flex items-start gap-3 p-3 border rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                    <input
+                        type="radio"
+                        name="jawaban[{{ $pertanyaan->id }}]"
+                        value="{{ $opsi->id }}"
+                        class="mt-1 h-4 w-4"
+                        {{ $checked ? 'checked' : '' }}>
 
-                        <div class="flex-1">
-                            @if($opsiImgUrl)
-                                <img src="{{ $opsiImgUrl }}"
-                                     class="w-16 h-16 mb-2 rounded cursor-pointer hover:scale-[1.03] transition"
-                                     onclick="openImageModal('{{ $opsiImgUrl }}')">
-                            @endif
-                            <div class="text-slate-700">
-                                {{ $opsi->teks_opsi ?? '-' }}
-                            </div>
+                    <div class="flex-1">
+                        @if($opsiImgUrl)
+                        <img src="{{ $opsiImgUrl }}"
+                            alt="Gambar opsi"
+                            class="w-16 h-16 object-cover rounded cursor-zoom-in hover:opacity-95 transition mb-1"
+                            onclick="openImageModal('{{ $opsiImgUrl }}')">
+                        @endif
+
+                        <div class="text-slate-800 text-sm leading-relaxed">
+                            {{ $opsi->teks_opsi ?? '-' }}
                         </div>
-                    </label>
+                    </div>
+                </label>
                 @empty
-                    <p class="text-red-500 text-sm">Belum ada opsi jawaban untuk pertanyaan ini.</p>
+                <div class="text-red-600 text-sm">
+                    Belum ada opsi jawaban untuk pertanyaan ini.
+                </div>
                 @endforelse
             </div>
 
@@ -147,56 +151,59 @@
             {{-- FLAG KECURANGAN --}}
             <input type="hidden" name="cheat_flag" id="cheat_flag" value="0">
 
-            {{-- Navigasi prev/next --}}
-            <div class="flex justify-between">
+            {{-- NAVIGASI --}}
+            <div class="flex items-center justify-between pt-2">
                 @if($currentQuestionIndex > 0)
-                    <button type="button"
-                            onclick="goToQuestion({{ $currentQuestionIndex - 1 }})"
-                            class="px-4 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition text-sm font-semibold">
-                        ← Sebelumnya
-                    </button>
+                <button type="button"
+                    onclick="goToQuestion({{ $currentQuestionIndex - 1 }})"
+                    class="px-4 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition">
+                    ← Sebelumnya
+                </button>
                 @else
-                    <span></span>
+                <span></span>
                 @endif
 
                 <button type="submit"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold">
-                    {{ $currentQuestionIndex + 1 == $totalSoal ? 'Selesai' : 'Selanjutnya →' }}
+                    class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                    {{ ($currentQuestionIndex + 1) == $totalSoal ? 'Selesai ✓' : 'Selanjutnya →' }}
                 </button>
             </div>
         </form>
-
-    @else
+        @else
         {{-- Semua soal selesai --}}
-        <div class="text-center py-6">
-            <div class="text-lg font-semibold text-slate-800">Semua soal telah selesai.</div>
-            <div class="mt-2 text-sm text-slate-600">
-                Nilai Anda:
-                <span class="font-bold text-emerald-700">{{ $percobaan->skor ?? 0 }}</span>
+        <div class="text-center py-8">
+            <div class="text-slate-500">Semua soal telah selesai.</div>
+            <div class="text-lg font-semibold mt-2">
+                Nilai Anda: {{ $percobaan->skor ?? 0 }}
+                <span class="{{ ($percobaan->lulus ?? false) ? 'text-emerald-600' : 'text-red-600' }}">
+                    ({{ ($percobaan->lulus ?? false) ? 'Lulus' : 'Tidak Lulus' }})
+                </span>
             </div>
 
-            <a href="{{ route('dashboard.posttest.result', ['percobaan' => $percobaan->id]) }}"
-               class="mt-4 inline-block px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm font-semibold">
-                Lihat Hasil Detail →
+            <a href="{{ route('dashboard.posttest.result', ['percobaan' => $percobaan->id ?? 0]) }}"
+                class="mt-4 inline-flex px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
+                Lihat Hasil Detail
             </a>
         </div>
-    @endif
+        @endif
 </div>
 
-{{-- Modal Zoom --}}
-<div id="imageModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center" onclick="closeImageModal()">
-    <div class="relative max-w-3xl w-full mx-4" onclick="event.stopPropagation()">
+{{-- MODAL ZOOM GAMBAR --}}
+<div id="imageModal"
+    class="fixed inset-0 bg-black/75 flex items-center justify-center hidden z-50"
+    onclick="closeImageModal()">
+    <div class="relative max-w-5xl w-full px-4" onclick="event.stopPropagation()">
         <button onclick="closeImageModal()"
-                class="absolute -top-4 -right-4 bg-white text-black rounded-full p-2 shadow hover:bg-slate-200">
+            class="absolute -top-4 -right-2 bg-white text-black rounded-full p-2 shadow hover:bg-gray-200">
             ✕
         </button>
-        <img id="modalImage" src="" class="max-w-full max-h-screen rounded shadow-lg mx-auto">
+        <img id="modalImage" src="" class="max-w-full max-h-[90vh] rounded shadow-lg mx-auto">
     </div>
 </div>
 
-{{-- Modal Cheat --}}
+{{-- MODAL CHEAT --}}
 <div id="cheatModal"
-     class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50">
+    class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-5 space-y-3 text-sm">
         <div class="flex items-start gap-3">
             <span class="text-2xl mt-0.5">⚠️</span>
@@ -214,81 +221,89 @@
 
         <div class="flex justify-end">
             <button type="button"
-                    onclick="closeCheatModal()"
-                    class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition">
+                onclick="closeCheatModal()"
+                class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition">
                 Saya mengerti
             </button>
         </div>
     </div>
 </div>
 
+@push('scripts')
 <script>
-function goToQuestion(idx){
-    document.getElementById('next_q_input').value = idx;
-    document.getElementById('form-tes').submit();
-}
-
-(function(){
-    let duration = {{ $durasiMenit * 60 }};
-    const serverStart = new Date("{{ $percobaan->waktu_mulai ?? now() }}").getTime();
-    const nowServer   = new Date("{{ now() }}").getTime();
-    let elapsed  = Math.floor((nowServer - serverStart) / 1000);
-    let remaining = duration - elapsed;
-    if (remaining < 0) remaining = 0;
-
-    function pad(n){ return n.toString().padStart(2,'0'); }
-
-    function updateTimer() {
-        const timerEl = document.getElementById('timer');
-        if (!timerEl) return;
-
-        if (remaining <= 0) {
-            timerEl.textContent = "00:00:00";
-            clearInterval(interval);
-            document.getElementById("form-tes")?.submit();
-            return;
-        }
-
-        const hours   = pad(Math.floor(remaining/3600));
-        const minutes = pad(Math.floor((remaining%3600)/60));
-        const seconds = pad(remaining%60);
-        timerEl.textContent = `${hours}:${minutes}:${seconds}`;
-        remaining--;
+    function goToQuestion(idx) {
+      document.getElementById('next_q_input').value = idx;
+      document.getElementById('form-tes').submit();
     }
 
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-})();
+    function openImageModal(src) {
+        document.getElementById('modalImage').src = src;
+        document.getElementById('imageModal').classList.remove('hidden');
+    }
 
-function openImageModal(src) {
-    document.getElementById('modalImage').src = src;
-    document.getElementById('imageModal').classList.remove('hidden');
-}
-function closeImageModal() {
-    document.getElementById('imageModal').classList.add('hidden');
-    document.getElementById('modalImage').src = '';
-}
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+        document.getElementById('modalImage').src = '';
+    }
 
-// anti-cheat
-let cheatTriggered = false;
-function triggerCheat(reason) {
-    if (cheatTriggered) return;
-    cheatTriggered = true;
+    // TIMER (default 30 menit)
+    (function() {
+        let duration = {{ $durasiMenit * 60 }}; // ✅ ini yang benar
 
-    document.getElementById('cheat_flag').value = '1';
-    document.getElementById('cheatModal').classList.remove('hidden');
-    console.warn('Cheat detected:', reason);
-}
-function closeCheatModal() {
-    document.getElementById('cheatModal').classList.add('hidden');
-}
-window.addEventListener('blur', () => triggerCheat('window_blur'));
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') triggerCheat('tab_hidden');
-});
-let initialHeight = window.innerHeight;
-window.addEventListener('resize', () => {
-    if (window.innerHeight < initialHeight * 0.6) triggerCheat('window_resize');
-});
+        const serverStart = new Date("{{ $percobaan->waktu_mulai ?? now() }}").getTime();
+        const nowServer    = new Date("{{ now() }}").getTime();
+
+        let elapsed   = Math.floor((nowServer - serverStart) / 1000);
+        let remaining = duration - elapsed;
+        if (remaining < 0) remaining = 0;
+
+        function pad(n){ return n.toString().padStart(2,'0'); }
+
+        function updateTimer() {
+            const el = document.getElementById('timer');
+            if (!el) return;
+
+            if (remaining <= 0) {
+                el.textContent = "00:00:00";
+                clearInterval(interval);
+                document.getElementById("form-tes")?.submit();
+                return;
+            }
+
+            const h = pad(Math.floor(remaining / 3600));
+            const m = pad(Math.floor((remaining % 3600) / 60));
+            const s = pad(remaining % 60);
+            el.textContent = `${h}:${m}:${s}`;
+            remaining--;
+        }
+
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+    })();
+
+    // ANTI-CHEAT
+    let cheatTriggered = false;
+
+    function triggerCheat(reason) {
+        if (cheatTriggered) return;
+        cheatTriggered = true;
+
+        document.getElementById('cheat_flag').value = '1';
+        document.getElementById('cheatModal').classList.remove('hidden');
+        console.warn('Cheat detected:', reason);
+    }
+
+    function closeCheatModal() {
+        document.getElementById('cheatModal').classList.add('hidden');
+    }
+    window.addEventListener('blur', () => triggerCheat('window_blur'));
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') triggerCheat('tab_hidden');
+    });
+    let initialHeight = window.innerHeight;
+    window.addEventListener('resize', () => {
+        if (window.innerHeight < initialHeight * 0.6) triggerCheat('window_resize');
+    });
 </script>
+@endpush
 @endsection

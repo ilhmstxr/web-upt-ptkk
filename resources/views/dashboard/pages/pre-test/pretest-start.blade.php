@@ -123,8 +123,7 @@
                         name="jawaban[{{ $pertanyaan->id }}]"
                         value="{{ $opsi->id }}"
                         class="mt-1 h-4 w-4"
-                        {{ $checked ? 'checked' : '' }}
-                        required>
+                        {{ $checked ? 'checked' : '' }}>
 
                     <div class="flex-1">
                         @if($opsiImgUrl)
@@ -233,8 +232,8 @@
 @push('scripts')
 <script>
     function goToQuestion(idx) {
-        document.getElementById('next_q_input').value = idx;
-        document.getElementById('form-tes').submit();
+      document.getElementById('next_q_input').value = idx;
+      document.getElementById('form-tes').submit();
     }
 
     function openImageModal(src) {
@@ -249,20 +248,16 @@
 
     // TIMER (default 30 menit)
     (function() {
-        let duration = {
-            {
-                $durasiMenit * 60
-            }
-        };
+        let duration = {{ $durasiMenit * 60 }}; // ✅ ini yang benar
+
         const serverStart = new Date("{{ $percobaan->waktu_mulai ?? now() }}").getTime();
-        const nowServer = new Date("{{ now() }}").getTime();
-        let elapsed = Math.floor((nowServer - serverStart) / 1000);
+        const nowServer    = new Date("{{ now() }}").getTime();
+
+        let elapsed   = Math.floor((nowServer - serverStart) / 1000);
         let remaining = duration - elapsed;
         if (remaining < 0) remaining = 0;
 
-        function pad(n) {
-            return n.toString().padStart(2, '0');
-        }
+        function pad(n){ return n.toString().padStart(2,'0'); }
 
         function updateTimer() {
             const el = document.getElementById('timer');
