@@ -9,32 +9,25 @@ use Illuminate\Http\Request;
 
 class TesController extends Controller
 {
-    /**
-     * Menampilkan daftar semua tes.
-     */
+
     public function index()
     {
         $tes = Tes::with(['kompetensi', 'pelatihan'])->get();
         return view('tes.index', compact('tes'));
     }
 
-    /**
-     * Menampilkan halaman tes untuk peserta.
-     * Membuat percobaan baru jika belum ada.
-     */
     public function show(Tes $tes, Request $request)
     {
-        $pesertaId = session('peserta_id');
-        if (!$pesertaId) {
+        [$pesertaId, $pesertaSurveiId] = $this->getPesertaContext();
+
+        // Harus ada salah satu identitas
+        if (!$pesertaId && !$pesertaSurveiId) {
             return redirect()->route('dashboard.home')
                 ->with('error', 'Silakan pilih/aktifkan peserta terlebih dahulu.');
         }
 
-        // 1 percobaan per peserta per tes (ubah sesuai kebijakanmu)
-        $percobaan = Percobaan::firstOrCreate(
-            ['peserta_id' => $pesertaId, 'tes_id' => $tes->id],
-            ['waktu_mulai' => now()]
-        );
+        // 1 percobaan per peserta per tes (sesuai kebijakanmu)
+        $percobaan = $this->firstOrCreatePercobaan($tes->id, $pesertaId, $pesertaSurveiId);
 
         // Pastikan relasi di model Pertanyaan: function opsiJawaban() { ... }
         $pertanyaanList = $tes->pertanyaan()->with('opsiJawaban')->get();
@@ -56,13 +49,11 @@ class TesController extends Controller
         ));
     }
 
-    /**
-     * Simpan jawaban peserta dan hitung skor jika selesai.
-     */
     public function submit(Request $request, Percobaan $percobaan)
     {
-        $pesertaId = session('peserta_id');
-        if (!$pesertaId || $percobaan->peserta_id !== $pesertaId) {
+        [$pesertaId, $pesertaSurveiId] = $this->getPesertaContext();
+
+        if (!$this->isOwnerPercobaan($percobaan, $pesertaId, $pesertaSurveiId)) {
             abort(403, 'Unauthorized');
         }
 
@@ -80,8 +71,7 @@ class TesController extends Controller
         $nextQuestion = $currentQuestionIndex + 1;
 
         if ($nextQuestion >= $total) {
-            // Selesai: hitung skor & simpan
-            // Pakai helper di model kalau ada:
+
             if (method_exists($percobaan, 'hitungDanSimpanSkor')) {
                 $percobaan->hitungDanSimpanSkor();
             } else {
@@ -93,20 +83,17 @@ class TesController extends Controller
             return redirect()->route('tes.result', $percobaan->id);
         }
 
-        // Lanjut ke soal berikutnya
         return redirect()->route('tes.show', [
             'tes' => $percobaan->tes_id,
             'q'   => $nextQuestion
         ]);
     }
 
-    /**
-     * Menampilkan hasil tes.
-     */
     public function result(Percobaan $percobaan)
     {
-        $pesertaId = session('peserta_id');
-        if (!$pesertaId || $percobaan->peserta_id !== $pesertaId) {
+        [$pesertaId, $pesertaSurveiId] = $this->getPesertaContext();
+
+        if (!$this->isOwnerPercobaan($percobaan, $pesertaId, $pesertaSurveiId)) {
             abort(403, 'Unauthorized');
         }
 
@@ -114,10 +101,6 @@ class TesController extends Controller
         return view('tes.result', compact('percobaan'));
     }
 
-    /**
-     * Hitung skor (persentase) berdasarkan jawaban peserta.
-     * Dipakai jika model belum punya helper hitungDanSimpanSkor().
-     */
     protected function hitungSkor(Percobaan $percobaan): float|int
     {
         // Pastikan relasi di model Percobaan: function jawabanUser() { return $this->hasMany(...); }
@@ -127,9 +110,51 @@ class TesController extends Controller
         if ($total === 0) return 0;
 
         $benar = $jawabanUsers->filter(
-            fn($j) => ($j->opsiJawaban->apakah_benar ?? false)
+            fn ($j) => ($j->opsiJawaban->apakah_benar ?? false)
         )->count();
 
         return round(($benar / $total) * 100, 2);
+    }
+
+    protected function getPesertaContext(): array
+    {
+        $pesertaId = session('peserta_id');
+        $pesertaSurveiId = session('peserta_survei_id');
+
+        return [
+            $pesertaId ? (int) $pesertaId : null,
+            $pesertaSurveiId ? (int) $pesertaSurveiId : null,
+        ];
+    }
+
+    protected function firstOrCreatePercobaan(int $tesId, ?int $pesertaId, ?int $pesertaSurveiId): Percobaan
+    {
+        $keys = ['tes_id' => $tesId];
+
+        if (!empty($pesertaSurveiId)) {
+            $keys['peserta_survei_id'] = $pesertaSurveiId;
+        } else {
+            $keys['peserta_id'] = $pesertaId;
+        }
+
+        return Percobaan::firstOrCreate(
+            $keys,
+            ['waktu_mulai' => now()]
+        );
+    }
+
+    protected function isOwnerPercobaan(Percobaan $percobaan, ?int $pesertaId, ?int $pesertaSurveiId): bool
+    {
+        // Kalau session survei aktif, validasi pakai peserta_survei_id
+        if (!empty($pesertaSurveiId)) {
+            return (int) $percobaan->peserta_survei_id === (int) $pesertaSurveiId;
+        }
+
+        // Kalau bukan survei, validasi pakai peserta_id
+        if (!empty($pesertaId)) {
+            return (int) $percobaan->peserta_id === (int) $pesertaId;
+        }
+
+        return false;
     }
 }

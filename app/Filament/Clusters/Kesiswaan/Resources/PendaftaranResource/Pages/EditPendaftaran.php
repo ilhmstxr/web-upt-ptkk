@@ -10,6 +10,7 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class EditPendaftaran extends EditRecord
 {
@@ -17,32 +18,65 @@ class EditPendaftaran extends EditRecord
 
     /**
      * Ambil skor pre/post dari tabel percobaan untuk peserta & pelatihan ini.
-     * tipe di percobaan kadang beda penamaan, jadi dibuat fleksibel.
+     *
+     * FIX utama: jangan sampai kosong karena data percobaan sering:
+     * - pelatihan_id null / tidak konsisten
+     * - waktu_selesai null (legacy), padahal skor ada
+     *
+     * Strategi:
+     * 1) prioritas: peserta_id + pelatihan_id + tipe + skor + waktu_selesai
+     * 2) fallback: peserta_id + tipe + skor + waktu_selesai (abaikan pelatihan_id)
+     * 3) fallback terakhir (legacy): peserta_id + tipe + skor (abaikan waktu_selesai)
      */
     protected function getPercobaanScore(int $pesertaId, int $pelatihanId, string $mode): float
     {
-        // mode: 'pre' atau 'post'
-        // cocokkan tipe yang umum:
+        if ($pesertaId <= 0) {
+            return 0.0;
+        }
+
+        $mode = strtolower(trim($mode));
+
         $candidates = $mode === 'pre'
-            ? ['pre', 'pretest', 'pre-test', 'pre_test', 'pre tes', 'pre tes', 'tes awal']
-            : ['post', 'posttest', 'post-test', 'post_test', 'post tes', 'tes akhir'];
+            ? ['pre-test', 'pre_test', 'pretest', 'pre', 'tes awal', 'tes awal peserta']
+            : ['post-test', 'post_test', 'posttest', 'post', 'tes akhir', 'tes akhir peserta'];
 
-        $q = Percobaan::query()
+        // base query (peserta + tipe + skor not null)
+        $base = Percobaan::query()
             ->where('peserta_id', $pesertaId)
-            ->where('pelatihan_id', $pelatihanId)
-            ->whereNotNull('skor');
+            ->whereNotNull('skor')
+            ->where(function ($qq) use ($candidates) {
+                foreach ($candidates as $t) {
+                    $qq->orWhere('tipe', 'like', '%' . $t . '%');
+                }
+            });
 
-        // tipe bisa kosong / tidak konsisten -> coba LIKE
-        $q->where(function ($qq) use ($candidates) {
-            foreach ($candidates as $t) {
-                $qq->orWhere('tipe', 'like', '%' . $t . '%');
+        // 1) PRIORITAS: match pelatihan_id + sudah selesai
+        if ($pelatihanId > 0) {
+            $row = (clone $base)
+                ->where('pelatihan_id', $pelatihanId)
+                ->whereNotNull('waktu_selesai')
+                ->latest('waktu_selesai')
+                ->first();
+
+            if ($row) {
+                return (float) $row->skor;
             }
-        });
+        }
 
-        // ambil yang paling terbaru
-        $row = $q->latest('updated_at')->first();
+        // 2) FALLBACK: abaikan pelatihan_id, tapi tetap yang sudah selesai
+        $row2 = (clone $base)
+            ->whereNotNull('waktu_selesai')
+            ->latest('waktu_selesai')
+            ->first();
 
-        return $row ? (float) $row->skor : 0.0;
+        if ($row2) {
+            return (float) $row2->skor;
+        }
+
+        // 3) FALLBACK TERAKHIR (legacy): skor ada walau waktu_selesai null
+        $row3 = $base->latest('updated_at')->first();
+
+        return $row3 ? (float) $row3->skor : 0.0;
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
@@ -53,19 +87,15 @@ class EditPendaftaran extends EditRecord
         // Map Pendaftaran attributes
         $data['kompetensi_keahlian'] = $record->kompetensi_pelatihan_id;
 
-        // ====== AUTO nilai dari percobaan ======
+        // ===== AUTO NILAI DARI PERCOBAAN =====
         $pesertaId   = (int) ($record->peserta_id ?? 0);
         $pelatihanId = (int) ($record->pelatihan_id ?? 0);
 
-        if ($pesertaId && $pelatihanId) {
-            $data['nilai_pre_test']  = $this->getPercobaanScore($pesertaId, $pelatihanId, 'pre');
-            $data['nilai_post_test'] = $this->getPercobaanScore($pesertaId, $pelatihanId, 'post');
-        } else {
-            $data['nilai_pre_test']  = (float) ($record->nilai_pre_test ?? 0);
-            $data['nilai_post_test'] = (float) ($record->nilai_post_test ?? 0);
-        }
+        // ✅ selalu hitung dari percobaan biar tampil (tidak ngandelin nilai yang tersimpan)
+        $data['nilai_pre_test']  = $this->getPercobaanScore($pesertaId, $pelatihanId, 'pre');
+        $data['nilai_post_test'] = $this->getPercobaanScore($pesertaId, $pelatihanId, 'post');
 
-        // praktek tetap dari pendaftaran (manual admin)
+        // ✅ input manual admin (INI YANG KAMU MAU)
         $data['nilai_praktek'] = (float) ($record->nilai_praktek ?? 0);
 
         // rata-rata tampil (akan dihitung ulang saat save)
@@ -114,48 +144,50 @@ class EditPendaftaran extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         return DB::transaction(function () use ($record, $data) {
-            // 1. Update Instansi
+            $get = fn (string $key, $default = null) => $data[$key] ?? $default;
+
+            // 1) Update Instansi
             if ($record->peserta && $record->peserta->instansi) {
                 $record->peserta->instansi->update([
-                    'asal_instansi'   => $data['asal_instansi'],
-                    'alamat_instansi' => $data['alamat_instansi'],
-                    'kota'            => $data['kota'],
-                    'cabangDinas_id'  => $data['cabangDinas_id'],
+                    'asal_instansi'   => $get('asal_instansi', $record->peserta->instansi->asal_instansi),
+                    'alamat_instansi' => $get('alamat_instansi', $record->peserta->instansi->alamat_instansi),
+                    'kota'            => $get('kota', $record->peserta->instansi->kota),
+                    'cabangDinas_id'  => $get('cabangDinas_id', $record->peserta->instansi->cabangDinas_id),
                 ]);
             }
 
-            // 2. Update User (Email/Name)
+            // 2) Update User (Email/Name/Phone)
             if ($record->peserta && $record->peserta->user) {
                 $record->peserta->user->update([
-                    'email' => $data['email'],
-                    'name'  => $data['nama'],
-                    'phone' => $data['no_hp'],
+                    'email' => $get('email', $record->peserta->user->email),
+                    'name'  => $get('nama', $record->peserta->user->name),
+                    'phone' => $get('no_hp', $record->peserta->user->phone),
                 ]);
             }
 
-            // 3. Update Peserta
+            // 3) Update Peserta
             if ($record->peserta) {
                 $record->peserta->update([
-                    'nama'          => $data['nama'],
-                    'nik'           => $data['nik'],
-                    'no_hp'         => $data['no_hp'],
-                    'tempat_lahir'  => $data['tempat_lahir'],
-                    'tanggal_lahir' => $data['tanggal_lahir'],
-                    'jenis_kelamin' => $data['jenis_kelamin'],
-                    'agama'         => $data['agama'],
-                    'alamat'        => $data['alamat'],
+                    'nama'          => $get('nama', $record->peserta->nama),
+                    'nik'           => $get('nik', $record->peserta->nik),
+                    'no_hp'         => $get('no_hp', $record->peserta->no_hp),
+                    'tempat_lahir'  => $get('tempat_lahir', $record->peserta->tempat_lahir),
+                    'tanggal_lahir' => $get('tanggal_lahir', $record->peserta->tanggal_lahir),
+                    'jenis_kelamin' => $get('jenis_kelamin', $record->peserta->jenis_kelamin),
+                    'agama'         => $get('agama', $record->peserta->agama),
+                    'alamat'        => $get('alamat', $record->peserta->alamat),
                 ]);
 
-                // 4. Update Lampiran
+                // 4) Update Lampiran (updateOrCreate)
                 $lampiranData = [
-                    'no_surat_tugas' => $data['nomor_surat_tugas'] ?? null,
+                    'no_surat_tugas' => $get('nomor_surat_tugas', null),
                 ];
 
-                if (isset($data['fc_ktp'])) $lampiranData['fc_ktp'] = $data['fc_ktp'];
-                if (isset($data['fc_ijazah'])) $lampiranData['fc_ijazah'] = $data['fc_ijazah'];
-                if (isset($data['fc_surat_tugas'])) $lampiranData['fc_surat_tugas'] = $data['fc_surat_tugas'];
-                if (isset($data['fc_surat_sehat'])) $lampiranData['fc_surat_sehat'] = $data['fc_surat_sehat'];
-                if (isset($data['pas_foto'])) $lampiranData['pas_foto'] = $data['pas_foto'];
+                foreach (['fc_ktp', 'fc_ijazah', 'fc_surat_tugas', 'fc_surat_sehat', 'pas_foto'] as $f) {
+                    if (array_key_exists($f, $data)) {
+                        $lampiranData[$f] = $data[$f];
+                    }
+                }
 
                 LampiranPeserta::updateOrCreate(
                     ['peserta_id' => $record->peserta->id],
@@ -163,59 +195,65 @@ class EditPendaftaran extends EditRecord
                 );
             }
 
-            // ====== AUTO nilai dari percobaan (ambil ulang supaya selalu latest) ======
-            $pesertaId   = (int) $record->peserta_id;
-            $pelatihanId = (int) ($data['pelatihan_id'] ?? $record->pelatihan_id);
+            // ===== AUTO nilai dari percobaan (assign) =====
+            $pesertaId   = (int) ($record->peserta_id ?? 0);
+            $pelatihanId = (int) ($get('pelatihan_id', $record->pelatihan_id) ?? 0);
 
             $pre  = $this->getPercobaanScore($pesertaId, $pelatihanId, 'pre');
             $post = $this->getPercobaanScore($pesertaId, $pelatihanId, 'post');
 
-            // praktek manual admin
-            $praktek = (float) ($data['nilai_praktek'] ?? 0);
+            // ✅ nilai_praktek input manual
+            $praktek = (float) ($get('nilai_praktek', $record->nilai_praktek ?? 0) ?? 0);
 
             // hitung rata-rata hanya dari nilai > 0
-            $vals = array_filter([$pre, $post, $praktek], fn ($v) => is_numeric($v) && $v > 0);
+            $vals = array_filter([$pre, $post, $praktek], fn ($v) => is_numeric($v) && (float) $v > 0);
             $rata = count($vals) ? round(array_sum($vals) / count($vals), 2) : 0;
 
-            // 5. Update Pendaftaran + Nilai
-            $record->update([
-                'pelatihan_id'            => $pelatihanId,
-                'kompetensi_pelatihan_id' => $data['kompetensi_keahlian'],
-                'kelas'                   => $data['kelas'],
-                'kompetensi_id'           => KompetensiPelatihan::find($data['kompetensi_keahlian'])?->kompetensi_id
-                    ?? $record->kompetensi_id,
+            // kompetensi_id resolve dari kompetensi_keahlian (tetap)
+            $kompetensiKeahlianId = (int) ($get('kompetensi_keahlian', $record->kompetensi_pelatihan_id) ?? 0);
+            $kompetensiIdResolved = KompetensiPelatihan::find($kompetensiKeahlianId)?->kompetensi_id
+                ?? $record->kompetensi_id;
 
-                // nilai tersimpan di pendaftaran
+            // 5) Update Pendaftaran + Nilai
+            $record->update([
+                'pelatihan_id'            => $pelatihanId ?: $record->pelatihan_id,
+                'kompetensi_pelatihan_id' => $kompetensiKeahlianId ?: $record->kompetensi_pelatihan_id,
+                'kelas'                   => $get('kelas', $record->kelas),
+                'kompetensi_id'           => $kompetensiIdResolved,
+
+                // ✅ ini yang kamu minta
                 'nilai_pre_test'          => $pre,
                 'nilai_post_test'         => $post,
                 'nilai_praktek'           => $praktek,
                 'rata_rata'               => $rata,
             ]);
 
-            // 6) Update statistik pelatihan (batch harian)
-            $batch = 'AUTO_DB_' . now()->format('Y_m_d');
+            // 6) Update statistik pelatihan (tetap, optional guard)
+            if (Schema::hasTable('statistik_pelatihan') && $pelatihanId > 0) {
+                $batch = 'AUTO_DB_' . now()->format('Y_m_d');
 
-            DB::statement("
-                INSERT INTO statistik_pelatihan
-                (batch, pelatihan_id, pre_avg, post_avg, praktek_avg, rata_avg, created_at, updated_at)
-                SELECT
-                  ? AS batch,
-                  pp.pelatihan_id,
-                  COALESCE(ROUND(AVG(NULLIF(pp.nilai_pre_test, 0)), 2), 0)  AS pre_avg,
-                  COALESCE(ROUND(AVG(NULLIF(pp.nilai_post_test, 0)), 2), 0) AS post_avg,
-                  COALESCE(ROUND(AVG(NULLIF(pp.nilai_praktek, 0)), 2), 0)   AS praktek_avg,
-                  COALESCE(ROUND(AVG(NULLIF(pp.rata_rata, 0)), 2), 0)       AS rata_avg,
-                  NOW(), NOW()
-                FROM pendaftaran_pelatihan pp
-                WHERE pp.pelatihan_id = ?
-                GROUP BY pp.pelatihan_id
-                ON DUPLICATE KEY UPDATE
-                  pre_avg = VALUES(pre_avg),
-                  post_avg = VALUES(post_avg),
-                  praktek_avg = VALUES(praktek_avg),
-                  rata_avg = VALUES(rata_avg),
-                  updated_at = NOW()
-            ", [$batch, $pelatihanId]);
+                DB::statement("
+                    INSERT INTO statistik_pelatihan
+                    (batch, pelatihan_id, pre_avg, post_avg, praktek_avg, rata_avg, created_at, updated_at)
+                    SELECT
+                      ? AS batch,
+                      pp.pelatihan_id,
+                      COALESCE(ROUND(AVG(NULLIF(pp.nilai_pre_test, 0)), 2), 0)  AS pre_avg,
+                      COALESCE(ROUND(AVG(NULLIF(pp.nilai_post_test, 0)), 2), 0) AS post_avg,
+                      COALESCE(ROUND(AVG(NULLIF(pp.nilai_praktek, 0)), 2), 0)   AS praktek_avg,
+                      COALESCE(ROUND(AVG(NULLIF(pp.rata_rata, 0)), 2), 0)       AS rata_avg,
+                      NOW(), NOW()
+                    FROM pendaftaran_pelatihan pp
+                    WHERE pp.pelatihan_id = ?
+                    GROUP BY pp.pelatihan_id
+                    ON DUPLICATE KEY UPDATE
+                      pre_avg = VALUES(pre_avg),
+                      post_avg = VALUES(post_avg),
+                      praktek_avg = VALUES(praktek_avg),
+                      rata_avg = VALUES(rata_avg),
+                      updated_at = NOW()
+                ", [$batch, $pelatihanId]);
+            }
 
             return $record;
         });

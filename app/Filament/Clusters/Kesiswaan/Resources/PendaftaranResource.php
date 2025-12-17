@@ -20,7 +20,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-
+use Illuminate\Support\Facades\DB;
 
 class PendaftaranResource extends Resource
 {
@@ -45,6 +45,61 @@ class PendaftaranResource extends Resource
             'kompetensiPelatihan.kompetensi',
             'penempatanAsrama.kamarPelatihan.kamar',
         ]);
+    }
+
+    /**
+     * Ambil skor terakhir dari percobaan dengan gaya "TesResource":
+     * 1) JOIN tes untuk pastikan pelatihan match (mengabaikan p.pelatihan_id yang sering NULL)
+     * 2) Fallback: pakai p.tipe dan izinkan p.pelatihan_id NULL (buat data lama)
+     *
+     * NOTE: untuk fallback p.tipe, tipe harus enum asli: pre-test/post-test/survei
+     */
+    protected static function skorTerakhirByPelatihanDanTipe(int $pelatihanId, int $pesertaId, array $tipeList): ?float
+    {
+        // 1) Cara "TesResource": join tes
+        $skor = DB::table('percobaan as p')
+            ->join('tes as t', 't.id', '=', 'p.tes_id')
+            ->where('t.pelatihan_id', $pelatihanId)
+            ->whereIn('t.tipe', $tipeList)
+            ->whereNotNull('p.skor')
+            ->where('p.peserta_id', $pesertaId)
+            ->orderByDesc('p.waktu_selesai')
+            ->orderByDesc('p.updated_at')
+            ->orderByDesc('p.id')
+            ->value('p.skor');
+
+        if ($skor !== null) {
+            return (float) $skor;
+        }
+
+        // 2) Fallback: pakai p.tipe + toleransi pelatihan_id null
+        $skor2 = DB::table('percobaan as p')
+            ->where('p.peserta_id', $pesertaId)
+            ->whereIn('p.tipe', $tipeList)
+            ->whereNotNull('p.skor')
+            ->where(function ($q) use ($pelatihanId) {
+                $q->where('p.pelatihan_id', $pelatihanId)
+                  ->orWhereNull('p.pelatihan_id');
+            })
+            ->orderByDesc('p.waktu_selesai')
+            ->orderByDesc('p.updated_at')
+            ->orderByDesc('p.id')
+            ->value('p.skor');
+
+        return $skor2 !== null ? (float) $skor2 : null;
+    }
+
+    /**
+     * Hitung rata-rata dari nilai yang > 0 (pre/post/praktek).
+     */
+    protected static function hitungRataRata(?float $pre, ?float $post, ?float $praktek): float
+    {
+        $vals = array_filter(
+            [(float) ($pre ?? 0), (float) ($post ?? 0), (float) ($praktek ?? 0)],
+            fn ($v) => is_numeric($v) && $v > 0
+        );
+
+        return count($vals) ? round(array_sum($vals) / count($vals), 2) : 0;
     }
 
     public static function form(Form $form): Form
@@ -198,7 +253,7 @@ class PendaftaranResource extends Resource
                     ]),
             ])
                 ->columnSpanFull()
-                ->visible(fn($record) => blank($record)),
+                ->visible(fn ($record) => blank($record)),
 
             /**
              * =========================
@@ -211,7 +266,7 @@ class PendaftaranResource extends Resource
                         ->schema([
                             Forms\Components\Placeholder::make('peserta_name')
                                 ->label('Nama Peserta')
-                                ->content(fn($record) => $record?->peserta?->nama ?? '-'),
+                                ->content(fn ($record) => $record?->peserta?->nama ?? '-'),
 
                             Forms\Components\TextInput::make('nomor_registrasi')
                                 ->label('Nomor Registrasi')
@@ -220,11 +275,11 @@ class PendaftaranResource extends Resource
 
                             Forms\Components\Placeholder::make('pelatihan_name')
                                 ->label('Pelatihan')
-                                ->content(fn($record) => $record?->pelatihan?->nama_pelatihan ?? '-'),
+                                ->content(fn ($record) => $record?->pelatihan?->nama_pelatihan ?? '-'),
 
                             Forms\Components\Placeholder::make('kompetensi_name')
                                 ->label('Kompetensi')
-                                ->content(fn($record) => $record?->kompetensiPelatihan?->kompetensi?->nama_kompetensi ?? '-'),
+                                ->content(fn ($record) => $record?->kompetensiPelatihan?->kompetensi?->nama_kompetensi ?? '-'),
 
                             Forms\Components\TextInput::make('kelas')
                                 ->label('Kelas')
@@ -254,7 +309,7 @@ class PendaftaranResource extends Resource
                                     $sehat = $lampiran->fc_surat_sehat_url ?? null;
                                     $foto  = $lampiran->pas_foto_url ?? null;
 
-                                    $link = fn($url) => $url
+                                    $link = fn ($url) => $url
                                         ? '<a href="' . $url . '" target="_blank" class="text-primary-600 hover:underline">Lihat File</a>'
                                         : '<span class="text-gray-500">Tidak ada</span>';
 
@@ -269,9 +324,113 @@ class PendaftaranResource extends Resource
                                 })
                                 ->columnSpanFull(),
                         ]),
+
+                    /**
+                     * NILAI PESERTA:
+                     * - Pre/Post auto hydrate dari percobaan (kalau kosong di DB)
+                     * - Tetap bisa diinput manual (tidak disabled)
+                     */
+                    Section::make('Nilai Peserta')
+                        ->schema([
+                            TextInput::make('nilai_pre_test')
+                                ->label('Nilai Pre-Test (Auto, bisa diubah manual)')
+                                ->numeric()
+                                ->reactive()
+                                ->dehydrated(true)
+                                ->afterStateHydrated(function (Set $set, Get $get, $record) {
+                                    if (! $record) return;
+
+                                    $current = $get('nilai_pre_test');
+                                    $isEmpty = $current === null || (float) $current <= 0;
+
+                                    if (! $isEmpty) return; // kalau sudah ada nilai, jangan ditimpa
+
+                                    $pesertaId   = (int) ($record->peserta_id ?? 0);
+                                    $pelatihanId = (int) ($record->pelatihan_id ?? 0);
+                                    if (! $pesertaId || ! $pelatihanId) return;
+
+                                    // Tipe enum asli
+                                    $pre = self::skorTerakhirByPelatihanDanTipe($pelatihanId, $pesertaId, ['pre-test']);
+                                    if ($pre !== null) {
+                                        $set('nilai_pre_test', $pre);
+                                    }
+
+                                    $preV  = (float) ($get('nilai_pre_test') ?? 0);
+                                    $postV = (float) ($get('nilai_post_test') ?? 0);
+                                    $prakV = (float) ($get('nilai_praktek') ?? 0);
+                                    $set('rata_rata', self::hitungRataRata($preV, $postV, $prakV));
+                                })
+                                ->afterStateUpdated(function (Set $set, Get $get) {
+                                    $preV  = (float) ($get('nilai_pre_test') ?? 0);
+                                    $postV = (float) ($get('nilai_post_test') ?? 0);
+                                    $prakV = (float) ($get('nilai_praktek') ?? 0);
+                                    $set('rata_rata', self::hitungRataRata($preV, $postV, $prakV));
+                                }),
+
+                            TextInput::make('nilai_post_test')
+                                ->label('Nilai Post-Test (Auto, bisa diubah manual)')
+                                ->numeric()
+                                ->reactive()
+                                ->dehydrated(true)
+                                ->afterStateHydrated(function (Set $set, Get $get, $record) {
+                                    if (! $record) return;
+
+                                    $current = $get('nilai_post_test');
+                                    $isEmpty = $current === null || (float) $current <= 0;
+
+                                    if (! $isEmpty) return;
+
+                                    $pesertaId   = (int) ($record->peserta_id ?? 0);
+                                    $pelatihanId = (int) ($record->pelatihan_id ?? 0);
+                                    if (! $pesertaId || ! $pelatihanId) return;
+
+                                    $post = self::skorTerakhirByPelatihanDanTipe($pelatihanId, $pesertaId, ['post-test']);
+                                    if ($post !== null) {
+                                        $set('nilai_post_test', $post);
+                                    }
+
+                                    $preV  = (float) ($get('nilai_pre_test') ?? 0);
+                                    $postV = (float) ($get('nilai_post_test') ?? 0);
+                                    $prakV = (float) ($get('nilai_praktek') ?? 0);
+                                    $set('rata_rata', self::hitungRataRata($preV, $postV, $prakV));
+                                })
+                                ->afterStateUpdated(function (Set $set, Get $get) {
+                                    $preV  = (float) ($get('nilai_pre_test') ?? 0);
+                                    $postV = (float) ($get('nilai_post_test') ?? 0);
+                                    $prakV = (float) ($get('nilai_praktek') ?? 0);
+                                    $set('rata_rata', self::hitungRataRata($preV, $postV, $prakV));
+                                }),
+
+                            TextInput::make('nilai_praktek')
+                                ->label('Nilai Praktik (Input Manual)')
+                                ->numeric()
+                                ->minValue(0)
+                                ->maxValue(100)
+                                ->reactive()
+                                ->dehydrated(true)
+                                ->afterStateUpdated(function (Set $set, Get $get) {
+                                    $preV  = (float) ($get('nilai_pre_test') ?? 0);
+                                    $postV = (float) ($get('nilai_post_test') ?? 0);
+                                    $prakV = (float) ($get('nilai_praktek') ?? 0);
+                                    $set('rata_rata', self::hitungRataRata($preV, $postV, $prakV));
+                                }),
+
+                            TextInput::make('rata_rata')
+                                ->label('Rata-Rata')
+                                ->numeric()
+                                ->disabled()
+                                ->dehydrated(true)
+                                ->afterStateHydrated(function (Set $set, Get $get) {
+                                    $preV  = (float) ($get('nilai_pre_test') ?? 0);
+                                    $postV = (float) ($get('nilai_post_test') ?? 0);
+                                    $prakV = (float) ($get('nilai_praktek') ?? 0);
+                                    $set('rata_rata', self::hitungRataRata($preV, $postV, $prakV));
+                                }),
+                        ])
+                        ->columns(2),
                 ])
                 ->columnSpan(['lg' => 2])
-                ->visible(fn($record) => filled($record)),
+                ->visible(fn ($record) => filled($record)),
 
             Forms\Components\Group::make()
                 ->schema([
@@ -290,7 +449,7 @@ class PendaftaranResource extends Resource
                         ]),
                 ])
                 ->columnSpan(['lg' => 1])
-                ->visible(fn($record) => filled($record)),
+                ->visible(fn ($record) => filled($record)),
         ]);
     }
 
@@ -328,14 +487,14 @@ class PendaftaranResource extends Resource
                     ->label('Status')
                     ->icon('heroicon-o-shield-check')
                     ->badge()
-                    ->formatStateUsing(fn($state) => match (strtolower((string) $state)) {
+                    ->formatStateUsing(fn ($state) => match (strtolower((string) $state)) {
                         'pending'    => 'Pending',
                         'verifikasi' => 'Verifikasi',
                         'diterima'   => 'Diterima',
                         'ditolak'    => 'Ditolak',
                         default      => (string) $state,
                     })
-                    ->color(fn(?string $state): string => match (strtolower((string) $state)) {
+                    ->color(fn (?string $state): string => match (strtolower((string) $state)) {
                         'pending'    => 'warning',
                         'verifikasi' => 'info',
                         'diterima'   => 'success',
@@ -364,14 +523,14 @@ class PendaftaranResource extends Resource
                     ->label('Filter Pelatihan')
                     ->relationship('pelatihan', 'nama_pelatihan'),
 
-                Tables\Filters\SelectFilter::make('kompetensi_id')
+                Tables\Filters\SelectFilter::make('kompetensi_pelatihan_id')
                     ->label('Kompetensi')
-                    ->options(fn() => Kompetensi::query()->pluck('nama_kompetensi', 'id')->all())
+                    ->options(fn () => Kompetensi::query()->pluck('nama_kompetensi', 'id')->all())
                     ->query(function (Builder $query, array $data) {
                         $kompetensiId = $data['value'] ?? null;
                         if (! $kompetensiId) return $query;
 
-                        // ✅ Lebih stabil karena kolom kompetensi_id ada di pendaftaran_pelatihan
+                        // Lebih stabil karena kolom kompetensi_id ada di pendaftaran_pelatihan
                         return $query->where('kompetensi_id', $kompetensiId);
                     }),
             ])
@@ -382,7 +541,7 @@ class PendaftaranResource extends Resource
                     ->label('Terima')
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->requiresConfirmation(fn() => ! session()->get('suppress_pendaftaran_approval'))
+                    ->requiresConfirmation(fn () => ! session()->get('suppress_pendaftaran_approval'))
                     ->modalIcon('heroicon-o-check')
                     ->modalHeading('Terima Peserta')
                     ->modalDescription('Apakah Anda yakin ingin menerima peserta ini? Status akan berubah menjadi Diterima.')
@@ -396,7 +555,6 @@ class PendaftaranResource extends Resource
                             session()->put('suppress_pendaftaran_approval', true);
                         }
 
-                        // ✅ enum lowercase
                         $record->update(['status_pendaftaran' => 'diterima']);
 
                         try {
@@ -410,8 +568,8 @@ class PendaftaranResource extends Resource
 
                             $kamarAsrama =
                                 $record->penempatanAsramaAktif?->kamarPelatihan?->kamar?->nomor_kamar
-                                ? 'Kamar ' . $record->penempatanAsramaAktif->kamarPelatihan->kamar->nomor_kamar
-                                : 'Belum Ditentukan';
+                                    ? 'Kamar ' . $record->penempatanAsramaAktif->kamarPelatihan->kamar->nomor_kamar
+                                    : 'Belum Ditentukan';
 
                             $emailData = [
                                 'id_peserta'     => $record->nomor_registrasi,
@@ -449,13 +607,13 @@ class PendaftaranResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
 
                 Tables\Actions\Action::make('reject')
                     ->label('Tolak')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
-                    ->requiresConfirmation(fn() => ! session()->get('suppress_pendaftaran_approval'))
+                    ->requiresConfirmation(fn () => ! session()->get('suppress_pendaftaran_approval'))
                     ->modalIcon('heroicon-o-x-mark')
                     ->modalHeading('Tolak Peserta')
                     ->modalDescription('Apakah Anda yakin ingin menolak peserta ini? Status akan berubah menjadi Ditolak.')
@@ -469,7 +627,6 @@ class PendaftaranResource extends Resource
                             session()->put('suppress_pendaftaran_approval', true);
                         }
 
-                        // ✅ enum lowercase
                         $record->update(['status_pendaftaran' => 'ditolak']);
 
                         \Filament\Notifications\Notification::make()
@@ -477,17 +634,17 @@ class PendaftaranResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
 
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
 
                 Tables\Actions\DeleteAction::make()
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
-                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
+                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
