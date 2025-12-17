@@ -80,4 +80,32 @@ class MateriPelatihan extends Model
             ? substr($plain, 0, 120) . '...'
             : $plain;
     }
+
+    public function setVideoUrlAttribute($value)
+    {
+        if (!$value) {
+            $this->attributes['video_url'] = null;
+            return;
+        }
+
+        $value = trim($value);
+
+        // youtube.com/watch?v=xxxx
+        if (preg_match('~watch\?v=([^&]+)~', $value, $m)) {
+            $this->attributes['video_url'] =
+                'https://www.youtube.com/embed/' . $m[1];
+            return;
+        }
+
+        // youtu.be/xxxx
+        if (preg_match('~youtu\.be/([^?\&]+)~', $value, $m)) {
+            $this->attributes['video_url'] =
+                'https://www.youtube.com/embed/' . $m[1];
+            return;
+        }
+
+        // kalau sudah embed atau link lain
+        $this->attributes['video_url'] = $value;
+    }
+
 }

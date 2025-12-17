@@ -34,15 +34,15 @@ class AssessmentAuthController extends Controller
             // Variabel Default (Dummy agar view tidak error)
             'preTestDone'       => false,
             'postTestDone'      => false,
-            'monevDone'         => false,
+            'monevTestDone'         => false,
             'materiDoneCount'   => 0,
             'totalMateri'       => 15,
             'preTestScore'      => null,
             'postTestScore'     => null,
-            'monevScore'        => null,
+            'monevTestScore'        => null,
             'preTestAttempts'   => 0,
             'postTestAttempts'  => 0,
-            'monevAttempts'     => 0,
+            'monevTestAttempts'     => 0,
         ];
 
         // Jika sudah login, Anda bisa load data real dari DB di sini

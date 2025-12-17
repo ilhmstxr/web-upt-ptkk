@@ -21,12 +21,19 @@ class MateriPelatihanResource extends Resource
     protected static ?string $modelLabel      = 'Materi';
     protected static ?int $navigationSort     = 20;
 
+    /* =====================================================
+     * FORM
+     * ===================================================== */
     public static function form(Form $form): Form
     {
         return $form->schema([
+
+            /* ===============================
+             * INFORMASI MATERI
+             * =============================== */
             Forms\Components\Section::make('Informasi Materi')
                 ->schema([
-                    // ✅ Pelatihan tetap ada, default query boleh, tapi admin bebas ubah
+
                     Forms\Components\Select::make('pelatihan_id')
                         ->label('Pelatihan')
                         ->relationship('pelatihan', 'nama_pelatihan')
@@ -35,10 +42,9 @@ class MateriPelatihanResource extends Resource
                         ->required()
                         ->default(request()->query('pelatihan_id')),
 
-                    // ✅ Tambahkan Kompetensi (admin bebas pilih)
                     Forms\Components\Select::make('kompetensi_id')
                         ->label('Kompetensi')
-                        ->relationship('kompetensi', 'nama_kompetensi') // sesuaikan nama kolomnya kalau beda
+                        ->relationship('kompetensi', 'nama_kompetensi')
                         ->searchable()
                         ->preload()
                         ->nullable()
@@ -54,8 +60,8 @@ class MateriPelatihanResource extends Resource
                         ->label('Tipe Materi')
                         ->required()
                         ->options([
-                            'video' => 'Video',
-                            'file'  => 'File',
+                            'video' => 'Video (YouTube)',
+                            'file'  => 'File (PDF/DOC/PPT)',
                             'link'  => 'Link',
                             'teks'  => 'Teks',
                         ])
@@ -65,8 +71,8 @@ class MateriPelatihanResource extends Resource
                     Forms\Components\TextInput::make('urutan')
                         ->label('Urutan')
                         ->numeric()
-                        ->default(1)
-                        ->required(),
+                        ->required()
+                        ->helperText('Urutan materi dalam satu pelatihan'),
 
                     Forms\Components\TextInput::make('estimasi_menit')
                         ->label('Estimasi (menit)')
@@ -80,21 +86,34 @@ class MateriPelatihanResource extends Resource
                 ])
                 ->columns(2),
 
+            /* ===============================
+             * KONTEN MATERI (DINAMIS)
+             * =============================== */
             Forms\Components\Section::make('Konten Materi')
                 ->schema([
+
                     Forms\Components\FileUpload::make('file_path')
                         ->label('Upload File')
                         ->disk('public')
-                        ->directory('materi')
+                        ->directory('materi-files')
                         ->openable()
                         ->downloadable()
+                        ->acceptedFileTypes([
+                            'application/pdf',
+                            'application/msword',
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            'application/vnd.ms-powerpoint',
+                            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                        ])
+                        ->maxSize(5120)
                         ->visible(fn (Forms\Get $get) => $get('tipe') === 'file')
                         ->columnSpanFull(),
 
                     Forms\Components\TextInput::make('video_url')
-                        ->label('Video URL')
+                        ->label('Video URL (YouTube)')
                         ->url()
                         ->visible(fn (Forms\Get $get) => $get('tipe') === 'video')
+                        ->helperText('Masukkan link YouTube (akan otomatis di-embed)')
                         ->columnSpanFull(),
 
                     Forms\Components\TextInput::make('link_url')
@@ -109,6 +128,9 @@ class MateriPelatihanResource extends Resource
                         ->columnSpanFull(),
                 ]),
 
+            /* ===============================
+             * STATUS
+             * =============================== */
             Forms\Components\Section::make('Status')
                 ->schema([
                     Forms\Components\Toggle::make('is_published')
@@ -118,10 +140,14 @@ class MateriPelatihanResource extends Resource
         ]);
     }
 
+    /* =====================================================
+     * TABLE
+     * ===================================================== */
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+
                 Tables\Columns\TextColumn::make('judul')
                     ->label('Judul')
                     ->searchable()
@@ -133,7 +159,6 @@ class MateriPelatihanResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                // ✅ tampilkan bidang kompetensi di tabel
                 Tables\Columns\TextColumn::make('kompetensi.nama_kompetensi')
                     ->label('Kompetensi')
                     ->searchable()
@@ -159,7 +184,6 @@ class MateriPelatihanResource extends Resource
 
                 Tables\Columns\TextColumn::make('estimasi_menit')
                     ->label('Estimasi')
-                    ->numeric()
                     ->suffix(' menit')
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -169,10 +193,10 @@ class MateriPelatihanResource extends Resource
                     ->alignCenter(),
             ])
             ->filters([
+
                 Tables\Filters\SelectFilter::make('pelatihan')
                     ->relationship('pelatihan', 'nama_pelatihan'),
 
-                // ✅ filter kompetensi juga
                 Tables\Filters\SelectFilter::make('kompetensi')
                     ->relationship('kompetensi', 'nama_kompetensi'),
 
@@ -200,6 +224,9 @@ class MateriPelatihanResource extends Resource
             ->defaultSort('urutan', 'asc');
     }
 
+    /* =====================================================
+     * RELATIONS & PAGES
+     * ===================================================== */
     public static function getRelations(): array
     {
         return [];

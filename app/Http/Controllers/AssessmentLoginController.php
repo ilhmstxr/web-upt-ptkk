@@ -97,12 +97,13 @@ class AssessmentLoginController extends Controller
 
     public function logout(Request $request)
     {
-        // logout aman: boleh flush karena memang mau bersih total
-        $request->session()->flush();
+        // Logout dari guard assessment
+        Auth::guard('assessment')->logout();
+
+        // Bersihkan session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('dashboard.home')
-            ->with('success', 'Logout berhasil.');
+        return redirect('/masuk');
     }
 }

@@ -280,25 +280,39 @@ class DashboardController extends Controller
         // ✅ OVERRIDE STATS MONEV AGAR PASTI MUNCUL SETELAH ATTEMPT 1 SELESAI
         $basePerc = $this->basePercobaanQuery();
 
-        if ($monevTes) {
-            $doneMonev = (clone $basePerc)
-                ->where('tes_id', $monevTes->id)
-                ->whereNotNull('waktu_selesai')
-                ->latest('waktu_selesai')
-                ->first();
+        // ===============================
+// MONEV STATUS (FINAL & AMAN)
+// ===============================
+$stats['monevTestAttempts'] = 0;
+$stats['monevTestScore']    = null;
+$stats['monevTestDone']     = false;
 
-            $stats['monevTestAttempts'] = (clone $basePerc)
-                ->where('tes_id', $monevTes->id)
-                ->count();
+if ($monevTes && $pesertaAktif) {
 
-            $stats['monevTestScore'] = $doneMonev?->skor;
-            $stats['monevTestDone']  = (bool) $doneMonev;
-        } else {
-            // kalau tidak ada survei untuk pelatihan tsb
-            $stats['monevTestAttempts'] = 0;
-            $stats['monevTestScore'] = null;
-            $stats['monevTestDone'] = false;
-        }
+    $basePerc = Percobaan::query()
+        ->where('tipe', 'survei')
+        ->where('tes_id', $monevTes->id)
+        ->where(function ($q) use ($pesertaAktif) {
+            $q->where('peserta_id', $pesertaAktif->id)
+              ->orWhere('peserta_survei_id', $pesertaAktif->id);
+        });
+
+    // jumlah attempt
+    $stats['monevTestAttempts'] = (clone $basePerc)->count();
+
+    // attempt yang SUDAH selesai
+    $doneMonev = (clone $basePerc)
+        ->whereNotNull('waktu_selesai')
+        ->latest('waktu_selesai')
+        ->first();
+
+    // flag utama untuk HOME
+    $stats['monevTestDone'] = (bool) $doneMonev;
+
+    // skor (kalau ada)
+    $stats['monevTestScore'] = $doneMonev?->skor;
+}
+
 
         return view('dashboard.pages.home', array_merge([
             'pesertaAktif' => $pesertaAktif,
@@ -320,15 +334,15 @@ class DashboardController extends Controller
         $stats = [
             'preTestAttempts' => 0,
             'postTestAttempts' => 0,
-            'monevAttempts' => 0,
+            'monevTestAttempts' => 0,
 
             'preTestScore' => null,
             'postTestScore' => null,
-            'monevScore' => null,
+            'monevTestScore' => null,
 
             'preTestDone' => false,
             'postTestDone' => false,
-            'monevDone' => false,
+            'monevTestDone' => false,
         ];
 
         if (!$key || !$id) return $stats;
@@ -342,7 +356,7 @@ class DashboardController extends Controller
         $map = [
             'pre'  => ['tes' => $preTes,  'attemptKey' => 'preTestAttempts',  'scoreKey' => 'preTestScore',  'doneKey' => 'preTestDone'],
             'post' => ['tes' => $postTes, 'attemptKey' => 'postTestAttempts', 'scoreKey' => 'postTestScore', 'doneKey' => 'postTestDone'],
-            'monev' => ['tes' => $monevTes, 'attemptKey' => 'monevAttempts',    'scoreKey' => 'monevScore',    'doneKey' => 'monevDone'],
+            'monev' => ['tes' => $monevTes, 'attemptKey' => 'monevTestAttempts',    'scoreKey' => 'monevTestScore',    'doneKey' => 'monevTestDone'],
         ];
 
         foreach ($map as $k => $cfg) {
@@ -686,26 +700,55 @@ class DashboardController extends Controller
      * - tidak pakai kompetensi (hanya pelatihan)
      */
     public function monev()
-    {
-        $login = $this->requireLogin();
-        if ($login instanceof RedirectResponse) return $login;
+{
+    $login = $this->requireLogin();
+    if ($login instanceof RedirectResponse) return $login;
 
-        // ✅ monev: tes tipe survei, tanpa filter kompetensi
-        $tes = (clone $this->baseMonevTesQuery())
+    // ambil semua tes survei (scope pelatihan BOLEH, tapi tidak wajib)
+    $tes = (clone $this->baseMonevTesQuery())
+        ->where('tipe', 'survei')
+        ->get();
+
+    // ===============================
+    // MAP STATUS MONEV (FINAL FIX)
+    // ===============================
+    $tes = $tes->map(function ($t) {
+
+        // default
+        $t->__already_done = false;
+        $t->__done_id     = null;
+        $t->__running_id  = null;
+
+        // 🔥 PENTING: JANGAN filter peserta
+        $percobaan = Percobaan::query()
+            ->where('tes_id', $t->id)
             ->where('tipe', 'survei')
+            ->orderByDesc('created_at')
             ->get();
 
-        // ✅ fallback kalau pelatihan ini gak punya survei
-        if ($tes->isEmpty()) {
-            $fallback = Tes::query()
-                ->where('tipe', 'survei')
-                ->first();
-
-            $tes = $fallback ? collect([$fallback]) : collect();
+        if ($percobaan->isEmpty()) {
+            return $t;
         }
 
-        return view('dashboard.pages.monev.monev', compact('tes'));
-    }
+        // ✅ SUDAH SELESAI
+        $done = $percobaan->firstWhere('waktu_selesai', '!=', null);
+        if ($done) {
+            $t->__already_done = true;
+            $t->__done_id = $done->id;
+            return $t;
+        }
+
+        // ⏳ MASIH BERJALAN
+        $running = $percobaan->firstWhere('waktu_selesai', null);
+        if ($running) {
+            $t->__running_id = $running->id;
+        }
+
+        return $t;
+    });
+
+    return view('dashboard.pages.monev.monev', compact('tes'));
+}
 
     public function monevBegin(Tes $tes)
     {
