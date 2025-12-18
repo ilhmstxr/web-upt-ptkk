@@ -1596,29 +1596,26 @@ $latestBeritas = Berita::query()
 {{-- SECTION: Panduan Pelatihan (Full-width image + gradient overlay) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="relative rounded-2xl overflow-hidden">
+    <div class="relative w-full rounded-2xl overflow-hidden shadow-sm">
 
       {{-- BG foto full --}}
-      <div
-        class="w-full h-[220px] sm:h-[240px] md:h-[300px] lg:h-[380px] bg-cover bg-center relative"
-        style="background-image: url('{{ asset('images/bgvideo.svg') }}');"
-      >
-       {{-- Overlay gradient: muncul di semua device (HP, tablet, desktop) --}}
-<div class="absolute inset-0"
-     style="background: linear-gradient(270deg,
-        rgba(21,36,175,1) 29%,
-        rgba(21,36,175,0.34) 66%,
-        rgba(21,36,175,0) 100%);">
-</div>
+      <div class="absolute inset-0 bg-cover bg-center z-0"
+           style="background-image: url('{{ asset('images/bgvideo.svg') }}');">
+           {{-- Overlay Gradient --}}
+           <div class="absolute inset-0"
+                style="background: linear-gradient(270deg,
+                rgba(21,36,175,1) 29%,
+                rgba(21,36,175,0.34) 66%,
+                rgba(21,36,175,0) 100%);">
+           </div>
       </div>
 
       {{-- Overlay grid konten --}}
-      <div
-        class="absolute inset-0 grid grid-cols-2
-               gap-x-3 md:gap-x-4 lg:gap-x-8
-               px-3 sm:px-5 md:px-8 lg:px-10
-               py-5 md:py-6 lg:py-0"
-      >
+      <div class="relative z-10 grid grid-cols-2
+                  gap-x-3 md:gap-x-4 lg:gap-x-8
+                  px-3 sm:px-5 md:px-8 lg:px-10
+                  py-5 md:py-6 lg:py-0
+                  min-h-[220px] sm:min-h-[240px] md:min-h-[300px] lg:min-h-[380px]">
 
         {{-- KIRI: Tombol Play - posisi tengah area kiri --}}
         <div class="relative flex items-center justify-center">
@@ -1634,7 +1631,7 @@ $latestBeritas = Berita::query()
         </div>
 
         {{-- KANAN: Card panduan --}}
-        <div class="relative flex items-center justify-end">
+        <div class="relative flex items-center justify-end w-full h-full">
           <div
             class="bg-[#DBE7F7]/95 text-[#0E2A7B] rounded-xl shadow-md
                    w-full
@@ -1664,18 +1661,18 @@ $latestBeritas = Berita::query()
             </p>
 
         <a href="{{ route('panduan') }}"
-            class="mt-4 md:mt-0 self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
-                            px-4 py-1 
-                            rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
-                            text-[14px] md:text-[15px] lg:text-[16px] 
-                            shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
-                    <span class="leading-none">Lihat Panduan</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                        class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" 
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
-                    </svg>
-            </a>
+                class="mt-auto self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                       px-3 py-1.5 md:px-4 md:py-1
+                       rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                       text-[12px] md:text-[15px] lg:text-[16px] 
+                       shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+                  <span class="leading-none">Lihat Panduan</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" 
+                       class="w-3.5 h-3.5 md:w-5 md:h-5" 
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+                  </svg>
+             </a>
           </div>
         </div>
 
