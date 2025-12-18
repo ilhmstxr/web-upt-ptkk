@@ -714,38 +714,42 @@ if ($monevTes && $pesertaAktif) {
     // ===============================
     $tes = $tes->map(function ($t) {
 
-        // default
-        $t->__already_done = false;
-        $t->__done_id     = null;
-        $t->__running_id  = null;
+    ['key' => $key, 'id' => $userId] = $this->getParticipantKeyAndId();
 
-        // 🔥 PENTING: JANGAN filter peserta
-        $percobaan = Percobaan::query()
-            ->where('tes_id', $t->id)
-            ->where('tipe', 'survei')
-            ->orderByDesc('created_at')
-            ->get();
+    $t->__already_done = false;
+    $t->__done_id     = null;
+    $t->__running_id  = null;
 
-        if ($percobaan->isEmpty()) {
-            return $t;
-        }
-
-        // ✅ SUDAH SELESAI
-        $done = $percobaan->firstWhere('waktu_selesai', '!=', null);
-        if ($done) {
-            $t->__already_done = true;
-            $t->__done_id = $done->id;
-            return $t;
-        }
-
-        // ⏳ MASIH BERJALAN
-        $running = $percobaan->firstWhere('waktu_selesai', null);
-        if ($running) {
-            $t->__running_id = $running->id;
-        }
-
+    if (!$key || !$userId) {
         return $t;
-    });
+    }
+
+    $percobaan = Percobaan::query()
+        ->where('tes_id', $t->id)
+        ->where('tipe', 'survei')
+        ->where($key, $userId)   // ✅ INI KUNCINYA
+        ->orderByDesc('created_at')
+        ->get();
+
+    if ($percobaan->isEmpty()) {
+        return $t;
+    }
+
+    $done = $percobaan->firstWhere('waktu_selesai', '!=', null);
+    if ($done) {
+        $t->__already_done = true;
+        $t->__done_id = $done->id;
+        return $t;
+    }
+
+    $running = $percobaan->firstWhere('waktu_selesai', null);
+    if ($running) {
+        $t->__running_id = $running->id;
+    }
+
+    return $t;
+});
+
 
     return view('dashboard.pages.monev.monev', compact('tes'));
 }
