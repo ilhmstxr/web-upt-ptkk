@@ -8,18 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('sorotan_pelatihans', function (Blueprint $table) {
-            // kolom untuk simpan array path foto
-            $table->json('photos')
-                ->nullable()
-                ->after('description');
-        });
+        // Pastikan kolom photos ada (kalau sudah ada, tidak ngapa-ngapain)
+        if (!Schema::hasColumn('sorotan_pelatihans', 'photos')) {
+            Schema::table('sorotan_pelatihans', function (Blueprint $table) {
+                $table->json('photos')->nullable()->after('description');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('sorotan_pelatihans', function (Blueprint $table) {
-            $table->dropColumn('photos');
-        });
+        // Aman saat rollback
+        if (Schema::hasColumn('sorotan_pelatihans', 'photos')) {
+            Schema::table('sorotan_pelatihans', function (Blueprint $table) {
+                $table->dropColumn('photos');
+            });
+        }
     }
 };

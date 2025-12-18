@@ -8,7 +8,7 @@
 
     $preTestDone      = $preTestDone      ?? false;
     $postTestDone     = $postTestDone     ?? false;
-    $monevDone        = $monevDone        ?? false;
+    $monevTestDone    = $moneTestDone        ?? false;
 
     $materiDoneCount  = $materiDoneCount  ?? 0;
     $totalMateri      = $totalMateri      ?? 0;
@@ -19,11 +19,11 @@
 
     $preTestScore     = $preTestScore     ?? null;
     $postTestScore    = $postTestScore    ?? null;
-    $monevScore       = $monevScore       ?? null;
+    $monevTestScore       = $monevTestScore       ?? null;
 
     $preTestAttempts  = $preTestAttempts  ?? 0;
     $postTestAttempts = $postTestAttempts ?? 0;
-    $monevAttempts    = $monevAttempts    ?? 0;
+    $monevTestAttempts    = $monevTestAttempts    ?? 0;
 
     $materiList = collect($materiList ?? []);
 
@@ -193,52 +193,15 @@
                         <div>
                             <div class="text-xs font-semibold text-slate-400">Monev</div>
                             <div class="text-xl font-bold mt-2 text-indigo-600">
-                                {{ $monevDone ? 'Selesai' : '-' }}
+                                {{ ($monevTestAttempts ?? 0) >= 1 ? 'Selesai' : '-' }}
                             </div>
 
                         </div>
                         <div class="bg-indigo-50 p-3 rounded-lg text-indigo-600 text-lg">📊</div>
                     </div>
-                    <div class="mt-3 text-xs text-slate-500">Attempts: {{ $monevAttempts }}</div>
+                    <div class="mt-3 text-xs text-slate-500">Attempts: {{ $monevTestAttempts }}</div>
                 </div>
             </div>
-
-            {{-- Latest lessons --}}
-            <section class="bg-white rounded-2xl border p-6 shadow-sm">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-semibold text-lg">Latest lessons</h3>
-                    <a href="{{ route('dashboard.materi.index') }}" class="text-sm text-blue-600">See all</a>
-                </div>
-
-                <div class="space-y-2 divide-y">
-                    @forelse($materiList as $m)
-                        @php
-                            $icon = match($m->tipe ?? 'teks') {
-                                'video' => '▶',
-                                'file'  => '📄',
-                                default => '✍',
-                            };
-                            $materiLink = route('dashboard.materi.show', $m->slug ?? $m->id);
-                        @endphp
-
-                        <a href="{{ $materiLink }}"
-                           class="flex items-center justify-between gap-4 py-3 hover:bg-slate-50 px-2 rounded transition">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-12 h-12 rounded-lg bg-slate-50 border flex items-center justify-center text-xl">
-                                    {{ $icon }}
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="font-semibold truncate">{{ $m->judul ?? '-' }}</div>
-                                    <div class="text-xs text-slate-400">{{ $m->estimasi_menit ? $m->estimasi_menit.' min' : '—' }}</div>
-                                </div>
-                            </div>
-                            <div class="text-sm text-slate-500">{{ $m->created_at?->diffForHumans() ?? '' }}</div>
-                        </a>
-                    @empty
-                        <div class="py-6 text-center text-slate-400">Belum ada materi tersedia</div>
-                    @endforelse
-                </div>
-            </section>
 
             {{-- Notes --}}
             <section class="bg-white rounded-2xl border p-5 shadow-sm">
@@ -289,45 +252,6 @@
                             @endfor
                         </div>
                     </div>
-
-                    {{-- Materi list --}}
-                    <div class="mt-4">
-                        <div class="flex items-center justify-between">
-                            <div class="text-sm font-semibold">Materi</div>
-                            <div class="text-xs opacity-90">{{ $materiDoneCount }}/{{ $totalMateri }}</div>
-                        </div>
-
-                        <div class="mt-3 space-y-2 max-h-56 overflow-auto pr-2">
-                            @forelse($materiList as $i => $m)
-                                @php
-                                    $done = $m->is_done ?? false;
-                                    $materiLink = route('dashboard.materi.show', $m->slug ?? $m->id);
-                                @endphp
-                                <a href="{{ $materiLink }}"
-                                   class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition">
-                                    <div class="w-8 h-8 rounded-md flex items-center justify-center {{ $done ? 'bg-white text-indigo-600' : 'bg-white/20 text-white' }}">
-                                        {{ $i+1 }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <div class="text-sm font-semibold truncate">{{ $m->judul ?? '-' }}</div>
-                                        <div class="text-xs opacity-90">
-                                            {{ $done ? 'Selesai' : ($m->estimasi_menit ? $m->estimasi_menit.'m' : 'Belum dikerjakan') }}
-                                        </div>
-                                    </div>
-                                </a>
-                            @empty
-                                <div class="text-sm opacity-90">Belum ada materi</div>
-                            @endforelse
-                        </div>
-
-                        <div class="mt-3">
-                            <a href="{{ route('dashboard.materi.index') }}"
-                               class="inline-block text-sm font-semibold bg-white text-indigo-600 px-3 py-2 rounded-lg">
-                                Lihat Semua
-                            </a>
-                        </div>
-                    </div>
-                </div>
 
                 {{-- Reminder --}}
                 <div class="bg-white rounded-2xl border p-4 shadow-sm">

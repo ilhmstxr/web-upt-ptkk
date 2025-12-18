@@ -30,29 +30,45 @@
             : 0;
     @endphp
 
-    {{-- HEADER --}}
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
+    {{-- HEADER + PROGRESS --}}
+<div class="mb-6 space-y-4">
+
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div class="space-y-1">
             <div class="text-sm text-slate-600">
                 Bagian <b>{{ $currentSectionIndex + 1 }}</b>
                 @if($totalBagian) dari {{ $totalBagian }} @endif
             </div>
+
             <div class="text-base font-bold text-indigo-700 uppercase">
                 {{ $currentKategori }}
             </div>
+
             <div class="text-xs text-slate-500">
                 Terjawab {{ $terjawabDalamBagian }} / {{ $totalSoalDalamBagian }}
             </div>
         </div>
 
-        <div class="w-full md:w-1/2">
-            <div class="w-full bg-slate-200 rounded-full h-3">
-                <div class="bg-indigo-600 h-3 rounded-full transition-all"
-                     style="width: {{ $progress }}%"></div>
-            </div>
-            <p class="text-xs mt-1 text-slate-500">{{ $progress }}%</p>
+        {{-- Progress info (kanan) --}}
+        <div class="text-xs text-slate-500 md:text-right">
+            <span id="progress-text">{{ $progress }}</span>% selesai
         </div>
     </div>
+
+    {{-- Progress bar --}}
+    <div class="w-full">
+        <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+            <div
+                id="progress-bar"
+                class="bg-indigo-600 h-3 rounded-full transition-all duration-300"
+                style="width: {{ $progress }}%">
+            </div>
+        </div>
+    </div>
+
+    {{-- meta untuk JS (disembunyikan) --}}
+    <div id="progress-meta" data-total="{{ $totalSoalDalamBagian }}" class="hidden"></div>
+</div>
 
     {{-- FORM --}}
     <form
@@ -135,9 +151,7 @@
                                     name="nilai[{{ $pertanyaan->id }}]"
                                     value="{{ $nilai }}"
                                     class="sr-only peer"
-                                    @checked($checked)
-                                    required
-                                >
+                                    @checked($checked)>
 
                                 <span class="text-3xl grayscale peer-checked:grayscale-0">
                                     {{ $data['emoji'] }}
@@ -255,14 +269,73 @@
 
 @push('scripts')
 <script>
-function openImageModal(src) {
-    document.getElementById('modalImage').src = src;
-    document.getElementById('imageModal').classList.remove('hidden');
-    document.getElementById('imageModal').classList.add('flex');
-}
-function closeImageModal() {
-    document.getElementById('imageModal').classList.add('hidden');
-}
+document.addEventListener('DOMContentLoaded', () => {
+
+    /* =============================
+       PROGRESS BAR PER KLIK
+    ============================== */
+    const meta = document.getElementById('progress-meta');
+    if (meta) {
+        const total = Number(meta.dataset.total || 0);
+        const bar   = document.getElementById('progress-bar');
+        const text  = document.getElementById('progress-text');
+
+        const updateProgress = () => {
+            const answered = new Set();
+
+            // Radio (Likert / Pilihan Ganda)
+            document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+                answered.add(el.name);
+            });
+
+            // Textarea (Essay)
+            document.querySelectorAll('textarea').forEach(el => {
+                if (el.value.trim() !== '') {
+                    answered.add(el.name);
+                }
+            });
+
+            const percent = total
+                ? Math.round((answered.size / total) * 100)
+                : 0;
+
+            if (bar)  bar.style.width = percent + '%';
+            if (text) text.textContent = percent;
+        };
+
+        // Event listener
+        document.querySelectorAll('input[type="radio"]').forEach(input => {
+            input.addEventListener('change', updateProgress);
+        });
+
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', updateProgress);
+        });
+    }
+
+    /* =============================
+       MODAL GAMBAR
+    ============================== */
+    window.openImageModal = function (src) {
+        const modal = document.getElementById('imageModal');
+        const img   = document.getElementById('modalImage');
+
+        if (!modal || !img) return;
+
+        img.src = src;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
+
+    window.closeImageModal = function () {
+        const modal = document.getElementById('imageModal');
+        if (!modal) return;
+
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    };
+
+});
 </script>
 @endpush
 @endsection
