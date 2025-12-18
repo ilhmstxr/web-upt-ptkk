@@ -1196,21 +1196,49 @@ $latestBeritas = Berita::query()
   // 1) DUMMY DATA (fallback paling akhir)
   // =========================
   const dummyData = {
-    pelatihans: [
-      { id: 1, nama: 'Tata Boga', warna: '#1524AF', warna_inactive: '#000000' },
-      { id: 2, nama: 'Teknik Pendingin dan Tata Udara', warna: '#1524AF', warna_inactive: '#000000' },
-      { id: 3, nama: 'Tata Busana', warna: '#1524AF', warna_inactive: '#000000' },
-      { id: 4, nama: 'Kecantikan', warna: '#1524AF', warna_inactive: '#000000' },
-    ],
-    labels: ['Tata Boga', 'Teknik Pendingin dan Tata Udara', 'Tata Busana', 'Kecantikan'],
-    datasets: {
-      pre:     [8, 22, 12, 29],
-      post:    [24, 53, 75, 94],
-      praktek: [38, 70, 35, 60],
-      rata:    [52, 10, 26, 49],
+  pelatihans: [
+    {
+      id: 1,
+      nama: 'Akselerasi Kelas MJC Guru Angkatan I 2025',
+      warna: '#1524AF',
+      warna_inactive: '#000000'
     },
-  };
+    {
+      id: 2,
+      nama: 'Mobile Training Unit (MTU) Angkatan II 2025',
+      warna: '#1524AF',
+      warna_inactive: '#000000'
+    },
+    {
+      id: 3,
+      nama: 'MILEA Kelas MJC Angkatan II 2025',
+      warna: '#1524AF',
+      warna_inactive: '#000000'
+    },
+    {
+      id: 4,
+      nama: 'Akselerasi TUK Kelas Keterampilan 2025',
+      warna: '#1524AF',
+      warna_inactive: '#000000'
+    }
+  ],
 
+  // Label X Chart (HARUS SEURUTAN DENGAN DATASET)
+  labels: [
+    'Akselerasi MJC Guru I',
+    'MTU Angkatan II',
+    'MILEA MJC II',
+    'TUK Kelas Keterampilan'
+  ],
+
+  datasets: {
+    // RATA-RATA DARI DATA ASLI
+    pre:     [49.87, 70.87, 62.20, 68.57],
+    post:    [67.60, 82.67, 78.80, 91.07],
+    praktek: [86.21, 90.46, 88.24, 89.60],
+    rata:    [80.72, 87.08, 84.69, 86.55],
+  }
+};
   // =========================
   // 2) DATA BLADE (fallback tengah)
   // =========================
