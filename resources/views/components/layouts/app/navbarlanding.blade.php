@@ -88,7 +88,7 @@ $items = [
 @endphp
 
 <header id="siteHeader"
-  class="sticky top-0 z-50 bg-[#F1F9FC] border-b border-slate-200/40 transition-shadow"
+  class="sticky top-0 z-[9999] bg-[#F1F9FC] border-b border-slate-200/40 transition-shadow"
   role="navigation" aria-label="Site">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="h-[56px] md:h-[64px] lg:h-[72px] flex items-center justify-between gap-3 md:gap-4">

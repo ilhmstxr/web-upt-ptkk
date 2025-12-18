@@ -49,14 +49,21 @@
 
         @layer components {
             .prose,
-            .prose * {
-                font-family: 'Montserrat', sans-serif !important;
-                font-weight: 500 !important;
-                color: #000000 !important;
-                letter-spacing: normal !important;
-                line-height: 1.7 !important;
-                max-width: 100% !important;
-            }
+.prose * {
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 500 !important;
+    color: #000000 !important;
+    letter-spacing: normal !important;
+    line-height: 1.7 !important;
+    max-width: 100% !important;
+}
+
+.prose {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: justify; /* ✅ RATA KANAN KIRI */
+}
+
 
             /* Heading konten tetap Volkhov */
             .prose h1,
@@ -101,10 +108,10 @@
     <div class="section-container">
 
         {{-- Layout Utama: Konten + Sidebar --}}
-        <div class="flex flex-col lg:flex-row max-w-6xl mx-auto gap-8">
+        <div class="flex flex-col md:flex-row max-w-6xl mx-auto gap-8">
 
             {{-- KIRI: Konten Artikel --}}
-            <div class="lg:w-3/4 bg-[#FFFFFF] p-8 md:p-10 rounded-2xl shadow-[0px_4px_24px_rgba(0,0,0,0.08)]">
+           <div class="md:w-3/4 bg-[#FFFFFF] p-8 md:p-10 rounded-2xl shadow-[0px_4px_24px_rgba(0,0,0,0.08)]">
 
                 {{-- 1) Judul --}}
                 <h1 class="font-[Volkhov] font-bold text-2xl md:text-3xl leading-tight mb-3 judul-stroke text-left">
@@ -170,7 +177,7 @@
   <a href="https://www.instagram.com/uptptkk.jatim/" target="_blank"
      class="w-11 h-11 flex items-center justify-center
             border-2 border-[#F2C94C]
-            rounded-lg bg-white 
+            rounded-lg bg-white
             text-[#F2C94C] hover:bg-[#F2C94C] hover:text-white transition">
     <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
         <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5a5 5 0 100 10 5 5 0 000-10zm6-1a1 1 0 100 2 1 1 0 000-2zm-6 3a3 3 0 110 6 3 3 0 010-6z"/>
@@ -190,13 +197,13 @@
     </svg>
   </a>
 
-</div>                
+</div>
 </article>
             </div>
 
             {{-- KANAN: Sidebar Berita Lainnya --}}
-            <div class="lg:w-1/4">
-                <div class="bg-[#FFFFFF] p-6 rounded-2xl shadow-[0px_4px_24px_rgba(0,0,0,0.08)] border border-gray-100 sticky top-4">
+           <div class="md:w-1/4">
+                <div class="bg-[#FFFFFF] p-6 rounded-2xl shadow-[0px_4px_24px_rgba(0,0,0,0.08)] border border-gray-100 md:sticky md:top-4">
 
                     <h2 class="font-[Volkhov] font-bold text-[20px] mb-5 judul-stroke">
                         Berita Lainnya

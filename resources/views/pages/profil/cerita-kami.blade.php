@@ -201,72 +201,61 @@ section + section {
 }
 
 /* ================= TIMELINE SEJARAH ================= */
+.timeline-container { position: relative; }
 
-/* Default (desktop & tablet) – posisi diatur lewat class Tailwind di HTML */
-.timeline-container {
-  position: relative;
-}
-
-/* Tablet: tinggi sedikit lebih besar, gambar agak mengecil */
+/* Tablet */
 @media (min-width: 768px) and (max-width: 1023.98px) {
-  .timeline-container {
-    height: 1700px;
-  }
-
-  .sejarah-img {
-    width: 260px !important;
-  }
+  .timeline-container { height: 1700px; }
+  .sejarah-img { width: 260px !important; }
 }
 
-/* Desktop: gambar dibesarkan */
+/* Desktop */
 @media (min-width: 1024px) {
-  .sejarah-img {
-    width: 360px !important;  /* silakan ubah 340/380 kalau mau */
-  }
+  .sejarah-img { width: 360px !important; }
 }
 
 /* ============ MOBILE (<= 767px) ============ */
-/* Garis pindah ke kiri, item bertumpuk: gambar → tahun → teks */
 @media (max-width: 767.98px) {
 
-  .timeline-container {
-    height: auto !important;      /* override h-[1400px] */
-    padding-left: 2.5rem;         /* ruang untuk garis di kiri */
+  .timeline-container{
+    height: auto !important;
+    padding-left: 2.5rem;
     padding-right: 1.25rem;
   }
 
-  /* Sembunyikan garis & 5 titik versi desktop */
-  .timeline-container > span {
-    display: none;
+  /* Sembunyikan garis & titik versi desktop */
+  .timeline-container > span{ display:none; }
+
+  /* Garis kiri */
+  .timeline-container::before{
+    content:'';
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:1.5rem;
+    width:3px;
+    background:#D1EDF5;
+    transform:translateX(-50%);
   }
 
-  /* Garis vertikal baru di kiri (sepanjang konten) */
-  .timeline-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 1.5rem;                 /* referensi center garis */
-    width: 3px;
-    background: #D1EDF5;
-    transform: translateX(-50%);  /* biar center di 1.5rem */
+  /* Semua item absolute jadi relative */
+  .timeline-container > div[class*="absolute"]{
+    position:relative;
+    top:auto;
+    left:auto;
+    transform:none;
+    max-width:100%;
+    margin:0 0 2.5rem 0;
   }
 
-  /* Setiap blok tahun (1974–2019) jadi item bertumpuk */
-  .timeline-container > div[class*="absolute"] {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
-    max-width: 100%;
-    margin: 0 0 2.5rem 0;         /* jarak antar tahun */
-  }
-
-  .timeline-container > div[class*="absolute"]::before {
+  /* Titik per item (posisi tetap sesuai garis),
+     dan karena SECTION sejarah overflow-hidden,
+     saat naik ke area navbar => otomatis ke-clip (hilang, tidak tembus) */
+  .timeline-container > div[class*="absolute"]::before{
   content: '';
   position: absolute;
   top: 0rem;
-  left: -0rem;  /* 🎯 SUPER FINE TUNE */
+  left: -0rem;            /* ✅ balik ke posisi lama */
   width: 14px;
   height: 14px;
   border-radius: 999px;
@@ -275,55 +264,43 @@ section + section {
   z-index: 99;
 }
 
-  /* Grid 2 kolom dipecah jadi vertikal */
-  .timeline-container > div[class*="absolute"] > .grid {
-    display: block;
-  }
+  /* Grid jadi vertikal */
+  .timeline-container > div[class*="absolute"] > .grid{ display:block; }
 
-  /* Reset padding & align supaya rapi di HP */
   .timeline-left-col,
   .timeline-right-col,
-  .timeline-container > div[class*="absolute"] > .grid > div {
-    padding: 0 !important;
-    margin: 0 0 0.5rem 0 !important;
-    text-align: left !important;
-  }
-  /* Geser teks (tahun + paragraf) sedikit ke kanan di HP */
-  .timeline-container > div[class*="absolute"] > .grid > div:nth-child(2) {
-    padding-left: 1rem !important; /* boleh dinaikkan ke 1rem kalau mau lebih jauh */
+  .timeline-container > div[class*="absolute"] > .grid > div{
+    padding:0 !important;
+    margin:0 0 0.5rem 0 !important;
+    text-align:left !important;
   }
 
-  /* Gambar di HP: sedikit lebih kecil + jarak bawah */
-  .timeline-container .sejarah-img {
-    width: 180px !important;
-    margin-bottom: 0.5rem;
+  .timeline-container > div[class*="absolute"] > .grid > div:nth-child(2){
+    padding-left:1rem !important;
   }
 
-  /* Teks paragraf sejarah di HP */
-  .sejarah-text {
-    font-size: 12px !important;
-    line-height: 1.6 !important;
-    text-align: justify !important;
+  .timeline-container .sejarah-img{
+    width:180px !important;
+    margin-bottom:0.5rem;
   }
 
-  /* Tahun di HP: kecil & rata tengah */
-  .timeline-container h4 {
-    font-size: 14px !important;
-    margin-bottom: 0.25rem;
-    text-align: center !important;
-    width: 100%;
+  .sejarah-text{
+    font-size:12px !important;
+    line-height:1.6 !important;
+    text-align:justify !important;
+  }
+
+  .timeline-container h4{
+    font-size:14px !important;
+    margin-bottom:0.25rem;
+    text-align:center !important;
+    width:100%;
   }
 }
 
 /* Jauhkan kolom gambar dari garis tengah (desktop & tablet) */
-.timeline-left-col {
-  padding-right: 3.75rem;   /* ~60px dari garis */
-}
-
-.timeline-right-col {
-  padding-left: 3.75rem;
-}
-
+.timeline-left-col{ padding-right: 3.75rem; }
+.timeline-right-col{ padding-left: 3.75rem; }
 
   </style>
 </head>
@@ -358,7 +335,7 @@ section + section {
                 gap-x-4 md:gap-x-6 lg:gap-x-[32px] pt-6">
 
       {{-- KOLOM KIRI: FOTO + NAMA --}}
-      <div class="relative flex flex-col items-center lg:items-start h-full w-fit">
+     <div class="relative flex flex-col items-center lg:items-start h-full w-full lg:w-fit">
 
         {{-- WRAPPER FOTO --}}
         <div class="relative mx-auto lg:mx-0
@@ -375,7 +352,7 @@ section + section {
             <img src="{{ asset('storage/'.$kepala->foto) }}"
               alt="Foto Kepala UPT"
               class="absolute bottom-0 left-1/2 -translate-x-1/2
-                      h-[105%] lg:h-[115%] 
+                      h-[105%] lg:h-[115%]
                       w-auto object-contain object-bottom drop-shadow-md z-10"
               loading="lazy"
               decoding="async" />
@@ -397,7 +374,8 @@ section + section {
       </div>
 
       {{-- KOLOM KANAN: TEKS SAMBUTAN --}}
-      <div class="w-full h-full flex flex-col lg:pt-[8px] lg:-mt-[6px]">
+     <div class="w-full h-full flex flex-col items-center text-center lg:items-start lg:text-left lg:pt-[8px] lg:-mt-[6px]">
+
 
         <div class="font-[Montserrat] text-[#0F172A] text-[15px] md:text-[16px] leading-1.6 text-justify prose max-w-none">
           {!! $kepala->sambutan !!}
@@ -502,7 +480,7 @@ section + section {
 
 
 {{-- SECTION: Sejarah (garis tengah + 5 titik sejajar, subjudul stroke kuning) --}}
-<section class="relative bg-[#F1F9FC] pt-6 pb-[300px]">
+<section class="relative bg-[#F1F9FC] pt-6 pb-0 md:pb-[300px] overflow-hidden md:overflow-visible">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
 
     {{-- Heading --}}
@@ -535,12 +513,10 @@ section + section {
       {{-- 1974 (gambar kiri, teks kanan) --}}
       <div class="absolute top-[3%] left-1/2 w-full max-w-7xl -translate-x-1/2">
         <div class="grid grid-cols-2 gap-x-[100px] items-start">
-          {{-- gambar kiri --}}
           <div class="timeline-left-col flex justify-center md:justify-end items-center -mt-10 pr-[40px]">
             <img src="{{ asset('images/profil/sejarah1974.svg') }}" alt="Sejarah 1974"
                  class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
           </div>
-          {{-- teks kanan --}}
           <div class="-mt-6 md:pl-[32px] lg:pl-[40px]">
             <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">1974</h4>
             <p class="sejarah-text font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
@@ -553,62 +529,52 @@ section + section {
         </div>
       </div>
 
-      {{-- 1978 (desktop: teks kiri, gambar kanan / HP: gambar → tahun → teks) --}}
+      {{-- 1978 --}}
       <div class="absolute top-[23%] left-1/2 w-full max-w-7xl -translate-x-1/2">
         <div class="grid grid-cols-2 gap-x-[100px] items-start">
-          {{-- gambar kanan di desktop, tapi DOM duluan untuk HP --}}
           <div class="timeline-right-col flex justify-center md:justify-start items-center -mt-10 md:pl-[40px] lg:pl-[48px]
                       order-1 md:order-2">
             <img src="{{ asset('images/profil/sejarah1978.svg') }}" alt="Sejarah 1978"
                  class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
           </div>
-          {{-- teks kiri di desktop, tapi muncul setelah gambar di HP --}}
-          <div class="mt-2 md:mt-2 pr-0 md:pr-[40px] text-left md:text-right
-                      order-2 md:order-1">
+          <div class="mt-2 md:mt-2 pr-0 md:pr-[40px] text-left md:text-right order-2 md:order-1">
             <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">1978</h4>
             <p class="sejarah-text font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
               Melalui Keputusan Menteri Pendidikan dan Kebudayaan Nomor: 0271/0/1978 tentang Susunan Organisasi dan Tata Kerja
-              Balai Latihan Pendidikan Teknis, nama lembaga ini diubah menjadi
-              Balai Latihan Pendidikan Teknis (BLPT) dan operasionalnya diserahkan kepada
-              Kantor Wilayah Departemen Pendidikan dan Kebudayaan Provinsi Jawa Timur.
+              Balai Latihan Pendidikan Teknis, nama lembaga ini diubah menjadi Balai Latihan Pendidikan Teknis (BLPT)
+              dan operasionalnya diserahkan kepada Kantor Wilayah Departemen Pendidikan dan Kebudayaan Provinsi Jawa Timur.
             </p>
           </div>
         </div>
       </div>
 
-      {{-- 2008 (gambar kiri, teks kanan) --}}
+      {{-- 2008 --}}
       <div class="absolute top-[47%] left-1/2 w-full max-w-7xl -translate-x-1/2">
         <div class="grid grid-cols-2 gap-x-[100px] items-start">
-          {{-- gambar kiri --}}
           <div class="timeline-left-col flex justify-center md:justify-end items-center -mt-10 pr-[40px]">
             <img src="{{ asset('images/profil/sejarah2008.svg') }}" alt="Sejarah 2008"
                  class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
           </div>
-          {{-- teks kanan --}}
           <div class="mt-14 md:pl-[32px] lg:pl-[40px]">
             <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2008</h4>
             <p class="sejarah-text font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
               Diterbitkannya Peraturan Gubernur Jawa Timur Nomor 120 Tahun 2008
               tentang Organisasi dan Tata Kerja UPT Dinas Pendidikan Provinsi Jawa Timur,
-              nama lembaga ini diubah menjadi
-              Unit Pelaksana Teknis Pelatihan dan Pengembangan Pendidikan Kejuruan (UPT. PPPK).
+              nama lembaga ini diubah menjadi Unit Pelaksana Teknis Pelatihan dan Pengembangan Pendidikan Kejuruan (UPT. PPPK).
             </p>
           </div>
         </div>
       </div>
 
-      {{-- 2016 (desktop: teks kiri, gambar kanan / HP: gambar → tahun → teks) --}}
+      {{-- 2016 --}}
       <div class="absolute top-[75%] left-1/2 w-full max-w-7xl -translate-x-1/2">
         <div class="grid grid-cols-2 gap-x-[100px] items-start">
-          {{-- gambar kanan di desktop, tapi DOM duluan untuk HP --}}
           <div class="timeline-right-col flex justify-center md:justify-start items-center -mt-10 md:pl-[40px] lg:pl-[48px]
                       order-1 md:order-2">
             <img src="{{ asset('images/profil/sejarah2016.svg') }}" alt="Sejarah 2016"
                  class="sejarah-img w-[280px] md:w-[320px]" loading="lazy">
           </div>
-          {{-- teks kiri di desktop, tapi setelah gambar in HP --}}
-          <div class="mt-2 md:mt-2 pr-0 md:pr-[40px] text-left md:text-right
-                      order-2 md:order-1">
+          <div class="mt-2 md:mt-2 pr-0 md:pr-[40px] text-left md:text-right order-2 md:order-1">
             <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2016</h4>
             <p class="sejarah-text font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
               Terjadi perubahan Peraturan Gubernur Jawa Timur Nomor 95 Tahun 2016 tentang Nomenklatur,
@@ -619,16 +585,13 @@ section + section {
         </div>
       </div>
 
-      {{-- 2019 (gambar kiri, teks kanan) --}}
-      <div class="absolute top-[100%] left-1/2 w-full max-w-7xl
-                  -translate-x-1/2 -translate-y-1/2 translate-y-[0px]">
+      {{-- 2019 --}}
+      <div class="absolute top-[100%] left-1/2 w-full max-w-7xl -translate-x-1/2 -translate-y-1/2 translate-y-[0px]">
         <div class="grid grid-cols-2 gap-x-[100px] items-start">
-          {{-- gambar kiri --}}
           <div class="timeline-left-col flex justify-center md:justify-end items-start pr-[40px]">
             <img src="{{ asset('images/profil/sejarah2019.svg') }}" alt="Sejarah 2019"
                  class="sejarah-img w-[300px] md:w-[340px]" loading="lazy">
           </div>
-          {{-- teks kanan --}}
           <div class="md:pl-[32px] lg:pl-[40px] mt-4 md:mt-0">
             <h4 class="font-[Volkhov] font-bold text-[#1524AF] text-[20px] mb-2">2019</h4>
             <p class="sejarah-text font-[Montserrat] text-[#000000] text-[16px] leading-relaxed text-justify">
@@ -642,7 +605,7 @@ section + section {
         </div>
       </div>
 
-    </div> {{-- /timeline-container --}}
+    </div>
   </div>
 </section>
 
@@ -841,29 +804,29 @@ section + section {
         </div>
 
         {{-- Tombol --}}
-        <div class="flex flex-col sm:flex-row gap-3">
-          <a href="{{ asset('pdf/peraturan-pergub.pdf') }}"
-            target="_blank"
-             class="inline-flex items-center justify-center gap-2
-                    w-full sm:w-1/2
-                    px-4 py-1 bg-[#1524AF] text-[#FFFFFF] rounded-lg
-                    text-[14px] md:text-[15px] font-semibold
-                    hover:bg-[#0F1D8F] transition text-center">
-            <img src="{{ asset('images/icons/mata.svg') }}" alt="Lihat" class="w-5 h-5">
-            Lihat
-          </a>
+       <div class="flex flex-row gap-3">
+  <a href="{{ asset('pdf/peraturan-pergub.pdf') }}"
+     target="_blank"
+     class="inline-flex items-center justify-center gap-2
+            w-1/2
+            px-4 py-3 bg-[#1524AF] text-[#FFFFFF] rounded-lg
+            text-[14px] md:text-[15px] font-semibold
+            hover:bg-[#0F1D8F] transition text-center">
+    <img src="{{ asset('images/icons/mata.svg') }}" alt="Lihat" class="w-5 h-5">
+    Lihat
+  </a>
 
-          <a href="{{ asset('pdf/peraturan-pergub.pdf') }}"
-             download
-             class="inline-flex items-center justify-center gap-2
-                    w-full sm:w-1/2
-                    px-4 py-3 bg-[#1524AF] text-[#FFFFFF] rounded-lg
-                    text-[14px] md:text-[15px] font-semibold
-                    hover:bg-[#0F1D8F] transition text-center">
-            <img src="{{ asset('images/icons/download.svg') }}" alt="Download" class="w-5 h-5">
-            Download
-          </a>
-        </div>
+  <a href="{{ asset('pdf/peraturan-pergub.pdf') }}"
+     download
+     class="inline-flex items-center justify-center gap-2
+            w-1/2
+            px-4 py-3 bg-[#1524AF] text-[#FFFFFF] rounded-lg
+            text-[14px] md:text-[15px] font-semibold
+            hover:bg-[#0F1D8F] transition text-center">
+    <img src="{{ asset('images/icons/download.svg') }}" alt="Download" class="w-5 h-5">
+    Download
+  </a>
+</div>
       </div>
 
     </div>
