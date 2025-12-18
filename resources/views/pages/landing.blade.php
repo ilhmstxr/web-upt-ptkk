@@ -1137,7 +1137,7 @@ $latestBeritas = Berita::query()
           <!-- Badge dummy info (muncul jika dummy dipakai) -->
           <div id="dummyNotice"
                class="hidden mt-4 text-[12px] text-slate-600 bg-white/70 border border-slate-200 rounded-lg p-3">
-            Data asli belum tersedia. Menampilkan contoh statistik sementara.
+            Data Statistik.
           </div>
         </div>
 
@@ -1481,8 +1481,6 @@ $latestBeritas = Berita::query()
 
 })();
 </script>
-
-
 
 {{-- SECTION: Panduan Pelatihan (Full-width image + gradient overlay) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
