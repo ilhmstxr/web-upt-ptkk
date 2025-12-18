@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PendaftaranPelatihan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AssessmentLoginController extends Controller
 {
@@ -97,12 +98,11 @@ class AssessmentLoginController extends Controller
 
     public function logout(Request $request)
     {
-        // logout aman: boleh flush karena memang mau bersih total
-        $request->session()->flush();
+        // Bersihkan session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('dashboard.home')
-            ->with('success', 'Logout berhasil.');
+        // 🔑 Kembali ke login assessment
+        return redirect()->route('landing');
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Percobaan;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\DB;
 
 class EditTes extends EditRecord
 {
@@ -45,54 +46,203 @@ class EditTes extends EditRecord
     }
 
     /**
-     * Kirim data tambahan ke Blade: distribusi soal & rekap nilai
+     * Kirim data tambahan ke Blade: distribusi soal & rekap nilai + analisis kategori
      */
     protected function getViewData(): array
     {
-        $tes = $this->record; // Tes yang sedang di-edit
+        $tes = $this->record;
 
-        // --- 1) Analisis kesukaran soal untuk Tes ini ---
+        // =========================================================
+        // 1) ANALISIS KESUKARAN GLOBAL (mudah/sedang/sulit)
+        // =========================================================
         $mudah = 0;
         $sedang = 0;
         $sulit = 0;
 
+        // Ambil pertanyaan + hitung jumlah jawaban dan jumlah benar
         $pertanyaans = Pertanyaan::where('tes_id', $tes->id)
             ->withCount([
                 'jawabanUsers',
                 'jawabanUsers as benar_count' => fn ($q) =>
                     $q->whereHas('opsiJawaban', fn ($q) => $q->where('apakah_benar', true)),
             ])
+            ->with(['opsiJawabans']) // untuk analisis distribusi jawaban
             ->get();
 
+        // Detail butir untuk analisis kompleks
+        $butirDetails = [];
+
         foreach ($pertanyaans as $p) {
-            $total = $p->jawaban_users_count;
+            $total = (int) $p->jawaban_users_count;
+            if ($total <= 0) continue;
 
-            if ($total === 0) {
-                continue; // belum ada data jawaban
-            }
+            $benar = (int) $p->benar_count;
+            $pIndex = $total > 0 ? ($benar / $total) : 0.0; // 0–1
 
-            $pIndex = $p->benar_count / $total; // 0–1
-
+            // Kategori kesukaran
+            $level = null;
             if ($pIndex <= 0.30) {
                 $sulit++;
+                $level = 'sulit';
             } elseif ($pIndex <= 0.70) {
                 $sedang++;
+                $level = 'sedang';
             } else {
                 $mudah++;
+                $level = 'mudah';
             }
+
+            // Flag “bermasalah” (kompleks):
+            // - terlalu sulit (pIndex < 0.2)
+            // - terlalu mudah (pIndex > 0.9)
+            // - kunci tidak dominan (prop benar < 0.4)
+            $flags = [];
+            if ($pIndex < 0.20) $flags[] = 'Terlalu sulit';
+            if ($pIndex > 0.90) $flags[] = 'Terlalu mudah';
+            if ($pIndex < 0.40) $flags[] = 'Kunci lemah / banyak salah';
+
+            $butirDetails[] = [
+                'id'        => $p->id,
+                'kategori'  => trim((string) ($p->kategori ?? 'Tanpa Kategori')) ?: 'Tanpa Kategori',
+                'teks'      => strip_tags((string) ($p->teks_pertanyaan ?? '')),
+                'total'     => $total,
+                'benar'     => $benar,
+                'p_index'   => round($pIndex * 100, 2), // persen
+                'level'     => $level,
+                'flags'     => $flags,
+            ];
         }
 
-        // --- 2) Rekap nilai peserta untuk Tes ini ---
-        $rekapNilai = Percobaan::where('tes_id', $tes->id)
-            ->with(['peserta', 'pesertaSurvei']) // sama seperti TesPercobaanResource
-            ->get()
-            ->map(function (Percobaan $percobaan) {
-                // Nama: prioritas PesertaSurvei, fallback Peserta
-                $nama = $percobaan->pesertaSurvei->nama
-                    ?? $percobaan->peserta->nama
-                    ?? '-';
+        // =========================================================
+        // 2) ANALISIS PER KATEGORI (GROUPED)
+        // =========================================================
+        $kategoriStats = collect($butirDetails)
+            ->groupBy('kategori')
+            ->map(function ($items, $kategori) {
+                $items = collect($items);
+                $n = $items->count();
 
-                // Durasi pengerjaan (menit)
+                $avgP = $n ? round($items->avg('p_index'), 2) : 0;
+
+                $mudah = $items->where('level', 'mudah')->count();
+                $sedang = $items->where('level', 'sedang')->count();
+                $sulit = $items->where('level', 'sulit')->count();
+
+                $flagCounts = $items->pluck('flags')->flatten()->countBy()->toArray();
+
+                // “Kesehatan kategori” sederhana:
+                // bagus kalau dominan sedang, tidak ekstrem.
+                $health = 'aman';
+                if ($sulit > ($n * 0.5)) $health = 'rawan_sulit';
+                if ($mudah > ($n * 0.5)) $health = 'rawan_mudah';
+                if (($flagCounts['Kunci lemah / banyak salah'] ?? 0) >= 2) $health = 'rawan_kunci';
+
+                return [
+                    'kategori'     => $kategori,
+                    'jumlah_soal'  => $n,
+                    'avg_p'        => $avgP, // persen
+                    'mudah'        => $mudah,
+                    'sedang'       => $sedang,
+                    'sulit'        => $sulit,
+                    'health'       => $health,
+                    'flag_counts'  => $flagCounts,
+                ];
+            })
+            ->sortByDesc('jumlah_soal')
+            ->values()
+            ->all();
+
+        // =========================================================
+        // 3) DISTRIBUSI JAWABAN (Top soal bermasalah)
+        // =========================================================
+        // Ambil 3 soal paling “rawan” (pIndex rendah) untuk ditampilkan seperti mockup
+        $topBermasalah = collect($butirDetails)
+            ->sortBy('p_index') // paling kecil dulu
+            ->take(3)
+            ->values()
+            ->all();
+
+        // Hitung distribusi opsi untuk soal-soal tersebut (persentase tiap opsi)
+        // Catatan: ini query agregasi cepat tanpa N+1.
+        $distribusiJawaban = [];
+        foreach ($topBermasalah as $item) {
+            $qid = (int) $item['id'];
+
+            // Total jawaban pada pertanyaan
+            $totalJawaban = (int) DB::table('jawaban_user')
+                ->where('pertanyaan_id', $qid)
+                ->count();
+
+            // Distribusi per opsi_jawaban_id
+            $byOpsi = DB::table('jawaban_user as ju')
+                ->select('ju.opsi_jawaban_id', DB::raw('COUNT(*) as cnt'))
+                ->where('ju.pertanyaan_id', $qid)
+                ->groupBy('ju.opsi_jawaban_id')
+                ->pluck('cnt', 'opsi_jawaban_id')
+                ->toArray();
+
+            // Ambil opsi jawaban untuk mapping teks + apakah_benar
+            $opsiList = DB::table('opsi_jawaban')
+                ->select('id', 'teks_opsi', 'apakah_benar')
+                ->where('pertanyaan_id', $qid)
+                ->orderBy('id')
+                ->get();
+
+            $opsiFormatted = [];
+            foreach ($opsiList as $o) {
+                $cnt = (int) ($byOpsi[$o->id] ?? 0);
+                $pct = $totalJawaban > 0 ? round(($cnt / $totalJawaban) * 100, 2) : 0.0;
+
+                $opsiFormatted[] = [
+                    'opsi_id'     => $o->id,
+                    'teks'        => (string) $o->teks_opsi,
+                    'is_kunci'    => (bool) $o->apakah_benar,
+                    'count'       => $cnt,
+                    'percent'     => $pct,
+                ];
+            }
+
+            $distribusiJawaban[] = [
+                'pertanyaan_id' => $qid,
+                'teks'          => $item['teks'],
+                'kategori'      => $item['kategori'],
+                'p_index'       => $item['p_index'],
+                'total_jawaban' => $totalJawaban,
+                'opsi'          => $opsiFormatted,
+            ];
+        }
+
+        // =========================================================
+        // 4) REKAP NILAI (FIX anti halu kemarin)
+        // =========================================================
+        $latestIds = DB::table('percobaan as p')
+            ->where('p.tes_id', $tes->id)
+            ->whereNotNull('p.waktu_selesai')
+            ->whereNotNull('p.skor')
+            ->selectRaw('MAX(p.id) as id')
+            ->groupBy(DB::raw('COALESCE(p.peserta_id, -1), COALESCE(p.peserta_survei_id, -1)'))
+            ->pluck('id')
+            ->filter()
+            ->values()
+            ->all();
+
+        $rekapNilai = Percobaan::query()
+            ->whereIn('id', $latestIds)
+            ->with(['peserta', 'pesertaSurvei'])
+            ->orderByDesc('waktu_selesai')
+            ->get()
+            ->map(function (Percobaan $percobaan) use ($tes) {
+                $nama = '-';
+                if (($tes->tipe ?? null) === 'survei' || ($tes->tipe ?? null) === 'survey') {
+                    $nama = $percobaan->pesertaSurvei->nama
+                        ?? $percobaan->peserta->nama
+                        ?? '-';
+                } else {
+                    $nama = $percobaan->peserta->nama
+                        ?? $percobaan->pesertaSurvei->nama
+                        ?? '-';
+                }
+
                 $durasi = null;
                 if ($percobaan->waktu_mulai && $percobaan->waktu_selesai) {
                     $mulai = $percobaan->waktu_mulai instanceof Carbon
@@ -107,46 +257,70 @@ class EditTes extends EditRecord
                 }
 
                 $skor = $percobaan->skor;
-
-                // Tentukan lulus / remedial (misal KKM 75)
                 $lulus = !is_null($skor) && $skor >= 75;
 
                 return [
                     'nama'   => $nama,
                     'skor'   => $skor,
                     'lulus'  => $lulus,
-                    'durasi' => $durasi, // menit, bisa null
+                    'durasi' => $durasi,
                 ];
             });
 
+        // =========================================================
+        // Return ke Blade
+        // =========================================================
         return [
-            'mudah'      => $mudah,
-            'sedang'     => $sedang,
-            'sulit'      => $sulit,
-            'rekapNilai' => $rekapNilai,
+            'mudah'              => $mudah,
+            'sedang'             => $sedang,
+            'sulit'              => $sulit,
+
+            'kategoriStats'      => $kategoriStats,
+            'butirDetails'       => $butirDetails,
+            'distribusiJawaban'  => $distribusiJawaban,
+
+            'rekapNilai'         => $rekapNilai,
         ];
     }
 
     /**
-     * Download rekap nilai Tes ini dalam bentuk CSV (bisa dibuka di Excel)
+     * Download rekap nilai Tes ini dalam bentuk CSV
      */
     public function downloadRekap()
     {
         $tes = $this->record;
 
-        // Ambil data percobaan untuk Tes ini, sama logika dengan TesPercobaanResource
-        $rekap = Percobaan::where('tes_id', $tes->id)
+        $latestIds = DB::table('percobaan as p')
+            ->where('p.tes_id', $tes->id)
+            ->whereNotNull('p.waktu_selesai')
+            ->whereNotNull('p.skor')
+            ->selectRaw('MAX(p.id) as id')
+            ->groupBy(DB::raw('COALESCE(p.peserta_id, -1), COALESCE(p.peserta_survei_id, -1)'))
+            ->pluck('id')
+            ->filter()
+            ->values()
+            ->all();
+
+        $rekap = Percobaan::query()
+            ->whereIn('id', $latestIds)
             ->with(['peserta', 'pesertaSurvei'])
+            ->orderByDesc('waktu_selesai')
             ->get()
-            ->map(function (Percobaan $percobaan) {
-                $nama = $percobaan->pesertaSurvei->nama
-                    ?? $percobaan->peserta->nama
-                    ?? '-';
+            ->map(function (Percobaan $percobaan) use ($tes) {
+                $nama = '-';
+                if (($tes->tipe ?? null) === 'survei' || ($tes->tipe ?? null) === 'survey') {
+                    $nama = $percobaan->pesertaSurvei->nama
+                        ?? $percobaan->peserta->nama
+                        ?? '-';
+                } else {
+                    $nama = $percobaan->peserta->nama
+                        ?? $percobaan->pesertaSurvei->nama
+                        ?? '-';
+                }
 
                 $skor = $percobaan->skor;
                 $lulus = !is_null($skor) && $skor >= 75;
 
-                // Hitung durasi menit
                 $durasi = null;
                 if ($percobaan->waktu_mulai && $percobaan->waktu_selesai) {
                     $mulai = $percobaan->waktu_mulai instanceof Carbon
@@ -172,11 +346,8 @@ class EditTes extends EditRecord
 
         return response()->streamDownload(function () use ($rekap) {
             $handle = fopen('php://output', 'w');
-
-            // Header kolom
             fputcsv($handle, ['Nama Peserta', 'Skor', 'Status', 'Durasi (Menit)']);
 
-            // Isi data
             foreach ($rekap as $row) {
                 fputcsv($handle, [
                     $row['nama'],
@@ -185,7 +356,6 @@ class EditTes extends EditRecord
                     $row['durasi'] ?? '-',
                 ]);
             }
-
             fclose($handle);
         }, $fileName, [
             'Content-Type' => 'text/csv',

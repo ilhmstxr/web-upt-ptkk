@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Evaluasi\Resources;
 
 use App\Filament\Clusters\Evaluasi;
 use App\Filament\Clusters\Evaluasi\Resources\TesResource\Pages;
+use App\Models\Percobaan;
 use App\Models\Tes;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -19,6 +20,9 @@ class TesResource extends Resource
     protected static ?string $cluster = Evaluasi::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    /**
+     * Default opsi Likert (untuk tipe_jawaban = skala_likert)
+     */
     protected static function defaultLikertOptions(): array
     {
         return [
@@ -29,6 +33,10 @@ class TesResource extends Resource
         ];
     }
 
+    /**
+     * Helper untuk mendeteksi apakah halaman sedang create.
+     * (Tetap mempertahankan behavior sebelumnya)
+     */
     protected static function isCreating($component): bool
     {
         $livewire = $component->getLivewire();
@@ -46,7 +54,9 @@ class TesResource extends Resource
     protected static function getKategoriOptionsFromRepeater(Forms\Get $get): array
     {
         $items = $get('../../pertanyaan') ?? [];
-        if (!is_array($items)) $items = [];
+        if (!is_array($items)) {
+            $items = [];
+        }
 
         $list = collect($items)
             ->pluck('kategori')
@@ -56,6 +66,82 @@ class TesResource extends Resource
             ->values();
 
         return $list->mapWithKeys(fn ($v) => [$v => $v])->toArray();
+    }
+
+    // =====================================================================
+    // ✅ TAMBAHAN: Helper pengambilan nilai/percobaan yang pakai peserta_survei_id
+    // =====================================================================
+
+    /**
+     * Query builder Percobaan yang "benar" untuk peserta:
+     * - Jika peserta_survei_id ada, pakai itu.
+     * - Jika tidak, fallback ke peserta_id.
+     *
+     * Kamu bisa pakai ini di controller/page lain untuk ambil skor/pre/post/survei.
+     */
+    public static function percobaanQueryForPeserta(
+        int $tesId,
+        ?int $pesertaId,
+        ?int $pesertaSurveiId
+    ): Builder {
+        return Percobaan::query()
+            ->where('tes_id', $tesId)
+            ->where(function (Builder $q) use ($pesertaId, $pesertaSurveiId) {
+                if (!empty($pesertaSurveiId)) {
+                    $q->where('peserta_survei_id', $pesertaSurveiId);
+                } else {
+                    $q->where('peserta_id', $pesertaId);
+                }
+            });
+    }
+
+    /**
+     * Ambil skor terakhir (latest) untuk peserta pada tes tertentu.
+     * Mengurutkan dari waktu_selesai -> updated_at -> id sebagai fallback.
+     */
+    public static function ambilSkorTerakhir(
+        int $tesId,
+        ?int $pesertaId,
+        ?int $pesertaSurveiId
+    ): ?float {
+        $row = self::percobaanQueryForPeserta($tesId, $pesertaId, $pesertaSurveiId)
+            ->orderByDesc('waktu_selesai')
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->first(['skor']);
+
+        return $row?->skor !== null ? (float) $row->skor : null;
+    }
+
+    public static function cariTesIdByKonteks(
+        int $pelatihanId,
+        ?int $kompetensiId,
+        string $tipe
+    ): ?int {
+        $tipe = $tipe === 'survey' ? 'survei' : $tipe;
+
+        return Tes::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->where('tipe', $tipe)
+            ->when(
+                $tipe !== 'survei' && !empty($kompetensiId),
+                fn (Builder $q) => $q->where('kompetensi_pelatihan_id', $kompetensiId)
+            )
+            ->orderByDesc('id')
+            ->value('id');
+    }
+
+    public static function ambilSkorTerakhirByKonteks(
+        int $pelatihanId,
+        ?int $kompetensiId,
+        string $tipe,
+        ?int $pesertaId,
+        ?int $pesertaSurveiId
+    ): ?float {
+        $tesId = self::cariTesIdByKonteks($pelatihanId, $kompetensiId, $tipe);
+        if (!$tesId) return null;
+
+        return self::ambilSkorTerakhir($tesId, $pesertaId, $pesertaSurveiId);
     }
 
     public static function form(Form $form): Form
@@ -72,15 +158,20 @@ class TesResource extends Resource
                                 'pre-test'  => 'Pre-Test',
                                 'post-test' => 'Post-Test',
                                 'survei'    => 'Survei',
+                                // Optional legacy label (kalau DB lama sempat pakai "survey")
+                                'survey'    => 'Survey (Legacy)',
                             ])
                             ->required()
                             ->live()
                             ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                // kalau jadi survei, kompetensi harus kosong
-                                if ($state === 'survei') {
-                                    $set('kompetensi_id', null);
+                                // kalau jadi survei/survey, kompetensi harus kosong
+                                if (in_array($state, ['survei', 'survey'], true)) {
+                                    $set('kompetensi_pelatihan_id', null);
                                 }
-                            }),
+                            })
+                            // Normalisasi: kalau user pilih "survey", simpan sebagai "survei"
+                            // (biar konsisten, tapi tetap bisa baca data legacy)
+                            ->dehydrateStateUsing(fn ($state) => $state === 'survey' ? 'survei' : $state),
 
                         Forms\Components\Select::make('pelatihan_id')
                             ->relationship('pelatihan', 'nama_pelatihan')
@@ -90,22 +181,27 @@ class TesResource extends Resource
                             ->default(fn () => request()->query('pelatihan_id'))
                             ->disabled(fn (?string $operation) => $operation === 'edit'),
 
-                        /**
-                         * ✅ FIX KOMPETENSI (sesuai DashboardController):
-                         * - pre/post: tampil + wajib + tersimpan
-                         * - survei: hilang + dipaksa null + tidak ikut tersimpan
-                         */
-                        Forms\Components\Select::make('kompetensi_id')
+                        Forms\Components\Select::make('kompetensi_pelatihan_id')
                             ->label('Kompetensi')
-                            ->relationship('kompetensi', 'nama_kompetensi')
+                            ->relationship(
+                                name: 'kompetensiPelatihan',
+                                titleAttribute: 'id', 
+                                modifyQueryUsing: fn ($query) =>
+                                    $query->with('kompetensi')
+                            )
+                            ->getOptionLabelFromRecordUsing(
+                                fn ($record) =>
+                                    $record->kompetensi?->nama_kompetensi
+                                    ?? 'Kompetensi #' . $record->id
+                            )
                             ->searchable()
                             ->preload()
-                            ->default(fn () => request()->query('kompetensi_id'))
-                            ->visible(fn (Forms\Get $get) => $get('tipe') !== 'survei')
+                            ->default(fn () => request()->query('kompetensi_pelatihan_id'))
+                            ->visible(fn (Forms\Get $get) => !in_array($get('tipe'), ['survei', 'survey'], true))
                             ->required(fn (Forms\Get $get) => in_array($get('tipe'), ['pre-test', 'post-test'], true))
-                            ->dehydrated(fn (Forms\Get $get) => $get('tipe') !== 'survei')
+                            ->dehydrated(fn (Forms\Get $get) => !in_array($get('tipe'), ['survei', 'survey'], true))
                             ->dehydrateStateUsing(fn ($state, Forms\Get $get) =>
-                                $get('tipe') === 'survei' ? null : $state
+                                in_array($get('tipe'), ['survei', 'survey'], true) ? null : $state
                             ),
 
                         Forms\Components\TextInput::make('durasi_menit')
@@ -158,10 +254,12 @@ class TesResource extends Resource
                                             ->placeholder('Contoh: PERSEPSI TERHADAP PROGRAM PELATIHAN'),
                                     ])
                                     ->createOptionUsing(fn (array $data) => trim((string) ($data['nama_kategori'] ?? '')))
-                                    ->visible(fn (Forms\Get $get) => $get('../../tipe') === 'survei')
-                                    ->dehydrated(fn (Forms\Get $get) => $get('../../tipe') === 'survei')
+                                    ->visible(fn (Forms\Get $get) => in_array($get('../../tipe'), ['survei', 'survey'], true))
+                                    ->dehydrated(fn (Forms\Get $get) => in_array($get('../../tipe'), ['survei', 'survey'], true))
                                     ->dehydrateStateUsing(function ($state, Forms\Get $get) {
-                                        if ($get('../../tipe') !== 'survei') return null;
+                                        if (!in_array($get('../../tipe'), ['survei', 'survey'], true)) {
+                                            return null;
+                                        }
                                         $v = trim((string) $state);
                                         return $v === '' ? null : $v;
                                     }),
@@ -276,14 +374,17 @@ class TesResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('judul')->searchable()->sortable(),
+
                 Tables\Columns\TextColumn::make('tipe')
                     ->badge()
+                    ->formatStateUsing(fn (string $state) => $state === 'survey' ? 'survei' : $state)
                     ->color(fn (string $state): string => match ($state) {
                         'pre-test'  => 'info',
                         'post-test' => 'success',
-                        'survei'    => 'warning',
+                        'survei', 'survey' => 'warning',
                         default     => 'gray',
                     }),
+
                 Tables\Columns\TextColumn::make('pelatihan.nama_pelatihan')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('durasi_menit')->numeric()->label('Durasi'),
                 Tables\Columns\TextColumn::make('pertanyaan_count')->counts('pertanyaan')->label('Jumlah Soal'),
@@ -309,6 +410,7 @@ class TesResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+        // Tetap eager load seperti sebelumnya
         return parent::getEloquentQuery()->with('pertanyaan.opsiJawabans');
     }
 

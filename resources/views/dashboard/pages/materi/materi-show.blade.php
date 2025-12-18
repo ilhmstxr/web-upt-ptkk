@@ -69,17 +69,23 @@
         {{-- BODY --}}
         <div class="prose max-w-full lg:prose-lg text-gray-700">
 
-            {{-- TEKS --}}
-            @if($tipe === 'teks')
-                @if(!empty($materi->teks))
-                    {!! $materi->teks !!}
-                @elseif(!empty($materi->deskripsi))
+        {{-- DESKRIPSI UMUM MATERI --}}
+            @if(!empty($materi->deskripsi))
+                <div class="mb-6 text-gray-700 leading-relaxed">
                     {!! $materi->deskripsi !!}
-                @else
-                    <div class="text-sm text-gray-500 italic">
-                        Konten materi belum tersedia.
-                    </div>
-                @endif
+                </div>
+            @endif
+    
+        {{-- TEKS --}}
+            @if($tipe === 'teks')
+            @if(!empty($materi->teks))
+                {!! $materi->teks !!}
+            @else
+                <div class="text-sm text-gray-500 italic">
+                    Konten materi belum tersedia.
+                </div>
+            @endif
+
 
             {{-- VIDEO --}}
             @elseif($tipe === 'video')

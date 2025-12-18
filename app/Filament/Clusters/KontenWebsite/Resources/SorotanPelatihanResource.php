@@ -25,42 +25,44 @@ class SorotanPelatihanResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Select::make('kelas')
-                ->label('Kelas')
-                ->required()
-                ->options([
-                    'mtu'        => 'Mobil Training Unit',
-                    'reguler'    => 'Program Reguler',
-                    'akselerasi' => 'Program Akselerasi',
-                ])
-                ->native(false)
-                ->placeholder('Pilih kelas'),
-
+            Forms\Components\Section::make('Informasi Sorotan')
+            ->schema([
             Forms\Components\TextInput::make('title')
-                ->label('Judul (opsional, bisa override default)')
-                ->maxLength(255),
+                ->label('Judul Program pelatihan')
+                ->required()
+                ->maxLength(50),
 
             Forms\Components\Textarea::make('description')
-                ->label('Deskripsi (opsional, bisa override default)')
-                ->rows(4)
-                ->columnSpanFull(),
+                ->label('Deskripsi Singkat')
+                ->rows(3)
+                ->columnSpanFull()
+                ->placeholder('Deskripsi singkat tentang program ini...'),
 
             Forms\Components\Toggle::make('is_published')
                 ->label('Publish')
-                ->default(true),
+                ->default(true)
+                ->onColor('success')
+                ->offColor('danger'),
+                ]),
 
             // 🔥 Upload foto slider (fix ke 6 gambar)
-            Forms\Components\FileUpload::make('photos')
-                ->label('Foto Slider (6 gambar)')
-                ->disk('public') // ⬅ simpan di storage/app/public
-                ->directory('konten-website/sorotan-pelatihan') // ⬅ folder khusus sorotan
-                ->multiple()
-                ->reorderable()
-                ->minFiles(6)
-                ->maxFiles(6)
-                ->image()
-                ->maxSize(4096) // KB
-                ->required(),
+            Forms\Components\Section::make('Galeri Foto')
+                ->description('Upload minimal 4 dan maksimal 8 foto.')
+                ->schema([
+                    Forms\Components\FileUpload::make('photos')
+                        ->label('Foto Dokumentasi')
+                        ->disk('public')            
+                        ->directory('sorotan')   
+                        ->multiple()            
+                        ->reorderable()            
+                        ->image()               
+                        ->imageEditor()            
+                        ->minFiles(4)               
+                        ->maxFiles(8)            
+                        ->maxSize(5120)          
+                        ->columnSpanFull()
+                        ->required(),
+                ]),
         ]);
     }
 
@@ -68,19 +70,18 @@ class SorotanPelatihanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('kelas')
-                    ->label('Kelas')
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'mtu'        => 'Mobil Training Unit',
-                        'reguler'    => 'Pelatihan Reguler',
-                        'akselerasi' => 'Pelatihan Akselerasi',
-                        default      => $state,
-                    })
-                    ->sortable(),
-
+                
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Judul')
-                    ->limit(40),
+                    ->label('Judul Sorotan')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\ToggleColumn::make('is_published')
                     ->label('Publish'),

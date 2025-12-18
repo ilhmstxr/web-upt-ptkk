@@ -373,12 +373,12 @@ section + section {
 
           @if($kepala->foto)
             <img src="{{ asset('storage/'.$kepala->foto) }}"
-                alt="Foto Kepala UPT"
-                class="absolute bottom-0 left-1/2 -translate-x-1/2
-                        h-[260px] sm:h-[320px] md:h-[400px] lg:h-[500px]
-                        w-auto object-contain drop-shadow-md z-10"
-                loading="lazy"
-                decoding="async" />
+              alt="Foto Kepala UPT"
+              class="absolute bottom-0 left-1/2 -translate-x-1/2
+                      h-[105%] lg:h-[115%] 
+                      w-auto object-contain object-bottom drop-shadow-md z-10"
+              loading="lazy"
+              decoding="async" />
           @endif
         </div>
 

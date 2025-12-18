@@ -43,44 +43,62 @@
             </div>
 
             {{-- STATUS --}}
-            <div class="mt-5 border-t pt-4">
-                @if(!empty($t->__already_done))
-                    <div class="flex flex-col gap-2">
-                        <div class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-2 rounded-lg w-fit">
-                            ✅ Sudah diisi
-                        </div>
+<div class="mt-5 border-t pt-4">
 
-                        @if(!empty($t->__done_id))
-                            <a href="{{ route('dashboard.monev.result', ['percobaan' => $t->__done_id]) }}"
-                               class="text-sm text-blue-600 font-semibold underline w-fit">
-                                Lihat hasil →
-                            </a>
-                        @endif
-                    </div>
+    {{-- =======================
+         SUDAH SELESAI
+    ======================== --}}
+    @if(!empty($t->__already_done) && !empty($t->__done_id))
 
-                @elseif(!empty($t->__running_id))
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="text-sm text-slate-600">
-                            ⏳ Survei sedang berjalan
-                        </div>
-
-                        <a href="{{ route('dashboard.monev.show', $t->id).'?percobaan='.$t->__running_id }}"
-                           class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm font-semibold">
-                            Lanjutkan
-                        </a>
-                    </div>
-
-                @else
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="text-sm text-slate-600">Belum diisi</div>
-
-                        <a href="{{ route('dashboard.monev.start', $t->id) }}"
-                           class="inline-block px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 transition text-sm font-semibold">
-                           Mulai
-                        </a>
-                    </div>
-                @endif
+        <div class="flex items-center justify-between gap-3">
+            <div class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-2 rounded-lg">
+                ✅ Sudah diisi
             </div>
+
+            <a href="{{ route('dashboard.monev.result', ['percobaan' => $t->__done_id]) }}"
+               class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg
+                      hover:bg-indigo-700 transition text-sm font-semibold">
+                Lihat Hasil →
+            </a>
+        </div>
+
+    {{-- =======================
+         SEDANG BERJALAN
+    ======================== --}}
+    @elseif(!empty($t->__running_id))
+
+        <div class="flex items-center justify-between gap-3">
+            <div class="text-sm text-slate-600">
+                ⏳ Survei sedang berjalan
+            </div>
+
+            <a href="{{ route('dashboard.monev.show', $t->id).'?percobaan='.$t->__running_id }}"
+               class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg
+                      hover:bg-blue-700 transition text-sm font-semibold">
+                Lanjutkan
+            </a>
+        </div>
+
+    {{-- =======================
+         BELUM PERNAH
+    ======================== --}}
+    @else
+
+        <div class="flex items-center justify-between gap-3">
+            <div class="text-sm text-slate-600">
+                Belum diisi
+            </div>
+
+            <a href="{{ route('dashboard.monev.start', $t->id) }}"
+               class="inline-block px-4 py-2 bg-emerald-600 text-white rounded-lg
+                      hover:bg-emerald-700 transition text-sm font-semibold">
+                Mulai
+            </a>
+        </div>
+
+    @endif
+</div>
+
         </div>
 
     @empty

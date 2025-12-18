@@ -13,8 +13,10 @@ use App\Models\Pelatihan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Throwable;
+
 
 class LandingController extends Controller
 {
@@ -114,11 +116,13 @@ class LandingController extends Controller
 
         // 6) SOROTAN PELATIHAN
         try {
+            // Hapus cache lama dulu biar fresh karena struktur DB berubah
+            Cache::forget('sorotan_pelatihan');
+
             $sorotans = Cache::remember('sorotan_pelatihan', 3600, function () {
                 return SorotanPelatihan::query()
                     ->where('is_published', true)
-                    ->whereIn('kelas', ['mtu', 'reguler', 'akselerasi'])
-                    ->orderByRaw("FIELD(kelas, 'mtu', 'reguler', 'akselerasi')")
+                    ->latest() // Ambil yang terbaru
                     ->get();
             });
         } catch (Throwable $e) {
@@ -177,5 +181,47 @@ class LandingController extends Controller
         return view('pages.profil.cerita-kami', [
             'kepala' => $kepala,
         ]);
+    }
+
+    public function home()
+    {
+        // ambil batch terbaru dari statistik_pelatihan
+        $batch = DB::table('statistik_pelatihan')
+            ->orderByDesc('created_at')
+            ->value('batch');
+
+        $pelatihans = collect();
+        $labels = [];
+        $pre = [];
+        $post = [];
+        $prak = [];
+        $rata = [];
+
+        if ($batch) {
+            $rows = DB::table('statistik_pelatihan as s')
+                ->join('pelatihan as p', 'p.id', '=', 's.pelatihan_id')
+                ->where('s.batch', $batch)
+                ->orderBy('p.nama_pelatihan')
+                ->get([
+                    'p.id',
+                    'p.nama_pelatihan',
+                    'p.warna',
+                    'p.warna_inactive',
+                    's.pre_avg',
+                    's.post_avg',
+                    's.praktek_avg',
+                    's.rata_avg',
+                ]);
+
+            $pelatihans = $rows; // biar blade kamu @forelse($pelatihans as $pel) tetap jalan
+
+            $labels = $rows->pluck('nama_pelatihan')->values()->all();
+            $pre    = $rows->pluck('pre_avg')->map(fn($v) => (float) $v)->values()->all();
+            $post   = $rows->pluck('post_avg')->map(fn($v) => (float) $v)->values()->all();
+            $prak   = $rows->pluck('praktek_avg')->map(fn($v) => (float) $v)->values()->all();
+            $rata   = $rows->pluck('rata_avg')->map(fn($v) => (float) $v)->values()->all();
+        }
+
+        return view('landing.home', compact('pelatihans','labels','pre','post','prak','rata'));
     }
 }

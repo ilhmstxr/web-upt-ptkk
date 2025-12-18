@@ -186,25 +186,31 @@ class ViewKompetensiPelatihan extends Page
                 ->where('t.kompetensi_pelatihan_id', $kompetensiId); // Ensure test belongs to competency
         };
 
+        // ======================
         // 1. PRETEST
+        // ======================
         $pretestQuery = \App\Models\Percobaan::query()
-            ->whereHas('tes', fn($q) => $q->where('tipe', 'pretest'))
-            ->tap($baseJoin);
+            ->whereHas('tes', fn ($q) => $q->where('tipe', 'pre-test'))
+            ->tap($baseJoin)
+            ->whereNotNull('skor');
 
-        $pretestAvg = $pretestQuery->avg('skor') ?? 0;
-        $pretestMax = $pretestQuery->max('skor') ?? 0;
-        $pretestMin = $pretestQuery->min('skor') ?? 0;
-        $pretestCount = $pretestQuery->count();
+        $pretestAvg   = (float) ($pretestQuery->avg('skor') ?? 0);
+        $pretestMax   = (float) ($pretestQuery->max('skor') ?? 0);
+        $pretestMin   = (float) ($pretestQuery->min('skor') ?? 0);
+        $pretestCount = (int) $pretestQuery->count();
 
+        // ======================
         // 2. POSTTEST
+        // ======================
         $posttestQuery = \App\Models\Percobaan::query()
-            ->whereHas('tes', fn($q) => $q->where('tipe', 'posttest'))
-            ->tap($baseJoin);
+            ->whereHas('tes', fn ($q) => $q->where('tipe', 'post-test'))
+            ->tap($baseJoin)
+            ->whereNotNull('skor');
 
-        $posttestAvg = $posttestQuery->avg('skor') ?? 0;
-        $posttestCount = $posttestQuery->count();
-        $lulus = (clone $posttestQuery)->where('skor', '>=', 75)->count();
-        $remedial = (clone $posttestQuery)->where('skor', '<', 75)->count();
+        $posttestAvg   = (float) ($posttestQuery->avg('skor') ?? 0);
+        $posttestCount = (int) $posttestQuery->count();
+        $lulus         = (clone $posttestQuery)->where('skor', '>=', 75)->count();
+        $remedial      = (clone $posttestQuery)->where('skor', '<', 75)->count();
 
         // 3. MONEV (SURVEI) - Simple Avg Calculation
         $monevRespondents = \App\Models\Percobaan::query()
@@ -243,16 +249,16 @@ class ViewKompetensiPelatihan extends Page
 
         return [
             'pretest' => [
-                'avg' => number_format($pretestAvg, 1),
-                'max' => $pretestMax,
-                'min' => $pretestMin,
-                'count' => $pretestCount,
+            'avg'   => round($pretestAvg, 2),
+            'max'   => $pretestMax,
+            'min'   => $pretestMin,
+            'count' => $pretestCount,
             ],
             'posttest' => [
-                'avg' => number_format($posttestAvg, 1),
-                'lulus' => $lulus,
+                'avg'      => round($posttestAvg, 2),
+                'lulus'    => $lulus,
                 'remedial' => $remedial,
-                'count' => $posttestCount,
+                'count'    => $posttestCount,
             ],
             'monev' => [
                 'avg' => 0,
