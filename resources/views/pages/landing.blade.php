@@ -1164,12 +1164,6 @@ $latestBeritas = Berita::query()
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-<<<<<<< HEAD
-      <!-- Left -->
-      <div class="lg:col-span-4">
-        <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-3">
-          <span class="text-[#861D23] font-[Volkhov] font-bold text-[16px]">Data Statistik</span>
-=======
       <!-- Left Column -->
       <div class="lg:col-span-4 flex flex-col justify-between">
         <div>
@@ -1255,29 +1249,21 @@ $latestBeritas = Berita::query()
                class="hidden mt-4 text-[12px] text-slate-600 bg-white/70 border border-slate-200 rounded-lg p-3">
             Data Statistik.
           </div>
->>>>>>> 06522cee9f5207440ef30beb6ee7c1169f6303cb
         </div>
 
-        <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[28px] leading-snug mb-3 text-[#081526]">
-          Rekapitulasi Rata-Rata<br/>Program Pelatihan
-        </h2>
-
-        <p class="text-sm text-slate-700 leading-relaxed mb-6">
-          Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
-          terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
-        </p>
-
-        <!-- List Pelatihan -->
-        <ul id="listPelatihan" class="space-y-3 mb-6">
-          <!-- di-render via JS -->
-        </ul>
-
         <a href="{{ route('statistik.index') }}" 
-        class="inline-flex items-center gap-2 bg-[#1524AF] hover:bg-[#0f1b83] text-white px-4 py-2 rounded-full text-[13px] font-[Montserrat] font-semibold">
-        Cari Tahu Lebih
-        <span class="text-[14px]">→</span>
+        class="mt-8 self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                       px-3 py-1.5 md:px-4 md:py-1
+                       rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                       text-[12px] md:text-[15px] lg:text-[16px] 
+                       shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+        <span class="leading-none">Cari Tahu Lebih</span>
+        <svg xmlns="http://www.w3.org/2000/svg" 
+          class="w-3.5 h-3.5 md:w-5 md:h-5" 
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+        </svg>
         </a>
-
       </div>
 
       <!-- Right -->
@@ -1674,16 +1660,15 @@ $latestBeritas = Berita::query()
         <div class="relative flex items-center justify-end w-full h-full">
           <div
             class="bg-[#DBE7F7]/95 text-[#0E2A7B] rounded-xl shadow-md
-                   w-full
-                   max-w-[200px] sm:max-w-[260px] md:max-w-[360px] lg:max-w-[540px]
-                   p-3 sm:p-4 md:p-5 lg:p-10
-                   backdrop-blur-sm
-                   md:translate-y-0 lg:translate-y-0"
-          >
-            
-          <h2 class="heading-stroke text-[20px] md:text-[24px] lg:text-[26px]
-                    font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mt-2
-                    mb-4 md:mb-6 lg:mb-8">
+                       w-full
+                       max-w-[200px] sm:max-w-[260px] md:max-w-[360px] lg:max-w-[540px]
+                       p-3 sm:p-4 md:p-5 lg:p-10
+                       backdrop-blur-sm
+                       flex flex-col items-center justify-center">
+          <h2 class="heading-stroke text-[18px] md:text-[22px] lg:text-[24px]
+                        font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mt-1
+                        mb-3 md:mb-6 lg:mb-8
+                        text-center">
             <span class="relative z-10">
               Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
             </span>
@@ -1701,7 +1686,7 @@ $latestBeritas = Berita::query()
             </p>
 
         <a href="{{ route('panduan') }}"
-                class="mt-auto self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                class="mt-8 self-center inline-flex items-center justify-center gap-2 w-max
                        px-3 py-1.5 md:px-4 md:py-1
                        rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
                        text-[12px] md:text-[15px] lg:text-[16px] 
