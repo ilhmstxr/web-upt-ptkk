@@ -22,15 +22,13 @@
       margin-right: auto;
       padding-left: 1.5rem;
       padding-right: 1.5rem;
-      padding-top: 2.5rem;
-      padding-bottom: 2.5rem;
+      padding-bottom: 2.5rem; /* bawah saja */
     }
 
     @media (min-width: 768px) {
       .section-container {
         padding-left: 3rem;
         padding-right: 3rem;
-        padding-top: 3rem;
         padding-bottom: 3rem;
       }
     }
@@ -39,7 +37,6 @@
       .section-container {
         padding-left: 80px;
         padding-right: 80px;
-        padding-top: 4rem;
         padding-bottom: 4rem;
       }
     }
@@ -75,37 +72,32 @@
     height="h-[368px]"
   />
 
-  {{-- CONTENT DINAMIS --}}
-  <section class="relative bg-[#F1F9FC]">
-    <div class="section-container">
-
-      @if(!isset($items) || $items->count() === 0)
+  {{-- NOTE: Section kosong DIHAPUS. Kalau data kosong baru tampil. --}}
+  @if(!isset($items) || $items->count() === 0)
+    <section class="relative bg-[#F1F9FC]">
+      <div class="section-container pt-6 md:pt-8 lg:pt-10">
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <p class="font-[Montserrat] text-[#081526]">
             Belum ada data Program Pelatihan. Silakan tambah data melalui Admin.
           </p>
         </div>
-      @endif
-
-    </div>
-  </section>
+      </div>
+    </section>
+  @endif
 
   @foreach($items as $i => $item)
     @php
-      // karena di model sudah casts array, biasanya langsung array
       $galeri = is_array($item->galeri)
         ? $item->galeri
         : (json_decode($item->galeri ?? '[]', true) ?? []);
 
-      // tampilkan max 3 foto (sesuai layout)
       $galeri3 = array_slice($galeri, 0, 3);
-
-      // selang-seling desktop
       $reverse = $i % 2 === 1;
     @endphp
 
-    <section class="relative bg-[#F1F9FC]">
-      <div class="section-container">
+    {{-- SECTION ITEM: ditarik ke atas biar rapet dengan hero --}}
+    <section class="relative bg-[#F1F9FC] -mt-10 md:-mt-14 {{ $i > 0 ? 'mt-0' : '' }}">
+      <div class="section-container pt-6 md:pt-8 lg:pt-10">
 
         {{-- ========== MOBILE (HP) ========== --}}
         <div class="block md:hidden mb-10">
@@ -147,7 +139,6 @@
         {{-- ========== TABLET & DESKTOP (MD+) ========== --}}
         <div class="hidden md:block">
 
-          {{-- 2 kolom: teks + hero (selang-seling) --}}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center mb-8">
 
             {{-- TEKS --}}
