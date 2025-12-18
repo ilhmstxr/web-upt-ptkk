@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PendaftaranPelatihan;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +30,7 @@ class AssessmentLoginController extends Controller
         $reg = PendaftaranPelatihan::with('peserta.instansi')
             ->where(function ($q) use ($token) {
                 $q->where('nomor_registrasi', $token)
-                  ->orWhere('assessment_token', $token);
+                    ->orWhere('assessment_token', $token);
             })
             ->latest('id')
             ->first();
