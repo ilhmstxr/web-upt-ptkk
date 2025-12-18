@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Pelatihan;
 use Illuminate\Http\Request;
+use App\Services\StatistikPelatihanService;
 
 class PelatihanController extends Controller
 {

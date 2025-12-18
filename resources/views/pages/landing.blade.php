@@ -1482,8 +1482,6 @@ $latestBeritas = Berita::query()
 })();
 </script>
 
-
-
 {{-- SECTION: Panduan Pelatihan (Full-width image + gradient overlay) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">

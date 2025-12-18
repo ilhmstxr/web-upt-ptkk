@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PendaftaranPelatihan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AssessmentLoginController extends Controller
 {
@@ -97,13 +98,11 @@ class AssessmentLoginController extends Controller
 
     public function logout(Request $request)
     {
-        // Logout dari guard assessment
-        Auth::guard('assessment')->logout();
-
         // Bersihkan session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/masuk');
+        // 🔑 Kembali ke login assessment
+        return redirect()->route('landing');
     }
 }
