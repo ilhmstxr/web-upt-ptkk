@@ -750,7 +750,7 @@ $latestBeritas = Berita::query()
 
       // 2. Mapping Data
       $sorotanData = $collection->map(function ($item) {
-        
+
         // Ambil data JSON photos
         $rawPhotos = $item->photos ?? [];
         if (is_string($rawPhotos)) {
@@ -887,7 +887,7 @@ $latestBeritas = Berita::query()
             if (desc  && meta[key]) desc.textContent  = meta[key].desc;
             paintTabDots();
           }
-          
+
           if(tabOrder.length > 0) setActive(tabOrder[0]);
         })();
 
@@ -1068,91 +1068,43 @@ $latestBeritas = Berita::query()
 </script>
 
 
-<!-- SECTION: Data Statistik (API + Blade fallback + Dummy fallback) -->
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-      <!-- Left Column -->
-      <div class="lg:col-span-4 flex flex-col justify-between">
-        <div>
-          <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-3">
-            <span class="text-[#861D23] font-[Volkhov] font-bold text-[16px]">Data Statistik</span>
-          </div>
-
-          <h2 class="heading-stroke font-[Volkhov] font-bold text-[24px] md:text-[28px] leading-snug mb-3">
-            Rekapitulasi Rata-Rata<br/>Program Pelatihan
-          </h2>
-
-          <p class="text-sm text-slate-700 leading-relaxed mb-5">
-            Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
-            terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
-          </p>
-
-          <!-- List Pelatihan
-               - Blade sebagai fallback awal
-               - Akan di-replace JS jika API/dummy dipakai -->
-          <ul id="listPelatihan" class="space-y-2">
-            @forelse($pelatihans ?? [] as $pel)
-              @php
-                $idx = $loop->index;
-                $colorActive = $pel->warna ?? '#1524AF';
-                $colorInactive = $pel->warna_inactive ?? '#000000';
-                $isFirst = $loop->first;
-              @endphp
-              <li>
-                <button
-                  type="button"
-                  class="pel-btn w-full flex items-center gap-2 py-1.5 text-left"
-                  data-index="{{ $idx }}"
-                  data-color-active="{{ $colorActive }}"
-                  data-color-inactive="{{ $colorInactive }}"
-                >
-                  <span class="dot w-2 h-2 rounded-full"
-                        style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></span>
-
-                  <span class="label flex-1 text-[14px] font-[Montserrat] font-medium"
-                        style="color: {{ $isFirst ? $colorActive : $colorInactive }};">
-                    {{ \Illuminate\Support\Str::limit($pel->nama_pelatihan ?? 'Pelatihan', 60) }}
-                  </span>
-                </button>
-
-                <div class="divider h-[1px]"
-                     style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></div>
-              </li>
-            @empty
-              <!-- Placeholder minimal (akan diganti JS kalau dummy/api) -->
-              <li>
-                <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="0">
-                  <span class="dot w-2 h-2 rounded-full bg-[#1524AF]"></span>
-                  <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#1524AF]">
-                    Loading...
-                  </span>
-                </button>
-                <div class="divider h-[1px] bg-[#1524AF]"></div>
-              </li>
-            @endforelse
-          </ul>
-
-          <!-- Badge dummy info (muncul jika dummy dipakai) -->
-          <div id="dummyNotice"
-               class="hidden mt-4 text-[12px] text-slate-600 bg-white/70 border border-slate-200 rounded-lg p-3">
-            Data asli belum tersedia. Menampilkan contoh statistik sementara.
-          </div>
+      <!-- Left -->
+      <div class="lg:col-span-4">
+        <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-3">
+          <span class="text-[#861D23] font-[Volkhov] font-bold text-[16px]">Data Statistik</span>
         </div>
 
-        {{-- Safe route untuk tombol --}}
-        @php
-          try { $pelatihanIndexUrl = route('pelatihan.index'); }
-          catch (\Throwable $e) { $pelatihanIndexUrl = '/pelatihan'; }
-        @endphp
+        <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[28px] leading-snug mb-3 text-[#081526]">
+          Rekapitulasi Rata-Rata<br/>Program Pelatihan
+        </h2>
+
+        <p class="text-sm text-slate-700 leading-relaxed mb-6">
+          Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
+          terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
+        </p>
+
+        <!-- List Pelatihan -->
+        <ul id="listPelatihan" class="space-y-3 mb-6">
+          <!-- di-render via JS -->
+        </ul>
+
+        <a href="{{ route('statistik.index') }}" 
+        class="inline-flex items-center gap-2 bg-[#1524AF] hover:bg-[#0f1b83] text-white px-4 py-2 rounded-full text-[13px] font-[Montserrat] font-semibold">
+        Cari Tahu Lebih
+        <span class="text-[14px]">→</span>
+        </a>
+
       </div>
 
-      <!-- Right Column (Chart) -->
-      <div class="lg:col-span-8 mt-6 lg:mt-0">
+      <!-- Right -->
+      <div class="lg:col-span-8">
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+        <!-- Summary cards -->
+        <div class="grid grid-cols-3 gap-3 sm:gap-4 mb-4">
           <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
             <div id="preAvgCard" class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">0</div>
             <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
@@ -1175,12 +1127,13 @@ $latestBeritas = Berita::query()
           </div>
         </div>
 
-        <!-- Chart Wrapper -->
+        <!-- Chart box -->
         <div class="rounded-2xl bg-white border-2 border-[#1524AF] p-4 md:p-5">
           <div class="relative w-full h-[320px]">
             <canvas id="statistikChart"></canvas>
           </div>
         </div>
+
       </div>
 
     </div>
@@ -1192,191 +1145,189 @@ $latestBeritas = Berita::query()
 
 <script>
 (async function () {
-  // =========================
-  // 1) DUMMY DATA (fallback paling akhir)
-  // =========================
-  const dummyData = {
+  // ===== helpers
+  const toNum = (v) => {
+    if (v === null || v === undefined) return 0;
+    if (typeof v === 'number') return v;
+    const s = String(v).trim().replace(/\./g, '').replace(',', '.');
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : 0;
+  };
+  const clamp01 = (n) => Math.max(0, Math.min(100, n));
+  const round2 = (n) => Math.round(n * 100) / 100;
+  const avg = (arr) => arr.length ? (arr.reduce((a,b)=>a+toNum(b),0) / arr.length) : 0;
+
+  // ===== wrap label jadi max 2 baris (untuk kompetensi / pelatihan)
+  function wrap2Lines(text, maxCharsPerLine = 28) {
+    const words = String(text).trim().split(/\s+/);
+    const lines = [];
+    let line = '';
+
+    for (const w of words) {
+      const test = (line ? line + ' ' : '') + w;
+      if (test.length <= maxCharsPerLine) {
+        line = test;
+      } else {
+        if (line) lines.push(line);
+        line = w;
+        if (lines.length === 1) break; // cukup 2 baris
+      }
+    }
+    if (line && lines.length < 2) lines.push(line);
+
+    // kalau baris kedua masih kepanjangan -> potong
+    if (lines[1] && lines[1].length > maxCharsPerLine) {
+      lines[1] = lines[1].slice(0, maxCharsPerLine - 1) + '…';
+    }
+    return lines;
+  }
+
+  // ===== DATA (dummy sesuai data kamu)
+  const data = {
     pelatihans: [
-      { id: 1, nama: 'Tata Boga', warna: '#1524AF', warna_inactive: '#000000' },
-      { id: 2, nama: 'Teknik Pendingin dan Tata Udara', warna: '#1524AF', warna_inactive: '#000000' },
-      { id: 3, nama: 'Tata Busana', warna: '#1524AF', warna_inactive: '#000000' },
-      { id: 4, nama: 'Kecantikan', warna: '#1524AF', warna_inactive: '#000000' },
-    ],
-    labels: ['Tata Boga', 'Teknik Pendingin dan Tata Udara', 'Tata Busana', 'Kecantikan'],
-    datasets: {
-      pre:     [8, 22, 12, 29],
-      post:    [24, 53, 75, 94],
-      praktek: [38, 70, 35, 60],
-      rata:    [52, 10, 26, 49],
-    },
+      {
+        id: 1,
+        nama: "Program Akselerasi Kelas MJC Guru Angkatan I Tahun 2025",
+        warna: "#1524AF",
+        warna_inactive: "#081526",
+        kompetensis: [
+          { nama: "FOTOGRAFI (FOTO PRODUK)", pre: "61,00", post: "91,33", praktek: "86,60", rata: "84,51" },
+          { nama: "DESAIN GRAFIS (LOGO DAN PACKAGING)", pre: "44,67", post: "70,00", praktek: "86,73", rata: "80,85" },
+          { nama: "CONTENT CREATOR (VIDEOGRAFI)", pre: "46,67", post: "58,67", praktek: "87,87", rata: "80,83" },
+          { nama: "ANIMASI (MOTION ANIMATION)", pre: "56,67", post: "68,33", praktek: "83,20", rata: "79,06" },
+          { nama: "WEB DESAIN", pre: "40,33", post: "49,67", praktek: "86,67", rata: "78,33" },
+        ]
+      },
+      {
+        id: 2,
+        nama: "Program Mobile Training Unit (MTU) Angkatan II Tahun 2025",
+        warna: "#1524AF",
+        warna_inactive: "#081526",
+        kompetensis: [
+          { nama: "FOTOGRAFI (FOTO PRODUK)", pre: "83,83", post: "98,50", praktek: "89,43", rata: "89,78" },
+          { nama: "CONTENT CREATOR (VIDEOGRAFI)", pre: "87,50", post: "91,33", praktek: "86,10", rata: "86,76" },
+          { nama: "PLC", pre: "62,67", post: "72,00", praktek: "87,30", rata: "80,12" },
+          { nama: "TEKNIK PENDINGIN DAN TATA UDARA I", pre: "61,17", post: "68,33", praktek: "90,87", rata: "85,64" },
+          { nama: "TEKNIK PENDINGIN DAN TATA UDARA II", pre: "59,17", post: "83,17", praktek: "98,60", rata: "93,11" },
+        ]
+      },
+      {
+        id: 3,
+        nama: "MILEA Menuju Generasi Emas 2045 (Kelas MJC) Angkatan II Tahun 2025",
+        warna: "#1524AF",
+        warna_inactive: "#081526",
+        kompetensis: [
+          { nama: "FOTOGRAFI (FOTO PRODUK)", pre: "55,67", post: "85,67", praktek: "89,40", rata: "85,65" },
+          { nama: "DESAIN GRAFIS (LOGO DAN PACKAGING)", pre: "69,33", post: "79,00", praktek: "91,00", rata: "87,63" },
+          { nama: "WEB DESAIN", pre: "67,33", post: "78,67", praktek: "88,47", rata: "85,37" },
+          { nama: "CONTENT CREATOR (VIDEOGRAFI)", pre: "58,00", post: "75,67", praktek: "85,53", rata: "81,79" },
+          { nama: "ANIMASI (MOTION ANIMATION)", pre: "60,67", post: "75,00", praktek: "86,80", rata: "83,01" },
+        ]
+      },
+      {
+        id: 4,
+        nama: "Akselerasi TUK Kelas Keterampilan (Guru SMK/SMA) Tahun 2025",
+        warna: "#1524AF",
+        warna_inactive: "#081526",
+        kompetensis: [
+          { nama: "TEKNIK PENDINGIN DAN TATA UDARA", pre: "63,07", post: "84,27", praktek: "92,67", rata: "88,87" },
+          { nama: "TATA KECANTIKAN", pre: "60,00", post: "86,40", praktek: "92,07", rata: "83,89" },
+          { nama: "TATA BUSANA", pre: "62,67", post: "94,13", praktek: "90,93", rata: "88,43" },
+          { nama: "TATA BOGA", pre: "88,53", post: "99,47", praktek: "82,73", rata: "84,99" },
+        ]
+      }
+    ]
   };
 
-  // =========================
-  // 2) DATA BLADE (fallback tengah)
-  // =========================
-  const bladeData = {
-    pelatihans: {!! json_encode(
-      collect($pelatihans ?? [])->map(fn($p) => [
-        'id' => $p->id,
-        'nama' => $p->nama_pelatihan ?? 'Pelatihan',
-        'warna' => $p->warna ?? '#1524AF',
-        'warna_inactive' => $p->warna_inactive ?? '#000000',
-      ])->values()
-    ) !!},
-    labels: {!! json_encode($labels ?? []) !!},
-    datasets: {
-      pre:     {!! json_encode($pre ?? []) !!},
-      post:    {!! json_encode($post ?? []) !!},
-      praktek: {!! json_encode($prak ?? []) !!},
-      rata:    {!! json_encode($rata ?? []) !!},
-    },
-  };
-
-  const list      = document.getElementById('listPelatihan');
-  const canvasEl  = document.getElementById('statistikChart');
-  const dummyNote = document.getElementById('dummyNotice');
-
-  const preCard     = document.getElementById('preAvgCard');
+  // ===== elements
+  const list = document.getElementById('listPelatihan');
+  const canvasEl = document.getElementById('statistikChart');
+  const preCard = document.getElementById('preAvgCard');
   const praktekCard = document.getElementById('praktekAvgCard');
-  const postCard    = document.getElementById('postAvgCard');
-
+  const postCard = document.getElementById('postAvgCard');
   if (!list || !canvasEl) return;
 
-  // =========================
-  // 3) Fetch API (prioritas utama)
-  // =========================
-  let apiData = null;
-  let useDummy = false;
-  let useBlade = false;
-
-  try {
-    const res = await fetch('/api/statistik-pelatihan');
-    apiData = await res.json();
-  } catch (e) {
-    apiData = null;
-  }
-
-  // =========================
-  // Helper cek data kosong
-  // =========================
-  function isEmptyData(d) {
-    if (!d) return true;
-    if (!Array.isArray(d.pelatihans) || d.pelatihans.length === 0) return true;
-
-    const ds = d.datasets || {};
-    const allVals = [
-      ...(ds.pre || []),
-      ...(ds.post || []),
-      ...(ds.praktek || []),
-      ...(ds.rata || []),
-    ];
-
-    if (allVals.length === 0) return true;
-    if (allVals.every(v => Number(v) === 0)) return true;
-
-    return false;
-  }
-
-  // =========================
-  // Tentukan sumber data
-  // =========================
-  if (!isEmptyData(apiData)) {
-    // pakai API
-  } else if (!isEmptyData(bladeData)) {
-    apiData = bladeData;
-    useBlade = true;
-  } else {
-    apiData = dummyData;
-    useDummy = true;
-  }
-
-  const data = apiData;
-
-  if (useDummy && dummyNote) dummyNote.classList.remove('hidden');
-
-  // =========================
-  // Render list pelatihan (selalu dari data final)
-  // =========================
-  list.innerHTML = (data.pelatihans ?? []).map((p, i) => {
-    const activeColor = p.warna || '#1524AF';
-    const inactiveColor = p.warna_inactive || '#000000';
+  // ===== render list kiri (pelatihan jadi max 2 baris tapi rapi)
+  list.innerHTML = data.pelatihans.map((p, i) => {
     const isFirst = i === 0;
-
     return `
       <li>
         <button type="button"
-          class="pel-btn w-full flex items-center gap-2 py-1.5 text-left"
+          class="pel-btn w-full flex items-start gap-2 py-1.5 text-left"
           data-index="${i}"
-          data-color-active="${activeColor}"
-          data-color-inactive="${inactiveColor}">
-          <span class="dot w-2 h-2 rounded-full"
-                style="background-color:${isFirst ? activeColor : inactiveColor};"></span>
-          <span class="label flex-1 text-[14px] font-[Montserrat] font-medium"
-                style="color:${isFirst ? activeColor : inactiveColor};">
-            ${p.nama || 'Pelatihan'}
+          data-color-active="${p.warna}"
+          data-color-inactive="${p.warna_inactive}">
+          <span class="dot w-2 h-2 rounded-full mt-1"
+                style="background-color:${isFirst ? p.warna : p.warna_inactive};"></span>
+
+          <span class="label flex-1 text-[13px] font-[Montserrat] font-medium leading-snug"
+                style="color:${isFirst ? p.warna : p.warna_inactive};
+                       display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+                       overflow:hidden;">
+            ${p.nama}
           </span>
         </button>
-        <div class="divider h-[1px]"
-             style="background-color:${isFirst ? activeColor : inactiveColor};"></div>
+        <div class="divider h-[1px]" style="background-color:${isFirst ? p.warna : p.warna_inactive};"></div>
       </li>
     `;
   }).join('');
 
-  // =========================
-  // Active state helper (pakai inline color)
-  // =========================
   function setActive(idx){
     list.querySelectorAll('li').forEach((li, i) => {
       const btn = li.querySelector('.pel-btn');
       const label = li.querySelector('.label');
-      const dot   = li.querySelector('.dot');
-      const div   = li.querySelector('.divider');
-      if (!btn || !label || !dot || !div) return;
-
-      const colorActive   = btn.dataset.colorActive || '#1524AF';
-      const colorInactive = btn.dataset.colorInactive || '#000000';
-
+      const dot = li.querySelector('.dot');
+      const div = li.querySelector('.divider');
+      const active = btn.dataset.colorActive || '#1524AF';
+      const inactive = btn.dataset.colorInactive || '#081526';
       if (i === idx){
-        label.style.color = colorActive;
-        dot.style.backgroundColor = colorActive;
-        div.style.backgroundColor = colorActive;
+        label.style.color = active;
+        dot.style.backgroundColor = active;
+        div.style.backgroundColor = active;
       } else {
-        label.style.color = colorInactive;
-        dot.style.backgroundColor = colorInactive;
-        div.style.backgroundColor = colorInactive;
+        label.style.color = inactive;
+        dot.style.backgroundColor = inactive;
+        div.style.backgroundColor = inactive;
       }
     });
   }
 
-  // =========================
-  // Summary cards per index
-  // =========================
-  function setSummaryByIndex(idx){
-    const preVal     = data.datasets?.pre?.[idx] ?? 0;
-    const praktekVal = data.datasets?.praktek?.[idx] ?? 0;
-    const postVal    = data.datasets?.post?.[idx] ?? 0;
+  function getPel(idx){ return data.pelatihans[idx] || data.pelatihans[0]; }
 
-    if (preCard) preCard.textContent = preVal;
-    if (praktekCard) praktekCard.textContent = praktekVal;
-    if (postCard) postCard.textContent = postVal;
+  function buildPayload(pel){
+    const ks = pel.kompetensis || [];
+    return {
+      labels: ks.map(k => k.nama),
+      pre: ks.map(k => clamp01(toNum(k.pre))),
+      post: ks.map(k => clamp01(toNum(k.post))),
+      praktek: ks.map(k => clamp01(toNum(k.praktek))),
+      rata: ks.map(k => clamp01(toNum(k.rata))),
+    };
   }
 
-  setActive(0);
-  setSummaryByIndex(0);
+  function setSummary(idx){
+    const pel = getPel(idx);
+    const ks = pel.kompetensis || [];
+    const preAvg = round2(avg(ks.map(k=>k.pre)));
+    const prakAvg = round2(avg(ks.map(k=>k.praktek)));
+    const postAvg = round2(avg(ks.map(k=>k.post)));
+    preCard.textContent = preAvg;
+    praktekCard.textContent = prakAvg;
+    postCard.textContent = postAvg;
+  }
 
-  // =========================
-  // Render Chart
-  // =========================
+  // ===== Chart: LINE + X label wrap 2 baris (tanpa geser chart)
   const ctx = canvasEl.getContext('2d');
+  const p0 = buildPayload(getPel(0));
 
-  new Chart(ctx, {
+  const chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.labels ?? [],
+      labels: p0.labels,
       datasets: [
         {
           label: 'Pre-Test',
-          data: data.datasets?.pre ?? [],
+          data: p0.pre,
           borderColor: '#FF6107',
           pointBackgroundColor: '#FF6107',
           pointBorderColor: '#FF6107',
@@ -1387,20 +1338,8 @@ $latestBeritas = Berita::query()
           fill: false
         },
         {
-          label: 'Post-Test',
-          data: data.datasets?.post ?? [],
-          borderColor: '#2F4BFF',
-          pointBackgroundColor: '#2F4BFF',
-          pointBorderColor: '#2F4BFF',
-          borderWidth: 2,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 5,
-          fill: false
-        },
-        {
           label: 'Praktek',
-          data: data.datasets?.praktek ?? [],
+          data: p0.praktek,
           borderColor: '#6B2C47',
           pointBackgroundColor: '#6B2C47',
           pointBorderColor: '#6B2C47',
@@ -1411,8 +1350,20 @@ $latestBeritas = Berita::query()
           fill: false
         },
         {
+          label: 'Post-Test',
+          data: p0.post,
+          borderColor: '#2F4BFF',
+          pointBackgroundColor: '#2F4BFF',
+          pointBorderColor: '#2F4BFF',
+          borderWidth: 2,
+          tension: 0.35,
+          pointRadius: 4,
+          pointHoverRadius: 5,
+          fill: false
+        },
+        {
           label: 'Rata-Rata',
-          data: data.datasets?.rata ?? [],
+          data: p0.rata,
           borderColor: '#DBCC8F',
           pointBackgroundColor: '#DBCC8F',
           pointBorderColor: '#DBCC8F',
@@ -1426,7 +1377,7 @@ $latestBeritas = Berita::query()
     },
     options: {
       maintainAspectRatio: false,
-      layout: { padding: { top: 10, right: 16, left: 16, bottom: 8 } },
+      layout: { padding: { top: 6, right: 14, left: 14, bottom: 6 } },
       plugins: {
         legend: {
           position: 'top',
@@ -1438,49 +1389,69 @@ $latestBeritas = Berita::query()
             boxHeight: 10,
             padding: 12,
             color: '#081526',
-            font: { size: 13, weight: '600' }
+            font: { size: 12, weight: '600' }
           }
         },
         tooltip: {
-          callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}` }
+          callbacks: { label: (c) => `${c.dataset.label}: ${c.formattedValue}` }
         }
       },
       scales: {
         x: {
-          offset: true,
-          ticks: { font: { size: 12 }, color: '#8787A3' },
-          grid: { display: true, drawTicks: false, color: '#8787A3', lineWidth: 1 },
-          border: { display: true, color: '#8787A3', width: 1.5 }
+          ticks: {
+            font: { size: 11 },
+            color: '#8787A3',
+            maxRotation: 0,
+            minRotation: 0,
+            autoSkip: false,
+            padding: 10,
+            callback: function(value){
+              const label = this.getLabelForValue(value);
+              // max 2 baris, aman ga geser chart
+              return wrap2Lines(label, 18);
+            }
+          },
+          grid: { display: true, drawTicks: false, color: 'rgba(135,135,163,0.25)', lineWidth: 1 },
+          border: { display: true, color: 'rgba(135,135,163,0.55)', width: 1.2 },
+          afterFit: (scale) => { scale.height = Math.max(scale.height, 56); }
         },
         y: {
           beginAtZero: true,
           min: 0,
           max: 100,
-          ticks: { stepSize: 20, font: { size: 12 }, color: '#8787A3' },
-          grid: {
-            color: (ctx) => (ctx.tick.value === 0 ? '#8787A3' : 'transparent'),
-            lineWidth: (ctx) => (ctx.tick.value === 0 ? 1.5 : 0),
-            drawTicks: false
-          },
-          border: { display: true, color: '#8787A3', width: 1.5 }
+          ticks: { stepSize: 20, font: { size: 11 }, color: '#8787A3' },
+          grid: { color: 'rgba(135,135,163,0.25)', drawTicks: false },
+          border: { display: true, color: 'rgba(135,135,163,0.55)', width: 1.2 }
         }
       }
     }
   });
 
-  // =========================
-  // Click list => aktif + update summary
-  // =========================
+  // init
+  setActive(0);
+  setSummary(0);
+
+  // klik pelatihan -> update chart + cards
   list.addEventListener('click', (e) => {
     const btn = e.target.closest('.pel-btn');
     if (!btn) return;
     const idx = parseInt(btn.dataset.index, 10) || 0;
+
     setActive(idx);
-    setSummaryByIndex(idx);
+    setSummary(idx);
+
+    const payload = buildPayload(getPel(idx));
+    chart.data.labels = payload.labels;
+    chart.data.datasets[0].data = payload.pre;      // Pre-Test
+    chart.data.datasets[1].data = payload.praktek;  // Praktek
+    chart.data.datasets[2].data = payload.post;     // Post-Test
+    chart.data.datasets[3].data = payload.rata;     // Rata-Rata
+    chart.update();
   });
 
 })();
 </script>
+
 
 {{-- SECTION: Panduan Pelatihan (Full-width image + gradient overlay) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
