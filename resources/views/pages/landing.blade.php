@@ -460,111 +460,118 @@ $latestBeritas = Berita::query()
   })();
 </script>
 
-{{-- SECTION: Cerita Kami (DINAMIS + FALLBACK DEFAULT) --}}
-@php
-    // Anggap "ada data" kalau minimal salah satu terisi
-    $hasCerita = !empty($cerita)
-        && (filled($cerita->title) || filled($cerita->excerpt) || filled($cerita->content) || filled($cerita->image_url));
+  {{-- SECTION: Cerita Kami (DINAMIS + FALLBACK DEFAULT) --}}
+  @php
+      // Anggap "ada data" kalau minimal salah satu terisi
+      $hasCerita = !empty($cerita)
+          && (filled($cerita->title) || filled($cerita->excerpt) || filled($cerita->content) || filled($cerita->image_url));
 
-    // ===== IMAGE URL =====
-    if ($hasCerita && filled($cerita->image_url)) {
-        $imgSrc = \Illuminate\Support\Str::startsWith($cerita->image_url, ['http://', 'https://', '/'])
-            ? $cerita->image_url
-            : \Illuminate\Support\Facades\Storage::url($cerita->image_url);
-    } else {
-        $imgSrc = asset('images/cerita-kami.jpg'); // fallback
-    }
+      // ===== IMAGE URL =====
+      if ($hasCerita && filled($cerita->image_url)) {
+          $imgSrc = \Illuminate\Support\Str::startsWith($cerita->image_url, ['http://', 'https://', '/'])
+              ? $cerita->image_url
+              : \Illuminate\Support\Facades\Storage::url($cerita->image_url);
+      } else {
+          $imgSrc = asset('images/cerita-kami.jpg'); // fallback
+      }
 
-    // ===== TITLE =====
-    $title = ($hasCerita && filled($cerita->title))
-        ? $cerita->title
-        : 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan';
+      // ===== TITLE =====
+      $title = ($hasCerita && filled($cerita->title))
+          ? $cerita->title
+          : 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan';
 
-    // ===== CONTENT (HTML dari rich editor) =====
-    $contentHtml = ($hasCerita && filled($cerita->content)) ? $cerita->content : null;
+      // ===== CONTENT (HTML dari rich editor) =====
+      $contentHtml = ($hasCerita && filled($cerita->content)) ? $cerita->content : null;
 
-    if ($contentHtml) {
-        $contentHtml = preg_replace('/(&nbsp;)+/i', ' ', $contentHtml);
-    }
+      if ($contentHtml) {
+          $contentHtml = preg_replace('/(&nbsp;)+/i', ' ', $contentHtml);
+      }
 
-    $fallbackHtml = '
-      <p>UPT PTKK merupakan salah satu Unit Pelaksana Teknis di bawah Dinas Pendidikan Provinsi Jawa Timur yang memiliki tugas dan fungsi dalam menyediakan fasilitas pelatihan berbasis kompetensi. Sebagai pelopor pelatihan vokasi, lembaga ini terus memperkuat perannya melalui penyelenggaraan program-program yang relevan, progresif, dan berdampak nyata.</p>
-      <p>Selain itu UPT PTKK diberi kepercayaan oleh Lembaga Sertifikasi Kompetensi (LSK) berbasis KKNI di bawah naungan KEMENDIKBUD Vokasi sebagai Tempat Uji Kompetensi (TUK) bidang keahlian sebagai berikut:</p>
-      <ol>
-        <li>Tata Boga</li>
-        <li>Tata Busana</li>
-        <li>Tata Kecantikan</li>
-        <li>Teknik Elektronika</li>
-        <li>Teknik Otomotif</li>
-        <li>Fotografi</li>
-        <li>Teknik Informasi Komunikasi (Web Desain/RPL, Desain Grafis, Animasi, Konten Kreator/Videografi)</li>
-      </ol>
-    ';
+      $fallbackHtml = '
+        <p>UPT PTKK merupakan salah satu Unit Pelaksana Teknis di bawah Dinas Pendidikan Provinsi Jawa Timur yang memiliki tugas dan fungsi dalam menyediakan fasilitas pelatihan berbasis kompetensi. Sebagai pelopor pelatihan vokasi, lembaga ini terus memperkuat perannya melalui penyelenggaraan program-program yang relevan, progresif, dan berdampak nyata.</p>
+        <p>Selain itu UPT PTKK diberi kepercayaan oleh Lembaga Sertifikasi Kompetensi (LSK) berbasis KKNI di bawah naungan KEMENDIKBUD Vokasi sebagai Tempat Uji Kompetensi (TUK) bidang keahlian sebagai berikut:</p>
+        <ol>
+          <li>Tata Boga</li>
+          <li>Tata Busana</li>
+          <li>Tata Kecantikan</li>
+          <li>Teknik Elektronika</li>
+          <li>Teknik Otomotif</li>
+          <li>Fotografi</li>
+          <li>Teknik Informasi Komunikasi (Web Desain/RPL, Desain Grafis, Animasi, Konten Kreator/Videografi)</li>
+        </ol>
+      ';
 
-    $bodyHtml = $contentHtml ?: $fallbackHtml;
+      $bodyHtml = $contentHtml ?: $fallbackHtml;
 
-    $ceritaUrl = url('/cerita-kami');
-@endphp
+      $ceritaUrl = url('/cerita-kami');
+  @endphp
 
 
-<section class="relative bg-[#F1F9FC] py-6 md:py-10">
-  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
+  <section class="relative bg-[#F1F9FC] py-6 md:py-10">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
+      <div class="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
 
-      {{-- KIRI: gambar (CENTER terhadap tinggi konten kanan) --}}
-      <div class="shrink-0 md:w-[420px] flex justify-center md:justify-start md:items-center">
-        <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF]
-                    w-[300px] md:w-[380px] lg:w-[420px] aspect-[3/2] bg-slate-200">
-          <img
-            src="{{ $imgSrc }}"
-            alt="{{ $title }}"
-            class="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-        </div>
-      </div>
-
-      {{-- KANAN: konten --}}
-      <div class="flex-1 flex flex-col w-full items-center md:items-start">
-        {{-- Badge --}}
-        <div class="w-full flex mb-[15px] justify-center md:justify-start">
-          <span class="inline-flex items-center px-4 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
-                       font-[Volkhov] font-bold text-base md:text-lg lg:text-[20px] shadow-sm leading-tight">
-            Cerita Kami
-          </span>
+        {{-- KIRI: gambar (CENTER terhadap tinggi konten kanan) --}}
+        <div class="shrink-0 md:w-[420px] flex justify-center md:justify-start md:items-center">
+          <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF]
+                      w-[300px] md:w-[380px] lg:w-[420px] aspect-[3/2] bg-slate-200">
+            <img
+              src="{{ $imgSrc }}"
+              alt="{{ $title }}"
+              class="absolute inset-0 w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
         </div>
 
-        {{-- Title --}}
-        <h2 class="mb-[15px] font-[Volkhov] font-bold text-[22px] md:text-[26px] leading-tight
-                   text-[#1524AF] heading-stroke max-w-[32ch] text-center md:text-left">
-          {{ $title }}
-        </h2>
+        {{-- KANAN: konten --}}
+        <div class="flex-1 flex flex-col w-full items-center md:items-start">
+          {{-- Badge Cerita Kami --}}
+          <div class="w-full flex mb-[15px] justify-center md:justify-start">
+            <span class="inline-flex items-center
+                      px-0 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
+                      font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+                      Cerita Kami</span>
+          </div>
 
-        {{-- Body: render HTML (dengan styling prose biar list rapi) --}}
-        <div class="prose max-w-none prose-p:my-3 prose-ol:my-3 prose-li:my-1
-                    prose-p:text-[#081526] prose-li:text-[#081526]
-                    prose-p:font-[Montserrat] prose-li:font-[Montserrat]
-                    prose-p:font-medium prose-li:font-medium
-                    prose-p:text-[14px] md:prose-p:text-[15px] lg:prose-p:text-[16px]">
-          {!! $bodyHtml !!}
-        </div>
+          {{-- Title --}}
+          <h2 class="mb-[15px] font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch] text-center md:text-left">
+            {{ $title }}
+          </h2>
 
-        {{-- Button --}}
-        <a href="{{ $ceritaUrl }}"
-           class="mt-4 inline-flex items-center justify-center gap-2 w-max
-                  px-4 py-2 rounded-lg bg-[#1524AF] text-white font-[Montserrat] font-medium
-                  text-[14px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all">
+          {{-- Body: render HTML (dengan styling prose biar list rapi) --}}
+          <div class="prose max-w-none text-justify prose-p:my-3 prose-ol:my-3 prose-li:my-1
+                      [&_p]:!leading-tight [&_li]:!leading-tight
+                      prose-p:text-[#081526] prose-li:text-[#081526] 
+                      prose-p:font-[Montserrat] prose-li:font-[Montserrat]
+                      prose-p:font-medium prose-li:font-medium
+                      prose-p:text-[14px] md:prose-p:text-[15px] lg:prose-p:text-[16px] ">
+            {!! $bodyHtml !!}
+          </div>
+
+          {{-- Button --}}
+          <a href="{{ $ceritaUrl }}" 
+          class=" mt-4 inline-flex items-center justify-center gap-2 w-max 
+                  px-4 py-1 
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                  text-[14px] md:text-[15px] lg:text-[16px] 
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+          
           <span class="leading-none">Cari tahu lebih</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          
+          {{-- Ikon diperbesar responsif (w-4 sm:w-5 md:w-6) --}}
+          <svg xmlns="http://www.w3.org/2000/svg" 
+              class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" 
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
           </svg>
         </a>
 
+        </div>
       </div>
     </div>
-  </div>
-</section>
-{{-- /SECTION: Cerita Kami --}}
+  </section>
+  {{-- /SECTION: Cerita Kami --}}
 
 
 
@@ -588,40 +595,48 @@ $latestBeritas = Berita::query()
         {{-- Viewport --}}
         <div class="relative w-full overflow-hidden">
           {{-- TRACK --}}
-          <div class="jatim-marquee flex w-[200%] items-center
+          {{-- PERUBAHAN: 
+               1. w-max: Agar lebar track mengikuti konten, bukan layar.
+               2. flex-nowrap: Agar item tidak pernah turun baris. 
+          --}}
+          <div class="jatim-marquee flex w-max items-center flex-nowrap
                       animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
+            
             {{-- Bagian 1 --}}
-            <div class="flex w-1/2 items-center justify-between
-                        px-6 md:px-10 lg:px-16
-                        gap-4 md:gap-6 lg:gap-8">
+            {{-- PERUBAHAN: Hapus w-1/2, ganti px dengan padding fix yang aman --}}
+            <div class="flex items-center flex-nowrap
+                        px-8 md:px-12
+                        gap-8 md:gap-12 lg:gap-16">
               <img src="{{ asset('images/icons/cetar.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Cetar">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Cetar">
               <img src="{{ asset('images/icons/dindik.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Dindik">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Dindik">
               <img src="{{ asset('images/icons/jatim.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Jatim">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Jatim">
               <img src="{{ asset('images/icons/berakhlak.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Berakhlak">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Berakhlak">
               <img src="{{ asset('images/icons/optimis.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Optimis">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Optimis">
             </div>
+
             {{-- Bagian 2 (duplikat) --}}
-            <div class="flex w-1/2 items-center justify-between
-                        px-6 md:px-10 lg:px-16
-                        gap-4 md:gap-6 lg:gap-8"
+            <div class="flex items-center flex-nowrap
+                        px-8 md:px-12
+                        gap-8 md:gap-12 lg:gap-16"
                  aria-hidden="true">
               <img src="{{ asset('images/icons/cetar.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/dindik.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/jatim.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/berakhlak.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/optimis.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
             </div>
           </div>
+          
           {{-- Fade kiri–kanan --}}
           <div class="pointer-events-none absolute inset-0
                       [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
@@ -632,17 +647,41 @@ $latestBeritas = Berita::query()
   </div>
 </section>
 
+
 {{-- SECTION: Berita Terbaru (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
 
     <div class="grid gap-y-2 mb-6">
-      <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23] font-[Volkhov] font-bold text-[15px] md:text-[16px] rounded-md leading-none px-3 py-1 shadow-sm w-fit">Berita Terbaru</span>
+      {{-- Badge Berita Terbaru --}}
+      <div class="w-full flex mb-[15px] justify-center md:justify-start">
+            <span class="inline-flex items-center
+                      px-0 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
+                      font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+                      Berita Terbaru</span>
+          </div>
+
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-        <h2 class="heading-stroke font-[Volkhov] font-bold text-[18px] sm:text-[20px] md:text-[24px] lg:text-[28px] leading-snug">Jangan lewatkan kabar terbaru dari UPT PTKK</h2>
-        <a href="{{ route('berita.index') ?? '#' }}" class="inline-flex items-center justify-center gap-2 bg-[#1524AF] hover:bg-[#0E1E8B] text-white font-['Montserrat'] font-medium text-[12px] sm:text-[13px] md:text-[14px] px-[12px] py-[6px] sm:px-[14px] sm:py-[7px] md:px-[16px] md:py-[8px] rounded-xl shadow-md transition-all duration-200 self-start md:self-center active:scale-[.98]">
+        <h2 class="mb-[15px] md:mb-0 mx-auto md:mx-0 
+           font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight 
+           text-[#1524AF] heading-stroke 
+           max-w-[38ch] md:max-w-[24ch] lg:max-w-[38ch] 
+           text-center md:text-left">
+  Jangan lewatkan kabar terbaru dari UPT PTKK
+</h2>
+        
+        <a href="{{ route('berita.index') ?? '#' }}" 
+          class=" md:mt-0 self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-1 
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                  text-[14px] md:text-[15px] lg:text-[16px] 
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
           <span class="leading-none">Lihat Semua Berita</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M19 12l-4-4m0 8l4-4" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" 
+              class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" 
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+          </svg>
         </a>
       </div>
     </div>
