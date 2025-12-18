@@ -180,9 +180,10 @@
               </a>
             </h2>
 
-           <p class="font-[Montserrat] text-[14.5px] md:text-[15px]
-          text-slate-800 leading-relaxed mb-3
-          max-w-[60ch] break-words overflow-hidden">
+         <p class="font-[Montserrat] text-[14.5px] md:text-[15px]
+      text-slate-800 leading-relaxed mb-3
+      max-w-[60ch] break-words overflow-hidden
+      text-justify">
 
               @if($fIsModel)
                 {{ Str::limit(strip_tags($featured->content ?? ''), 320) }}
@@ -203,7 +204,7 @@
       @endif
 
       {{-- GRID OTHER POSTS --}}
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         @foreach ($others as $post)
           @php
             $isModel   = is_object($post);
@@ -263,23 +264,36 @@
             </div>
 
             {{-- Judul --}}
-            <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2
-                       text-[#081526] transition-colors duration-200
-                       group-hover:text-[#1524AF]">
-              <a href="{{ $slugOrUrl }}" class="block">
-                {{ $title }}
-              </a>
-            </h3>
+           <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2
+           text-[#081526] transition-colors duration-200
+           group-hover:text-[#1524AF]">
+  <a href="{{ $slugOrUrl }}" class="block">
+
+    {{-- MOBILE (≤ md): max 6 kata --}}
+    <span class="block md:hidden">
+      {{ Str::words($title, 6, '...') }}
+    </span>
+
+    {{-- DESKTOP (≥ md): judul full --}}
+    <span class="hidden md:block">
+      {{ $title }}
+    </span>
+
+  </a>
+</h3>
+
+
 
             {{-- Excerpt --}}
-           <p class="font-[Montserrat]
-          text-[13px] sm:text-[14px]
-          text-[#374151]
-          mb-3
-          leading-relaxed
-          break-words
-          overflow-hidden
-          line-clamp-3">
+          <p class="font-[Montserrat]
+      text-[13px] sm:text-[14px]
+      text-[#374151]
+      mb-3
+      leading-relaxed
+      break-words
+      overflow-hidden
+      line-clamp-3
+      text-justify">
   {{ $excerpt }}
 </p>
 
