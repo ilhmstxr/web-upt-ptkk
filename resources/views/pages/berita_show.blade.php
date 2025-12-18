@@ -133,16 +133,20 @@
                     </span>
                 </div>
 
-                {{-- 3) Foto utama --}}
-                <div class="w-full mb-3">
-                    <img
-                        src="{{ $post->image ? Storage::url($post->image) : asset('images/placeholder_kunjungan.jpg') }}"
-                        alt="Cover Image: {{ $post->title }}"
-                        class="w-full object-cover rounded-lg shadow-md border-[2px] border-[#B6BBE6]"
-                        style="aspect-ratio: 16 / 6;"
-                        onerror="this.onerror=null;this.src='{{ asset('images/placeholder_kunjungan.jpg') }}'"
-                    />
-                </div>
+               {{-- 3) Foto utama (DINAMIS, tidak crop) --}}
+<div class="w-full mb-3">
+  <div class="w-full rounded-lg shadow-md border-[2px] border-[#B6BBE6] overflow-hidden bg-[#EAF2FF]">
+    <img
+      src="{{ $post->image ? Storage::url($post->image) : asset('images/placeholder_kunjungan.jpg') }}"
+      alt="Cover Image: {{ $post->title }}"
+      class="w-full h-auto object-contain"
+      loading="lazy"
+      decoding="async"
+      onerror="this.onerror=null;this.src='{{ asset('images/placeholder_kunjungan.jpg') }}'"
+    />
+  </div>
+</div>
+
 
                 {{-- Caption foto dari admin (opsional) --}}
                 @if(!empty($post->image_caption))
