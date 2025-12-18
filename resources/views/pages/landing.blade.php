@@ -460,111 +460,118 @@ $latestBeritas = Berita::query()
   })();
 </script>
 
-{{-- SECTION: Cerita Kami (DINAMIS + FALLBACK DEFAULT) --}}
-@php
-    // Anggap "ada data" kalau minimal salah satu terisi
-    $hasCerita = !empty($cerita)
-        && (filled($cerita->title) || filled($cerita->excerpt) || filled($cerita->content) || filled($cerita->image_url));
+  {{-- SECTION: Cerita Kami (DINAMIS + FALLBACK DEFAULT) --}}
+  @php
+      // Anggap "ada data" kalau minimal salah satu terisi
+      $hasCerita = !empty($cerita)
+          && (filled($cerita->title) || filled($cerita->excerpt) || filled($cerita->content) || filled($cerita->image_url));
 
-    // ===== IMAGE URL =====
-    if ($hasCerita && filled($cerita->image_url)) {
-        $imgSrc = \Illuminate\Support\Str::startsWith($cerita->image_url, ['http://', 'https://', '/'])
-            ? $cerita->image_url
-            : \Illuminate\Support\Facades\Storage::url($cerita->image_url);
-    } else {
-        $imgSrc = asset('images/cerita-kami.jpg'); // fallback
-    }
+      // ===== IMAGE URL =====
+      if ($hasCerita && filled($cerita->image_url)) {
+          $imgSrc = \Illuminate\Support\Str::startsWith($cerita->image_url, ['http://', 'https://', '/'])
+              ? $cerita->image_url
+              : \Illuminate\Support\Facades\Storage::url($cerita->image_url);
+      } else {
+          $imgSrc = asset('images/cerita-kami.jpg'); // fallback
+      }
 
-    // ===== TITLE =====
-    $title = ($hasCerita && filled($cerita->title))
-        ? $cerita->title
-        : 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan';
+      // ===== TITLE =====
+      $title = ($hasCerita && filled($cerita->title))
+          ? $cerita->title
+          : 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan';
 
-    // ===== CONTENT (HTML dari rich editor) =====
-    $contentHtml = ($hasCerita && filled($cerita->content)) ? $cerita->content : null;
+      // ===== CONTENT (HTML dari rich editor) =====
+      $contentHtml = ($hasCerita && filled($cerita->content)) ? $cerita->content : null;
 
-    if ($contentHtml) {
-        $contentHtml = preg_replace('/(&nbsp;)+/i', ' ', $contentHtml);
-    }
+      if ($contentHtml) {
+          $contentHtml = preg_replace('/(&nbsp;)+/i', ' ', $contentHtml);
+      }
 
-    $fallbackHtml = '
-      <p>UPT PTKK merupakan salah satu Unit Pelaksana Teknis di bawah Dinas Pendidikan Provinsi Jawa Timur yang memiliki tugas dan fungsi dalam menyediakan fasilitas pelatihan berbasis kompetensi. Sebagai pelopor pelatihan vokasi, lembaga ini terus memperkuat perannya melalui penyelenggaraan program-program yang relevan, progresif, dan berdampak nyata.</p>
-      <p>Selain itu UPT PTKK diberi kepercayaan oleh Lembaga Sertifikasi Kompetensi (LSK) berbasis KKNI di bawah naungan KEMENDIKBUD Vokasi sebagai Tempat Uji Kompetensi (TUK) bidang keahlian sebagai berikut:</p>
-      <ol>
-        <li>Tata Boga</li>
-        <li>Tata Busana</li>
-        <li>Tata Kecantikan</li>
-        <li>Teknik Elektronika</li>
-        <li>Teknik Otomotif</li>
-        <li>Fotografi</li>
-        <li>Teknik Informasi Komunikasi (Web Desain/RPL, Desain Grafis, Animasi, Konten Kreator/Videografi)</li>
-      </ol>
-    ';
+      $fallbackHtml = '
+        <p>UPT PTKK merupakan salah satu Unit Pelaksana Teknis di bawah Dinas Pendidikan Provinsi Jawa Timur yang memiliki tugas dan fungsi dalam menyediakan fasilitas pelatihan berbasis kompetensi. Sebagai pelopor pelatihan vokasi, lembaga ini terus memperkuat perannya melalui penyelenggaraan program-program yang relevan, progresif, dan berdampak nyata.</p>
+        <p>Selain itu UPT PTKK diberi kepercayaan oleh Lembaga Sertifikasi Kompetensi (LSK) berbasis KKNI di bawah naungan KEMENDIKBUD Vokasi sebagai Tempat Uji Kompetensi (TUK) bidang keahlian sebagai berikut:</p>
+        <ol>
+          <li>Tata Boga</li>
+          <li>Tata Busana</li>
+          <li>Tata Kecantikan</li>
+          <li>Teknik Elektronika</li>
+          <li>Teknik Otomotif</li>
+          <li>Fotografi</li>
+          <li>Teknik Informasi Komunikasi (Web Desain/RPL, Desain Grafis, Animasi, Konten Kreator/Videografi)</li>
+        </ol>
+      ';
 
-    $bodyHtml = $contentHtml ?: $fallbackHtml;
+      $bodyHtml = $contentHtml ?: $fallbackHtml;
 
-    $ceritaUrl = url('/cerita-kami');
-@endphp
+      $ceritaUrl = url('/cerita-kami');
+  @endphp
 
 
-<section class="relative bg-[#F1F9FC] py-6 md:py-10">
-  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
+  <section class="relative bg-[#F1F9FC] py-6 md:py-10">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
+      <div class="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
 
-      {{-- KIRI: gambar (CENTER terhadap tinggi konten kanan) --}}
-      <div class="shrink-0 md:w-[420px] flex justify-center md:justify-start md:items-center">
-        <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF]
-                    w-[300px] md:w-[380px] lg:w-[420px] aspect-[3/2] bg-slate-200">
-          <img
-            src="{{ $imgSrc }}"
-            alt="{{ $title }}"
-            class="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-        </div>
-      </div>
-
-      {{-- KANAN: konten --}}
-      <div class="flex-1 flex flex-col w-full items-center md:items-start">
-        {{-- Badge --}}
-        <div class="w-full flex mb-[15px] justify-center md:justify-start">
-          <span class="inline-flex items-center px-4 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
-                       font-[Volkhov] font-bold text-base md:text-lg lg:text-[20px] shadow-sm leading-tight">
-            Cerita Kami
-          </span>
+        {{-- KIRI: gambar (CENTER terhadap tinggi konten kanan) --}}
+        <div class="shrink-0 md:w-[420px] flex justify-center md:justify-start md:items-center">
+          <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF]
+                      w-[300px] md:w-[380px] lg:w-[420px] aspect-[3/2] bg-slate-200">
+            <img
+              src="{{ $imgSrc }}"
+              alt="{{ $title }}"
+              class="absolute inset-0 w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
         </div>
 
-        {{-- Title --}}
-        <h2 class="mb-[15px] font-[Volkhov] font-bold text-[22px] md:text-[26px] leading-tight
-                   text-[#1524AF] heading-stroke max-w-[32ch] text-center md:text-left">
-          {{ $title }}
-        </h2>
+        {{-- KANAN: konten --}}
+        <div class="flex-1 flex flex-col w-full items-center md:items-start">
+          {{-- Badge Cerita Kami --}}
+          <div class="w-full flex mb-[15px] justify-center md:justify-start">
+            <span class="inline-flex items-center
+                      px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                      font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+                      Cerita Kami</span>
+          </div>
 
-        {{-- Body: render HTML (dengan styling prose biar list rapi) --}}
-        <div class="prose max-w-none prose-p:my-3 prose-ol:my-3 prose-li:my-1
-                    prose-p:text-[#081526] prose-li:text-[#081526]
-                    prose-p:font-[Montserrat] prose-li:font-[Montserrat]
-                    prose-p:font-medium prose-li:font-medium
-                    prose-p:text-[14px] md:prose-p:text-[15px] lg:prose-p:text-[16px]">
-          {!! $bodyHtml !!}
-        </div>
+          {{-- Title --}}
+          <h2 class="mb-[15px] font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch] text-center md:text-left">
+            {{ $title }}
+          </h2>
 
-        {{-- Button --}}
-        <a href="{{ $ceritaUrl }}"
-           class="mt-4 inline-flex items-center justify-center gap-2 w-max
-                  px-4 py-2 rounded-lg bg-[#1524AF] text-white font-[Montserrat] font-medium
-                  text-[14px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all">
+          {{-- Body: render HTML (dengan styling prose biar list rapi) --}}
+          <div class="prose max-w-none text-justify prose-p:my-3 prose-ol:my-3 prose-li:my-1
+                      [&_p]:!leading-tight [&_li]:!leading-tight
+                      prose-p:text-[#081526] prose-li:text-[#081526] 
+                      prose-p:font-[Montserrat] prose-li:font-[Montserrat]
+                      prose-p:font-medium prose-li:font-medium
+                      prose-p:text-[14px] md:prose-p:text-[15px] lg:prose-p:text-[16px] ">
+            {!! $bodyHtml !!}
+          </div>
+
+          {{-- Button --}}
+          <a href="{{ $ceritaUrl }}" 
+          class=" mt-4 inline-flex items-center justify-center gap-2 w-max 
+                  px-4 py-1 
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                  text-[14px] md:text-[15px] lg:text-[16px] 
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+          
           <span class="leading-none">Cari tahu lebih</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          
+          {{-- Ikon diperbesar responsif (w-4 sm:w-5 md:w-6) --}}
+          <svg xmlns="http://www.w3.org/2000/svg" 
+              class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" 
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
           </svg>
         </a>
 
+        </div>
       </div>
     </div>
-  </div>
-</section>
-{{-- /SECTION: Cerita Kami --}}
+  </section>
+  {{-- /SECTION: Cerita Kami --}}
 
 
 
@@ -588,40 +595,48 @@ $latestBeritas = Berita::query()
         {{-- Viewport --}}
         <div class="relative w-full overflow-hidden">
           {{-- TRACK --}}
-          <div class="jatim-marquee flex w-[200%] items-center
+          {{-- PERUBAHAN: 
+               1. w-max: Agar lebar track mengikuti konten, bukan layar.
+               2. flex-nowrap: Agar item tidak pernah turun baris. 
+          --}}
+          <div class="jatim-marquee flex w-max items-center flex-nowrap
                       animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
+            
             {{-- Bagian 1 --}}
-            <div class="flex w-1/2 items-center justify-between
-                        px-6 md:px-10 lg:px-16
-                        gap-4 md:gap-6 lg:gap-8">
+            {{-- PERUBAHAN: Hapus w-1/2, ganti px dengan padding fix yang aman --}}
+            <div class="flex items-center flex-nowrap
+                        px-8 md:px-12
+                        gap-8 md:gap-12 lg:gap-16">
               <img src="{{ asset('images/icons/cetar.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Cetar">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Cetar">
               <img src="{{ asset('images/icons/dindik.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Dindik">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Dindik">
               <img src="{{ asset('images/icons/jatim.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Jatim">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Jatim">
               <img src="{{ asset('images/icons/berakhlak.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Berakhlak">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Berakhlak">
               <img src="{{ asset('images/icons/optimis.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Optimis">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Optimis">
             </div>
+
             {{-- Bagian 2 (duplikat) --}}
-            <div class="flex w-1/2 items-center justify-between
-                        px-6 md:px-10 lg:px-16
-                        gap-4 md:gap-6 lg:gap-8"
+            <div class="flex items-center flex-nowrap
+                        px-8 md:px-12
+                        gap-8 md:gap-12 lg:gap-16"
                  aria-hidden="true">
               <img src="{{ asset('images/icons/cetar.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/dindik.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/jatim.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/berakhlak.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/optimis.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
             </div>
           </div>
+          
           {{-- Fade kiri–kanan --}}
           <div class="pointer-events-none absolute inset-0
                       [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
@@ -632,71 +647,141 @@ $latestBeritas = Berita::query()
   </div>
 </section>
 
+
 {{-- SECTION: Berita Terbaru (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
 
+    {{-- HEADER (Menggunakan style terbaru Tuan Putri) --}}
     <div class="grid gap-y-2 mb-6">
-      <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23] font-[Volkhov] font-bold text-[15px] md:text-[16px] rounded-md leading-none px-3 py-1 shadow-sm w-fit">Berita Terbaru</span>
+      {{-- Badge Berita Terbaru --}}
+      <div class="w-full flex mb-[15px] justify-center md:justify-start">
+        <span class="inline-flex items-center
+                     px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                     font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+          Berita Terbaru
+        </span>
+      </div>
+
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-        <h2 class="heading-stroke font-[Volkhov] font-bold text-[18px] sm:text-[20px] md:text-[24px] lg:text-[28px] leading-snug">Jangan lewatkan kabar terbaru dari UPT PTKK</h2>
-        <a href="{{ route('berita.index') ?? '#' }}" class="inline-flex items-center justify-center gap-2 bg-[#1524AF] hover:bg-[#0E1E8B] text-white font-['Montserrat'] font-medium text-[12px] sm:text-[13px] md:text-[14px] px-[12px] py-[6px] sm:px-[14px] sm:py-[7px] md:px-[16px] md:py-[8px] rounded-xl shadow-md transition-all duration-200 self-start md:self-center active:scale-[.98]">
+        <h2 class="mb-[15px] md:mb-0 mx-auto md:mx-0 
+                   font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight 
+                   text-[#1524AF] heading-stroke 
+                   max-w-[38ch] md:max-w-[24ch] lg:max-w-[38ch] 
+                   text-center md:text-left">
+          Jangan lewatkan kabar terbaru dari UPT PTKK
+        </h2>
+        
+        <a href="{{ route('berita.index') ?? '#' }}" 
+           class="mt-4 md:mt-0 self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-1 
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                  text-[14px] md:text-[15px] lg:text-[16px] 
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
           <span class="leading-none">Lihat Semua Berita</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M19 12l-4-4m0 8l4-4" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" 
+               class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" 
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+          </svg>
         </a>
       </div>
     </div>
 
+    {{-- GRID CARD (Style Baru: Rounded-26px, Shadow Glow) --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       @if($latestBeritas->isEmpty())
-        {{-- fallback ketika belum ada berita --}}
+        {{-- FALLBACK: Belum ada berita --}}
         @for($i=1;$i<=3;$i++)
-          <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
-            <div class="w-full h-[160px] bg-[#E7ECF3] rounded-lg mb-4 flex items-center justify-center text-sm text-[#727272]">Belum ada berita</div>
-            <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              <span>{{ now()->format('d F Y') }}</span>
-            </div>
-            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">Belum ada berita tersedia</h3>
-            <p class="text-sm text-[#081526] mb-3 leading-relaxed">Silakan tambahkan berita melalui panel admin.</p>
-            <a href="#" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">Baca Selengkapnya →</a>
+          <article class="group rounded-[26px] border border-[#D0D5DD] bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 hover:border-[#1524AF] hover:shadow-[0_10px_30px_rgba(21,36,175,0.18)] hover:bg-gradient-to-br hover:from-[#EFF5FF] hover:to-[#F8FBFF]">
+             <div class="aspect-[16/11] w-full rounded-[20px] overflow-hidden border border-[#E2E8F0] mb-3 bg-gray-100 flex items-center justify-center text-gray-400">
+               Belum ada gambar
+             </div>
+             <div class="flex items-center gap-2 text-[#6B7280] text-xs mb-1">
+               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect><line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line><line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line><line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line></svg>
+               <span>-</span>
+             </div>
+             <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2 text-[#081526]">Belum ada berita</h3>
+             <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-[#374151] mb-3 leading-relaxed">Silakan tambahkan berita dari panel admin.</p>
           </article>
         @endfor
+
       @else
+        {{-- BERITA TERSEDIA --}}
         @foreach($latestBeritas as $b)
           @php
-            // --- LOGIKA COPY PASTE DARI BERITA SHOW ---
-            // Cukup gunakan Storage::url jika ada image, fallback ke asset jika tidak
             $imgUrl = $b->image ? Storage::url($b->image) : asset('images/berita/placeholder.jpg');
-
-            $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
-
-            // Format tanggal meniru berita_show (menggunakan optional)
             $pubDate = optional($b->published_at ?? $b->created_at)->format('d F Y');
+            $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
+            $slugOrUrl = route('berita.show', $b->slug ?? $b->id);
           @endphp
 
-          <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
+          <article
+            class="group rounded-[26px] border border-[#D0D5DD] bg-white
+                   p-4 sm:p-5 shadow-sm
+                   transition-all duration-300
+                   hover:border-[#1524AF]
+                   hover:shadow-[0_10px_30px_rgba(21,36,175,0.18)]
+                   hover:bg-gradient-to-br hover:from-[#EFF5FF] hover:to-[#F8FBFF]">
 
-            {{-- MARKUP GAMBAR --}}
-            <div class="w-full h-[160px] rounded-lg mb-4 overflow-hidden">
-               <img src="{{ $imgUrl }}" alt="{{ $b->title }}" class="w-full h-full object-cover rounded-lg shadow-md" loading="lazy">
-            </div>
+            {{-- Gambar --}}
+            <a href="{{ $slugOrUrl }}" class="block mb-3">
+              <div class="aspect-[16/11] w-full rounded-[20px] overflow-hidden border border-[#E2E8F0] transition-colors group-hover:border-[#1524AF]">
+                <img
+                  src="{{ $imgUrl }}"
+                  alt="{{ $b->title }}"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='{{ asset('images/berita/placeholder.jpg') }}'">
+              </div>
+            </a>
 
-            <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            {{-- Tanggal --}}
+            <div class="flex items-center gap-2 text-[#6B7280] text-xs mb-1">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
+                <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line>
+                <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line>
+              </svg>
               <span>{{ $pubDate }}</span>
             </div>
 
-            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">
-              {{ $b->title }}
+            {{-- Judul --}}
+            <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2
+                       text-[#081526] transition-colors duration-200
+                       group-hover:text-[#1524AF]">
+              <a href="{{ $slugOrUrl }}" class="block">
+                {{-- Judul dipotong biar rapi di HP --}}
+                <span class="block md:hidden">{{ Str::words($b->title, 6, '...') }}</span>
+                <span class="hidden md:block">{{ $b->title }}</span>
+              </a>
             </h3>
 
-            <p class="text-sm text-[#081526] mb-3 leading-relaxed">
-              {!! e($excerpt) !!}
+            {{-- Excerpt --}}
+            <p class="font-[Montserrat]
+                      text-[13px] sm:text-[14px]
+                      text-[#374151]
+                      mb-3
+                      leading-relaxed
+                      break-words
+                      overflow-hidden
+                      line-clamp-3
+                      text-justify">
+              {{ $excerpt }}
             </p>
 
-            <a href="{{ route('berita.show', $b->slug ?? $b->id) ?? '#' }}" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">
-              Baca Selengkapnya →
+            {{-- Baca Selengkapnya --}}
+            <a href="{{ $slugOrUrl }}"
+               class="inline-flex items-center gap-2 font-[Montserrat]
+                      text-[13px] sm:text-[14px]
+                      text-[#595959]
+                      transition-colors duration-200
+                      group-hover:text-[#1524AF] group-hover:underline underline-offset-2">
+              Baca Selengkapnya
+              <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </a>
           </article>
         @endforeach
@@ -721,10 +806,11 @@ $latestBeritas = Berita::query()
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px] text-center flex flex-col items-center">
 
     {{-- BADGE --}}
-    <div class="inline-block bg-[#FDECEC] text-[#861D23]
-                text-[18px] md:text-[20px] lg:text-[22px]
-                font-[Volkhov] font-bold leading-none
-                px-4 py-[6px] rounded-md mb-4">
+    <div class="inline-block bg-[#F3E8E9] text-[#861D23]
+                font-[Volkhov] font-bold 
+                text-base md:text-lg lg:text-[20px]
+                leading-tight shadow-sm
+                px-4 py-1 rounded-md mb-4">
       Sorotan Pelatihan
     </div>
 
@@ -776,12 +862,13 @@ $latestBeritas = Berita::query()
     @if($sorotanData->isNotEmpty())
 
       {{-- NAMA PELATIHAN + DESKRIPSI (Default ambil index 0) --}}
-      <div id="sorotan-top" class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
+      <div id="sorotan-top" class="w-full mb-6 md:mb-8 flex flex-col items-center md:flex-row md:items-center md:justify-start md:gap-6 text-center md:text-left">
         <div class="shrink-0">
           <button type="button"
                   class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
-                         font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
-                         rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
+                         font-[Volkhov] font-bold 
+                         text-base md:text-lg lg:text-[20px] 
+                         rounded-md px-4 py-1 leading-tight whitespace-nowrap">
             {{ $sorotanData[0]['label'] }}
           </button>
         </div>
@@ -926,9 +1013,10 @@ $latestBeritas = Berita::query()
     <div class="text-center mb-6">
       {{-- Badge --}}
       <div class="inline-block bg-[#F3E8E9] text-[#861D23]
-                  text-[18px] md:text-[20px] lg:text-[22px]
-                  px-5 py-1.5 rounded-md
-                  font-[Volkhov] font-bold leading-none mb-6">
+                font-[Volkhov] font-bold 
+                text-base md:text-lg lg:text-[20px]
+                leading-tight shadow-sm
+                px-4 py-1 rounded-md mb-4">
         Kompetensi Pelatihan
       </div>
 
@@ -1030,12 +1118,16 @@ $latestBeritas = Berita::query()
 
         {{-- CTA (kanan) --}}
         <a href="{{ route('kompetensi') }}"
-           class="inline-flex items-center gap-2 bg-[#1524AF] hover:bg-[#0E1F73]
-                  text-white text-sm font-medium px-5 py-2.5 rounded-md transition
-                  self-center md:self-auto">
+           class="mt-4 md:mt-0 self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-1 
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                  text-[14px] md:text-[15px] lg:text-[16px] 
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
           Lihat Semua Kompetensi
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          <svg xmlns="http://www.w3.org/2000/svg" 
+               class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" 
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
           </svg>
         </a>
       </div>
@@ -1072,10 +1164,98 @@ $latestBeritas = Berita::query()
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
+<<<<<<< HEAD
       <!-- Left -->
       <div class="lg:col-span-4">
         <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-3">
           <span class="text-[#861D23] font-[Volkhov] font-bold text-[16px]">Data Statistik</span>
+=======
+      <!-- Left Column -->
+      <div class="lg:col-span-4 flex flex-col justify-between">
+        <div>
+          <div class="w-full flex mb-[15px] justify-center md:justify-start">
+            <span class="inline-flex items-center
+                      px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                      font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+                      Data Statistik</span>
+          </div>
+
+          <div class="flex flex-col items-center md:items-start w-full">
+  
+            <div class="flex flex-col items-center md:items-start w-full">
+  
+              {{-- JUDUL: Disamakan style-nya (Volkhov, Blue, Size 22px/26px) --}}
+              <h2 class="heading-stroke font-[Volkhov] font-bold 
+                        text-[22px] md:text-[26px] leading-tight 
+                        text-[#1524AF] mb-3
+                        text-center md:text-left">
+                Rekapitulasi Rata-Rata<br/>Program Pelatihan
+              </h2>
+
+              {{-- TEKS: Disamakan style-nya (Montserrat, Ukuran pas, Justify di HP) --}}
+              <p class="font-['Montserrat'] font-medium 
+                        text-[14px] md:text-[15px] 
+                        text-[#374151] leading-relaxed mb-5
+                        text-justify">
+                Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
+                terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
+              </p>
+
+            </div>
+
+          </div>
+
+          <!-- List Pelatihan
+               - Blade sebagai fallback awal
+               - Akan di-replace JS jika API/dummy dipakai -->
+          <ul id="listPelatihan" class="space-y-2">
+            @forelse($pelatihans ?? [] as $pel)
+              @php
+                $idx = $loop->index;
+                $colorActive = $pel->warna ?? '#1524AF';
+                $colorInactive = $pel->warna_inactive ?? '#000000';
+                $isFirst = $loop->first;
+              @endphp
+              <li>
+                <button
+                  type="button"
+                  class="pel-btn w-full flex items-center gap-2 py-1.5 text-left"
+                  data-index="{{ $idx }}"
+                  data-color-active="{{ $colorActive }}"
+                  data-color-inactive="{{ $colorInactive }}"
+                >
+                  <span class="dot w-2 h-2 rounded-full"
+                        style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></span>
+
+                  <span class="label flex-1 text-[14px] font-[Montserrat] font-medium"
+                        style="color: {{ $isFirst ? $colorActive : $colorInactive }};">
+                    {{ \Illuminate\Support\Str::limit($pel->nama_pelatihan ?? 'Pelatihan', 60) }}
+                  </span>
+                </button>
+
+                <div class="divider h-[1px]"
+                     style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></div>
+              </li>
+            @empty
+              <!-- Placeholder minimal (akan diganti JS kalau dummy/api) -->
+              <li>
+                <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="0">
+                  <span class="dot w-2 h-2 rounded-full bg-[#1524AF]"></span>
+                  <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#1524AF]">
+                    Loading...
+                  </span>
+                </button>
+                <div class="divider h-[1px] bg-[#1524AF]"></div>
+              </li>
+            @endforelse
+          </ul>
+
+          <!-- Badge dummy info (muncul jika dummy dipakai) -->
+          <div id="dummyNotice"
+               class="hidden mt-4 text-[12px] text-slate-600 bg-white/70 border border-slate-200 rounded-lg p-3">
+            Data Statistik.
+          </div>
+>>>>>>> 06522cee9f5207440ef30beb6ee7c1169f6303cb
         </div>
 
         <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[28px] leading-snug mb-3 text-[#081526]">
@@ -1456,29 +1636,26 @@ $latestBeritas = Berita::query()
 {{-- SECTION: Panduan Pelatihan (Full-width image + gradient overlay) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="relative rounded-2xl overflow-hidden">
+    <div class="relative w-full rounded-2xl overflow-hidden shadow-sm">
 
       {{-- BG foto full --}}
-      <div
-        class="w-full h-[220px] sm:h-[240px] md:h-[300px] lg:h-[380px] bg-cover bg-center relative"
-        style="background-image: url('{{ asset('images/bgvideo.svg') }}');"
-      >
-       {{-- Overlay gradient: muncul di semua device (HP, tablet, desktop) --}}
-<div class="absolute inset-0"
-     style="background: linear-gradient(270deg,
-        rgba(21,36,175,1) 29%,
-        rgba(21,36,175,0.34) 66%,
-        rgba(21,36,175,0) 100%);">
-</div>
+      <div class="absolute inset-0 bg-cover bg-center z-0"
+           style="background-image: url('{{ asset('images/bgvideo.svg') }}');">
+           {{-- Overlay Gradient --}}
+           <div class="absolute inset-0"
+                style="background: linear-gradient(270deg,
+                rgba(21,36,175,1) 29%,
+                rgba(21,36,175,0.34) 66%,
+                rgba(21,36,175,0) 100%);">
+           </div>
       </div>
 
       {{-- Overlay grid konten --}}
-      <div
-        class="absolute inset-0 grid grid-cols-2
-               gap-x-3 md:gap-x-4 lg:gap-x-8
-               px-3 sm:px-5 md:px-8 lg:px-10
-               py-5 md:py-6 lg:py-0"
-      >
+      <div class="relative z-10 grid grid-cols-2
+                  gap-x-3 md:gap-x-4 lg:gap-x-8
+                  px-3 sm:px-5 md:px-8 lg:px-10
+                  py-5 md:py-6 lg:py-0
+                  min-h-[220px] sm:min-h-[240px] md:min-h-[300px] lg:min-h-[380px]">
 
         {{-- KIRI: Tombol Play - posisi tengah area kiri --}}
         <div class="relative flex items-center justify-center">
@@ -1494,7 +1671,7 @@ $latestBeritas = Berita::query()
         </div>
 
         {{-- KANAN: Card panduan --}}
-        <div class="relative flex items-center justify-end">
+        <div class="relative flex items-center justify-end w-full h-full">
           <div
             class="bg-[#DBE7F7]/95 text-[#0E2A7B] rounded-xl shadow-md
                    w-full
@@ -1503,42 +1680,39 @@ $latestBeritas = Berita::query()
                    backdrop-blur-sm
                    md:translate-y-0 lg:translate-y-0"
           >
-            <h2
-              class="heading-stroke
-                     text-left
-                     text-[12px] sm:text-[14px] md:text-[18px] lg:text-[24px]
-                     font-[Volkhov] font-bold leading-snug
-                     mb-2 sm:mb-2.5 md:mb-3"
-            >
-              Bersama, Kita Cetak Pendidikan
-              <br class="hidden md:block">
-              Vokasi yang Unggul
-            </h2>
+            
+          <h2 class="heading-stroke text-[20px] md:text-[24px] lg:text-[26px]
+                    font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mt-2
+                    mb-4 md:mb-6 lg:mb-8">
+            <span class="relative z-10">
+              Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
+            </span>
+            <span class="absolute inset-0 text-transparent [-webkit-text-stroke:2px_#FFDE59] pointer-events-none">
+              Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
+            </span>
+          </h2>
 
-            <p
-              class="text-[11px] sm:text-[12px] md:text-[13px] lg:text-[16px]
-                     text-[#000000] leading-relaxed
-                     mb-3 sm:mb-4 md:mb-5 lg:mb-6"
-            >
+            <p class="font-['Montserrat'] font-medium 
+                        text-[14px] md:text-[15px] 
+                        text-[#374151] leading-tight mb-5
+                        text-justify">
               Pahami alur permohonan peserta untuk mengikuti program pelatihan di UPT PTKK
               guna memastikan kelancaran proses.
             </p>
 
         <a href="{{ route('panduan') }}"
-   class="flex items-center justify-start gap-1.5
-          bg-[#1524AF] text-white
-          px-3 sm:px-4 md:px-6 lg:px-10
-          py-1.5 sm:py-2 md:py-2.5
-          rounded-md
-          text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px]
-          font-medium hover:opacity-90 transition w-fit
-          ml-0">
-              Lihat Panduan
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
-                   stroke-width="2" viewBox="0 0 24 24" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </a>
+                class="mt-auto self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                       px-3 py-1.5 md:px-4 md:py-1
+                       rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                       text-[12px] md:text-[15px] lg:text-[16px] 
+                       shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+                  <span class="leading-none">Lihat Panduan</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" 
+                       class="w-3.5 h-3.5 md:w-5 md:h-5" 
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+                  </svg>
+             </a>
           </div>
         </div>
 

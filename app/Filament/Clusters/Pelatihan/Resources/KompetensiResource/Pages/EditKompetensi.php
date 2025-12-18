@@ -16,4 +16,13 @@ class EditKompetensi extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            KompetensiResource::getUrl('index') => 'Kompetensi',
+            '#' => $this->record->nama_kompetensi,
+            '' => 'Edit',
+        ];
+    }
 }

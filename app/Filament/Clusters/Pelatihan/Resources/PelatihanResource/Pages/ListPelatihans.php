@@ -31,7 +31,7 @@ class ListPelatihans extends ListRecords
             // PelatihanResource\Widgets\PelatihanStatsOverview::class,
         ];
     }
-    
+
     public function getHeader(): ?View
     {
         return view('filament.clusters.pelatihan.components.resource-tabs', [
