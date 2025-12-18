@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PendaftaranPelatihan;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -28,7 +29,7 @@ class AssessmentLoginController extends Controller
         $reg = PendaftaranPelatihan::with('peserta.instansi')
             ->where(function ($q) use ($token) {
                 $q->where('nomor_registrasi', $token)
-                  ->orWhere('assessment_token', $token);
+                    ->orWhere('assessment_token', $token);
             })
             ->latest('id')
             ->first();
@@ -97,8 +98,7 @@ class AssessmentLoginController extends Controller
 
     public function logout(Request $request)
     {
-        // Logout dari guard assessment
-        Auth::guard('assessment')->logout();
+
 
         // Bersihkan session
         $request->session()->invalidate();
