@@ -74,7 +74,7 @@
             </tr>
             <tr>
                 <td class="label">Password</td>
-                <!-- <td>: {{ $data[''] }}</td> -->
+                <td>: {{ $data['password'] }}</td>
             </tr> <!-- tanggal lahir yang  tidak ada stripnya -->
             <tr>
                 <td class="label">Nama</td>

@@ -284,6 +284,7 @@ class PesertaPelatihanTable extends BaseWidget
                                 $emailData = [
                                     'nama_pelatihan' => $record->pelatihan->nama_pelatihan,
                                     'id_peserta'     => $record->nomor_registrasi,
+                                    'password'       => \Carbon\Carbon::parse($record->peserta->tanggal_lahir)->format('dmY'),
                                     'nama_peserta'   => $record->peserta->nama,
                                     'asal_lembaga'   => $record->peserta->instansi->asal_instansi ?? '-',
                                     'cabang_dinas'   => $record->peserta->instansi->cabangDinas->nama ?? '-',
