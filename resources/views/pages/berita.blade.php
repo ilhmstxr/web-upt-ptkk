@@ -74,31 +74,6 @@
   use Illuminate\Support\Str;
   use Illuminate\Support\Carbon;
 
-  // normalisasi input dari controller
-  $postsPaginator = $postsPaginator ?? ($posts ?? null);
-  $featured = $featured ?? null;
-  $others = $others ?? null;
-
-  if (empty($postsPaginator) && ! empty($posts) && is_object($posts) && method_exists($posts, 'items')) {
-    $postsPaginator = $posts;
-  }
-
-  if ($postsPaginator && empty($featured)) {
-    $items = collect($postsPaginator->items());
-    $featured = $items->first() ?: null;
-    $others = $items->slice(1);
-  }
-
-  if (empty($postsPaginator) && ! empty($posts) && ($posts instanceof \Illuminate\Support\Collection)) {
-    $items = $posts;
-    $featured = $featured ?? $items->first();
-    $others = $others ?? $items->slice(1);
-  }
-
-  if ($others && ! ($others instanceof \Illuminate\Support\Collection)) {
-    $others = collect($others);
-  }
-
   $tz = config('app.timezone') ?: 'UTC';
 @endphp
 
@@ -138,7 +113,7 @@
           {{-- KIRI: GAMBAR --}}
           <div class="lg:col-span-5">
             <a href="{{ $fIsModel ? route('berita.show', $fSlug) : ($fSlug) }}" class="block group">
-              <div class="aspect-[16/12] md:aspect-[16/11] w-full rounded-[18px] overflow-hidden">
+              <div class="aspect-[16/12] md:aspect-[16/11] w-full rounded-[18px] overflow-hidden border-[2px] border-[#B6BBE6]">
                 <img src="{{ $fImgUrl }}" alt="{{ $fTitle }}"
                      class="w-full h-full object-cover transition group-hover:scale-[1.02]" loading="lazy"
                      onerror="this.onerror=null;this.src='{{ asset('images/beranda/slide1.jpg') }}'">
@@ -150,28 +125,20 @@
           <div class="lg:col-span-7">
             <div class="mb-3">
               <span class="inline-flex items-center
-                           px-4 py-1.5
-                           rounded-lg
-                           bg-[#F6D8DC]
-                           text-[#861D23]
-                           font-[Volkhov]
-                           text-[17px] md:text-[18px]
-                           font-semibold
-                           leading-none
-                           shadow-sm
-                           whitespace-nowrap">
+                      px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                      font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
                 Berita Baru
               </span>
             </div>
 
             <div class="flex items-center gap-2 text-slate-500 text-[13px] mb-1">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
-                <line x1="8"  y1="2" x2="8"  y2="6" stroke-width="2"></line>
-                <line x1="3"  y1="10" x2="21" y2="10" stroke-width="2"></line>
+                <path d="M2 9C2 7.114 2 6.172 2.586 5.586C3.172 5 4.114 5 6 5H18C19.886 5 20.828 5 21.414 5.586C22 6.172 22 7.114 22 9C22 9.471 22 9.707 21.854 9.854C21.707 10 21.47 10 21 10H3C2.529 10 2.293 10 2.146 9.854C2 9.707 2 9.47 2 9ZM2 18C2 19.886 2 20.828 2.586 21.414C3.172 22 4.114 22 6 22H18C19.886 22 20.828 22 21.414 21.414C22 20.828 22 19.886 22 18V13C22 12.529 22 12.293 21.854 12.146C21.707 12 21.47 12 21 12H3C2.529 12 2.293 12 2.146 12.146C2 12.293 2 12.53 2 13V18Z" fill="#727272"/>
+                <path d="M7 3V6M17 3V6" stroke="#727272" stroke-width="2" stroke-linecap="round"/>
               </svg>
-              <span>{{ $fDateForDisplay }}</span>
+              <span class="font-medium font-['Montserrat']">
+                  {{ \Carbon\Carbon::parse($fDateForDisplay)->translatedFormat('d F Y') }}
+              </span>
             </div>
 
             <h2 class="font-[Volkhov] font-bold text-[24px] md:text-[26px] leading-tight text-[#1524AF] mb-2 judul-stroke">
@@ -255,12 +222,12 @@
             {{-- Tanggal --}}
             <div class="flex items-center gap-2 text-[#6B7280] text-xs mb-1">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
-                <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line>
-                <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line>
+                <path d="M2 9C2 7.114 2 6.172 2.586 5.586C3.172 5 4.114 5 6 5H18C19.886 5 20.828 5 21.414 5.586C22 6.172 22 7.114 22 9C22 9.471 22 9.707 21.854 9.854C21.707 10 21.47 10 21 10H3C2.529 10 2.293 10 2.146 9.854C2 9.707 2 9.47 2 9ZM2 18C2 19.886 2 20.828 2.586 21.414C3.172 22 4.114 22 6 22H18C19.886 22 20.828 22 21.414 21.414C22 20.828 22 19.886 22 18V13C22 12.529 22 12.293 21.854 12.146C21.707 12 21.47 12 21 12H3C2.529 12 2.293 12 2.146 12.146C2 12.293 2 12.53 2 13V18Z" fill="#727272"/>
+                <path d="M7 3V6M17 3V6" stroke="#727272" stroke-width="2" stroke-linecap="round"/>
               </svg>
-              <span>{{ $dateForDisplay }}</span>
+              <span class="font-medium font-['Montserrat']">
+                  {{ \Carbon\Carbon::parse($fDateForDisplay)->translatedFormat('d F Y') }}
+              </span>
             </div>
 
             {{-- Judul --}}
