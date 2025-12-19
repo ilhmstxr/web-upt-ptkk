@@ -171,7 +171,7 @@ $items = [
         <div class="flex items-center gap-2 md:gap-3">
           <a href="{{ $loginHref }}"
              class="inline-flex items-center justify-center h-8 md:h-9 lg:h-10 px-3 md:px-4 rounded-xl
-                    border border-[#1524AF] text-[#1524AF] hover:bg-white/50
+                    border-[2px] border-[#1524AF] text-[#1524AF] hover:bg-white/50
                     font-[Montserrat] text-[13px] md:text-[14px] lg:text-[16px] transition">
             Masuk
           </a>
@@ -252,7 +252,7 @@ $items = [
       <div class="flex gap-3 pt-1">
         <a href="{{ $loginHref }}"
            class="flex-1 inline-flex items-center justify-center h-10 px-4 rounded-xl
-                  border border-[#1524AF] text-[#1524AF] hover:bg-white/50 transition">
+                  border-[2px] border-[#1524AF] text-[#1524AF] hover:bg-white/50 transition">
           Masuk
         </a>
         <a href="{{ $daftarHref }}"
