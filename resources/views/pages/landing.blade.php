@@ -1184,14 +1184,6 @@ $latestBeritas = Berita::query()
                       text-center md:text-left">
               Rekapitulasi Rata-Rata<br/>Program Pelatihan
             </h2>
-
-            <p class="font-['Montserrat'] font-medium
-                      text-[14px] md:text-[15px]
-                      text-[#374151] leading-relaxed mb-5
-                      text-justify">
-              Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
-              terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
-            </p>
           </div>
 
           <!-- List Pelatihan (dibangun JS agar sinkron) -->
@@ -1318,6 +1310,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const isTabletOrMobile = () => window.matchMedia('(max-width: 1024px)').matches;
   const isMobile = () => window.matchMedia('(max-width: 480px)').matches;
+  const xLabels = ['Pre-Test', 'Post-Test', 'Praktek', 'Rata-Rata'];
+  const palette = [
+    '#1524AF', '#FF6107', '#6B2C47', '#2F4BFF',
+    '#DBCC8F', '#0F766E', '#B45309', '#BE185D',
+    '#0369A1', '#4C1D95'
+  ];
+  const colorFor = (i) => {
+    if (i < palette.length) return palette[i];
+    const hue = (i * 37) % 360;
+    return `hsl(${hue}, 70%, 45%)`;
+  };
 
   function shortLabel1Word(label) {
     if (!label) return '';
@@ -1327,67 +1330,22 @@ document.addEventListener('DOMContentLoaded', () => {
     return firstWord.toUpperCase();
   }
 
-  // ===== DATA (dummy)
+  // ===== DATA (dynamic)
   const data = {
-    pelatihans: [
-      {
-        id: 1,
-        nama: "Program Akselerasi Kelas MJC Guru Angkatan I Tahun 2025",
-        warna: "#1524AF",
-        warna_inactive: "#081526",
-        kompetensis: [
-          { nama: "FOTOGRAFI (FOTO PRODUK)", pre: "61,00", post: "91,33", praktek: "86,60", rata: "84,51" },
-          { nama: "DESAIN GRAFIS (LOGO DAN PACKAGING)", pre: "44,67", post: "70,00", praktek: "86,73", rata: "80,85" },
-          { nama: "CONTENT CREATOR (VIDEOGRAFI)", pre: "46,67", post: "58,67", praktek: "87,87", rata: "80,83" },
-          { nama: "ANIMASI (MOTION ANIMATION)", pre: "56,67", post: "68,33", praktek: "83,20", rata: "79,06" },
-          { nama: "WEB DESAIN", pre: "40,33", post: "49,67", praktek: "86,67", rata: "78,33" },
-        ]
-      },
-      {
-        id: 2,
-        nama: "Program Mobile Training Unit (MTU) Angkatan II Tahun 2025",
-        warna: "#1524AF",
-        warna_inactive: "#081526",
-        kompetensis: [
-          { nama: "FOTOGRAFI (FOTO PRODUK)", pre: "83,83", post: "98,50", praktek: "89,43", rata: "89,78" },
-          { nama: "CONTENT CREATOR (VIDEOGRAFI)", pre: "87,50", post: "91,33", praktek: "86,10", rata: "86,76" },
-          { nama: "PLC", pre: "62,67", post: "72,00", praktek: "87,30", rata: "80,12" },
-          { nama: "TEKNIK PENDINGIN DAN TATA UDARA I", pre: "61,17", post: "68,33", praktek: "90,87", rata: "85,64" },
-          { nama: "TEKNIK PENDINGIN DAN TATA UDARA II", pre: "59,17", post: "83,17", praktek: "98,60", rata: "93,11" },
-        ]
-      },
-      {
-        id: 3,
-        nama: "MILEA Menuju Generasi Emas 2045 (Kelas MJC) Angkatan II Tahun 2025",
-        warna: "#1524AF",
-        warna_inactive: "#081526",
-        kompetensis: [
-          { nama: "FOTOGRAFI (FOTO PRODUK)", pre: "55,67", post: "85,67", praktek: "89,40", rata: "85,65" },
-          { nama: "DESAIN GRAFIS (LOGO DAN PACKAGING)", pre: "69,33", post: "79,00", praktek: "91,00", rata: "87,63" },
-          { nama: "WEB DESAIN", pre: "67,33", post: "78,67", praktek: "88,47", rata: "85,37" },
-          { nama: "CONTENT CREATOR (VIDEOGRAFI)", pre: "58,00", post: "75,67", praktek: "85,53", rata: "81,79" },
-          { nama: "ANIMASI (MOTION ANIMATION)", pre: "60,67", post: "75,00", praktek: "86,80", rata: "83,01" },
-        ]
-      },
-      {
-        id: 4,
-        nama: "Akselerasi TUK Kelas Keterampilan (Guru SMK/SMA) Tahun 2025",
-        warna: "#1524AF",
-        warna_inactive: "#081526",
-        kompetensis: [
-          { nama: "TEKNIK PENDINGIN DAN TATA UDARA", pre: "63,07", post: "84,27", praktek: "92,67", rata: "88,87" },
-          { nama: "TATA KECANTIKAN", pre: "60,00", post: "86,40", praktek: "92,07", rata: "83,89" },
-          { nama: "TATA BUSANA", pre: "62,67", post: "94,13", praktek: "90,93", rata: "88,43" },
-          { nama: "TATA BOGA", pre: "88,53", post: "99,47", praktek: "82,73", rata: "84,99" },
-        ]
-      }
-    ]
+    pelatihans: @json($pelatihans),
   };
+  const pelatihans = Array.isArray(data.pelatihans) ? data.pelatihans : [];
+  const dummyNotice = document.getElementById('dummyNotice');
 
   // ===== render list pelatihan
-  list.innerHTML = data.pelatihans.map((p, i) => {
-    const isFirst = i === 0;
-    return `
+  if (!pelatihans.length) {
+    list.innerHTML = '';
+    if (dummyNotice) dummyNotice.classList.remove('hidden');
+  } else {
+    if (dummyNotice) dummyNotice.classList.add('hidden');
+    list.innerHTML = pelatihans.map((p, i) => {
+      const isFirst = i === 0;
+      return `
       <li>
         <button type="button"
           class="pel-btn w-full flex items-start gap-2 py-1.5 text-left"
@@ -1407,7 +1365,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="divider h-[1px]" style="background-color:${isFirst ? p.warna : p.warna_inactive};"></div>
       </li>
     `;
-  }).join('');
+    }).join('');
+  }
 
   function setActive(idx){
     list.querySelectorAll('li').forEach((li, i) => {
@@ -1429,18 +1388,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function getPel(idx){ return data.pelatihans[idx] || data.pelatihans[0]; }
+  function getPel(idx){
+    return pelatihans[idx] || pelatihans[0] || { kompetensis: [] };
+  }
 
-  function buildPayload(pel){
+  function buildDatasets(pel){
     const ks = pel.kompetensis || [];
-    const labels = ks.map(k => k.nama);
-    return {
-      labels,
-      pre: ks.map(k => clamp01(toNum(k.pre))),
-      post: ks.map(k => clamp01(toNum(k.post))),
-      praktek: ks.map(k => clamp01(toNum(k.praktek))),
-      rata: ks.map(k => clamp01(toNum(k.rata))),
-    };
+    return ks.map((k, i) => {
+      const color = colorFor(i);
+      return {
+        label: k.nama,
+        data: [
+          clamp01(toNum(k.pre)),
+          clamp01(toNum(k.post)),
+          clamp01(toNum(k.praktek)),
+          clamp01((toNum(k.post) + toNum(k.praktek)) / 2),
+        ],
+        borderColor: color,
+        pointBackgroundColor: color,
+        pointBorderColor: color,
+        borderWidth: 2,
+        tension: 0.35,
+        pointRadius: 3.5,
+        pointHoverRadius: 4.5,
+        fill: false,
+      };
+    });
   }
 
   // cards
@@ -1458,19 +1431,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Chart init
   const ctx = canvasEl.getContext('2d');
-  const p0 = buildPayload(getPel(0));
-  window.__fullLabels = p0.labels; // ✅ penting untuk callback
+  const datasets0 = buildDatasets(getPel(0));
 
   const chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: p0.labels,
-      datasets: [
-        { label: 'Pre-Test', data: p0.pre, borderColor:'#FF6107', pointBackgroundColor:'#FF6107', pointBorderColor:'#FF6107', borderWidth:2, tension:0.35, pointRadius:4, pointHoverRadius:5, fill:false },
-        { label: 'Praktek',  data: p0.praktek, borderColor:'#6B2C47', pointBackgroundColor:'#6B2C47', pointBorderColor:'#6B2C47', borderWidth:2, tension:0.35, pointRadius:4, pointHoverRadius:5, fill:false },
-        { label: 'Post-Test',data: p0.post, borderColor:'#2F4BFF', pointBackgroundColor:'#2F4BFF', pointBorderColor:'#2F4BFF', borderWidth:2, tension:0.35, pointRadius:4, pointHoverRadius:5, fill:false },
-        { label: 'Rata-Rata',data: p0.rata, borderColor:'#DBCC8F', pointBackgroundColor:'#DBCC8F', pointBorderColor:'#DBCC8F', borderWidth:2, tension:0.35, pointRadius:4, pointHoverRadius:5, fill:false },
-      ]
+      labels: xLabels,
+      datasets: datasets0
     },
     options: {
       maintainAspectRatio: false,
@@ -1495,26 +1462,23 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       scales: {
         x: {
-          offset: true, // ✅ gak nempel sumbu Y
+          offset: true,
           grid: {
-            offset: false, // ✅ garis vertikal lengkap & sejajar kategori (desktop look)
+            offset: false,
             display: true,
             drawTicks: false,
             color: 'rgba(135,135,163,0.25)',
             lineWidth: 1
           },
           ticks: {
-            autoSkip: false, // ✅ semua kategori punya garis
+            autoSkip: false,
             maxRotation: 0,
             minRotation: 0,
             padding: isMobile() ? 6 : 10,
             font: { size: isMobile() ? 10 : 11 },
             color: '#8787A3',
             callback: function(value){
-              const raw = this.getLabelForValue(value);
-              const full = (Array.isArray(window.__fullLabels) && window.__fullLabels[value]) ? window.__fullLabels[value] : raw;
-              if (isMobile()) return shortLabel1Word(full);          // ✅ HP: 1 kata
-              return wrap2Lines(full, isTabletOrMobile() ? 16 : 18); // ✅ tablet/desktop: wrap
+              return this.getLabelForValue(value);
             }
           },
           afterFit: (scale) => { scale.height = Math.max(scale.height, isMobile() ? 52 : 60); }
@@ -1532,8 +1496,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // init
-  setActive(0);
-  setSummary(0);
+  if (pelatihans.length) {
+    setActive(0);
+    setSummary(0);
+  } else {
+    preCard.textContent = '0';
+    praktekCard.textContent = '0';
+    postCard.textContent = '0';
+  }
 
   // klik pelatihan -> update chart + cards
   list.addEventListener('click', (e) => {
@@ -1544,14 +1514,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setActive(idx);
     setSummary(idx);
 
-    const payload = buildPayload(getPel(idx));
-    window.__fullLabels = payload.labels; // ✅ penting!
+    const datasets = buildDatasets(getPel(idx));
 
-    chart.data.labels = payload.labels;
-    chart.data.datasets[0].data = payload.pre;
-    chart.data.datasets[1].data = payload.praktek;
-    chart.data.datasets[2].data = payload.post;
-    chart.data.datasets[3].data = payload.rata;
+    chart.data.labels = xLabels;
+    chart.data.datasets = datasets;
     chart.update();
   });
 
