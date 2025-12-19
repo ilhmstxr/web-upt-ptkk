@@ -79,7 +79,7 @@ class PendaftaranResource extends Resource
             ->whereNotNull('p.skor')
             ->where(function ($q) use ($pelatihanId) {
                 $q->where('p.pelatihan_id', $pelatihanId)
-                  ->orWhereNull('p.pelatihan_id');
+                    ->orWhereNull('p.pelatihan_id');
             })
             ->orderByDesc('p.waktu_selesai')
             ->orderByDesc('p.updated_at')
@@ -96,7 +96,7 @@ class PendaftaranResource extends Resource
     {
         $vals = array_filter(
             [(float) ($pre ?? 0), (float) ($post ?? 0), (float) ($praktek ?? 0)],
-            fn ($v) => is_numeric($v) && $v > 0
+            fn($v) => is_numeric($v) && $v > 0
         );
 
         return count($vals) ? round(array_sum($vals) / count($vals), 2) : 0;
@@ -253,7 +253,7 @@ class PendaftaranResource extends Resource
                     ]),
             ])
                 ->columnSpanFull()
-                ->visible(fn ($record) => blank($record)),
+                ->visible(fn($record) => blank($record)),
 
             /**
              * =========================
@@ -264,66 +264,43 @@ class PendaftaranResource extends Resource
                 ->schema([
                     Forms\Components\Section::make('Informasi Pendaftar')
                         ->schema([
-                            Forms\Components\Placeholder::make('peserta_name')
-                                ->label('Nama Peserta')
-                                ->content(fn ($record) => $record?->peserta?->nama ?? '-'),
+                            Forms\Components\TextInput::make('nama')->label('Nama Peserta')->required()->maxLength(150),
+                            Forms\Components\TextInput::make('nomor_registrasi')->label('Nomor Registrasi')->disabled()->dehydrated(false),
+                            Forms\Components\TextInput::make('nik')->label('NIK')->numeric()->length(16)->required(),
+                            Forms\Components\TextInput::make('no_hp')->label('No. HP')->tel()->required(),
+                            Forms\Components\TextInput::make('email')->label('Email')->email()->required(),
+                            Forms\Components\TextInput::make('tempat_lahir')->required(),
+                            Forms\Components\DatePicker::make('tanggal_lahir')->required(),
+                            Forms\Components\Select::make('jenis_kelamin')->options(['Laki-laki' => 'Laki-laki', 'Perempuan' => 'Perempuan'])->required(),
+                            Forms\Components\TextInput::make('agama')->required(),
+                            Forms\Components\Textarea::make('alamat')->columnSpanFull()->required(),
 
-                            Forms\Components\TextInput::make('nomor_registrasi')
-                                ->label('Nomor Registrasi')
-                                ->disabled()
-                                ->dehydrated(false),
-
-                            Forms\Components\Placeholder::make('pelatihan_name')
-                                ->label('Pelatihan')
-                                ->content(fn ($record) => $record?->pelatihan?->nama_pelatihan ?? '-'),
-
-                            Forms\Components\Placeholder::make('kompetensi_name')
-                                ->label('Kompetensi')
-                                ->content(fn ($record) => $record?->kompetensiPelatihan?->kompetensi?->nama_kompetensi ?? '-'),
-
-                            Forms\Components\TextInput::make('kelas')
-                                ->label('Kelas')
-                                ->disabled()
-                                ->dehydrated(false),
-
-                            Forms\Components\TextInput::make('tanggal_pendaftaran')
-                                ->label('Tanggal Pendaftaran')
-                                ->disabled()
-                                ->dehydrated(false),
+                            Forms\Components\Placeholder::make('pelatihan_name')->label('Pelatihan')->content(fn($record) => $record?->pelatihan?->nama_pelatihan ?? '-'),
+                            Forms\Components\Placeholder::make('kompetensi_name')->label('Kompetensi')->content(fn($record) => $record?->kompetensiPelatihan?->kompetensi?->nama_kompetensi ?? '-'),
+                            Forms\Components\TextInput::make('kelas')->label('Kelas')->required(),
+                            Forms\Components\TextInput::make('tanggal_pendaftaran')->label('Tanggal Pendaftaran')->disabled()->dehydrated(false),
                         ])
                         ->columns(2),
 
-                    Forms\Components\Section::make('Verifikasi Berkas')
+                    Forms\Components\Section::make('Detail Instansi')
                         ->schema([
-                            Forms\Components\Placeholder::make('lampiran_info')
-                                ->label('')
-                                ->content(function ($record) {
-                                    $lampiran = $record?->peserta?->lampiran;
+                            Forms\Components\TextInput::make('asal_instansi')->label('Asal Sekolah / Instansi')->required(),
+                            Forms\Components\TextInput::make('alamat_instansi')->required(),
+                            Forms\Components\TextInput::make('kota')->label('Kota / Kabupaten')->required(),
+                            Forms\Components\Select::make('cabangDinas_id')->label('Cabang Dinas')
+                                ->options(CabangDinas::query()->pluck('nama', 'id')->all())
+                                ->searchable()->preload()->required(),
+                        ])->columns(2),
 
-                                    if (! $lampiran) {
-                                        return 'Belum ada berkas lampiran.';
-                                    }
-
-                                    $ktp   = $lampiran->fc_ktp_url ?? null;
-                                    $ijaz  = $lampiran->fc_ijazah_url ?? null;
-                                    $sehat = $lampiran->fc_surat_sehat_url ?? null;
-                                    $foto  = $lampiran->pas_foto_url ?? null;
-
-                                    $link = fn ($url) => $url
-                                        ? '<a href="' . $url . '" target="_blank" class="text-primary-600 hover:underline">Lihat File</a>'
-                                        : '<span class="text-gray-500">Tidak ada</span>';
-
-                                    return new HtmlString('
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div><strong>KTP:</strong> ' . $link($ktp) . '</div>
-                                            <div><strong>Ijazah:</strong> ' . $link($ijaz) . '</div>
-                                            <div><strong>Surat Sehat:</strong> ' . $link($sehat) . '</div>
-                                            <div><strong>Pas Foto:</strong> ' . $link($foto) . '</div>
-                                        </div>
-                                    ');
-                                })
-                                ->columnSpanFull(),
-                        ]),
+                    Forms\Components\Section::make('Verifikasi Berkas & Lampiran')
+                        ->schema([
+                            Forms\Components\FileUpload::make('fc_ktp')->label('Scan KTP')->disk('public')->directory('lampiran-peserta')->acceptedFileTypes(['application/pdf', 'image/*'])->maxSize(2048),
+                            Forms\Components\FileUpload::make('fc_ijazah')->label('Scan Ijazah')->disk('public')->directory('lampiran-peserta')->acceptedFileTypes(['application/pdf', 'image/*'])->maxSize(2048),
+                            Forms\Components\FileUpload::make('fc_surat_tugas')->label('Surat Tugas')->disk('public')->directory('lampiran-peserta')->acceptedFileTypes(['application/pdf', 'image/*'])->maxSize(2048),
+                            Forms\Components\FileUpload::make('fc_surat_sehat')->label('Surat Sehat')->disk('public')->directory('lampiran-peserta')->acceptedFileTypes(['application/pdf', 'image/*'])->maxSize(2048),
+                            Forms\Components\FileUpload::make('pas_foto')->label('Pas Foto')->disk('public')->directory('lampiran-peserta')->image()->maxSize(2048),
+                            Forms\Components\TextInput::make('nomor_surat_tugas')->label('Nomor Surat Tugas'),
+                        ])->columns(2),
 
                     /**
                      * NILAI PESERTA:
@@ -430,7 +407,7 @@ class PendaftaranResource extends Resource
                         ->columns(2),
                 ])
                 ->columnSpan(['lg' => 2])
-                ->visible(fn ($record) => filled($record)),
+                ->visible(fn($record) => filled($record)),
 
             Forms\Components\Group::make()
                 ->schema([
@@ -449,7 +426,7 @@ class PendaftaranResource extends Resource
                         ]),
                 ])
                 ->columnSpan(['lg' => 1])
-                ->visible(fn ($record) => filled($record)),
+                ->visible(fn($record) => filled($record)),
         ]);
     }
 
@@ -487,14 +464,14 @@ class PendaftaranResource extends Resource
                     ->label('Status')
                     ->icon('heroicon-o-shield-check')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => match (strtolower((string) $state)) {
+                    ->formatStateUsing(fn($state) => match (strtolower((string) $state)) {
                         'pending'    => 'Pending',
                         'verifikasi' => 'Verifikasi',
                         'diterima'   => 'Diterima',
                         'ditolak'    => 'Ditolak',
                         default      => (string) $state,
                     })
-                    ->color(fn (?string $state): string => match (strtolower((string) $state)) {
+                    ->color(fn(?string $state): string => match (strtolower((string) $state)) {
                         'pending'    => 'warning',
                         'verifikasi' => 'info',
                         'diterima'   => 'success',
@@ -525,7 +502,7 @@ class PendaftaranResource extends Resource
 
                 Tables\Filters\SelectFilter::make('kompetensi_pelatihan_id')
                     ->label('Kompetensi')
-                    ->options(fn () => Kompetensi::query()->pluck('nama_kompetensi', 'id')->all())
+                    ->options(fn() => Kompetensi::query()->pluck('nama_kompetensi', 'id')->all())
                     ->query(function (Builder $query, array $data) {
                         $kompetensiId = $data['value'] ?? null;
                         if (! $kompetensiId) return $query;
@@ -541,7 +518,7 @@ class PendaftaranResource extends Resource
                     ->label('Terima')
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->requiresConfirmation(fn () => ! session()->get('suppress_pendaftaran_approval'))
+                    ->requiresConfirmation(fn() => ! session()->get('suppress_pendaftaran_approval'))
                     ->modalIcon('heroicon-o-check')
                     ->modalHeading('Terima Peserta')
                     ->modalDescription('Apakah Anda yakin ingin menerima peserta ini? Status akan berubah menjadi Diterima.')
@@ -568,8 +545,8 @@ class PendaftaranResource extends Resource
 
                             $kamarAsrama =
                                 $record->penempatanAsramaAktif?->kamarPelatihan?->kamar?->nomor_kamar
-                                    ? 'Kamar ' . $record->penempatanAsramaAktif->kamarPelatihan->kamar->nomor_kamar
-                                    : 'Belum Ditentukan';
+                                ? 'Kamar ' . $record->penempatanAsramaAktif->kamarPelatihan->kamar->nomor_kamar
+                                : 'Belum Ditentukan';
 
                             $emailData = [
                                 'id_peserta'     => $record->nomor_registrasi,
@@ -607,13 +584,13 @@ class PendaftaranResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
 
                 Tables\Actions\Action::make('reject')
                     ->label('Tolak')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
-                    ->requiresConfirmation(fn () => ! session()->get('suppress_pendaftaran_approval'))
+                    ->requiresConfirmation(fn() => ! session()->get('suppress_pendaftaran_approval'))
                     ->modalIcon('heroicon-o-x-mark')
                     ->modalHeading('Tolak Peserta')
                     ->modalDescription('Apakah Anda yakin ingin menolak peserta ini? Status akan berubah menjadi Ditolak.')
@@ -634,17 +611,17 @@ class PendaftaranResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
 
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
 
                 Tables\Actions\DeleteAction::make()
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
-                    ->visible(fn (PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
