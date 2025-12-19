@@ -86,16 +86,16 @@
 
         {{-- Input Token / Nomor Registrasi --}}
         <div>
-          <label class="block text-[#1A1A1A] text-sm font-medium">ID Peserta</label>
+          <label class="block text-[#1A1A1A] text-sm font-medium">Nomor Registrasi</label>
           <input type="text"
                  name="token"
                  value="{{ old('token') }}"
                  autocomplete="off"
                  class="w-full mt-1 rounded-xl border border-gray-300 px-4 py-3 text-sm
                         focus:ring-2 focus:ring-[#1524AF] outline-none"
-                 placeholder="Masukkan ID Peserta / Nomor Registrasi">
+                 placeholder="Masukkan Nomor Registrasi">
           <p class="text-xs text-gray-500 mt-1">
-            Isi dengan nomor registrasi atau assessment token.
+            Isi dengan nomor registrasi.
           </p>
         </div>
 

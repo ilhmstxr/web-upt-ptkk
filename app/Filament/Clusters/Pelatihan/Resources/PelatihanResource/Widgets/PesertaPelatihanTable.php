@@ -15,6 +15,8 @@ use Filament\Notifications\Notification;
 
 class PesertaPelatihanTable extends BaseWidget
 {
+    public const DEFAULT_CP_NAMA = 'Sdri. Admin';
+    public const DEFAULT_CP_PHONE = '082249999447';
     /**
      * Record Pelatihan (DISET VIA mount / data)
      */
@@ -258,13 +260,13 @@ class PesertaPelatihanTable extends BaseWidget
 
                         Forms\Components\TextInput::make('cp_nama')
                             ->label('Nama CP')
-                            ->default('Sdri. Admin')
+                            ->default(self::DEFAULT_CP_NAMA)
                             ->required()
                             ->visible(fn(Forms\Get $get) => $get('kirim_email_konfirmasi')), // Hanya muncul jika kirim email
 
                         Forms\Components\TextInput::make('cp_phone')
                             ->label('No. Telp CP')
-                            ->default('082249999447')
+                            ->default(self::DEFAULT_CP_PHONE)
                             ->required()
                             ->visible(fn(Forms\Get $get) => $get('kirim_email_konfirmasi')),
                     ])

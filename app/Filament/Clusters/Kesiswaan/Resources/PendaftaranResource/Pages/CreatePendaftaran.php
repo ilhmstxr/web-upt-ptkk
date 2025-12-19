@@ -94,7 +94,7 @@ class CreatePendaftaran extends CreateRecord
             );
 
             /**
-             * 4) PENDAFTARAN: nomor registrasi + token
+             * 4) PENDAFTARAN: nomor registrasi
              */
             $existing = PendaftaranPelatihan::query()
                 ->where('pelatihan_id', $data['pelatihan_id'])
@@ -103,10 +103,6 @@ class CreatePendaftaran extends CreateRecord
 
             $nextUrut = $existing + 1;
             $nomorReg = sprintf('%d-%s-%03d', $data['pelatihan_id'], strtoupper($kodeKompetensi), $nextUrut);
-
-            $namaDepan = Str::upper(Str::slug(explode(' ', $data['nama'])[0] ?? '', ''));
-            $namaClean = substr($namaDepan, 0, 5);
-            $token = sprintf('%s-%s-%s-%s', $namaClean, $data['pelatihan_id'], date('Y'), Str::upper(Str::random(4)));
 
             // ✅ enum lowercase sesuai migration
             $statusPendaftaran = $this->autoAcceptAndSendEmail ? 'diterima' : 'pending';
@@ -123,9 +119,6 @@ class CreatePendaftaran extends CreateRecord
 
                 'nomor_registrasi'        => $nomorReg,
                 'tanggal_pendaftaran'     => now(),
-
-                'assessment_token'        => $token,
-                'token_expires_at'        => now()->addMonths(3),
 
                 'nilai_pre_test'          => 0,
                 'nilai_post_test'         => 0,

@@ -41,18 +41,18 @@
 
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
       <div class="lg:col-span-5">
-        <span class="inline-flex items-center rounded-full bg-[#FFEFEF] px-4 py-1 text-xs font-semibold text-[#C21E1E]">
-          Data Statistik
-        </span>
+        <span class="inline-flex items-center
+                      px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                      font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+              Data Statistik
+            </span>
 
-        <h1 class="mt-4 font-[Volkhov] font-bold text-[22px] md:text-[30px] leading-snug text-[#0F1E7A]">
-          Rekapitulasi Rata-Rata<br />Program Pelatihan
-        </h1>
-
-        <p class="mt-3 text-[13px] md:text-[14px] font-[Montserrat] text-slate-600 leading-relaxed">
-          Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
-          terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
-        </p>
+            <h2 class="heading-stroke font-[Volkhov] font-bold
+                      text-[22px] md:text-[26px] leading-tight
+                      text-[#1524AF] mb-3
+                      text-center md:text-left">
+              Rekapitulasi Rata-Rata<br/>Program Pelatihan
+            </h2>
 
         <p id="judulPelatihan" class="mt-3 font-[Montserrat] text-sm font-semibold text-[#1524AF]">
           Memuat...

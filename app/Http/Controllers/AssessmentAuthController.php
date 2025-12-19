@@ -62,15 +62,15 @@ class AssessmentAuthController extends Controller
             'password' => 'required|string', // Password (Tgl Lahir) wajib diisi
         ]);
 
-        // 2. Cari Pendaftaran berdasarkan Token
+        // 2. Cari Pendaftaran berdasarkan Nomor Registrasi
         // Kita load relasi ke peserta -> user untuk cek password
         $pendaftaran = PendaftaranPelatihan::with(['peserta.user'])
-                        ->where('assessment_token', $request->token)
+                        ->where('nomor_registrasi', $request->token)
                         ->first();
 
-        // Cek 1: Token Valid?
+        // Cek 1: Nomor Registrasi Valid?
         if (!$pendaftaran) {
-            return back()->with('error', 'Token ID Peserta tidak ditemukan.');
+            return back()->with('error', 'Nomor registrasi tidak ditemukan.');
         }
 
         // Cek 2: Password Valid? (Format ddmmyyyy)
@@ -83,7 +83,7 @@ class AssessmentAuthController extends Controller
         // 3. Login Berhasil -> Simpan ke Session
         Session::put('peserta_aktif', $pendaftaran->peserta);
         
-        // Opsional: Simpan data pendaftaran spesifik ini agar tahu dia login pake token pelatihan mana
+        // Opsional: Simpan data pendaftaran spesifik ini agar tahu dia login pake nomor registrasi mana
         Session::put('pendaftaran_aktif_id', $pendaftaran->id);
 
         return redirect()->route('dashboard.home')->with('success', 'Login berhasil!');
