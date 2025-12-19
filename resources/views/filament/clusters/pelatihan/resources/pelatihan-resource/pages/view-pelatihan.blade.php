@@ -364,7 +364,7 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <template x-for="(q, qIndex) in questions" :key="q.id">
-                                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col">
+                                    <div class="bg-white dark:bg-gray-900 p-5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col">
                                         <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 min-h-[3rem] line-clamp-2" x-text="q.teks" :title="q.teks"></p>
 
                                         <div class="flex items-center gap-4 mt-auto">

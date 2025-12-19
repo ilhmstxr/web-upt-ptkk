@@ -532,6 +532,7 @@ $latestBeritas = Berita::query()
             Cerita Kami
           </span>
         </div>
+        resources\views\pages\landing.blade.php
 
         {{-- Title --}}
         <h2 class="mb-[15px] font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch] text-center md:text-left">
