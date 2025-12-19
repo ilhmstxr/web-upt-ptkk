@@ -640,6 +640,7 @@ $latestBeritas = Berita::query()
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
 
     {{-- HEADER (Menggunakan style terbaru Tuan Putri) --}}
+    {{-- HEADER (Menggunakan style terbaru Tuan Putri) --}}
     <div class="grid gap-y-2 mb-6">
       {{-- Badge Berita Terbaru --}}
       <div class="w-full flex mb-[15px] justify-center md:justify-start">
@@ -650,7 +651,30 @@ $latestBeritas = Berita::query()
         </span>
       </div>
 
+      {{-- Badge Berita Terbaru --}}
+      <div class="w-full flex mb-[15px] justify-center md:justify-start">
+        <span class="inline-flex items-center
+                     px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                     font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+          Berita Terbaru
+        </span>
+      </div>
+
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <h2 class="mb-[15px] md:mb-0 mx-auto md:mx-0 
+                   font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight 
+                   text-[#1524AF] heading-stroke 
+                   max-w-[38ch] md:max-w-[24ch] lg:max-w-[38ch] 
+                   text-center md:text-left">
+          Jangan lewatkan kabar terbaru dari UPT PTKK
+        </h2>
+        
+        <a href="{{ route('berita.index') ?? '#' }}" 
+           class="mt-4 md:mt-0 self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-1 
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                  text-[14px] md:text-[15px] lg:text-[16px] 
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
         <h2 class="mb-[15px] md:mb-0 mx-auto md:mx-0
                    font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight
                    text-[#1524AF] heading-stroke
@@ -666,6 +690,11 @@ $latestBeritas = Berita::query()
                   text-[14px] md:text-[15px] lg:text-[16px]
                   shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
           <span class="leading-none">Lihat Semua Berita</span>
+          <svg xmlns="http://www.w3.org/2000/svg" 
+               class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" 
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+          </svg>
           <svg xmlns="http://www.w3.org/2000/svg"
                class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -676,8 +705,10 @@ $latestBeritas = Berita::query()
     </div>
 
     {{-- GRID CARD (Style Baru: Rounded-26px, Shadow Glow) --}}
+    {{-- GRID CARD (Style Baru: Rounded-26px, Shadow Glow) --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       @if($latestBeritas->isEmpty())
+        {{-- FALLBACK: Belum ada berita --}}
         {{-- FALLBACK: Belum ada berita --}}
         @for($i=1;$i<=3;$i++)
           <article class="group rounded-[26px] border border-[#D0D5DD] bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 hover:border-[#1524AF] hover:shadow-[0_10px_30px_rgba(21,36,175,0.18)] hover:bg-gradient-to-br hover:from-[#EFF5FF] hover:to-[#F8FBFF]">
@@ -690,14 +721,29 @@ $latestBeritas = Berita::query()
              </div>
              <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2 text-[#081526]">Belum ada berita</h3>
              <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-[#374151] mb-3 leading-relaxed">Silakan tambahkan berita dari panel admin.</p>
+          <article class="group rounded-[26px] border border-[#D0D5DD] bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 hover:border-[#1524AF] hover:shadow-[0_10px_30px_rgba(21,36,175,0.18)] hover:bg-gradient-to-br hover:from-[#EFF5FF] hover:to-[#F8FBFF]">
+             <div class="aspect-[16/11] w-full rounded-[20px] overflow-hidden border border-[#E2E8F0] mb-3 bg-gray-100 flex items-center justify-center text-gray-400">
+               Belum ada gambar
+             </div>
+             <div class="flex items-center gap-2 text-[#6B7280] text-xs mb-1">
+               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect><line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line><line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line><line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line></svg>
+               <span>-</span>
+             </div>
+             <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2 text-[#081526]">Belum ada berita</h3>
+             <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-[#374151] mb-3 leading-relaxed">Silakan tambahkan berita dari panel admin.</p>
           </article>
         @endfor
+
+
       @else
+        {{-- BERITA TERSEDIA --}}
         {{-- BERITA TERSEDIA --}}
         @foreach($latestBeritas as $b)
           @php
             $imgUrl = $b->image ? Storage::url($b->image) : asset('images/berita/placeholder.jpg');
             $pubDate = optional($b->published_at ?? $b->created_at)->format('d F Y');
+            $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
+            $slugOrUrl = route('berita.show', $b->slug ?? $b->id);
             $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
             $slugOrUrl = route('berita.show', $b->slug ?? $b->id);
           @endphp
@@ -709,7 +755,34 @@ $latestBeritas = Berita::query()
                    hover:border-[#1524AF]
                    hover:shadow-[0_10px_30px_rgba(21,36,175,0.18)]
                    hover:bg-gradient-to-br hover:from-[#EFF5FF] hover:to-[#F8FBFF]">
+          <article
+            class="group rounded-[26px] border border-[#D0D5DD] bg-white
+                   p-4 sm:p-5 shadow-sm
+                   transition-all duration-300
+                   hover:border-[#1524AF]
+                   hover:shadow-[0_10px_30px_rgba(21,36,175,0.18)]
+                   hover:bg-gradient-to-br hover:from-[#EFF5FF] hover:to-[#F8FBFF]">
 
+            {{-- Gambar --}}
+            <a href="{{ $slugOrUrl }}" class="block mb-3">
+              <div class="aspect-[16/11] w-full rounded-[20px] overflow-hidden border border-[#E2E8F0] transition-colors group-hover:border-[#1524AF]">
+                <img
+                  src="{{ $imgUrl }}"
+                  alt="{{ $b->title }}"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='{{ asset('images/berita/placeholder.jpg') }}'">
+              </div>
+            </a>
+
+            {{-- Tanggal --}}
+            <div class="flex items-center gap-2 text-[#6B7280] text-xs mb-1">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
+                <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line>
+                <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line>
+              </svg>
             {{-- Gambar --}}
             <a href="{{ $slugOrUrl }}" class="block mb-3">
               <div class="aspect-[16/11] w-full rounded-[20px] overflow-hidden border border-[#E2E8F0] transition-colors group-hover:border-[#1524AF]">
@@ -742,6 +815,15 @@ $latestBeritas = Berita::query()
                 <span class="block md:hidden">{{ Str::words($b->title, 6, '...') }}</span>
                 <span class="hidden md:block">{{ $b->title }}</span>
               </a>
+            {{-- Judul --}}
+            <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2
+                       text-[#081526] transition-colors duration-200
+                       group-hover:text-[#1524AF]">
+              <a href="{{ $slugOrUrl }}" class="block">
+                {{-- Judul dipotong biar rapi di HP --}}
+                <span class="block md:hidden">{{ Str::words($b->title, 6, '...') }}</span>
+                <span class="hidden md:block">{{ $b->title }}</span>
+              </a>
             </h3>
 
             {{-- Excerpt --}}
@@ -755,8 +837,30 @@ $latestBeritas = Berita::query()
                       line-clamp-3
                       text-justify">
               {{ $excerpt }}
+            {{-- Excerpt --}}
+            <p class="font-[Montserrat]
+                      text-[13px] sm:text-[14px]
+                      text-[#374151]
+                      mb-3
+                      leading-relaxed
+                      break-words
+                      overflow-hidden
+                      line-clamp-3
+                      text-justify">
+              {{ $excerpt }}
             </p>
 
+            {{-- Baca Selengkapnya --}}
+            <a href="{{ $slugOrUrl }}"
+               class="inline-flex items-center gap-2 font-[Montserrat]
+                      text-[13px] sm:text-[14px]
+                      text-[#595959]
+                      transition-colors duration-200
+                      group-hover:text-[#1524AF] group-hover:underline underline-offset-2">
+              Baca Selengkapnya
+              <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             {{-- Baca Selengkapnya --}}
             <a href="{{ $slugOrUrl }}"
                class="inline-flex items-center gap-2 font-[Montserrat]
@@ -792,6 +896,11 @@ $latestBeritas = Berita::query()
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px] text-center flex flex-col items-center">
 
     {{-- BADGE --}}
+    <div class="inline-block bg-[#F3E8E9] text-[#861D23]
+                font-[Volkhov] font-bold 
+                text-base md:text-lg lg:text-[20px]
+                leading-tight shadow-sm
+                px-4 py-1 rounded-md mb-4">
     <div class="inline-block bg-[#F3E8E9] text-[#861D23]
                 font-[Volkhov] font-bold
                 text-base md:text-lg lg:text-[20px]
@@ -1165,6 +1274,7 @@ $latestBeritas = Berita::query()
 </script>
 
 
+<section class="relative bg-[#F1F9FC] py-4 md:py-6">
 <!-- ========================= -->
 <!-- SECTION: DATA STATISTIK   -->
 <!-- ========================= -->
@@ -1179,12 +1289,27 @@ $latestBeritas = Berita::query()
             <span class="inline-flex items-center
                       px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
                       font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+                      Data Statistik</span>
+          <div class="w-full flex mb-[15px] justify-center md:justify-start">
+            <span class="inline-flex items-center
+                      px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                      font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
               Data Statistik
             </span>
           </div>
 
           <div class="flex flex-col items-center md:items-start w-full">
-            {{-- JUDUL: Disamakan style-nya (Volkhov, Blue, Size 22px/26px) --}}
+  
+            <div class="flex flex-col items-center md:items-start w-full">
+  
+              {{-- JUDUL: Disamakan style-nya (Volkhov, Blue, Size 22px/26px) --}}
+              <h2 class="heading-stroke font-[Volkhov] font-bold 
+                        text-[22px] md:text-[26px] leading-tight 
+                        text-[#1524AF] mb-3
+                        text-center md:text-left">
+                Rekapitulasi Rata-Rata<br/>Program Pelatihan
+              </h2>
+          <div class="flex flex-col items-center md:items-start w-full">
             <h2 class="heading-stroke font-[Volkhov] font-bold
                       text-[22px] md:text-[26px] leading-tight
                       text-[#1524AF] mb-3
@@ -1192,16 +1317,23 @@ $latestBeritas = Berita::query()
               Rekapitulasi Rata-Rata<br/>Program Pelatihan
             </h2>
 
-            {{-- TEKS: Disamakan style-nya (Montserrat, Ukuran pas, Justify di HP) --}}
-            <p class="font-['Montserrat'] font-medium
-                      text-[14px] md:text-[15px]
-                      text-[#374151] leading-relaxed mb-5
-                      text-justify">
-              Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
-              terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
-            </p>
+              {{-- TEKS: Disamakan style-nya (Montserrat, Ukuran pas, Justify di HP) --}}
+              <p class="font-['Montserrat'] font-medium 
+                        text-[14px] md:text-[15px] 
+                        text-[#374151] leading-relaxed mb-5
+                        text-justify">
+                Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
+                terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
+              </p>
           </div>
 
+            </div>
+
+          </div>
+
+          <!-- List Pelatihan
+               - Blade sebagai fallback awal
+               - Akan di-replace JS jika API/dummy dipakai -->
           <!-- List Pelatihan (dibangun JS agar sinkron) -->
           <ul id="listPelatihan" class="space-y-2">
             <li>
@@ -1238,6 +1370,7 @@ $latestBeritas = Berita::query()
 
       <!-- Right -->
       <div class="lg:col-span-8">
+
         <!-- Summary cards -->
         <div class="grid grid-cols-3 gap-3 sm:gap-4 mb-4">
           <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
@@ -1268,8 +1401,12 @@ $latestBeritas = Berita::query()
             <canvas id="statistikChart"></canvas>
           </div>
         </div>
-      </div>
 
+      </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </section>
@@ -1537,20 +1674,35 @@ document.addEventListener('DOMContentLoaded', () => {
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="relative w-full rounded-2xl overflow-hidden shadow-sm">
+    <div class="relative w-full rounded-2xl overflow-hidden shadow-sm">
 
       {{-- BG foto full --}}
       <div class="absolute inset-0 bg-cover bg-center z-0"
            style="background-image: url('{{ asset('images/bgvideo.svg') }}');">
-        {{-- Overlay Gradient --}}
-        <div class="absolute inset-0"
-             style="background: linear-gradient(270deg,
-             rgba(21,36,175,1) 29%,
-             rgba(21,36,175,0.34) 66%,
-             rgba(21,36,175,0) 100%);">
-        </div>
+           {{-- Overlay Gradient --}}
+           <div class="absolute inset-0"
+                style="background: linear-gradient(270deg,
+                rgba(21,36,175,1) 29%,
+                rgba(21,36,175,0.34) 66%,
+                rgba(21,36,175,0) 100%);">
+           </div>
+      <div class="absolute inset-0 bg-cover bg-center z-0"
+           style="background-image: url('{{ asset('images/bgvideo.svg') }}');">
+           {{-- Overlay Gradient --}}
+           <div class="absolute inset-0"
+                style="background: linear-gradient(270deg,
+                rgba(21,36,175,1) 29%,
+                rgba(21,36,175,0.34) 66%,
+                rgba(21,36,175,0) 100%);">
+           </div>
       </div>
 
       {{-- Overlay grid konten --}}
+      <div class="relative z-10 grid grid-cols-2
+                  gap-x-3 md:gap-x-4 lg:gap-x-8
+                  px-3 sm:px-5 md:px-8 lg:px-10
+                  py-5 md:py-6 lg:py-0
+                  min-h-[220px] sm:min-h-[240px] md:min-h-[300px] lg:min-h-[380px]">
       <div class="relative z-10 grid grid-cols-2
                   gap-x-3 md:gap-x-4 lg:gap-x-8
                   px-3 sm:px-5 md:px-8 lg:px-10
@@ -1572,25 +1724,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
         {{-- KANAN: Card panduan --}}
         <div class="relative flex items-center justify-end w-full h-full">
+        <div class="relative flex items-center justify-end w-full h-full">
           <div
             class="bg-[#DBE7F7]/95 text-[#0E2A7B] rounded-xl shadow-md
                    w-full
                    max-w-[200px] sm:max-w-[260px] md:max-w-[360px] lg:max-w-[540px]
                    p-3 sm:p-4 md:p-5 lg:p-10
                    backdrop-blur-sm
-                   flex flex-col items-center justify-center">
-            <h2 class="heading-stroke text-[18px] md:text-[22px] lg:text-[24px]
+                   md:translate-y-0 lg:translate-y-0"
+          >
+            
+          <h2 class="heading-stroke text-[20px] md:text-[24px] lg:text-[26px]
+                    font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mt-2
+                    mb-4 md:mb-6 lg:mb-8">
+            <span class="relative z-10">
+              Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
+            </span>
+            <span class="absolute inset-0 text-transparent [-webkit-text-stroke:2px_#FFDE59] pointer-events-none">
+              Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
+            </span>
+          </h2>
+                       w-full
+                       max-w-[200px] sm:max-w-[260px] md:max-w-[360px] lg:max-w-[540px]
+                       p-3 sm:p-4 md:p-5 lg:p-10
+                       backdrop-blur-sm
+                       flex flex-col items-center justify-center">
+          <h2 class="heading-stroke text-[18px] md:text-[22px] lg:text-[24px]
                         font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mt-1
                         mb-3 md:mb-6 lg:mb-8
                         text-center">
-              <span class="relative z-10">
-                Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
-              </span>
-              <span class="absolute inset-0 text-transparent [-webkit-text-stroke:2px_#FFDE59] pointer-events-none">
-                Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
-              </span>
-            </h2>
+            <span class="relative z-10">
+              Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
+            </span>
+            <span class="absolute inset-0 text-transparent [-webkit-text-stroke:2px_#FFDE59] pointer-events-none">
+              Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
+            </span>
+          </h2>
 
+            <p class="font-['Montserrat'] font-medium 
+                        text-[14px] md:text-[15px] 
+                        text-[#374151] leading-tight mb-5
+                        text-justify">
             <p class="font-['Montserrat'] font-medium
                         text-[14px] md:text-[15px]
                         text-[#374151] leading-tight mb-5
@@ -1599,19 +1773,31 @@ document.addEventListener('DOMContentLoaded', () => {
               guna memastikan kelancaran proses.
             </p>
 
-            <a href="{{ route('panduan') }}"
-               class="mt-8 self-center inline-flex items-center justify-center gap-2 w-max
-                      px-3 py-1.5 md:px-4 md:py-1
-                      rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
-                      text-[12px] md:text-[15px] lg:text-[16px]
-                      shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
-              <span class="leading-none">Lihat Panduan</span>
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   class="w-3.5 h-3.5 md:w-5 md:h-5"
-                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
-              </svg>
-            </a>
+        <a href="{{ route('panduan') }}"
+                class="mt-auto self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                       px-3 py-1.5 md:px-4 md:py-1
+                       rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium 
+                       text-[12px] md:text-[15px] lg:text-[16px] 
+                       shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+                  <span class="leading-none">Lihat Panduan</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" 
+                       class="w-3.5 h-3.5 md:w-5 md:h-5" 
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+                  </svg>
+             </a>
+                class="mt-8 self-center inline-flex items-center justify-center gap-2 w-max
+                       px-3 py-1.5 md:px-4 md:py-1
+                       rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
+                       text-[12px] md:text-[15px] lg:text-[16px]
+                       shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+                  <span class="leading-none">Lihat Panduan</span>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="w-3.5 h-3.5 md:w-5 md:h-5"
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+                  </svg>
+             </a>
           </div>
         </div>
 
@@ -1621,7 +1807,7 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </section>
 
-{{-- FOOTER --}}
+  {{-- FOOTER --}}
   @include('components.layouts.app.footer')
 
   @stack('scripts')
