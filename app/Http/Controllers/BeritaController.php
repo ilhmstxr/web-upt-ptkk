@@ -26,56 +26,60 @@ class BeritaController extends Controller
      */
     public function index(Request $request)
     {
-        // Ubah ke `true` bila kamu ingin menggunakan published_at sebagai filter default.
         $USE_PUBLISHED_AT_BY_DEFAULT = false;
-
-        $usePublishedAt = $request->query('use_published_at')
-            ? (bool) $request->query('use_published_at')
-            : $USE_PUBLISHED_AT_BY_DEFAULT;
-
+        $usePublishedAt = $request->query('use_published_at') ? (bool) $request->query('use_published_at') : $USE_PUBLISHED_AT_BY_DEFAULT;
         $isPreview = (bool) $request->query('preview') && Auth::check();
 
-        // Dasar query: hanya yang di-flag sebagai published
-        $query = Berita::query()->where('is_published', true);
-
-        // Jika ingin pakai published_at AND kolom ada
+        // 1. AMBIL "SANG RAJA" (1 Berita Paling Baru utk Banner Atas)
+        // Query dasar
+        $featuredQuery = Berita::query()->where('is_published', true);
+        
+        // Filter Tanggal (jika aktif)
         if ($usePublishedAt && $this->hasColumn('beritas', 'published_at')) {
             $now = Carbon::now(config('app.timezone') ?: config('app.locale'));
             if (! $isPreview) {
-                // normal mode: hanya yang published_at null atau <= now
-                $query->where(function ($q) use ($now) {
-                    $q->whereNull('published_at')
-                      ->orWhere('published_at', '<=', $now);
+                $featuredQuery->where(function ($q) use ($now) {
+                    $q->whereNull('published_at')->orWhere('published_at', '<=', $now);
                 });
-            } else {
-                // preview mode: tambahkan nothing (tampilkan juga yg scheduled)
+            }
+        }
+        
+        // Ambil 1 saja yang paling pucuk
+        $featured = $featuredQuery->orderByDesc('published_at')
+                                  ->orderByDesc('id')
+                                  ->first();
+
+        // 2. AMBIL "RAKYATNYA" (Berita sisanya untuk Grid Bawah)
+        $query = Berita::query()->where('is_published', true);
+
+        // PENTING: Jangan tampilkan lagi berita yang sudah jadi Banner ($featured) di grid bawah
+        if ($featured) {
+            $query->where('id', '!=', $featured->id);
+        }
+
+        // Filter Tanggal (Sama seperti atas)
+        if ($usePublishedAt && $this->hasColumn('beritas', 'published_at')) {
+            $now = Carbon::now(config('app.timezone') ?: config('app.locale'));
+            if (! $isPreview) {
+                $query->where(function ($q) use ($now) {
+                    $q->whereNull('published_at')->orWhere('published_at', '<=', $now);
+                });
             }
         }
 
-        // Urutkan (published_at may be null) lalu id
+        // Pagination untuk Grid Bawah
+        // Gunakan angka 9 (3 baris x 3 kolom) agar rapi
         $postsPaginator = $query->orderByDesc('published_at')
-                               ->orderByDesc('id')
-                               ->paginate(9)
-                               ->withQueryString();
+                                ->orderByDesc('id')
+                                ->paginate(9) 
+                                ->withQueryString();
 
-        // Ambil items pada halaman sekarang sebagai collection
-        $items = collect($postsPaginator->items());
-        $featured = $items->first() ?: null;
-        $others = $items->slice(1);
-
-        // Logging ringan untuk membantu debugging jika kosong
-        if ($postsPaginator->total() === 0) {
-            Log::debug('BeritaController@index : tidak menemukan berita terpublikasi.', [
-                'usePublishedAt' => $usePublishedAt,
-                'isPreview' => $isPreview,
-                'db' => \DB::connection()->getDatabaseName(),
-            ]);
-        }
-
+        // 3. Kirim ke View
+        // $others kita isi dengan items dari paginator saja
         return view('pages.berita', [
-            'postsPaginator' => $postsPaginator,
-            'featured' => $featured,
-            'others' => $others,
+            'postsPaginator' => $postsPaginator, // Ini untuk pagination link
+            'featured'       => $featured,       // Ini yang SELALU TERBARU (Banner)
+            'others'         => $postsPaginator, // Ini untuk lopping grid (Isinya berubah sesuai page)
         ]);
     }
 

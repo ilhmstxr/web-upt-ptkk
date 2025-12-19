@@ -460,111 +460,118 @@ $latestBeritas = Berita::query()
   })();
 </script>
 
-{{-- SECTION: Cerita Kami (DINAMIS + FALLBACK DEFAULT) --}}
-@php
-    // Anggap "ada data" kalau minimal salah satu terisi
-    $hasCerita = !empty($cerita)
-        && (filled($cerita->title) || filled($cerita->excerpt) || filled($cerita->content) || filled($cerita->image_url));
+  {{-- SECTION: Cerita Kami (DINAMIS + FALLBACK DEFAULT) --}}
+  @php
+      // Anggap "ada data" kalau minimal salah satu terisi
+      $hasCerita = !empty($cerita)
+          && (filled($cerita->title) || filled($cerita->excerpt) || filled($cerita->content) || filled($cerita->image_url));
 
-    // ===== IMAGE URL =====
-    if ($hasCerita && filled($cerita->image_url)) {
-        $imgSrc = \Illuminate\Support\Str::startsWith($cerita->image_url, ['http://', 'https://', '/'])
-            ? $cerita->image_url
-            : \Illuminate\Support\Facades\Storage::url($cerita->image_url);
-    } else {
-        $imgSrc = asset('images/cerita-kami.jpg'); // fallback
-    }
+      // ===== IMAGE URL =====
+      if ($hasCerita && filled($cerita->image_url)) {
+          $imgSrc = \Illuminate\Support\Str::startsWith($cerita->image_url, ['http://', 'https://', '/'])
+              ? $cerita->image_url
+              : \Illuminate\Support\Facades\Storage::url($cerita->image_url);
+      } else {
+          $imgSrc = asset('images/cerita-kami.jpg'); // fallback
+      }
 
-    // ===== TITLE =====
-    $title = ($hasCerita && filled($cerita->title))
-        ? $cerita->title
-        : 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan';
+      // ===== TITLE =====
+      $title = ($hasCerita && filled($cerita->title))
+          ? $cerita->title
+          : 'UPT Pengembangan Teknis Dan Keterampilan Kejuruan';
 
-    // ===== CONTENT (HTML dari rich editor) =====
-    $contentHtml = ($hasCerita && filled($cerita->content)) ? $cerita->content : null;
+      // ===== CONTENT (HTML dari rich editor) =====
+      $contentHtml = ($hasCerita && filled($cerita->content)) ? $cerita->content : null;
 
-    if ($contentHtml) {
-        $contentHtml = preg_replace('/(&nbsp;)+/i', ' ', $contentHtml);
-    }
+      if ($contentHtml) {
+          $contentHtml = preg_replace('/(&nbsp;)+/i', ' ', $contentHtml);
+      }
 
-    $fallbackHtml = '
-      <p>UPT PTKK merupakan salah satu Unit Pelaksana Teknis di bawah Dinas Pendidikan Provinsi Jawa Timur yang memiliki tugas dan fungsi dalam menyediakan fasilitas pelatihan berbasis kompetensi. Sebagai pelopor pelatihan vokasi, lembaga ini terus memperkuat perannya melalui penyelenggaraan program-program yang relevan, progresif, dan berdampak nyata.</p>
-      <p>Selain itu UPT PTKK diberi kepercayaan oleh Lembaga Sertifikasi Kompetensi (LSK) berbasis KKNI di bawah naungan KEMENDIKBUD Vokasi sebagai Tempat Uji Kompetensi (TUK) bidang keahlian sebagai berikut:</p>
-      <ol>
-        <li>Tata Boga</li>
-        <li>Tata Busana</li>
-        <li>Tata Kecantikan</li>
-        <li>Teknik Elektronika</li>
-        <li>Teknik Otomotif</li>
-        <li>Fotografi</li>
-        <li>Teknik Informasi Komunikasi (Web Desain/RPL, Desain Grafis, Animasi, Konten Kreator/Videografi)</li>
-      </ol>
-    ';
+      $fallbackHtml = '
+        <p>UPT PTKK merupakan salah satu Unit Pelaksana Teknis di bawah Dinas Pendidikan Provinsi Jawa Timur yang memiliki tugas dan fungsi dalam menyediakan fasilitas pelatihan berbasis kompetensi. Sebagai pelopor pelatihan vokasi, lembaga ini terus memperkuat perannya melalui penyelenggaraan program-program yang relevan, progresif, dan berdampak nyata.</p>
+        <p>Selain itu UPT PTKK diberi kepercayaan oleh Lembaga Sertifikasi Kompetensi (LSK) berbasis KKNI di bawah naungan KEMENDIKBUD Vokasi sebagai Tempat Uji Kompetensi (TUK) bidang keahlian sebagai berikut:</p>
+        <ol>
+          <li>Tata Boga</li>
+          <li>Tata Busana</li>
+          <li>Tata Kecantikan</li>
+          <li>Teknik Elektronika</li>
+          <li>Teknik Otomotif</li>
+          <li>Fotografi</li>
+          <li>Teknik Informasi Komunikasi (Web Desain/RPL, Desain Grafis, Animasi, Konten Kreator/Videografi)</li>
+        </ol>
+      ';
 
-    $bodyHtml = $contentHtml ?: $fallbackHtml;
+      $bodyHtml = $contentHtml ?: $fallbackHtml;
 
-    $ceritaUrl = url('/cerita-kami');
-@endphp
+      $ceritaUrl = url('/cerita-kami');
+  @endphp
 
 
-<section class="relative bg-[#F1F9FC] py-6 md:py-10">
-  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
+  <section class="relative bg-[#F1F9FC] py-6 md:py-10">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
+      <div class="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
 
-      {{-- KIRI: gambar (CENTER terhadap tinggi konten kanan) --}}
-      <div class="shrink-0 md:w-[420px] flex justify-center md:justify-start md:items-center">
-        <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF]
-                    w-[300px] md:w-[380px] lg:w-[420px] aspect-[3/2] bg-slate-200">
-          <img
-            src="{{ $imgSrc }}"
-            alt="{{ $title }}"
-            class="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-        </div>
-      </div>
-
-      {{-- KANAN: konten --}}
-      <div class="flex-1 flex flex-col w-full items-center md:items-start">
-        {{-- Badge --}}
-        <div class="w-full flex mb-[15px] justify-center md:justify-start">
-          <span class="inline-flex items-center px-4 py-1 rounded-lg bg-[#F3E8E9] text-[#861D23]
-                       font-[Volkhov] font-bold text-base md:text-lg lg:text-[20px] shadow-sm leading-tight">
-            Cerita Kami
-          </span>
+        {{-- KIRI: gambar (CENTER terhadap tinggi konten kanan) --}}
+        <div class="shrink-0 md:w-[420px] flex justify-center md:justify-start md:items-center">
+          <div class="relative rounded-2xl overflow-hidden shadow-xl ring-[2.5px] ring-[#1524AF]
+                      w-[300px] md:w-[380px] lg:w-[420px] aspect-[3/2] bg-slate-200">
+            <img
+              src="{{ $imgSrc }}"
+              alt="{{ $title }}"
+              class="absolute inset-0 w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
         </div>
 
-        {{-- Title --}}
-        <h2 class="mb-[15px] font-[Volkhov] font-bold text-[22px] md:text-[26px] leading-tight
-                   text-[#1524AF] heading-stroke max-w-[32ch] text-center md:text-left">
-          {{ $title }}
-        </h2>
+        {{-- KANAN: konten --}}
+        <div class="flex-1 flex flex-col w-full items-center md:items-start">
+          {{-- Badge Cerita Kami --}}
+          <div class="w-full flex mb-[15px] justify-center md:justify-start">
+            <span class="inline-flex items-center
+                      px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                      font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+                      Cerita Kami</span>
+          </div>
 
-        {{-- Body: render HTML (dengan styling prose biar list rapi) --}}
-        <div class="prose max-w-none prose-p:my-3 prose-ol:my-3 prose-li:my-1
-                    prose-p:text-[#081526] prose-li:text-[#081526]
-                    prose-p:font-[Montserrat] prose-li:font-[Montserrat]
-                    prose-p:font-medium prose-li:font-medium
-                    prose-p:text-[14px] md:prose-p:text-[15px] lg:prose-p:text-[16px]">
-          {!! $bodyHtml !!}
-        </div>
+          {{-- Title --}}
+          <h2 class="mb-[15px] font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight text-[#1524AF] heading-stroke max-w-[32ch] md:max-w-[28ch] lg:max-w-[32ch] text-center md:text-left">
+            {{ $title }}
+          </h2>
 
-        {{-- Button --}}
-        <a href="{{ $ceritaUrl }}"
-           class="mt-4 inline-flex items-center justify-center gap-2 w-max
-                  px-4 py-2 rounded-lg bg-[#1524AF] text-white font-[Montserrat] font-medium
-                  text-[14px] shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all">
+          {{-- Body: render HTML (dengan styling prose biar list rapi) --}}
+          <div class="prose max-w-none text-justify prose-p:my-3 prose-ol:my-3 prose-li:my-1
+                      [&_p]:!leading-tight [&_li]:!leading-tight
+                      prose-p:text-[#081526] prose-li:text-[#081526]
+                      prose-p:font-[Montserrat] prose-li:font-[Montserrat]
+                      prose-p:font-medium prose-li:font-medium
+                      prose-p:text-[14px] md:prose-p:text-[15px] lg:prose-p:text-[16px] ">
+            {!! $bodyHtml !!}
+          </div>
+
+          {{-- Button --}}
+          <a href="{{ $ceritaUrl }}"
+          class=" mt-4 inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-1
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
+                  text-[14px] md:text-[15px] lg:text-[16px]
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+
           <span class="leading-none">Cari tahu lebih</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+          {{-- Ikon diperbesar responsif (w-4 sm:w-5 md:w-6) --}}
+          <svg xmlns="http://www.w3.org/2000/svg"
+              class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
           </svg>
         </a>
 
+        </div>
       </div>
     </div>
-  </div>
-</section>
-{{-- /SECTION: Cerita Kami --}}
+  </section>
+  {{-- /SECTION: Cerita Kami --}}
 
 
 
@@ -588,40 +595,48 @@ $latestBeritas = Berita::query()
         {{-- Viewport --}}
         <div class="relative w-full overflow-hidden">
           {{-- TRACK --}}
-          <div class="jatim-marquee flex w-[200%] items-center
+          {{-- PERUBAHAN:
+               1. w-max: Agar lebar track mengikuti konten, bukan layar.
+               2. flex-nowrap: Agar item tidak pernah turun baris.
+          --}}
+          <div class="jatim-marquee flex w-max items-center flex-nowrap
                       animate-[jatim-scroll-x_linear_infinite] [animation-duration:24s]">
+
             {{-- Bagian 1 --}}
-            <div class="flex w-1/2 items-center justify-between
-                        px-6 md:px-10 lg:px-16
-                        gap-4 md:gap-6 lg:gap-8">
+            {{-- PERUBAHAN: Hapus w-1/2, ganti px dengan padding fix yang aman --}}
+            <div class="flex items-center flex-nowrap
+                        px-8 md:px-12
+                        gap-8 md:gap-12 lg:gap-16">
               <img src="{{ asset('images/icons/cetar.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Cetar">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Cetar">
               <img src="{{ asset('images/icons/dindik.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Dindik">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Dindik">
               <img src="{{ asset('images/icons/jatim.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Jatim">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Jatim">
               <img src="{{ asset('images/icons/berakhlak.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Berakhlak">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Berakhlak">
               <img src="{{ asset('images/icons/optimis.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="Optimis">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="Optimis">
             </div>
+
             {{-- Bagian 2 (duplikat) --}}
-            <div class="flex w-1/2 items-center justify-between
-                        px-6 md:px-10 lg:px-16
-                        gap-4 md:gap-6 lg:gap-8"
+            <div class="flex items-center flex-nowrap
+                        px-8 md:px-12
+                        gap-8 md:gap-12 lg:gap-16"
                  aria-hidden="true">
               <img src="{{ asset('images/icons/cetar.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/dindik.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/jatim.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/berakhlak.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
               <img src="{{ asset('images/icons/optimis.svg') }}"
-                   class="h-[26px] md:h-[32px] lg:h-[42px] flex-shrink-0" alt="">
+                   class="h-[26px] md:h-[32px] lg:h-[42px] w-auto max-w-none flex-shrink-0" alt="">
             </div>
           </div>
+
           {{-- Fade kiri–kanan --}}
           <div class="pointer-events-none absolute inset-0
                       [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
@@ -632,71 +647,141 @@ $latestBeritas = Berita::query()
   </div>
 </section>
 
+
 {{-- SECTION: Berita Terbaru (DINAMIS) --}}
 <section class="relative bg-[#F1F9FC] py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
 
+    {{-- HEADER (Menggunakan style terbaru Tuan Putri) --}}
     <div class="grid gap-y-2 mb-6">
-      <span class="inline-flex items-center justify-center bg-[#F3E8E9] text-[#861D23] font-[Volkhov] font-bold text-[15px] md:text-[16px] rounded-md leading-none px-3 py-1 shadow-sm w-fit">Berita Terbaru</span>
+      {{-- Badge Berita Terbaru --}}
+      <div class="w-full flex mb-[15px] justify-center md:justify-start">
+        <span class="inline-flex items-center
+                     px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                     font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+          Berita Terbaru
+        </span>
+      </div>
+
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-        <h2 class="heading-stroke font-[Volkhov] font-bold text-[18px] sm:text-[20px] md:text-[24px] lg:text-[28px] leading-snug">Jangan lewatkan kabar terbaru dari UPT PTKK</h2>
-        <a href="{{ route('berita.index') ?? '#' }}" class="inline-flex items-center justify-center gap-2 bg-[#1524AF] hover:bg-[#0E1E8B] text-white font-['Montserrat'] font-medium text-[12px] sm:text-[13px] md:text-[14px] px-[12px] py-[6px] sm:px-[14px] sm:py-[7px] md:px-[16px] md:py-[8px] rounded-xl shadow-md transition-all duration-200 self-start md:self-center active:scale-[.98]">
+        <h2 class="mb-[15px] md:mb-0 mx-auto md:mx-0
+                   font-['Volkhov'] font-bold text-[22px] md:text-[26px] leading-tight
+                   text-[#1524AF] heading-stroke
+                   max-w-[38ch] md:max-w-[24ch] lg:max-w-[38ch]
+                   text-center md:text-left">
+          Jangan lewatkan kabar terbaru dari UPT PTKK
+        </h2>
+
+        <a href="{{ route('berita.index') ?? '#' }}"
+           class="mt-4 md:mt-0 self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-1
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
+                  text-[14px] md:text-[15px] lg:text-[16px]
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
           <span class="leading-none">Lihat Semua Berita</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M19 12l-4-4m0 8l4-4" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+          </svg>
         </a>
       </div>
     </div>
 
+    {{-- GRID CARD (Style Baru: Rounded-26px, Shadow Glow) --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       @if($latestBeritas->isEmpty())
-        {{-- fallback ketika belum ada berita --}}
+        {{-- FALLBACK: Belum ada berita --}}
         @for($i=1;$i<=3;$i++)
-          <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
-            <div class="w-full h-[160px] bg-[#E7ECF3] rounded-lg mb-4 flex items-center justify-center text-sm text-[#727272]">Belum ada berita</div>
-            <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              <span>{{ now()->format('d F Y') }}</span>
-            </div>
-            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">Belum ada berita tersedia</h3>
-            <p class="text-sm text-[#081526] mb-3 leading-relaxed">Silakan tambahkan berita melalui panel admin.</p>
-            <a href="#" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">Baca Selengkapnya →</a>
+          <article class="group rounded-[26px] border border-[#D0D5DD] bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 hover:border-[#1524AF] hover:shadow-[0_10px_30px_rgba(21,36,175,0.18)] hover:bg-gradient-to-br hover:from-[#EFF5FF] hover:to-[#F8FBFF]">
+             <div class="aspect-[16/11] w-full rounded-[20px] overflow-hidden border border-[#E2E8F0] mb-3 bg-gray-100 flex items-center justify-center text-gray-400">
+               Belum ada gambar
+             </div>
+             <div class="flex items-center gap-2 text-[#6B7280] text-xs mb-1">
+               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect><line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line><line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line><line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line></svg>
+               <span>-</span>
+             </div>
+             <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2 text-[#081526]">Belum ada berita</h3>
+             <p class="font-[Montserrat] text-[13px] sm:text-[14px] text-[#374151] mb-3 leading-relaxed">Silakan tambahkan berita dari panel admin.</p>
           </article>
         @endfor
+
       @else
+        {{-- BERITA TERSEDIA --}}
         @foreach($latestBeritas as $b)
           @php
-            // --- LOGIKA COPY PASTE DARI BERITA SHOW ---
-            // Cukup gunakan Storage::url jika ada image, fallback ke asset jika tidak
             $imgUrl = $b->image ? Storage::url($b->image) : asset('images/berita/placeholder.jpg');
-
-            $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
-
-            // Format tanggal meniru berita_show (menggunakan optional)
             $pubDate = optional($b->published_at ?? $b->created_at)->format('d F Y');
+            $excerpt = Str::limit(strip_tags($b->content ?? ''), 120);
+            $slugOrUrl = route('berita.show', $b->slug ?? $b->id);
           @endphp
 
-          <article class="group bg-white border border-[#B6BBE6] rounded-2xl shadow-sm p-4 transition-all duration-300 hover:border-[#1524AF] hover:shadow-md">
+          <article
+            class="group rounded-[26px] border border-[#D0D5DD] bg-white
+                   p-4 sm:p-5 shadow-sm
+                   transition-all duration-300
+                   hover:border-[#1524AF]
+                   hover:shadow-[0_10px_30px_rgba(21,36,175,0.18)]
+                   hover:bg-gradient-to-br hover:from-[#EFF5FF] hover:to-[#F8FBFF]">
 
-            {{-- MARKUP GAMBAR --}}
-            <div class="w-full h-[160px] rounded-lg mb-4 overflow-hidden">
-               <img src="{{ $imgUrl }}" alt="{{ $b->title }}" class="w-full h-full object-cover rounded-lg shadow-md" loading="lazy">
-            </div>
+            {{-- Gambar --}}
+            <a href="{{ $slugOrUrl }}" class="block mb-3">
+              <div class="aspect-[16/11] w-full rounded-[20px] overflow-hidden border border-[#E2E8F0] transition-colors group-hover:border-[#1524AF]">
+                <img
+                  src="{{ $imgUrl }}"
+                  alt="{{ $b->title }}"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='{{ asset('images/berita/placeholder.jpg') }}'">
+              </div>
+            </a>
 
-            <div class="flex items-center gap-2 text-[#727272] text-xs mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            {{-- Tanggal --}}
+            <div class="flex items-center gap-2 text-[#6B7280] text-xs mb-1">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"></line>
+                <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"></line>
+                <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"></line>
+              </svg>
               <span>{{ $pubDate }}</span>
             </div>
 
-            <h3 class="text-[#081526] group-hover:text-[#1524AF] transition-colors duration-300 font-semibold mb-2">
-              {{ $b->title }}
+            {{-- Judul --}}
+            <h3 class="font-[Volkhov] text-[16px] sm:text-[18px] leading-snug mb-2
+                       text-[#081526] transition-colors duration-200
+                       group-hover:text-[#1524AF]">
+              <a href="{{ $slugOrUrl }}" class="block">
+                {{-- Judul dipotong biar rapi di HP --}}
+                <span class="block md:hidden">{{ Str::words($b->title, 6, '...') }}</span>
+                <span class="hidden md:block">{{ $b->title }}</span>
+              </a>
             </h3>
 
-            <p class="text-sm text-[#081526] mb-3 leading-relaxed">
-              {!! e($excerpt) !!}
+            {{-- Excerpt --}}
+            <p class="font-[Montserrat]
+                      text-[13px] sm:text-[14px]
+                      text-[#374151]
+                      mb-3
+                      leading-relaxed
+                      break-words
+                      overflow-hidden
+                      line-clamp-3
+                      text-justify">
+              {{ $excerpt }}
             </p>
 
-            <a href="{{ route('berita.show', $b->slug ?? $b->id) ?? '#' }}" class="text-[#595959] group-hover:text-[#1524AF] text-sm font-medium inline-flex items-center gap-1 transition-colors duration-300">
-              Baca Selengkapnya →
+            {{-- Baca Selengkapnya --}}
+            <a href="{{ $slugOrUrl }}"
+               class="inline-flex items-center gap-2 font-[Montserrat]
+                      text-[13px] sm:text-[14px]
+                      text-[#595959]
+                      transition-colors duration-200
+                      group-hover:text-[#1524AF] group-hover:underline underline-offset-2">
+              Baca Selengkapnya
+              <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </a>
           </article>
         @endforeach
@@ -721,10 +806,11 @@ $latestBeritas = Berita::query()
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px] text-center flex flex-col items-center">
 
     {{-- BADGE --}}
-    <div class="inline-block bg-[#FDECEC] text-[#861D23]
-                text-[18px] md:text-[20px] lg:text-[22px]
-                font-[Volkhov] font-bold leading-none
-                px-4 py-[6px] rounded-md mb-4">
+    <div class="inline-block bg-[#F3E8E9] text-[#861D23]
+                font-[Volkhov] font-bold
+                text-base md:text-lg lg:text-[20px]
+                leading-tight shadow-sm
+                px-4 py-1 rounded-md mb-4">
       Sorotan Pelatihan
     </div>
 
@@ -750,7 +836,7 @@ $latestBeritas = Berita::query()
 
       // 2. Mapping Data
       $sorotanData = $collection->map(function ($item) {
-        
+
         // Ambil data JSON photos
         $rawPhotos = $item->photos ?? [];
         if (is_string($rawPhotos)) {
@@ -776,12 +862,13 @@ $latestBeritas = Berita::query()
     @if($sorotanData->isNotEmpty())
 
       {{-- NAMA PELATIHAN + DESKRIPSI (Default ambil index 0) --}}
-      <div id="sorotan-top" class="w-full mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-start md:gap-6 text-left">
+      <div id="sorotan-top" class="w-full mb-6 md:mb-8 flex flex-col items-center md:flex-row md:items-center md:justify-start md:gap-6 text-center md:text-left">
         <div class="shrink-0">
           <button type="button"
                   class="sorotan-label bg-[#DBE7F7] text-[#1524AF]
-                         font-[Volkhov] font-bold text-[18px] md:text-[20px] lg:text-[22px]
-                         rounded-md px-5 py-2.5 leading-tight whitespace-nowrap">
+                         font-[Volkhov] font-bold
+                         text-base md:text-lg lg:text-[20px]
+                         rounded-md px-4 py-1 leading-tight whitespace-nowrap">
             {{ $sorotanData[0]['label'] }}
           </button>
         </div>
@@ -887,7 +974,7 @@ $latestBeritas = Berita::query()
             if (desc  && meta[key]) desc.textContent  = meta[key].desc;
             paintTabDots();
           }
-          
+
           if(tabOrder.length > 0) setActive(tabOrder[0]);
         })();
 
@@ -926,9 +1013,10 @@ $latestBeritas = Berita::query()
     <div class="text-center mb-6">
       {{-- Badge --}}
       <div class="inline-block bg-[#F3E8E9] text-[#861D23]
-                  text-[18px] md:text-[20px] lg:text-[22px]
-                  px-5 py-1.5 rounded-md
-                  font-[Volkhov] font-bold leading-none mb-6">
+                font-[Volkhov] font-bold
+                text-base md:text-lg lg:text-[20px]
+                leading-tight shadow-sm
+                px-4 py-1 rounded-md mb-4">
         Kompetensi Pelatihan
       </div>
 
@@ -1030,12 +1118,16 @@ $latestBeritas = Berita::query()
 
         {{-- CTA (kanan) --}}
         <a href="{{ route('kompetensi') }}"
-           class="inline-flex items-center gap-2 bg-[#1524AF] hover:bg-[#0E1F73]
-                  text-white text-sm font-medium px-5 py-2.5 rounded-md transition
-                  self-center md:self-auto">
+           class="mt-4 md:mt-0 self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                  px-4 py-1
+                  rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
+                  text-[14px] md:text-[15px] lg:text-[16px]
+                  shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
           Lihat Semua Kompetensi
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
           </svg>
         </a>
       </div>
@@ -1067,92 +1159,80 @@ $latestBeritas = Berita::query()
   })();
 </script>
 
-
-<!-- SECTION: Data Statistik (API + Blade fallback + Dummy fallback) -->
-<section class="relative bg-[#F1F9FC] py-4 md:py-6">
+<!-- ========================= -->
+<!-- SECTION: DATA STATISTIK   -->
+<!-- ========================= -->
+<section class="relative bg-[#F1F9FC] py-4 md:py-6" id="section-data-statistik">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
       <!-- Left Column -->
       <div class="lg:col-span-4 flex flex-col justify-between">
         <div>
-          <div class="inline-flex items-center px-3 py-1 rounded-md bg-[#F3E8E9] mb-3">
-            <span class="text-[#861D23] font-[Volkhov] font-bold text-[16px]">Data Statistik</span>
+          <div class="w-full flex mb-[15px] justify-center md:justify-start">
+            <span class="inline-flex items-center
+                      px-4 md:px-0 py-1 rounded-md bg-[#F3E8E9] text-[#861D23]
+                      font-bold text-base md:text-lg lg:text-[20px] font-[Volkhov] shadow-sm leading-tight">
+              Data Statistik
+            </span>
           </div>
 
-          <h2 class="heading-stroke font-[Volkhov] font-bold text-[24px] md:text-[28px] leading-snug mb-3">
-            Rekapitulasi Rata-Rata<br/>Program Pelatihan
-          </h2>
+          <div class="flex flex-col items-center md:items-start w-full">
+            <h2 class="heading-stroke font-[Volkhov] font-bold
+                      text-[22px] md:text-[26px] leading-tight
+                      text-[#1524AF] mb-3
+                      text-center md:text-left">
+              Rekapitulasi Rata-Rata<br/>Program Pelatihan
+            </h2>
 
-          <p class="text-sm text-slate-700 leading-relaxed mb-5">
-            Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
-            terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
-          </p>
+            <p class="font-['Montserrat'] font-medium
+                      text-[14px] md:text-[15px]
+                      text-[#374151] leading-relaxed mb-5
+                      text-justify">
+              Hasil menunjukkan bahwa program pelatihan kami efektif meningkatkan pemahaman dan keterampilan peserta,
+              terbukti dari kenaikan nilai rata-rata pre-test ke post-test.
+            </p>
+          </div>
 
-          <!-- List Pelatihan
-               - Blade sebagai fallback awal
-               - Akan di-replace JS jika API/dummy dipakai -->
+          <!-- List Pelatihan (dibangun JS agar sinkron) -->
           <ul id="listPelatihan" class="space-y-2">
-            @forelse($pelatihans ?? [] as $pel)
-              @php
-                $idx = $loop->index;
-                $colorActive = $pel->warna ?? '#1524AF';
-                $colorInactive = $pel->warna_inactive ?? '#000000';
-                $isFirst = $loop->first;
-              @endphp
-              <li>
-                <button
-                  type="button"
-                  class="pel-btn w-full flex items-center gap-2 py-1.5 text-left"
-                  data-index="{{ $idx }}"
-                  data-color-active="{{ $colorActive }}"
-                  data-color-inactive="{{ $colorInactive }}"
-                >
-                  <span class="dot w-2 h-2 rounded-full"
-                        style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></span>
-
-                  <span class="label flex-1 text-[14px] font-[Montserrat] font-medium"
-                        style="color: {{ $isFirst ? $colorActive : $colorInactive }};">
-                    {{ \Illuminate\Support\Str::limit($pel->nama_pelatihan ?? 'Pelatihan', 60) }}
-                  </span>
-                </button>
-
-                <div class="divider h-[1px]"
-                     style="background-color: {{ $isFirst ? $colorActive : $colorInactive }};"></div>
-              </li>
-            @empty
-              <!-- Placeholder minimal (akan diganti JS kalau dummy/api) -->
-              <li>
-                <button type="button" class="pel-btn w-full flex items-center gap-2 py-1.5 text-left" data-index="0">
-                  <span class="dot w-2 h-2 rounded-full bg-[#1524AF]"></span>
-                  <span class="label flex-1 text-[14px] font-[Montserrat] font-medium text-[#1524AF]">
-                    Loading...
-                  </span>
-                </button>
-                <div class="divider h-[1px] bg-[#1524AF]"></div>
-              </li>
-            @endforelse
+            <li>
+              <button type="button" class="pel-btn w-full flex items-start gap-2 py-1.5 text-left" data-index="0">
+                <span class="dot w-2 h-2 rounded-full mt-1 bg-[#1524AF]"></span>
+                <span class="label flex-1 text-[13px] font-[Montserrat] font-medium leading-snug text-[#1524AF]">
+                  Loading...
+                </span>
+              </button>
+              <div class="divider h-[1px] bg-[#1524AF]"></div>
+            </li>
           </ul>
 
-          <!-- Badge dummy info (muncul jika dummy dipakai) -->
           <div id="dummyNotice"
                class="hidden mt-4 text-[12px] text-slate-600 bg-white/70 border border-slate-200 rounded-lg p-3">
             Data Statistik.
           </div>
         </div>
 
-        {{-- Safe route untuk tombol --}}
-        @php
-          try { $pelatihanIndexUrl = route('pelatihan.index'); }
-          catch (\Throwable $e) { $pelatihanIndexUrl = '/pelatihan'; }
-        @endphp
+        <a href="{{ route('statistik.index') }}"
+           class="mt-8 self-center md:self-auto inline-flex items-center justify-center gap-2 w-max
+                       px-3 py-1.5 md:px-4 md:py-1
+                       rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
+                       text-[12px] md:text-[15px] lg:text-[16px]
+                       shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+          <span class="leading-none">Cari Tahu Lebih</span>
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="w-3.5 h-3.5 md:w-5 md:h-5"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+          </svg>
+        </a>
       </div>
 
-      <!-- Right Column (Chart) -->
-      <div class="lg:col-span-8 mt-6 lg:mt-0">
+      <!-- Right -->
+      <div class="lg:col-span-8">
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+        <!-- Summary cards -->
+        <div class="grid grid-cols-3 gap-3 sm:gap-4 mb-4">
           <div class="rounded-xl bg-[#DBE7F7] shadow-sm border border-slate-200 p-3 sm:p-4 text-center">
             <div id="preAvgCard" class="text-[18px] sm:text-[22px] md:text-[28px] font-[Volkhov] font-bold text-[#081526]">0</div>
             <div class="text-[10px] sm:text-xs font-[Montserrat] font-medium text-[#081526]">
@@ -1175,286 +1255,226 @@ $latestBeritas = Berita::query()
           </div>
         </div>
 
-        <!-- Chart Wrapper -->
+        <!-- Chart box -->
         <div class="rounded-2xl bg-white border-2 border-[#1524AF] p-4 md:p-5">
           <div class="relative w-full h-[320px]">
             <canvas id="statistikChart"></canvas>
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 </section>
 
-<script src="https://cdn.tailwindcss.com"></script>
+<!-- Chart.js (PASTIKAN cuma sekali di halaman, jangan dobel) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <script>
-(async function () {
-  // =========================
-  // 1) DUMMY DATA (fallback paling akhir)
-  // =========================
-  const dummyData = {
-  pelatihans: [
-    {
-      id: 1,
-      nama: 'Akselerasi Kelas MJC Guru Angkatan I 2025',
-      warna: '#1524AF',
-      warna_inactive: '#000000'
-    },
-    {
-      id: 2,
-      nama: 'Mobile Training Unit (MTU) Angkatan II 2025',
-      warna: '#1524AF',
-      warna_inactive: '#000000'
-    },
-    {
-      id: 3,
-      nama: 'MILEA Kelas MJC Angkatan II 2025',
-      warna: '#1524AF',
-      warna_inactive: '#000000'
-    },
-    {
-      id: 4,
-      nama: 'Akselerasi TUK Kelas Keterampilan 2025',
-      warna: '#1524AF',
-      warna_inactive: '#000000'
-    }
-  ],
-
-  // Label X Chart (HARUS SEURUTAN DENGAN DATASET)
-  labels: [
-    'Akselerasi MJC Guru I',
-    'MTU Angkatan II',
-    'MILEA MJC II',
-    'TUK Kelas Keterampilan'
-  ],
-
-  datasets: {
-    // RATA-RATA DARI DATA ASLI
-    pre:     [49.87, 70.87, 62.20, 68.57],
-    post:    [67.60, 82.67, 78.80, 91.07],
-    praktek: [86.21, 90.46, 88.24, 89.60],
-    rata:    [80.72, 87.08, 84.69, 86.55],
+document.addEventListener('DOMContentLoaded', () => {
+  // ===== safety check
+  const list = document.getElementById('listPelatihan');
+  const canvasEl = document.getElementById('statistikChart');
+  if (!list || !canvasEl) {
+    console.error('[Statistik] elemen tidak ketemu:', { list, canvasEl });
+    return;
   }
-};
-  // =========================
-  // 2) DATA BLADE (fallback tengah)
-  // =========================
-  const bladeData = {
-    pelatihans: {!! json_encode(
-      collect($pelatihans ?? [])->map(fn($p) => [
-        'id' => $p->id,
-        'nama' => $p->nama_pelatihan ?? 'Pelatihan',
-        'warna' => $p->warna ?? '#1524AF',
-        'warna_inactive' => $p->warna_inactive ?? '#000000',
-      ])->values()
-    ) !!},
-    labels: {!! json_encode($labels ?? []) !!},
-    datasets: {
-      pre:     {!! json_encode($pre ?? []) !!},
-      post:    {!! json_encode($post ?? []) !!},
-      praktek: {!! json_encode($prak ?? []) !!},
-      rata:    {!! json_encode($rata ?? []) !!},
-    },
+  if (!window.Chart) {
+    console.error('[Statistik] Chart.js belum keload (window.Chart undefined)');
+    return;
+  }
+
+  // ===== helpers
+  const toNum = (v) => {
+    if (v === null || v === undefined) return 0;
+    if (typeof v === 'number') return v;
+    const s = String(v).trim().replace(/\./g, '').replace(',', '.');
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : 0;
+  };
+  const clamp01 = (n) => Math.max(0, Math.min(100, n));
+  const round2 = (n) => Math.round(n * 100) / 100;
+  const avg = (arr) => arr.length ? (arr.reduce((a,b)=>a+toNum(b),0) / arr.length) : 0;
+
+  function wrap2Lines(text, maxCharsPerLine = 28) {
+    const words = String(text).trim().split(/\s+/);
+    const lines = [];
+    let line = '';
+    for (const w of words) {
+      const test = (line ? line + ' ' : '') + w;
+      if (test.length <= maxCharsPerLine) line = test;
+      else {
+        if (line) lines.push(line);
+        line = w;
+        if (lines.length === 1) break;
+      }
+    }
+    if (line && lines.length < 2) lines.push(line);
+    if (lines[1] && lines[1].length > maxCharsPerLine) {
+      lines[1] = lines[1].slice(0, maxCharsPerLine - 1) + '…';
+    }
+    return lines;
+  }
+
+  const isTabletOrMobile = () => window.matchMedia('(max-width: 1024px)').matches;
+  const isMobile = () => window.matchMedia('(max-width: 480px)').matches;
+
+  function shortLabel1Word(label) {
+    if (!label) return '';
+    const s = String(label).trim();
+    const beforeParen = s.split('(')[0].trim();
+    const firstWord = beforeParen.split(/\s+/)[0] || beforeParen;
+    return firstWord.toUpperCase();
+  }
+
+  // ===== DATA (dummy)
+  const data = {
+    pelatihans: [
+      {
+        id: 1,
+        nama: "Program Akselerasi Kelas MJC Guru Angkatan I Tahun 2025",
+        warna: "#1524AF",
+        warna_inactive: "#081526",
+        kompetensis: [
+          { nama: "FOTOGRAFI (FOTO PRODUK)", pre: "61,00", post: "91,33", praktek: "86,60", rata: "84,51" },
+          { nama: "DESAIN GRAFIS (LOGO DAN PACKAGING)", pre: "44,67", post: "70,00", praktek: "86,73", rata: "80,85" },
+          { nama: "CONTENT CREATOR (VIDEOGRAFI)", pre: "46,67", post: "58,67", praktek: "87,87", rata: "80,83" },
+          { nama: "ANIMASI (MOTION ANIMATION)", pre: "56,67", post: "68,33", praktek: "83,20", rata: "79,06" },
+          { nama: "WEB DESAIN", pre: "40,33", post: "49,67", praktek: "86,67", rata: "78,33" },
+        ]
+      },
+      {
+        id: 2,
+        nama: "Program Mobile Training Unit (MTU) Angkatan II Tahun 2025",
+        warna: "#1524AF",
+        warna_inactive: "#081526",
+        kompetensis: [
+          { nama: "FOTOGRAFI (FOTO PRODUK)", pre: "83,83", post: "98,50", praktek: "89,43", rata: "89,78" },
+          { nama: "CONTENT CREATOR (VIDEOGRAFI)", pre: "87,50", post: "91,33", praktek: "86,10", rata: "86,76" },
+          { nama: "PLC", pre: "62,67", post: "72,00", praktek: "87,30", rata: "80,12" },
+          { nama: "TEKNIK PENDINGIN DAN TATA UDARA I", pre: "61,17", post: "68,33", praktek: "90,87", rata: "85,64" },
+          { nama: "TEKNIK PENDINGIN DAN TATA UDARA II", pre: "59,17", post: "83,17", praktek: "98,60", rata: "93,11" },
+        ]
+      },
+      {
+        id: 3,
+        nama: "MILEA Menuju Generasi Emas 2045 (Kelas MJC) Angkatan II Tahun 2025",
+        warna: "#1524AF",
+        warna_inactive: "#081526",
+        kompetensis: [
+          { nama: "FOTOGRAFI (FOTO PRODUK)", pre: "55,67", post: "85,67", praktek: "89,40", rata: "85,65" },
+          { nama: "DESAIN GRAFIS (LOGO DAN PACKAGING)", pre: "69,33", post: "79,00", praktek: "91,00", rata: "87,63" },
+          { nama: "WEB DESAIN", pre: "67,33", post: "78,67", praktek: "88,47", rata: "85,37" },
+          { nama: "CONTENT CREATOR (VIDEOGRAFI)", pre: "58,00", post: "75,67", praktek: "85,53", rata: "81,79" },
+          { nama: "ANIMASI (MOTION ANIMATION)", pre: "60,67", post: "75,00", praktek: "86,80", rata: "83,01" },
+        ]
+      },
+      {
+        id: 4,
+        nama: "Akselerasi TUK Kelas Keterampilan (Guru SMK/SMA) Tahun 2025",
+        warna: "#1524AF",
+        warna_inactive: "#081526",
+        kompetensis: [
+          { nama: "TEKNIK PENDINGIN DAN TATA UDARA", pre: "63,07", post: "84,27", praktek: "92,67", rata: "88,87" },
+          { nama: "TATA KECANTIKAN", pre: "60,00", post: "86,40", praktek: "92,07", rata: "83,89" },
+          { nama: "TATA BUSANA", pre: "62,67", post: "94,13", praktek: "90,93", rata: "88,43" },
+          { nama: "TATA BOGA", pre: "88,53", post: "99,47", praktek: "82,73", rata: "84,99" },
+        ]
+      }
+    ]
   };
 
-  const list      = document.getElementById('listPelatihan');
-  const canvasEl  = document.getElementById('statistikChart');
-  const dummyNote = document.getElementById('dummyNotice');
-
-  const preCard     = document.getElementById('preAvgCard');
-  const praktekCard = document.getElementById('praktekAvgCard');
-  const postCard    = document.getElementById('postAvgCard');
-
-  if (!list || !canvasEl) return;
-
-  // =========================
-  // 3) Fetch API (prioritas utama)
-  // =========================
-  let apiData = null;
-  let useDummy = false;
-  let useBlade = false;
-
-  try {
-    const res = await fetch('/api/statistik-pelatihan');
-    apiData = await res.json();
-  } catch (e) {
-    apiData = null;
-  }
-
-  // =========================
-  // Helper cek data kosong
-  // =========================
-  function isEmptyData(d) {
-    if (!d) return true;
-    if (!Array.isArray(d.pelatihans) || d.pelatihans.length === 0) return true;
-
-    const ds = d.datasets || {};
-    const allVals = [
-      ...(ds.pre || []),
-      ...(ds.post || []),
-      ...(ds.praktek || []),
-      ...(ds.rata || []),
-    ];
-
-    if (allVals.length === 0) return true;
-    if (allVals.every(v => Number(v) === 0)) return true;
-
-    return false;
-  }
-
-  // =========================
-  // Tentukan sumber data
-  // =========================
-  if (!isEmptyData(apiData)) {
-    // pakai API
-  } else if (!isEmptyData(bladeData)) {
-    apiData = bladeData;
-    useBlade = true;
-  } else {
-    apiData = dummyData;
-    useDummy = true;
-  }
-
-  const data = apiData;
-
-  if (useDummy && dummyNote) dummyNote.classList.remove('hidden');
-
-  // =========================
-  // Render list pelatihan (selalu dari data final)
-  // =========================
-  list.innerHTML = (data.pelatihans ?? []).map((p, i) => {
-    const activeColor = p.warna || '#1524AF';
-    const inactiveColor = p.warna_inactive || '#000000';
+  // ===== render list pelatihan
+  list.innerHTML = data.pelatihans.map((p, i) => {
     const isFirst = i === 0;
-
     return `
       <li>
         <button type="button"
-          class="pel-btn w-full flex items-center gap-2 py-1.5 text-left"
+          class="pel-btn w-full flex items-start gap-2 py-1.5 text-left"
           data-index="${i}"
-          data-color-active="${activeColor}"
-          data-color-inactive="${inactiveColor}">
-          <span class="dot w-2 h-2 rounded-full"
-                style="background-color:${isFirst ? activeColor : inactiveColor};"></span>
-          <span class="label flex-1 text-[14px] font-[Montserrat] font-medium"
-                style="color:${isFirst ? activeColor : inactiveColor};">
-            ${p.nama || 'Pelatihan'}
+          data-color-active="${p.warna}"
+          data-color-inactive="${p.warna_inactive}">
+          <span class="dot w-2 h-2 rounded-full mt-1"
+                style="background-color:${isFirst ? p.warna : p.warna_inactive};"></span>
+
+          <span class="label flex-1 text-[13px] font-[Montserrat] font-medium leading-snug"
+                style="color:${isFirst ? p.warna : p.warna_inactive};
+                       display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+                       overflow:hidden;">
+            ${p.nama}
           </span>
         </button>
-        <div class="divider h-[1px]"
-             style="background-color:${isFirst ? activeColor : inactiveColor};"></div>
+        <div class="divider h-[1px]" style="background-color:${isFirst ? p.warna : p.warna_inactive};"></div>
       </li>
     `;
   }).join('');
 
-  // =========================
-  // Active state helper (pakai inline color)
-  // =========================
   function setActive(idx){
     list.querySelectorAll('li').forEach((li, i) => {
       const btn = li.querySelector('.pel-btn');
       const label = li.querySelector('.label');
-      const dot   = li.querySelector('.dot');
-      const div   = li.querySelector('.divider');
-      if (!btn || !label || !dot || !div) return;
-
-      const colorActive   = btn.dataset.colorActive || '#1524AF';
-      const colorInactive = btn.dataset.colorInactive || '#000000';
-
+      const dot = li.querySelector('.dot');
+      const div = li.querySelector('.divider');
+      const active = btn.dataset.colorActive || '#1524AF';
+      const inactive = btn.dataset.colorInactive || '#081526';
       if (i === idx){
-        label.style.color = colorActive;
-        dot.style.backgroundColor = colorActive;
-        div.style.backgroundColor = colorActive;
+        label.style.color = active;
+        dot.style.backgroundColor = active;
+        div.style.backgroundColor = active;
       } else {
-        label.style.color = colorInactive;
-        dot.style.backgroundColor = colorInactive;
-        div.style.backgroundColor = colorInactive;
+        label.style.color = inactive;
+        dot.style.backgroundColor = inactive;
+        div.style.backgroundColor = inactive;
       }
     });
   }
 
-  // =========================
-  // Summary cards per index
-  // =========================
-  function setSummaryByIndex(idx){
-    const preVal     = data.datasets?.pre?.[idx] ?? 0;
-    const praktekVal = data.datasets?.praktek?.[idx] ?? 0;
-    const postVal    = data.datasets?.post?.[idx] ?? 0;
+  function getPel(idx){ return data.pelatihans[idx] || data.pelatihans[0]; }
 
-    if (preCard) preCard.textContent = preVal;
-    if (praktekCard) praktekCard.textContent = praktekVal;
-    if (postCard) postCard.textContent = postVal;
+  function buildPayload(pel){
+    const ks = pel.kompetensis || [];
+    const labels = ks.map(k => k.nama);
+    return {
+      labels,
+      pre: ks.map(k => clamp01(toNum(k.pre))),
+      post: ks.map(k => clamp01(toNum(k.post))),
+      praktek: ks.map(k => clamp01(toNum(k.praktek))),
+      rata: ks.map(k => clamp01(toNum(k.rata))),
+    };
   }
 
-  setActive(0);
-  setSummaryByIndex(0);
+  // cards
+  const preCard = document.getElementById('preAvgCard');
+  const praktekCard = document.getElementById('praktekAvgCard');
+  const postCard = document.getElementById('postAvgCard');
 
-  // =========================
-  // Render Chart
-  // =========================
+  function setSummary(idx){
+    const pel = getPel(idx);
+    const ks = pel.kompetensis || [];
+    preCard.textContent = round2(avg(ks.map(k=>k.pre)));
+    praktekCard.textContent = round2(avg(ks.map(k=>k.praktek)));
+    postCard.textContent = round2(avg(ks.map(k=>k.post)));
+  }
+
+  // ===== Chart init
   const ctx = canvasEl.getContext('2d');
+  const p0 = buildPayload(getPel(0));
+  window.__fullLabels = p0.labels; // ✅ penting untuk callback
 
-  new Chart(ctx, {
+  const chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.labels ?? [],
+      labels: p0.labels,
       datasets: [
-        {
-          label: 'Pre-Test',
-          data: data.datasets?.pre ?? [],
-          borderColor: '#FF6107',
-          pointBackgroundColor: '#FF6107',
-          pointBorderColor: '#FF6107',
-          borderWidth: 2,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 5,
-          fill: false
-        },
-        {
-          label: 'Post-Test',
-          data: data.datasets?.post ?? [],
-          borderColor: '#2F4BFF',
-          pointBackgroundColor: '#2F4BFF',
-          pointBorderColor: '#2F4BFF',
-          borderWidth: 2,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 5,
-          fill: false
-        },
-        {
-          label: 'Praktek',
-          data: data.datasets?.praktek ?? [],
-          borderColor: '#6B2C47',
-          pointBackgroundColor: '#6B2C47',
-          pointBorderColor: '#6B2C47',
-          borderWidth: 2,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 5,
-          fill: false
-        },
-        {
-          label: 'Rata-Rata',
-          data: data.datasets?.rata ?? [],
-          borderColor: '#DBCC8F',
-          pointBackgroundColor: '#DBCC8F',
-          pointBorderColor: '#DBCC8F',
-          borderWidth: 2,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 5,
-          fill: false
-        }
+        { label: 'Pre-Test', data: p0.pre, borderColor:'#FF6107', pointBackgroundColor:'#FF6107', pointBorderColor:'#FF6107', borderWidth:2, tension:0.35, pointRadius:4, pointHoverRadius:5, fill:false },
+        { label: 'Praktek',  data: p0.praktek, borderColor:'#6B2C47', pointBackgroundColor:'#6B2C47', pointBorderColor:'#6B2C47', borderWidth:2, tension:0.35, pointRadius:4, pointHoverRadius:5, fill:false },
+        { label: 'Post-Test',data: p0.post, borderColor:'#2F4BFF', pointBackgroundColor:'#2F4BFF', pointBorderColor:'#2F4BFF', borderWidth:2, tension:0.35, pointRadius:4, pointHoverRadius:5, fill:false },
+        { label: 'Rata-Rata',data: p0.rata, borderColor:'#DBCC8F', pointBackgroundColor:'#DBCC8F', pointBorderColor:'#DBCC8F', borderWidth:2, tension:0.35, pointRadius:4, pointHoverRadius:5, fill:false },
       ]
     },
     options: {
       maintainAspectRatio: false,
-      layout: { padding: { top: 10, right: 16, left: 16, bottom: 8 } },
+      layout: { padding: { top: 6, right: 14, left: 14, bottom: 6 } },
       plugins: {
         legend: {
           position: 'top',
@@ -1466,76 +1486,106 @@ $latestBeritas = Berita::query()
             boxHeight: 10,
             padding: 12,
             color: '#081526',
-            font: { size: 13, weight: '600' }
+            font: { size: 12, weight: '600' }
           }
         },
         tooltip: {
-          callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}` }
+          callbacks: { label: (c) => `${c.dataset.label}: ${c.formattedValue}` }
         }
       },
       scales: {
         x: {
-          offset: true,
-          ticks: { font: { size: 12 }, color: '#8787A3' },
-          grid: { display: true, drawTicks: false, color: '#8787A3', lineWidth: 1 },
-          border: { display: true, color: '#8787A3', width: 1.5 }
+          offset: true, // ✅ gak nempel sumbu Y
+          grid: {
+            offset: false, // ✅ garis vertikal lengkap & sejajar kategori (desktop look)
+            display: true,
+            drawTicks: false,
+            color: 'rgba(135,135,163,0.25)',
+            lineWidth: 1
+          },
+          ticks: {
+            autoSkip: false, // ✅ semua kategori punya garis
+            maxRotation: 0,
+            minRotation: 0,
+            padding: isMobile() ? 6 : 10,
+            font: { size: isMobile() ? 10 : 11 },
+            color: '#8787A3',
+            callback: function(value){
+              const raw = this.getLabelForValue(value);
+              const full = (Array.isArray(window.__fullLabels) && window.__fullLabels[value]) ? window.__fullLabels[value] : raw;
+              if (isMobile()) return shortLabel1Word(full);          // ✅ HP: 1 kata
+              return wrap2Lines(full, isTabletOrMobile() ? 16 : 18); // ✅ tablet/desktop: wrap
+            }
+          },
+          afterFit: (scale) => { scale.height = Math.max(scale.height, isMobile() ? 52 : 60); }
         },
         y: {
           beginAtZero: true,
           min: 0,
           max: 100,
-          ticks: { stepSize: 20, font: { size: 12 }, color: '#8787A3' },
-          grid: {
-            color: (ctx) => (ctx.tick.value === 0 ? '#8787A3' : 'transparent'),
-            lineWidth: (ctx) => (ctx.tick.value === 0 ? 1.5 : 0),
-            drawTicks: false
-          },
-          border: { display: true, color: '#8787A3', width: 1.5 }
+          ticks: { stepSize: 20, font: { size: 11 }, color: '#8787A3' },
+          grid: { color: 'rgba(135,135,163,0.25)', drawTicks: false },
+          border: { display: true, color: 'rgba(135,135,163,0.55)', width: 1.2 }
         }
       }
     }
   });
 
-  // =========================
-  // Click list => aktif + update summary
-  // =========================
+  // init
+  setActive(0);
+  setSummary(0);
+
+  // klik pelatihan -> update chart + cards
   list.addEventListener('click', (e) => {
     const btn = e.target.closest('.pel-btn');
     if (!btn) return;
     const idx = parseInt(btn.dataset.index, 10) || 0;
+
     setActive(idx);
-    setSummaryByIndex(idx);
+    setSummary(idx);
+
+    const payload = buildPayload(getPel(idx));
+    window.__fullLabels = payload.labels; // ✅ penting!
+
+    chart.data.labels = payload.labels;
+    chart.data.datasets[0].data = payload.pre;
+    chart.data.datasets[1].data = payload.praktek;
+    chart.data.datasets[2].data = payload.post;
+    chart.data.datasets[3].data = payload.rata;
+    chart.update();
   });
 
-})();
+  console.log('[Statistik] chart OK render');
+});
 </script>
+
+
+
+
 
 {{-- SECTION: Panduan Pelatihan (Full-width image + gradient overlay) --}}
 <section class="relative bg-[#F1F9FC] py-4 md:py-6">
   <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-[80px]">
-    <div class="relative rounded-2xl overflow-hidden">
+    <div class="relative w-full rounded-2xl overflow-hidden shadow-sm">
 
       {{-- BG foto full --}}
-      <div
-        class="w-full h-[220px] sm:h-[240px] md:h-[300px] lg:h-[380px] bg-cover bg-center relative"
-        style="background-image: url('{{ asset('images/bgvideo.svg') }}');"
-      >
-       {{-- Overlay gradient: muncul di semua device (HP, tablet, desktop) --}}
-<div class="absolute inset-0"
-     style="background: linear-gradient(270deg,
-        rgba(21,36,175,1) 29%,
-        rgba(21,36,175,0.34) 66%,
-        rgba(21,36,175,0) 100%);">
-</div>
+      <div class="absolute inset-0 bg-cover bg-center z-0"
+           style="background-image: url('{{ asset('images/bgvideo.svg') }}');">
+           {{-- Overlay Gradient --}}
+           <div class="absolute inset-0"
+                style="background: linear-gradient(270deg,
+                rgba(21,36,175,1) 29%,
+                rgba(21,36,175,0.34) 66%,
+                rgba(21,36,175,0) 100%);">
+           </div>
       </div>
 
       {{-- Overlay grid konten --}}
-      <div
-        class="absolute inset-0 grid grid-cols-2
-               gap-x-3 md:gap-x-4 lg:gap-x-8
-               px-3 sm:px-5 md:px-8 lg:px-10
-               py-5 md:py-6 lg:py-0"
-      >
+      <div class="relative z-10 grid grid-cols-2
+                  gap-x-3 md:gap-x-4 lg:gap-x-8
+                  px-3 sm:px-5 md:px-8 lg:px-10
+                  py-5 md:py-6 lg:py-0
+                  min-h-[220px] sm:min-h-[240px] md:min-h-[300px] lg:min-h-[380px]">
 
         {{-- KIRI: Tombol Play - posisi tengah area kiri --}}
         <div class="relative flex items-center justify-center">
@@ -1551,51 +1601,47 @@ $latestBeritas = Berita::query()
         </div>
 
         {{-- KANAN: Card panduan --}}
-        <div class="relative flex items-center justify-end">
+        <div class="relative flex items-center justify-end w-full h-full">
           <div
             class="bg-[#DBE7F7]/95 text-[#0E2A7B] rounded-xl shadow-md
-                   w-full
-                   max-w-[200px] sm:max-w-[260px] md:max-w-[360px] lg:max-w-[540px]
-                   p-3 sm:p-4 md:p-5 lg:p-10
-                   backdrop-blur-sm
-                   md:translate-y-0 lg:translate-y-0"
-          >
-            <h2
-              class="heading-stroke
-                     text-left
-                     text-[12px] sm:text-[14px] md:text-[18px] lg:text-[24px]
-                     font-[Volkhov] font-bold leading-snug
-                     mb-2 sm:mb-2.5 md:mb-3"
-            >
-              Bersama, Kita Cetak Pendidikan
-              <br class="hidden md:block">
-              Vokasi yang Unggul
-            </h2>
+                       w-full
+                       max-w-[200px] sm:max-w-[260px] md:max-w-[360px] lg:max-w-[540px]
+                       p-3 sm:p-4 md:p-5 lg:p-10
+                       backdrop-blur-sm
+                       flex flex-col items-center justify-center">
+          <h2 class="heading-stroke text-[18px] md:text-[22px] lg:text-[24px]
+                        font-[Volkhov] font-bold text-[#0E2A7B] leading-snug relative inline-block mt-1
+                        mb-3 md:mb-6 lg:mb-8
+                        text-center">
+            <span class="relative z-10">
+              Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
+            </span>
+            <span class="absolute inset-0 text-transparent [-webkit-text-stroke:2px_#FFDE59] pointer-events-none">
+              Bersama, Kita Cetak Pendidikan Vokasi yang Unggul
+            </span>
+          </h2>
 
-            <p
-              class="text-[11px] sm:text-[12px] md:text-[13px] lg:text-[16px]
-                     text-[#000000] leading-relaxed
-                     mb-3 sm:mb-4 md:mb-5 lg:mb-6"
-            >
+            <p class="font-['Montserrat'] font-medium
+                        text-[14px] md:text-[15px]
+                        text-[#374151] leading-tight mb-5
+                        text-justify">
               Pahami alur permohonan peserta untuk mengikuti program pelatihan di UPT PTKK
               guna memastikan kelancaran proses.
             </p>
 
         <a href="{{ route('panduan') }}"
-   class="flex items-center justify-start gap-1.5
-          bg-[#1524AF] text-white
-          px-3 sm:px-4 md:px-6 lg:px-10
-          py-1.5 sm:py-2 md:py-2.5
-          rounded-md
-          text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px]
-          font-medium hover:opacity-90 transition w-fit
-          ml-0">
-              Lihat Panduan
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
-                   stroke-width="2" viewBox="0 0 24 24" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </a>
+                class="mt-8 self-center inline-flex items-center justify-center gap-2 w-max
+                       px-3 py-1.5 md:px-4 md:py-1
+                       rounded-lg bg-[#1524AF] text-white font-['Montserrat'] font-medium
+                       text-[12px] md:text-[15px] lg:text-[16px]
+                       shadow-md hover:bg-[#0F1D8F] active:scale-[.99] transition-all duration-200 ease-out">
+                  <span class="leading-none">Lihat Panduan</span>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="w-3.5 h-3.5 md:w-5 md:h-5"
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M19 12l-4-4m0 8l4-4" />
+                  </svg>
+             </a>
           </div>
         </div>
 

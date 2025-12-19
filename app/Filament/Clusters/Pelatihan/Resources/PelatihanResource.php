@@ -117,11 +117,19 @@ final class PelatihanResource extends Resource
                                             Forms\Components\TextInput::make('nama')
                                                 ->required()
                                                 ->maxLength(255),
-                                            Forms\Components\Select::make('kompetensi_pelatihan_id')
-                                                ->relationship('kompetensi', 'nama_kompetensi')
+                                            Forms\Components\Select::make('kompetensi_id')
+                                                ->label('Kompetensi')
+                                                ->options(\App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
+                                                ->searchable()
                                                 ->required(),
                                         ])
                                         ->createOptionUsing(function (array $data) {
+                                            $data['user_id'] = auth()->id();
+                                            $data['tempat_lahir'] = '-';
+                                            $data['tgl_lahir'] = '2000-01-01'; // Default dummy date
+                                            $data['jenis_kelamin'] = '-';
+                                            $data['agama'] = '-';
+                                            $data['no_hp'] = '-';
                                             return \App\Models\Instruktur::create($data)->id;
                                         }),
 
@@ -171,8 +179,8 @@ final class PelatihanResource extends Resource
                     ->description(
                         fn($record) =>
                         trim((string) ($record->jenis_program ?? '')) !== ''
-                        ? ($record->jenis_program . ' • Angkatan ' . ($record->angkatan ?? '—'))
-                        : ('Angkatan ' . ($record->angkatan ?? '—'))
+                            ? ($record->jenis_program . ' • Angkatan ' . ($record->angkatan ?? '—'))
+                            : ('Angkatan ' . ($record->angkatan ?? '—'))
                     )
                     ->weight('medium'),
 
@@ -203,8 +211,8 @@ final class PelatihanResource extends Resource
                     ->description(
                         fn($record) =>
                         $record->tanggal_selesai
-                        ? 'S/d ' . $record->tanggal_selesai->format('d M Y')
-                        : null
+                            ? 'S/d ' . $record->tanggal_selesai->format('d M Y')
+                            : null
                     ),
             ])
             ->filters([
