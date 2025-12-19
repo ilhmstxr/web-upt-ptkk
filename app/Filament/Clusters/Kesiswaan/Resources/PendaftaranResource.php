@@ -141,6 +141,8 @@ class PendaftaranResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make(2)->schema([
                             Forms\Components\TextInput::make('nama')
+                                ->label('Nama Lengkap')
+                                ->helperText('Tulis gelar jika ada (cth: S.Kom, S.Pd)')
                                 ->required()
                                 ->maxLength(150),
 
@@ -160,12 +162,15 @@ class PendaftaranResource extends Resource
                                 ->required(),
 
                             Forms\Components\TextInput::make('tempat_lahir')
+                                ->label('Tempat Lahir')
                                 ->required(),
 
                             Forms\Components\DatePicker::make('tanggal_lahir')
+                                ->label('Tanggal Lahir')
                                 ->required(),
 
                             Forms\Components\Select::make('jenis_kelamin')
+                                ->label('Jenis Kelamin')
                                 ->options([
                                     'Laki-laki' => 'Laki-laki',
                                     'Perempuan' => 'Perempuan',
@@ -173,9 +178,11 @@ class PendaftaranResource extends Resource
                                 ->required(),
 
                             Forms\Components\TextInput::make('agama')
+                                ->label('Agama')
                                 ->required(),
 
                             Forms\Components\Textarea::make('alamat')
+                                ->label('Alamat Lengkap')
                                 ->columnSpanFull()
                                 ->required(),
                         ]),

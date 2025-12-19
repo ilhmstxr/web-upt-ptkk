@@ -9,7 +9,6 @@ use App\Models\ProfilUPT;
 use App\Models\KepalaUpt;
 use App\Models\CeritaKami;
 use App\Models\SorotanPelatihan;
-use App\Models\Pelatihan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -130,23 +129,55 @@ class LandingController extends Controller
             $sorotans = collect();
         }
 
-        // 7) DATA PELATIHAN (CHART)
+        // 7) DATA STATISTIK (CHART) dari pendaftaran_pelatihan
         try {
-            $pelatihans = Cache::remember('landing_pelatihans', 1800, function () {
-                return Pelatihan::where('status', '!=', 'belum dimulai')
-                    ->orderBy('tanggal_mulai', 'asc')
-                    ->take(4)
-                    ->get();
+            $rows = Cache::remember('landing_statistik', 1800, function () {
+                return DB::table('pendaftaran_pelatihan as pp')
+                    ->join('pelatihan as p', 'p.id', '=', 'pp.pelatihan_id')
+                    ->whereNotNull('p.tanggal_selesai')
+                    ->whereDate('p.tanggal_selesai', '<=', now())
+                    ->groupBy('p.id', 'p.nama_pelatihan', 'p.warna', 'p.warna_inactive')
+                    ->orderBy('p.nama_pelatihan')
+                    ->get([
+                        'p.id',
+                        'p.nama_pelatihan',
+                        'p.warna',
+                        'p.warna_inactive',
+                        DB::raw('AVG(pp.nilai_pre_test) as pre_avg'),
+                        DB::raw('AVG(pp.nilai_post_test) as post_avg'),
+                        DB::raw('AVG(pp.nilai_praktek) as praktek_avg'),
+                        DB::raw('AVG(pp.rata_rata) as rata_avg'),
+                    ]);
+            });
+
+            $pelatihans = collect($rows)->map(function ($row) {
+                $pre = (float) ($row->pre_avg ?? 0);
+                $post = (float) ($row->post_avg ?? 0);
+                $prak = (float) ($row->praktek_avg ?? 0);
+                $rata = $row->rata_avg !== null
+                    ? (float) $row->rata_avg
+                    : round(($pre + $post + $prak) / 3, 2);
+
+                return (object) [
+                    'id' => $row->id,
+                    'nama_pelatihan' => $row->nama_pelatihan,
+                    'warna' => $row->warna,
+                    'warna_inactive' => $row->warna_inactive,
+                    'pre_avg' => $pre,
+                    'post_avg' => $post,
+                    'praktek_avg' => $prak,
+                    'rata_avg' => $rata,
+                ];
             });
         } catch (Throwable $e) {
-            Log::error("Gagal memuat data Pelatihan untuk Chart: " . $e->getMessage());
+            Log::error("Gagal memuat data Statistik untuk Chart: " . $e->getMessage());
         }
 
-        $labels = $pelatihans->map(fn($p) => (string) ($p->nama_pelatihan ?? $p->title ?? 'Pelatihan'))->toArray();
-        $pre    = $pelatihans->map(fn($p) => (float) ($p->avg_pre_test ?? 0))->toArray();
-        $post   = $pelatihans->map(fn($p) => (float) ($p->avg_post_test ?? 0))->toArray();
-        $prak   = $pelatihans->map(fn($p) => (float) ($p->avg_praktek ?? 0))->toArray();
-        $rata   = $pelatihans->map(fn($p) => (float) ($p->avg_rata ?? round((($p->avg_pre_test ?? 0) + ($p->avg_post_test ?? 0) + ($p->avg_praktek ?? 0)) / 3, 2)))->toArray();
+        $labels = $pelatihans->map(fn($p) => (string) ($p->nama_pelatihan ?? 'Pelatihan'))->toArray();
+        $pre    = $pelatihans->map(fn($p) => (float) ($p->pre_avg ?? 0))->toArray();
+        $post   = $pelatihans->map(fn($p) => (float) ($p->post_avg ?? 0))->toArray();
+        $prak   = $pelatihans->map(fn($p) => (float) ($p->praktek_avg ?? 0))->toArray();
+        $rata   = $pelatihans->map(fn($p) => (float) ($p->rata_avg ?? 0))->toArray();
 
         // 🔹 SATU-SATUNYA RETURN
         return view('pages.landing', [

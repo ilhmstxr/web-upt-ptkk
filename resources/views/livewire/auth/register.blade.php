@@ -50,7 +50,30 @@ new #[Layout('components.layouts.auth')] class extends Component {
             required
             autofocus
             autocomplete="name"
-            :placeholder="__('Full name')"
+            :placeholder="__('Full name (write title if any, e.g: S.Kom, S.Pd)')"
+            x-data="{ uppercase: true }"
+            x-init="() => {
+                $nextTick(() => {
+                    const input = $el.querySelector('input');
+                    if (input && input.type === 'text' && input.name !== 'email') {
+                        input.addEventListener('input', function() {
+                            const start = this.selectionStart;
+                            const end = this.selectionEnd;
+                            this.value = this.value.toUpperCase();
+                            this.setSelectionRange(start, end);
+                        });
+
+                        input.addEventListener('paste', function(e) {
+                            setTimeout(() => {
+                                const start = this.selectionStart;
+                                const end = this.selectionEnd;
+                                this.value = this.value.toUpperCase();
+                                this.setSelectionRange(start, end);
+                            }, 10);
+                        });
+                    }
+                });
+            }"
         />
 
         <!-- Email Address -->
@@ -96,4 +119,30 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <span>{{ __('Already have an account?') }}</span>
         <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply uppercase to text fields (excluding email and password)
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                if (input.type !== 'email' && input.type !== 'password') {
+                    input.addEventListener('input', function() {
+                        const start = this.selectionStart;
+                        const end = this.selectionEnd;
+                        this.value = this.value.toUpperCase();
+                        this.setSelectionRange(start, end);
+                    });
+
+                    input.addEventListener('paste', function(e) {
+                        setTimeout(() => {
+                            const start = this.selectionStart;
+                            const end = this.selectionEnd;
+                            this.value = this.value.toUpperCase();
+                            this.setSelectionRange(start, end);
+                        }, 10);
+                    });
+                }
+            });
+        });
+    </script>
 </div>

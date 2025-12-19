@@ -580,7 +580,7 @@
                           {{-- Nama --}}
                           <div>
                             <label class="block text-[13px] md:text-[14px] text-slate-800 mb-1">
-                              Nama
+                              Nama Lengkap
                             </label>
                             <input
                               type="text"
@@ -590,7 +590,7 @@
                               class="w-full rounded-lg border border-[#B6BBE6] bg-white px-3 py-2.5
                                  text-[13px] md:text-[14px] focus:outline-none focus:ring-2
                                  focus:ring-[#1524AF]/40 focus:border-[#1524AF]"
-                              placeholder="Masukkan Nama"
+                              placeholder="Masukkan Nama Lengkap (tulis gelar jika ada, cth: S.Kom, S.Pd)"
                               oninvalid="this.setCustomValidity('Nama wajib diisi')"
                               oninput="this.setCustomValidity('')" />
                           </div>
@@ -1535,6 +1535,55 @@
           }
         });
       });
+    })();
+
+    // =============== UPPERCASE TEXT INPUTS ===============
+    (function() {
+      // Function to convert text to uppercase in real-time, excluding email and password fields
+      function applyUppercaseToFields() {
+        // Get all input and textarea elements, but exclude email, password, date, number, tel, and hidden inputs
+        const textInputs = [
+          ...document.querySelectorAll('input[type="text"]'),
+          ...document.querySelectorAll('textarea')
+        ].filter(input => {
+          // Don't apply to email, password, date, number, tel, or hidden inputs
+          return input.type !== 'email' &&
+                 input.type !== 'password' &&
+                 input.type !== 'date' &&
+                 input.type !== 'number' &&
+                 input.type !== 'tel' &&
+                 input.type !== 'hidden';
+        });
+
+        textInputs.forEach(input => {
+          // Convert to uppercase as user types
+          input.addEventListener('input', function() {
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            this.value = this.value.toUpperCase();
+            // Maintain cursor position
+            this.setSelectionRange(start, end);
+          });
+
+          // Convert to uppercase when pasting content
+          input.addEventListener('paste', function(e) {
+            setTimeout(() => {
+              const start = this.selectionStart;
+              const end = this.selectionEnd;
+              this.value = this.value.toUpperCase();
+              this.setSelectionRange(start, end);
+            }, 10);
+          });
+        });
+      }
+
+      // Apply uppercase to text fields when DOM is loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        applyUppercaseToFields();
+      });
+
+      // Also apply when new fields might be added dynamically
+      setTimeout(applyUppercaseToFields, 500);
     })();
 
     // =============== AUTOCOMPLETE KOTA ===============

@@ -332,7 +332,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="name">Nama Lengkap</label>
-                            <input type="text" id="name" name="name" inputmode="text" placeholder="Masukkan Nama Lengkap" required aria-required="true"/>
+                            <input type="text" id="name" name="name" inputmode="text" placeholder="Masukkan Nama Lengkap (tulis gelar jika ada, cth: S.Kom, S.Pd)" required aria-required="true"/>
                             <div class="help-text">Sesuai KTP/Ijazah.</div>
                             <div id="name-error" class="error-text" style="display:none;">Nama lengkap wajib diisi.</div>
                         </div>
@@ -827,6 +827,49 @@
         }
     });
     
+    // Function to convert text to uppercase in real-time, excluding email and password fields
+    function applyUppercaseToFields() {
+        // Get all input and textarea elements, but exclude email, password, date, number, tel, and hidden inputs
+        const textInputs = [
+            ...document.querySelectorAll('input[type="text"]'),
+            ...document.querySelectorAll('textarea')
+        ].filter(input => {
+            // Don't apply to email, password, date, number, tel, or hidden inputs
+            return input.type !== 'email' &&
+                   input.type !== 'password' &&
+                   input.type !== 'date' &&
+                   input.type !== 'number' &&
+                   input.type !== 'tel' &&
+                   input.type !== 'hidden';
+        });
+
+        textInputs.forEach(input => {
+            // Convert to uppercase as user types
+            input.addEventListener('input', function() {
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.toUpperCase();
+                // Maintain cursor position
+                this.setSelectionRange(start, end);
+            });
+
+            // Convert to uppercase when pasting content
+            input.addEventListener('paste', function(e) {
+                setTimeout(() => {
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.toUpperCase();
+                    this.setSelectionRange(start, end);
+                }, 10);
+            });
+        });
+    }
+
+    // Apply uppercase to text fields when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        applyUppercaseToFields();
+    });
+
     // Listeners untuk update progress dan validasi saat input berubah
     $$('input, select, textarea').forEach(el => {
         el.addEventListener('input', () => {

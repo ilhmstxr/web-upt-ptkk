@@ -78,9 +78,7 @@ Route::view('/kontak-kami', 'pages.kontak')->name('kontak');
 // Halaman Masuk umum kalau masih dipakai
 Route::view('/masuk', 'pages.masuk')->name('masuk');
 
-Route::get('/statistik', function () {
-    return view('pages.statistik.index');
-})->name('statistik.index');
+Route::get('/statistik', [StatistikPelatihanController::class, 'index'])->name('statistik.index');
 
 /* ======================================================================
 |  B. HOME redirect (legacy)

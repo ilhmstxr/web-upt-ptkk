@@ -73,10 +73,6 @@
                 <td>: {{ $data['id_peserta'] }}</td>
             </tr>
             <tr>
-                <td class="label">Password</td>
-                <td>: {{ $data['password'] }}</td>
-            </tr> <!-- tanggal lahir yang  tidak ada stripnya -->
-            <tr>
                 <td class="label">Nama</td>
                 <td>: {{ $data['nama_peserta'] }}</td>
             </tr>
@@ -96,6 +92,14 @@
                 <td class="label">Kamar Asrama</td>
                 <td>: {{ $data['kamar_asrama'] }}</td>
             </tr>
+            <tr>
+                <td class="label">Token Assesment</td>
+                <td>: {{ $data['token_assessment'] }}</td>
+            </tr> <!-- tanggal lahir yang  tidak ada stripnya -->
+            <tr>
+                <td class="label">Password</td>
+                <td>: {{ $data['password'] }}</td>
+            </tr> <!-- tanggal lahir yang  tidak ada stripnya -->
         </table>
 
         <div class="header">WAKTU DAN TEMPAT PELAKSANAAN</div>

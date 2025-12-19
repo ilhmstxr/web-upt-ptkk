@@ -159,20 +159,16 @@
             </div>
         </div>
 
-        <!-- Token Assessment (NEW SECTION) -->
-        <div class="fade-up bg-indigo-50 border border-indigo-200 rounded-lg p-6 text-center mb-6" style="animation-delay:.7s">
-            <h3 class="text-lg font-semibold text-indigo-900">Token Assessment Anda</h3>
-            <p class="text-sm text-indigo-600 mb-3">Gunakan token ini untuk masuk ke dashboard ujian/materi.</p>
-            
-            <div class="text-3xl font-mono font-bold text-indigo-700 tracking-wider select-all bg-white border border-indigo-100 py-3 px-4 rounded-md inline-block mb-1">
-                {{ $pendaftaran->assessment_token }}
+        <!-- Token Assessment (REMOVED - will be sent in Email 2) -->
+        <div class="fade-up bg-amber-50 border border-amber-200 rounded-lg p-6 text-center mb-6" style="animation-delay:.7s">
+            <h3 class="text-lg font-semibold text-amber-900">Token Assessment</h3>
+            <p class="text-sm text-amber-700 mb-3">
+                Token assessment akan dikirim melalui email setelah pendaftaran Anda disetujui oleh admin.
+            </p>
+            <div class="text-sm text-amber-600">
+                <i class="fas fa-clock mr-2"></i>
+                Mohon tunggu konfirmasi dari admin untuk mendapatkan token.
             </div>
-
-            @if($pendaftaran->token_expires_at)
-                <p class="text-xs text-gray-500 mt-2">
-                    Berlaku hingga: {{ \Carbon\Carbon::parse($pendaftaran->token_expires_at)->format('d F Y') }}
-                </p>
-            @endif
         </div>
 
         <!-- Tombol -->
