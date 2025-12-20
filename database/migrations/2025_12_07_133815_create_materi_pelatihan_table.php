@@ -47,7 +47,7 @@ return new class extends Migration {
 
             // Metadata urutan & estimasi
             $table->unsignedInteger('urutan')->default(1);
-            $table->unsignedInteger('estimasi_menit')->nullable();
+            $table->unsignedInteger('estimasi_hari')->nullable();
 
             // Publikasi
             $table->boolean('is_published')->default(true);

@@ -49,9 +49,9 @@
                 {{ $tipeBadge['label'] }}
             </span>
 
-            @if(!empty($materi->estimasi_menit))
+            @if(!empty($materi->estimasi_hari))
                 <span class="text-[11px] px-2 py-1 rounded-full bg-gray-50 text-gray-600 font-medium">
-                    {{ $materi->estimasi_menit }} menit
+                    {{ $materi->estimasi_hari }} hari
                 </span>
             @endif
         </div>

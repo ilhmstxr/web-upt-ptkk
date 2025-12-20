@@ -54,15 +54,17 @@ class AsramaResource extends Resource
         }
 
         return collect($config[$asramaName])
-            ->map(function ($room) {
+            ->map(function ($room) use ($asramaName) {
                 $no  = (int) ($room['no'] ?? 0);
                 $bed = $room['bed'] ?? null;
+                $lantai = $room['lantai'] ?? static::inferLantaiFromAsramaName($asramaName);
 
                 $isActive = is_numeric($bed) && (int) $bed > 0;
                 $totalBeds = $isActive ? (int) $bed : 0;
 
                 return [
                     'nomor_kamar'    => $no,
+                    'lantai'         => $lantai,
                     'total_beds'     => $totalBeds,
                     'available_beds' => $totalBeds,
                     'is_active'      => $isActive,
@@ -116,6 +118,11 @@ class AsramaResource extends Resource
                                 ->numeric()
                                 ->required(),
 
+                            Forms\Components\TextInput::make('lantai')
+                                ->label('Lantai')
+                                ->numeric()
+                                ->minValue(1),
+
                             Forms\Components\TextInput::make('total_beds')
                                 ->label('Total Bed')
                                 ->numeric()
@@ -139,7 +146,7 @@ class AsramaResource extends Resource
                                 ->default(true),
 
                         ])
-                        ->columns(4)
+                        ->columns(5)
                         ->addActionLabel('Tambah Kamar')
                         ->reorderable()
                         ->collapsible(),
@@ -229,5 +236,17 @@ class AsramaResource extends Resource
             'create' => Pages\CreateAsrama::route('/create'),
             'edit'   => Pages\EditAsrama::route('/{record}/edit'),
         ];
+    }
+
+    protected static function inferLantaiFromAsramaName(string $asramaName): ?int
+    {
+        $name = strtolower($asramaName);
+        if (str_contains($name, 'atas')) {
+            return 2;
+        }
+        if (str_contains($name, 'bawah')) {
+            return 1;
+        }
+        return null;
     }
 }

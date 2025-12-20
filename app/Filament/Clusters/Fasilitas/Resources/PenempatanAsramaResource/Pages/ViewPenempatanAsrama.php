@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Fasilitas\Resources\PenempatanAsramaResource\Pag
 use App\Filament\Clusters\Fasilitas\Resources\PenempatanAsramaResource;
 use App\Models\PendaftaranPelatihan;
 use App\Services\AsramaAllocator;
+use App\Services\AsramaConfigSyncService;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
@@ -29,9 +30,12 @@ class ViewPenempatanAsrama extends ViewRecord
                 ->icon('heroicon-o-bolt')
                 ->color('success')
                 ->requiresConfirmation()
-                ->action(function (AsramaAllocator $allocator) {
+                ->action(function (AsramaAllocator $allocator, AsramaConfigSyncService $sync) {
 
                     $pelatihanId = $this->record->id;
+
+                    // pastikan data kamar/asrama sudah tersinkron dari config
+                    $sync->syncFromConfig();
 
                     // sinkron kamar global -> kamar_pelatihan
                     $allocator->attachKamarToPelatihan($pelatihanId);
@@ -80,6 +84,13 @@ class ViewPenempatanAsrama extends ViewRecord
             return $v === '' ? '-' : $v;
         };
 
+        $inferLantai = function (?string $asramaName): ?int {
+            $name = strtolower((string) $asramaName);
+            if (str_contains($name, 'atas')) return 2;
+            if (str_contains($name, 'bawah')) return 1;
+            return null;
+        };
+
         $rows = PendaftaranPelatihan::query()
             ->where('pelatihan_id', $pelatihanId)
             ->with([
@@ -90,13 +101,14 @@ class ViewPenempatanAsrama extends ViewRecord
             ->orderBy('id')
             ->get()
             ->values()
-            ->map(function ($pend, $i) use ($clean) {
+            ->map(function ($pend, $i) use ($clean, $inferLantai) {
 
                 $peserta    = $pend->peserta;
                 $penempatan = $pend->penempatanAsramaAktif();
 
                 $kamar      = $penempatan?->kamarPelatihan?->kamar;
                 $asrama     = $kamar?->asrama;
+                $lantai     = $kamar?->lantai ?? $inferLantai($asrama?->name);
 
                 return [
                     'no'            => $i + 1,
@@ -106,7 +118,7 @@ class ViewPenempatanAsrama extends ViewRecord
                     'jenis_kelamin' => $clean($peserta?->jenis_kelamin),
                     'instansi'      => $clean($peserta?->instansi?->asal_instansi),
                     'asrama'        => $clean($asrama?->name),
-                    'lantai'        => $clean($kamar?->lantai),
+                    'lantai'        => $clean($lantai),
                     'kamar'         => $clean($kamar?->nomor_kamar),
                 ];
             });
@@ -158,4 +170,3 @@ class ViewPenempatanAsrama extends ViewRecord
         ]);
     }
 }
-

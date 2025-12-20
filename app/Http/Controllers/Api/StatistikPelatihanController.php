@@ -9,33 +9,29 @@ class StatistikPelatihanController extends Controller
 {
     public function index()
     {
-        // ambil batch terbaru
-        $batch = DB::table('statistik_pelatihan')
-            ->orderByDesc('created_at')
-            ->value('batch');
-
-        if (!$batch) {
-            return response()->json([
-                'pelatihans' => [],
-                'labels' => [],
-                'datasets' => ['pre'=>[], 'post'=>[], 'praktek'=>[], 'rata'=>[]],
-            ]);
-        }
-
-        $rows = DB::table('statistik_pelatihan as s')
-            ->join('pelatihan as p', 'p.id', '=', 's.pelatihan_id')
-            ->where('s.batch', $batch)
+        $rows = DB::table('pendaftaran_pelatihan as pp')
+            ->join('pelatihan as p', 'p.id', '=', 'pp.pelatihan_id')
+            ->whereNotNull('p.tanggal_selesai')
+            ->whereDate('p.tanggal_selesai', '<=', now())
+            ->groupBy('p.id', 'p.nama_pelatihan', 'p.warna', 'p.warna_inactive')
             ->orderBy('p.nama_pelatihan')
             ->get([
                 'p.id',
                 'p.nama_pelatihan as nama',
                 'p.warna',
                 'p.warna_inactive',
-                's.pre_avg',
-                's.post_avg',
-                's.praktek_avg',
-                's.rata_avg',
+                DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_pre_test, 0)), 2), 0) as pre_avg'),
+                DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_post_test, 0)), 2), 0) as post_avg'),
+                DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_praktek, 0)), 2), 0) as praktek_avg'),
             ]);
+
+        if ($rows->isEmpty()) {
+            return response()->json([
+                'pelatihans' => [],
+                'labels' => [],
+                'datasets' => ['pre'=>[], 'post'=>[], 'praktek'=>[], 'rata'=>[]],
+            ]);
+        }
 
         return response()->json([
             'pelatihans' => $rows->map(fn($r) => [
@@ -51,7 +47,13 @@ class StatistikPelatihanController extends Controller
                 'pre'     => $rows->pluck('pre_avg')->map(fn($v)=>(float)$v)->values(),
                 'post'    => $rows->pluck('post_avg')->map(fn($v)=>(float)$v)->values(),
                 'praktek' => $rows->pluck('praktek_avg')->map(fn($v)=>(float)$v)->values(),
-                'rata'    => $rows->pluck('rata_avg')->map(fn($v)=>(float)$v)->values(),
+                'rata'    => $rows->map(function ($r) {
+                    $post = (float) ($r->post_avg ?? 0);
+                    $prak = (float) ($r->praktek_avg ?? 0);
+                    return ($post > 0 || $prak > 0)
+                        ? round(($post + $prak) / 2, 2)
+                        : 0;
+                })->values(),
             ],
         ]);
     }

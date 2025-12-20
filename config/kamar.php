@@ -28,16 +28,10 @@ return [
     ],
 
     'Tulip Bawah' => [
-        ['no' => 1, 'bed' => 'rusak'],
-        ['no' => 2, 'bed' => 'rusak'],
-        ['no' => 3, 'bed' => 'rusak'],
-        ['no' => 4, 'bed' => 'rusak'],
-        ['no' => 5, 'bed' => 'rusak'],
-        ['no' => 6, 'bed' => 3],
-        ['no' => 7, 'bed' => 3],
-        ['no' => 8, 'bed' => 3],
-        ['no' => 9, 'bed' => 'rusak'],
-        ['no' => 10, 'bed' => 3],
+        ['no' => 1, 'bed' => 4],
+        ['no' => 2, 'bed' => 4],
+        ['no' => 3, 'bed' => 4],
+        ['no' => 4, 'bed' => 4],
     ],
 
     'Tulip Atas' => [

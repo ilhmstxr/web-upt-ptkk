@@ -21,10 +21,16 @@
     .section-container{max-width:1280px;margin:auto;padding-left:1.5rem;padding-right:1.5rem;}
     @media (min-width:768px){.section-container{padding-left:3rem;padding-right:3rem}}
     @media (min-width:1024px){.section-container{padding-left:80px;padding-right:80px}}
+
+    .table-wrap{border:2px solid #0b83d0;border-radius:14px;overflow:hidden;box-shadow:0 10px 24px rgba(17,24,39,0.08)}
+    .table-head{background:linear-gradient(90deg,#0aa3e5 0%,#08b3f2 100%);color:#081526}
+    .row-animate{opacity:0;transform:translateY(6px);animation:rowIn 0.45s ease forwards;animation-delay:var(--row-delay,0ms)}
+    @keyframes rowIn{to{opacity:1;transform:translateY(0)}}
+    .row-hover{transition:background-color .2s ease}
   </style>
 </head>
 
-<body class="bg-[#F1F9FC] text-[#081526]">
+<body class="bg-[#F1F9FC] text-[#081526] font-[Montserrat]">
 
   {{-- TOPBAR --}}
   @include('components.layouts.app.topbar')
@@ -130,22 +136,22 @@
 
         <div class="bg-white rounded-2xl border border-[#D6DFEF] overflow-hidden shadow-sm">
           <div class="overflow-x-auto">
-            <table class="min-w-full text-sm">
-              <thead class="bg-[#E3EEFF]">
+            <table class="min-w-full text-sm table-wrap">
+              <thead class="table-head">
                 <tr class="text-left">
-                  <th class="px-4 py-3 border border-[#D6DFEF] font-[Montserrat] font-semibold text-[#081526]">
+                  <th class="px-4 py-3 border border-[#0b83d0] font-[Montserrat] font-semibold text-[#081526]">
                     Nama Kompetensi
                   </th>
-                  <th class="px-4 py-3 border border-[#D6DFEF] font-[Montserrat] font-semibold text-[#081526] text-center">
+                  <th class="px-4 py-3 border border-[#0b83d0] font-[Montserrat] font-semibold text-[#081526] text-center">
                     Pre-Test
                   </th>
-                  <th class="px-4 py-3 border border-[#D6DFEF] font-[Montserrat] font-semibold text-[#081526] text-center">
+                  <th class="px-4 py-3 border border-[#0b83d0] font-[Montserrat] font-semibold text-[#081526] text-center">
                     Post-Test
                   </th>
-                  <th class="px-4 py-3 border border-[#D6DFEF] font-[Montserrat] font-semibold text-[#081526] text-center">
+                  <th class="px-4 py-3 border border-[#0b83d0] font-[Montserrat] font-semibold text-[#081526] text-center">
                     Praktek
                   </th>
-                  <th class="px-4 py-3 border border-[#D6DFEF] font-[Montserrat] font-semibold text-[#081526] text-center">
+                  <th class="px-4 py-3 border border-[#0b83d0] font-[Montserrat] font-semibold text-[#081526] text-center">
                     Rata-Rata
                   </th>
                 </tr>
@@ -279,26 +285,26 @@
       const pel = getActive();
       const ks = pel.kompetensis || [];
 
-      elTable.innerHTML = ks.map((k) => `
-        <tr class="hover:bg-[#F7FAFF]">
+      elTable.innerHTML = ks.map((k, idx) => `
+        <tr class="row-animate row-hover hover:bg-[#EEF7FF]" style="--row-delay:${idx * 60}ms">
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
-                     text-[#081526] font-['Fira_Code'] font-normal">
+                     text-[#081526] font-[Montserrat] font-medium">
             ${k.nama ?? '-'}
           </td>
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
-                     text-[#081526] font-['Fira_Code'] font-normal text-center">
+                     text-[#081526] font-[Montserrat] font-medium text-center">
             ${fmt(toNum(k.pre))}
           </td>
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
-                     text-[#081526] font-['Fira_Code'] font-normal text-center">
+                     text-[#081526] font-[Montserrat] font-medium text-center">
             ${fmt(toNum(k.post))}
           </td>
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
-                     text-[#081526] font-['Fira_Code'] font-normal text-center">
+                     text-[#081526] font-[Montserrat] font-medium text-center">
             ${fmt(toNum(k.praktek))}
           </td>
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
-                     text-[#081526] font-['Fira_Code'] font-normal text-center">
+                     text-[#081526] font-[Montserrat] font-medium text-center">
             ${fmt(calcRata(k))}
           </td>
         </tr>

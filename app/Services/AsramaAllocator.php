@@ -47,6 +47,7 @@ class AsramaAllocator
                         'pelatihan_id' => $pelatihanId,
                     ],
                     [
+                        'total_beds'     => (int) ($kamar->total_beds ?? 0),
                         'available_beds' => $reset ? (int) $kamar->total_beds : (int) ($kamar->total_beds ?? 0),
                         'is_active'      => (bool) $kamar->is_active,
                         'created_at'     => $exists ? DB::raw('created_at') : now(),
@@ -66,9 +67,9 @@ class AsramaAllocator
      */
     /**
      * Auto-allocate peserta untuk 1 pelatihan dengan prioritas:
-     * 1. Cek apakah Cukup 1 Asrama (beda gender beda kamar).
-     * 2. Kalau tdk cukup, Asrama Campur tapi Beda Kamar.
-     * 3. Kalau tdk cukup, boleh campur gender di kamar 8 bed (urutan bed berdekatan).
+     * 1. Pisahkan gender beda asrama (gender terbanyak ke asrama dengan bed terbanyak).
+     * 2. Kalau tdk cukup, satu asrama boleh beda gender tapi beda kamar.
+     * 3. Kalau tdk cukup, hanya boleh 1 kamar beda gender (khusus kamar 8 bed).
      */
     public function allocatePeserta(int $pelatihanId): array
     {
@@ -153,72 +154,106 @@ class AsramaAllocator
                 ];
             }
 
-            // 3. Analisis Kapasitas per Asrama (Strategy Phase)
-            //    Hitung total available bed per asrama
-            $asramaCapacity = [];
+            // 3. Analisis Kapasitas per Asrama + gender existing
+            $asramaStats = [];
             foreach ($rooms as $r) {
-                if (!isset($asramaCapacity[$r->asrama_id])) {
-                    $asramaCapacity[$r->asrama_id] = 0;
+                if (!isset($asramaStats[$r->asrama_id])) {
+                    $asramaStats[$r->asrama_id] = [
+                        'available' => 0,
+                        'genders' => [],
+                    ];
                 }
-                $asramaCapacity[$r->asrama_id] += $r->available;
+                $asramaStats[$r->asrama_id]['available'] += $r->available;
+                $asramaStats[$r->asrama_id]['genders'] = array_values(array_unique(array_merge(
+                    $asramaStats[$r->asrama_id]['genders'],
+                    $r->occupants_genders
+                )));
             }
 
-            // Cari Asrama Prioritas (Single Dorm Strategy)
-            // Asrama mana yg muat nampung SEMUA sisa peserta?
-            $totalNeeded = count($toBeAllocated);
-            $targetAsramaId = null;
-
-            foreach ($asramaCapacity as $aid => $cap) {
-                if ($cap >= $totalNeeded) {
-                    $targetAsramaId = $aid; // Found candidate
-                    break; // Ambil yang pertama ketemu (bs diimprove logicnya cari yg paling pas)
-                }
-            }
-
-            // 4. Allocation Loop
+            $genderCounts = [
+                'Laki-laki' => 0,
+                'Perempuan' => 0,
+            ];
             foreach ($toBeAllocated as $p) {
+                $genderCounts[$p->peserta->jenis_kelamin]++;
+            }
+
+            $phase1Plan = $this->pickSeparatedAsramaPlan($asramaStats, $genderCounts);
+
+            $assign = function ($p, $assignedRoom) use ($pelatihanId, &$result) {
                 $gender = $p->peserta->jenis_kelamin;
-                $assignedRoom = null;
 
-                // --- PASS 1: Strict Gender & Location ---
-                // Try find room in Target Asrama (if any), strict gender
-                if ($targetAsramaId) {
-                    $assignedRoom = $this->findRoom($rooms, $gender, $targetAsramaId, strictGender: true);
+                $assignedRoom->available--;
+                $assignedRoom->occupants_genders[] = $gender;
+
+                PenempatanAsrama::create([
+                    'peserta_id'         => $p->peserta_id,
+                    'pelatihan_id'       => $pelatihanId,
+                    'kamar_pelatihan_id' => $assignedRoom->kp_id,
+                    'gender'             => $gender,
+                ]);
+
+                DB::table('kamar_pelatihans')
+                    ->where('id', $assignedRoom->kp_id)
+                    ->decrement('available_beds');
+
+                $result['ok']++;
+                $result['details'][] = ['pid' => $p->id, 'kamar' => $assignedRoom->kp_id];
+            };
+
+            // 4. Allocation Phase
+            $remaining = [];
+
+            // PASS 1: Pisah gender beda asrama (majority -> asrama capacity terbesar)
+            if ($phase1Plan) {
+                foreach ($toBeAllocated as $p) {
+                    $gender = $p->peserta->jenis_kelamin;
+                    $asramaId = $phase1Plan[$gender] ?? null;
+                    $assignedRoom = $this->findRoom($rooms, $gender, $asramaId, strictGender: true);
+                    if ($assignedRoom) {
+                        $assign($p, $assignedRoom);
+                    } else {
+                        $remaining[] = $p;
+                    }
                 }
+            } else {
+                $remaining = $toBeAllocated;
+            }
 
-                // If not found in target (or no target), try finding room in ANY asrama, strict gender
-                if (!$assignedRoom) {
-                    $assignedRoom = $this->findRoom($rooms, $gender, null, strictGender: true);
-                }
-
-                // --- PASS 2: Falback Mixed Gender (8 Beds Only) ---
-                // Hanya boleh jika kamar punya total_beds == 8
-                if (!$assignedRoom) {
-                    $assignedRoom = $this->findRoom($rooms, $gender, null, strictGender: false, allowMixed8Bed: true);
-                }
-
+            // PASS 2: Boleh campur asrama, tetap beda kamar (strict gender per kamar)
+            $remaining2 = [];
+            foreach ($remaining as $p) {
+                $gender = $p->peserta->jenis_kelamin;
+                $assignedRoom = $this->findRoom($rooms, $gender, null, strictGender: true);
                 if ($assignedRoom) {
-                    // Execute Allocation update in Memory
-                    $assignedRoom->available--;
-                    $assignedRoom->occupants_genders[] = $gender;
-
-                    // Execute Database Insert
-                    PenempatanAsrama::create([
-                        'peserta_id'         => $p->peserta_id,
-                        'pelatihan_id'       => $pelatihanId,
-                        'kamar_pelatihan_id' => $assignedRoom->kp_id,
-                        'gender'             => $gender,
-                    ]);
-
-                    // Update available counter di DB langsung (atau bulk nanti, tp biara aman per row dlu)
-                    DB::table('kamar_pelatihans')
-                        ->where('id', $assignedRoom->kp_id)
-                        ->decrement('available_beds');
-
-                    $result['ok']++;
-                    $result['details'][] = ['pid' => $p->id, 'kamar' => $assignedRoom->kp_id];
+                    $assign($p, $assignedRoom);
                 } else {
-                    $result['failed_full']++;
+                    $remaining2[] = $p;
+                }
+            }
+
+            // PASS 3: Hanya 1 kamar beda gender, khusus total_beds=8
+            if (!empty($remaining2)) {
+                $mixedRoomId = $this->pickMixedRoomId($rooms);
+                if (!$mixedRoomId) {
+                    $result['failed_full'] += count($remaining2);
+                    return $result;
+                }
+
+                $preferredGender = $this->preferredGenderForMixed($remaining2, $rooms, $mixedRoomId);
+                usort($remaining2, function ($a, $b) use ($preferredGender) {
+                    $ga = $a->peserta->jenis_kelamin === $preferredGender ? 0 : 1;
+                    $gb = $b->peserta->jenis_kelamin === $preferredGender ? 0 : 1;
+                    return $ga <=> $gb;
+                });
+
+                foreach ($remaining2 as $p) {
+                    $assignedRoom = $this->findMixedRoom($rooms, $mixedRoomId);
+                    if ($assignedRoom) {
+                        $assign($p, $assignedRoom);
+                    } else {
+                        $result['failed_full']++;
+                    }
                 }
             }
 
@@ -258,5 +293,117 @@ class AsramaAllocator
             }
         }
         return null;
+    }
+
+    private function pickSeparatedAsramaPlan(array $asramaStats, array $genderCounts): ?array
+    {
+        $genders = ['Laki-laki', 'Perempuan'];
+        $major = $genderCounts['Laki-laki'] >= $genderCounts['Perempuan'] ? 'Laki-laki' : 'Perempuan';
+        $minor = $major === 'Laki-laki' ? 'Perempuan' : 'Laki-laki';
+
+        if (($genderCounts[$major] ?? 0) === 0 && ($genderCounts[$minor] ?? 0) === 0) {
+            return null;
+        }
+
+        $eligibleMajor = $this->eligibleAsramaForGender($asramaStats, $major);
+        $eligibleMinor = $this->eligibleAsramaForGender($asramaStats, $minor);
+
+        foreach ($eligibleMajor as $majorId => $majorCap) {
+            if ($genderCounts[$major] > $majorCap) continue;
+
+            if ($genderCounts[$minor] === 0) {
+                return [$major => $majorId];
+            }
+
+            foreach ($eligibleMinor as $minorId => $minorCap) {
+                if ($minorId === $majorId) continue;
+                if ($genderCounts[$minor] <= $minorCap) {
+                    return [
+                        $major => $majorId,
+                        $minor => $minorId,
+                    ];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function eligibleAsramaForGender(array $asramaStats, string $gender): array
+    {
+        $eligible = [];
+        foreach ($asramaStats as $asramaId => $stats) {
+            $genders = $stats['genders'] ?? [];
+            $isOk = empty($genders) || (count($genders) === 1 && $genders[0] === $gender);
+            if ($isOk && ($stats['available'] ?? 0) > 0) {
+                $eligible[$asramaId] = (int) $stats['available'];
+            }
+        }
+
+        arsort($eligible);
+        return $eligible;
+    }
+
+    private function pickMixedRoomId(array $rooms): ?int
+    {
+        $mixed = [];
+        $candidates = [];
+
+        foreach ($rooms as $r) {
+            if ($r->available <= 0 || (int) $r->total_beds !== 8) continue;
+            $currentGenders = array_unique($r->occupants_genders);
+            if (count($currentGenders) > 1) {
+                $mixed[$r->kp_id] = $r->available;
+            } else {
+                $candidates[$r->kp_id] = $r->available;
+            }
+        }
+
+        if (!empty($mixed)) {
+            arsort($mixed);
+            return (int) array_key_first($mixed);
+        }
+
+        if (!empty($candidates)) {
+            arsort($candidates);
+            return (int) array_key_first($candidates);
+        }
+
+        return null;
+    }
+
+    private function preferredGenderForMixed(array $participants, array $rooms, int $mixedRoomId): string
+    {
+        $preferred = null;
+        if (isset($rooms[$mixedRoomId])) {
+            $currentGenders = array_unique($rooms[$mixedRoomId]->occupants_genders);
+            if (count($currentGenders) === 1) {
+                $preferred = $currentGenders[0];
+            }
+        }
+
+        if ($preferred) {
+            return $preferred;
+        }
+
+        $counts = ['Laki-laki' => 0, 'Perempuan' => 0];
+        foreach ($participants as $p) {
+            $counts[$p->peserta->jenis_kelamin]++;
+        }
+
+        return $counts['Laki-laki'] >= $counts['Perempuan'] ? 'Laki-laki' : 'Perempuan';
+    }
+
+    private function findMixedRoom(array $rooms, int $mixedRoomId)
+    {
+        if (!isset($rooms[$mixedRoomId])) {
+            return null;
+        }
+
+        $r = $rooms[$mixedRoomId];
+        if ($r->available <= 0) return null;
+        if ((int) $r->total_beds !== 8) return null;
+
+        return $r;
     }
 }
