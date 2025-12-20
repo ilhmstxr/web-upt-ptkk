@@ -9,7 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pendaftaran_pelatihan', function (Blueprint $table) {
-            if (! Schema::hasColumn('pendaftaran_pelatihan', 'token_expires_at')) {
+            if (
+                ! Schema::hasColumn('pendaftaran_pelatihan', 'token_expires_at')
+                && Schema::hasColumn('pendaftaran_pelatihan', 'assessment_token')
+            ) {
                 $table->timestamp('token_expires_at')
                       ->nullable()
                       ->after('assessment_token');

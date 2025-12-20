@@ -3,6 +3,7 @@
 namespace App\Filament\Clusters\Fasilitas\Resources\PenempatanAsramaResource\RelationManagers;
 
 use App\Models\PendaftaranPelatihan;
+use App\Models\PenempatanAsrama;
 use App\Models\Peserta;
 use App\Models\Pelatihan;
 use App\Services\AsramaAllocator;
@@ -23,7 +24,7 @@ class PesertaPenempatanRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_registrasi')
-                    ->label('Kode Regis')
+                    ->label('Nomor Registrasi')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
@@ -34,16 +35,13 @@ class PesertaPenempatanRelationManager extends RelationManager
                     ->sortable()
                     ->wrap(),
 
-                Tables\Columns\TextColumn::make('kelas')
-                    ->label('Kelas')
-                    ->badge()
-                    ->color('gray')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('peserta.instansi.asal_instansi')
-                    ->label('Asal Instansi')
-                    ->default('-')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('kompetensi')
+                    ->label('Kompetensi')
+                    ->state(function (PendaftaranPelatihan $record) {
+                        return $record->kompetensi?->nama_kompetensi
+                            ?? $record->kompetensiPelatihan?->kompetensi?->nama_kompetensi
+                            ?? '-';
+                    })
                     ->wrap(),
 
                 Tables\Columns\TextColumn::make('peserta.jenis_kelamin')
@@ -57,23 +55,54 @@ class PesertaPenempatanRelationManager extends RelationManager
                     ->formatStateUsing(fn($state) => $state ? ucfirst($state) : '-')
                     ->alignCenter(),
 
-                Tables\Columns\TextColumn::make('asrama_kamar')
-                    ->label('Asrama / Kamar')
+                Tables\Columns\TextColumn::make('asrama')
+                    ->label('Asrama')
                     ->state(function (PendaftaranPelatihan $record) {
-                        $penempatan = $record->penempatanAsramaAktif();
-
-                        $kamar = $penempatan?->kamarPelatihan?->kamar;
-
-                        if (! $kamar) {
-                            return 'Belum dibagi';
-                        }
-
-                        $asramaName = $kamar->asrama->name ?? 'Asrama';
-                        $kamarNo    = $kamar->nomor_kamar ?? '-';
-
-                        return "{$asramaName} - Kamar {$kamarNo}";
+                        $kamar = $record->penempatanAsramaAktif()?->kamarPelatihan?->kamar;
+                        return $kamar?->asrama?->name ?? '-';
                     })
                     ->wrap(),
+
+                Tables\Columns\TextColumn::make('lantai')
+                    ->label('Lantai')
+                    ->state(function (PendaftaranPelatihan $record) {
+                        $kamar = $record->penempatanAsramaAktif()?->kamarPelatihan?->kamar;
+                        return $kamar?->lantai ?? '-';
+                    })
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('kamar')
+                    ->label('Kamar')
+                    ->state(function (PendaftaranPelatihan $record) {
+                        $kamar = $record->penempatanAsramaAktif()?->kamarPelatihan?->kamar;
+                        return $kamar?->nomor_kamar ?? '-';
+                    })
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('bed')
+                    ->label('Bed')
+                    ->state(function (PendaftaranPelatihan $record) {
+                        $penempatan = $record->penempatanAsramaAktif();
+                        $kpId = $penempatan?->kamar_pelatihan_id;
+                        if (!$kpId) {
+                            return '-';
+                        }
+
+                        static $bedCache = [];
+                        if (!array_key_exists($kpId, $bedCache)) {
+                            $bedCache[$kpId] = PenempatanAsrama::query()
+                                ->where('pelatihan_id', $record->pelatihan_id)
+                                ->where('kamar_pelatihan_id', $kpId)
+                                ->orderBy('id')
+                                ->pluck('peserta_id')
+                                ->values()
+                                ->all();
+                        }
+
+                        $idx = array_search($record->peserta_id, $bedCache[$kpId], true);
+                        return $idx === false ? '-' : $idx + 1;
+                    })
+                    ->alignCenter(),
 
             ])
             ->actions([])
@@ -89,6 +118,8 @@ class PesertaPenempatanRelationManager extends RelationManager
             ->where('pelatihan_id', $pelatihan->id)
             ->with([
                 'peserta.instansi',
+                'kompetensi',
+                'kompetensiPelatihan.kompetensi',
                 'penempatanAsrama.kamarPelatihan.kamar.asrama',
             ]);
     }

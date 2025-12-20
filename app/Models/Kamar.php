@@ -17,14 +17,19 @@ class Kamar extends Model
     protected $fillable = [
         'asrama_id',
         'nomor_kamar',
+        'lantai',
         'total_beds',
+        'available_beds',
+        'status',
         'is_active',
     ];
 
     protected $casts = [
         'is_active'   => 'boolean',
         'nomor_kamar' => 'integer',
+        'lantai'      => 'integer',
         'total_beds'  => 'integer',
+        'available_beds' => 'integer',
     ];
 
     public function asrama(): BelongsTo

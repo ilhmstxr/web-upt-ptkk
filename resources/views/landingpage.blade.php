@@ -323,49 +323,81 @@
       </section>
 
       <section class="programs-section">
-        <a href="#" class="program-card" onclick="handleCardClick('tata-boga')">
-          <div class="arrow-icon">→</div>
-          <div class="program-image">
-            <img src="images/tata-boga.jpg" alt="Tata Boga" onerror="this.src='images/placeholder.jpg'" />
-          </div>
-          <div class="program-content">
-            <h3 class="program-title">Tata Boga</h3>
-            <span class="program-date">25 - 30 Agustus 2025</span>
-          </div>
-        </a>
+        @php
+          $statPelatihans = collect($pelatihans ?? [])
+            ->sortByDesc(function ($p) {
+              return data_get($p, 'tanggal_selesai')
+                ?? data_get($p, 'tanggal_mulai')
+                ?? data_get($p, 'id', 0);
+            })
+            ->take(4);
+        @endphp
 
-        <a href="#" class="program-card" onclick="handleCardClick('tata-busana')">
-          <div class="arrow-icon">→</div>
-          <div class="program-image">
-            <img src="images/tata-busana.jpg" alt="Tata Busana" onerror="this.src='images/placeholder.jpg'" />
-          </div>
-          <div class="program-content">
-            <h3 class="program-title">Tata Busana</h3>
-            <span class="program-date">25 - 30 Agustus 2025</span>
-          </div>
-        </a>
+        @if($statPelatihans->isNotEmpty())
+          @foreach($statPelatihans as $pel)
+            @php
+              $name = data_get($pel, 'nama') ?? data_get($pel, 'nama_pelatihan') ?? 'Pelatihan';
+              $img = data_get($pel, 'fotos.0') ?? data_get($pel, 'image') ?? 'images/placeholder.jpg';
+              $start = data_get($pel, 'tanggal_mulai');
+              $end = data_get($pel, 'tanggal_selesai');
+              $dateText = ($start && $end) ? "{$start} - {$end}" : ($start ?? '-');
+            @endphp
+            <a href="#" class="program-card">
+              <div class="arrow-icon">→</div>
+              <div class="program-image">
+                <img src="{{ $img }}" alt="{{ $name }}" onerror="this.src='images/placeholder.jpg'" />
+              </div>
+              <div class="program-content">
+                <h3 class="program-title">{{ $name }}</h3>
+                <span class="program-date">{{ $dateText }}</span>
+              </div>
+            </a>
+          @endforeach
+        @else
+          <a href="#" class="program-card" onclick="handleCardClick('tata-boga')">
+            <div class="arrow-icon">→</div>
+            <div class="program-image">
+              <img src="images/tata-boga.jpg" alt="Tata Boga" onerror="this.src='images/placeholder.jpg'" />
+            </div>
+            <div class="program-content">
+              <h3 class="program-title">Tata Boga</h3>
+              <span class="program-date">25 - 30 Agustus 2025</span>
+            </div>
+          </a>
 
-        <a href="#" class="program-card" onclick="handleCardClick('tata-kecantikan')">
-          <div class="arrow-icon">→</div>
-          <div class="program-image">
-            <img src="images/tata-kecantikan.jpg" alt="Tata Kecantikan" onerror="this.src='images/placeholder.jpg'" />
-          </div>
-          <div class="program-content">
-            <h3 class="program-title">Tata Kecantikan</h3>
-            <span class="program-date">25 - 30 Agustus 2025</span>
-          </div>
-        </a>
+          <a href="#" class="program-card" onclick="handleCardClick('tata-busana')">
+            <div class="arrow-icon">→</div>
+            <div class="program-image">
+              <img src="images/tata-busana.jpg" alt="Tata Busana" onerror="this.src='images/placeholder.jpg'" />
+            </div>
+            <div class="program-content">
+              <h3 class="program-title">Tata Busana</h3>
+              <span class="program-date">25 - 30 Agustus 2025</span>
+            </div>
+          </a>
 
-        <a href="#" class="program-card" onclick="handleCardClick('teknik-pendingin-tata-udara')">
-          <div class="arrow-icon">→</div>
-          <div class="program-image">
-            <img src="images/tata-udara.jpg" alt="Teknik Pendingin dan Tata Udara" onerror="this.src='images/placeholder.jpg'" />
-          </div>
-          <div class="program-content">
-            <h3 class="program-title">Teknik Pendingin dan Tata Udara</h3>
-            <span class="program-date">25 - 30 Agustus 2025</span>
-          </div>
-        </a>
+          <a href="#" class="program-card" onclick="handleCardClick('tata-kecantikan')">
+            <div class="arrow-icon">→</div>
+            <div class="program-image">
+              <img src="images/tata-kecantikan.jpg" alt="Tata Kecantikan" onerror="this.src='images/placeholder.jpg'" />
+            </div>
+            <div class="program-content">
+              <h3 class="program-title">Tata Kecantikan</h3>
+              <span class="program-date">25 - 30 Agustus 2025</span>
+            </div>
+          </a>
+
+          <a href="#" class="program-card" onclick="handleCardClick('teknik-pendingin-tata-udara')">
+            <div class="arrow-icon">→</div>
+            <div class="program-image">
+              <img src="images/tata-udara.jpg" alt="Teknik Pendingin dan Tata Udara" onerror="this.src='images/placeholder.jpg'" />
+            </div>
+            <div class="program-content">
+              <h3 class="program-title">Teknik Pendingin dan Tata Udara</h3>
+              <span class="program-date">25 - 30 Agustus 2025</span>
+            </div>
+          </a>
+        @endif
       </section>
     </main>
 

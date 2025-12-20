@@ -26,13 +26,13 @@ class MateriPelatihan extends Model
         'teks',
 
         'urutan',
-        'estimasi_menit',
+        'estimasi_hari',
         'is_published',
     ];
 
     protected $casts = [
         'urutan' => 'integer',
-        'estimasi_menit' => 'integer',
+        'estimasi_hari' => 'integer',
         'is_published' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

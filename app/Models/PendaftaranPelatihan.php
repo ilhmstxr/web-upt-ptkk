@@ -29,11 +29,6 @@ class PendaftaranPelatihan extends Model
         'status',
         'status_pendaftaran',
 
-        // Token assessment
-        'assessment_token',
-        'assessment_token_sent_at',
-        'token_expires_at',
-
         // Nilai & Survei
         'nilai_pre_test',
         'nilai_post_test',
@@ -44,8 +39,6 @@ class PendaftaranPelatihan extends Model
 
     protected $casts = [
         'tanggal_pendaftaran'      => 'datetime',
-        'assessment_token_sent_at' => 'datetime',
-        'token_expires_at'         => 'datetime',
     ];
 
     // ======================

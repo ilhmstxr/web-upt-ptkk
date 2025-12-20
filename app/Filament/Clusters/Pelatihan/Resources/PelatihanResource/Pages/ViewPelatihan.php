@@ -269,7 +269,7 @@ class ViewPelatihan extends ViewRecord
                 if (!isset($questionCounts[$pid])) {
                     $questionCounts[$pid] = [
                         'id' => $pid,
-                        'teks' => $p->teks_pertanyaan ?? 'Pertanyaan #' . $pid,
+                        'teks' => $p->teks ?? 'Pertanyaan #' . $pid,
                         'kategori' => $kategori,
                         'counts' => [1 => 0, 2 => 0, 3 => 0, 4 => 0]
                     ];

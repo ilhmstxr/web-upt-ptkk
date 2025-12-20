@@ -143,7 +143,7 @@
                                 {{ \Illuminate\Support\Str::limit($m->deskripsi ?? '', 60) }}
                             </div>
                         </div>
-                        <div class="text-xs text-slate-400">{{ $m->estimasi_menit ? $m->estimasi_menit . 'm' : '-' }}</div>
+                        <div class="text-xs text-slate-400">{{ $m->estimasi_hari ? $m->estimasi_hari . 'm' : '-' }}</div>
                     </a>
                 @empty
                     <div class="text-sm text-slate-400 col-span-full">Belum ada materi yang tersedia.</div>

@@ -4,7 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Filament\Widgets\KompetensiStatsOverview;
 use App\Models\Kompetensi;
-use App\Models\Percobaan;
+use App\Models\PendaftaranPelatihan;
 use App\Models\Peserta;
 use Filament\Pages\Page;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -41,9 +41,27 @@ class ViewKompetensiDetail extends Page implements HasTable
             ->query(
                 Peserta::query()
                     ->where('kompetensi_id', $this->record->id)
-                    ->addSelect(['pre_test_score' => Percobaan::select('nilai')->join('tes', 'tes.id', '=', 'percobaans.tes_id')->whereColumn('tes.peserta_id', 'pesertas.id')->where('tes.jenis_tes', 'pre-test')->latest()->limit(1)])
-                    ->addSelect(['post_test_score' => Percobaan::select('nilai')->join('tes', 'tes.id', '=', 'percobaans.tes_id')->whereColumn('tes.peserta_id', 'pesertas.id')->where('tes.jenis_tes', 'post-test')->latest()->limit(1)])
-                    ->addSelect(['practice_score' => Percobaan::select('nilai')->join('tes', 'tes.id', '=', 'percobaans.tes_id')->whereColumn('tes.peserta_id', 'pesertas.id')->where('tes.jenis_tes', 'praktek')->latest()->limit(1)])
+                    ->addSelect([
+                        'pre_test_score' => PendaftaranPelatihan::select('nilai_pre_test')
+                            ->whereColumn('pendaftaran_pelatihan.peserta_id', 'pesertas.id')
+                            ->where('pendaftaran_pelatihan.kompetensi_id', $this->record->id)
+                            ->orderByDesc('pendaftaran_pelatihan.id')
+                            ->limit(1),
+                    ])
+                    ->addSelect([
+                        'post_test_score' => PendaftaranPelatihan::select('nilai_post_test')
+                            ->whereColumn('pendaftaran_pelatihan.peserta_id', 'pesertas.id')
+                            ->where('pendaftaran_pelatihan.kompetensi_id', $this->record->id)
+                            ->orderByDesc('pendaftaran_pelatihan.id')
+                            ->limit(1),
+                    ])
+                    ->addSelect([
+                        'practice_score' => PendaftaranPelatihan::select('nilai_praktek')
+                            ->whereColumn('pendaftaran_pelatihan.peserta_id', 'pesertas.id')
+                            ->where('pendaftaran_pelatihan.kompetensi_id', $this->record->id)
+                            ->orderByDesc('pendaftaran_pelatihan.id')
+                            ->limit(1),
+                    ])
             )
             ->heading('Daftar Peserta')
             ->columns([

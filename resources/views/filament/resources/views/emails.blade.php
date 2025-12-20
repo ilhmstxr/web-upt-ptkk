@@ -3,8 +3,8 @@
 <p>Selamat, status pendaftaran kamu sudah <b>DITERIMA</b>.</p>
 
 <p>
-    <b>Token / Nomor Registrasi Assessment:</b><br>
-    {{ $pendaftaran->assessment_token }}
+    <b>Nomor Registrasi Assessment:</b><br>
+    {{ $pendaftaran->nomor_registrasi }}
 </p>
 
 <p>

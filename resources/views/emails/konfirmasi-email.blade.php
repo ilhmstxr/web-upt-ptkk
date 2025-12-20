@@ -69,13 +69,9 @@
         <div class="header">INFORMASI PENDAFTARAN</div>
         <table class="info-table">
             <tr>
-                <td class="label">ID Peserta</td>
+                <td class="label">Nomor Registrasi</td>
                 <td>: {{ $data['id_peserta'] }}</td>
             </tr>
-            <tr>
-                <td class="label">Password</td>
-                <td>: {{ $data['password'] }}</td>
-            </tr> <!-- tanggal lahir yang  tidak ada stripnya -->
             <tr>
                 <td class="label">Nama</td>
                 <td>: {{ $data['nama_peserta'] }}</td>
@@ -96,6 +92,10 @@
                 <td class="label">Kamar Asrama</td>
                 <td>: {{ $data['kamar_asrama'] }}</td>
             </tr>
+            <tr>
+                <td class="label">Password</td>
+                <td>: {{ $data['password'] }}</td>
+            </tr> <!-- tanggal lahir yang  tidak ada stripnya -->
         </table>
 
         <div class="header">WAKTU DAN TEMPAT PELAKSANAAN</div>

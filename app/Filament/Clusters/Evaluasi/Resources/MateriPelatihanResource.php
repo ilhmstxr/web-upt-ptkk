@@ -74,8 +74,8 @@ class MateriPelatihanResource extends Resource
                         ->required()
                         ->helperText('Urutan materi dalam satu pelatihan'),
 
-                    Forms\Components\TextInput::make('estimasi_menit')
-                        ->label('Estimasi (menit)')
+                    Forms\Components\TextInput::make('estimasi_hari')
+                        ->label('Estimasi (hari)')
                         ->numeric()
                         ->nullable(),
 
@@ -182,9 +182,9 @@ class MateriPelatihanResource extends Resource
                     ->sortable()
                     ->alignCenter(),
 
-                Tables\Columns\TextColumn::make('estimasi_menit')
+                Tables\Columns\TextColumn::make('estimasi_hari')
                     ->label('Estimasi')
-                    ->suffix(' menit')
+                    ->suffix('Hari')
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\IconColumn::make('is_published')

@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Pages;
 
 use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource;
 use App\Models\KompetensiPelatihan;
+use App\Models\PendaftaranPelatihan;
 use App\Models\Pelatihan;
 use Filament\Resources\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
@@ -177,82 +178,51 @@ class ViewKompetensiPelatihan extends Page
         $pelatihanId = $this->record->id;
         $kompetensiId = $this->kompetensiPelatihan->id;
 
-        // Base query joins for competency filtering
-        $baseJoin = function ($query) use ($pelatihanId, $kompetensiId) {
-            $query->join('pendaftaran_pelatihan as pp', 'pp.peserta_id', '=', 'percobaan.peserta_id')
-                ->join('tes as t', 't.id', '=', 'percobaan.tes_id')
-                ->where('pp.pelatihan_id', $pelatihanId)
-                ->where('pp.kompetensi_pelatihan_id', $kompetensiId)
-                ->where('t.kompetensi_pelatihan_id', $kompetensiId); // Ensure test belongs to competency
-        };
+        $baseQuery = PendaftaranPelatihan::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->where('kompetensi_pelatihan_id', $kompetensiId)
+            ->where('status_pendaftaran', '!=', 'Batal');
 
         // ======================
         // 1. PRETEST
         // ======================
-        $pretestQuery = \App\Models\Percobaan::query()
-            ->whereHas('tes', fn ($q) => $q->where('tipe', 'pre-test'))
-            ->tap($baseJoin)
-            ->whereNotNull('skor');
+        $pretestQuery = (clone $baseQuery)
+            ->where('nilai_pre_test', '>', 0);
 
-        $pretestAvg   = (float) ($pretestQuery->avg('skor') ?? 0);
-        $pretestMax   = (float) ($pretestQuery->max('skor') ?? 0);
-        $pretestMin   = (float) ($pretestQuery->min('skor') ?? 0);
+        $pretestAvg   = (float) ($pretestQuery->avg('nilai_pre_test') ?? 0);
+        $pretestMax   = (float) ($pretestQuery->max('nilai_pre_test') ?? 0);
+        $pretestMin   = (float) ($pretestQuery->min('nilai_pre_test') ?? 0);
         $pretestCount = (int) $pretestQuery->count();
 
         // ======================
         // 2. POSTTEST
         // ======================
-        $posttestQuery = \App\Models\Percobaan::query()
-            ->whereHas('tes', fn ($q) => $q->where('tipe', 'post-test'))
-            ->tap($baseJoin)
-            ->whereNotNull('skor');
+        $posttestQuery = (clone $baseQuery)
+            ->where('nilai_post_test', '>', 0);
 
-        $posttestAvg   = (float) ($posttestQuery->avg('skor') ?? 0);
+        $posttestAvg   = (float) ($posttestQuery->avg('nilai_post_test') ?? 0);
         $posttestCount = (int) $posttestQuery->count();
-        $lulus         = (clone $posttestQuery)->where('skor', '>=', 75)->count();
-        $remedial      = (clone $posttestQuery)->where('skor', '<', 75)->count();
+        $lulus         = (clone $posttestQuery)->where('nilai_post_test', '>=', 75)->count();
+        $remedial      = (clone $posttestQuery)->where('nilai_post_test', '<', 75)->count();
 
         // 3. MONEV (SURVEI) - Simple Avg Calculation
         $monevRespondents = \App\Models\Percobaan::query()
-            ->tap($baseJoin)
-            ->whereHas('tes', fn($q) => $q->where('tipe', 'survei'))
+            ->join('tes as t', 't.id', '=', 'percobaan.tes_id')
+            ->join('pendaftaran_pelatihan as pp', 'pp.peserta_id', '=', 'percobaan.peserta_id')
+            ->where('t.tipe', 'survei')
+            ->where('pp.pelatihan_id', $pelatihanId)
+            ->where('pp.kompetensi_pelatihan_id', $kompetensiId)
             ->distinct('percobaan.peserta_id')
             ->count('percobaan.peserta_id');
 
-        $totalPeserta = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-            ->where('kompetensi_pelatihan_id', $kompetensiId)
-            ->where('status_pendaftaran', '!=', 'Batal')
-            ->count();
-
-        // Calculate rough average if possible, else 0 placeholder as requested for simplified view
-        // Using average of all answers simply:
-        $monevAvg = \App\Models\JawabanUser::query()
-            ->join('percobaan as pr', 'pr.id', '=', 'jawaban_user.percobaan_id')
-            ->join('tes as t', 't.id', '=', 'pr.tes_id')
-            ->join('pertanyaan as p', 'p.id', '=', 'jawaban_user.pertanyaan_id')
-            ->join('pendaftaran_pelatihan as pp', 'pp.peserta_id', '=', 'pr.peserta_id') // Filter join
-            ->where('t.tipe', 'survei')
-            ->where('p.tipe_jawaban', 'skala_likert')
-            ->where('pp.pelatihan_id', $pelatihanId)
-            ->where('pp.kompetensi_pelatihan_id', $kompetensiId)
-            // Need to join opsi_jawaban to value, or assume standard 1-4
-            // Since we reverted explicit buildsLikertData, we can accept 0 or try to calculate if needed.
-            // Let's stick to safe 0 and respondents count if raw calculation is too complex without trait.
-            // Actually, let's keep it simple: 0.0 placeholder is fine if charts are moved.
-            // OR re-implement the simple calc:
-            ->selectRaw('count(*) as count') // Just checking validity
-            ->exists() ? 0 : 0; // Keeping it 0 for now as 'Monev Detail' has the real data.
-
-        // Correcting: If we want to show *something* on the card (like progress bar), we need a value.
-        // But the previous implementation had complex logic. Let's just return what's needed for the VIEW.
-        // The view expects `monev.avg` and `monev.responden`.
+        $totalPeserta = (clone $baseQuery)->count();
 
         return [
             'pretest' => [
-            'avg'   => round($pretestAvg, 2),
-            'max'   => $pretestMax,
-            'min'   => $pretestMin,
-            'count' => $pretestCount,
+                'avg'   => round($pretestAvg, 2),
+                'max'   => $pretestMax,
+                'min'   => $pretestMin,
+                'count' => $pretestCount,
             ],
             'posttest' => [
                 'avg'      => round($posttestAvg, 2),
@@ -264,8 +234,8 @@ class ViewKompetensiPelatihan extends Page
                 'avg' => 0,
                 'responden' => $monevRespondents,
                 'total_peserta' => $totalPeserta,
-                'percentage' => $totalPeserta > 0 ? ($monevRespondents / $totalPeserta) * 100 : 0
-            ]
+                'percentage' => $totalPeserta > 0 ? ($monevRespondents / $totalPeserta) * 100 : 0,
+            ],
         ];
     }
 }

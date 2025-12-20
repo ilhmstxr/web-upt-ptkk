@@ -26,12 +26,9 @@ class AssessmentLoginController extends Controller
         $token = trim($request->token);
         $pass  = preg_replace('/\D/', '', trim($request->password)); // buang selain angka
 
-        // 1) ambil pendaftaran by nomor_registrasi / assessment_token
+        // 1) ambil pendaftaran by nomor_registrasi
         $reg = PendaftaranPelatihan::with('peserta.instansi')
-            ->where(function ($q) use ($token) {
-                $q->where('nomor_registrasi', $token)
-                    ->orWhere('assessment_token', $token);
-            })
+            ->where('nomor_registrasi', $token)
             ->latest('id')
             ->first();
 

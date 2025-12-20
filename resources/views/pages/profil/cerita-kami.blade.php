@@ -708,7 +708,7 @@ section + section {
           <p class="text-[#081526] font-[Montserrat] font-medium text-[15px]
                     leading-snug text-center">
             @switch($i)
-              @case(1) Peningkatan Produktivitas dan Inovasi Guru dan Siswa SMA/SMK @break
+              @case(1) Peningkatan Produktivitas Inovasi Guru dan Siswa SMA/SMK @break
               @case(2) Penguatan Ekosistem Ekonomi Kreatif Nasional @break
               @case(3) Meningkatkan Kemampuan Adaptasi Terhadap Transformasi Digital @break
               @case(4) Terciptanya Ekosistem Kolaboratif Antara Pendidikan dan Industri @break

@@ -242,7 +242,7 @@ class DashboardController extends Controller
                     'judul',
                     'deskripsi',
                     'tipe',
-                    'estimasi_menit',
+                    'estimasi_hari',
                     'urutan',
                     'created_at'
                 ]);

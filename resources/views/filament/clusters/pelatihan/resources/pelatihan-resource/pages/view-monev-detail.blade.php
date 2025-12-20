@@ -67,7 +67,7 @@
 
                     <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <template x-for="q in group" :key="q.id">
-                            <div class="bg-white dark:bg-gray-900 p-4 rounded-lg ring-1 ring-gray-950/5 dark:ring-white/10 flex flex-col">
+                            <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg ring-1 ring-gray-950/5 dark:ring-white/5 flex flex-col">
                                 <p class="text-sm font-medium text-gray-800 dark:text-gray-200 mb-4 min-h-[3rem]" x-text="q.teks"></p>
 
                                 <div class="flex items-center gap-4 mt-auto">
@@ -101,7 +101,7 @@
                 </div>
             </template>
         </div>
-        @endif
+    @endif
         <!-- Script Alpine & Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>

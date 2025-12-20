@@ -39,7 +39,7 @@ class MateriController extends Controller
             'tipe'  => 'required|in:video,file,link,teks',
 
             'deskripsi' => 'nullable|string',
-            'estimasi_menit' => 'nullable|integer',
+            'estimasi_hari' => 'nullable|integer',
 
             'video_url' => 'nullable|url',
             'link_url'  => 'nullable|url',
@@ -124,7 +124,7 @@ class MateriController extends Controller
             'tipe'  => 'required|in:video,file,link,teks',
 
             'deskripsi' => 'nullable|string',
-            'estimasi_menit' => 'nullable|integer',
+            'estimasi_hari' => 'nullable|integer',
 
             'video_url' => 'nullable|url',
             'link_url'  => 'nullable|url',

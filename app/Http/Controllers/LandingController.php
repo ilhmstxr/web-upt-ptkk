@@ -131,53 +131,83 @@ class LandingController extends Controller
 
         // 7) DATA STATISTIK (CHART) dari pendaftaran_pelatihan
         try {
-            $rows = Cache::remember('landing_statistik', 1800, function () {
+            $rows = Cache::remember('landing_statistik_v2', 1800, function () {
+                $latestPelatihanIds = DB::table('pelatihan')
+                    ->whereNotNull('tanggal_selesai')
+                    ->whereDate('tanggal_selesai', '<=', now())
+                    ->orderByDesc('tanggal_selesai')
+                    ->limit(5)
+                    ->pluck('id');
+
                 return DB::table('pendaftaran_pelatihan as pp')
                     ->join('pelatihan as p', 'p.id', '=', 'pp.pelatihan_id')
+                    ->leftJoin('kompetensi_pelatihan as kp', 'kp.id', '=', 'pp.kompetensi_pelatihan_id')
+                    ->leftJoin('kompetensi as k', 'k.id', '=', DB::raw('COALESCE(pp.kompetensi_id, kp.kompetensi_id)'))
+                    ->whereIn('p.id', $latestPelatihanIds)
                     ->whereNotNull('p.tanggal_selesai')
                     ->whereDate('p.tanggal_selesai', '<=', now())
-                    ->groupBy('p.id', 'p.nama_pelatihan', 'p.warna', 'p.warna_inactive')
-                    ->orderBy('p.nama_pelatihan')
-                    ->get([
+                    ->groupBy(
                         'p.id',
                         'p.nama_pelatihan',
                         'p.warna',
                         'p.warna_inactive',
-                        DB::raw('AVG(pp.nilai_pre_test) as pre_avg'),
-                        DB::raw('AVG(pp.nilai_post_test) as post_avg'),
-                        DB::raw('AVG(pp.nilai_praktek) as praktek_avg'),
-                        DB::raw('AVG(pp.rata_rata) as rata_avg'),
+                        'k.id',
+                        'k.nama_kompetensi'
+                    )
+                    ->orderByDesc('p.tanggal_selesai')
+                    ->orderBy('k.nama_kompetensi')
+                    ->get([
+                        'p.id as pelatihan_id',
+                        'p.nama_pelatihan',
+                        'p.warna',
+                        'p.warna_inactive',
+                        'k.nama_kompetensi',
+                        DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_pre_test, 0)), 2), 0) as pre_avg'),
+                        DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_post_test, 0)), 2), 0) as post_avg'),
+                        DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_praktek, 0)), 2), 0) as praktek_avg'),
                     ]);
             });
 
-            $pelatihans = collect($rows)->map(function ($row) {
-                $pre = (float) ($row->pre_avg ?? 0);
-                $post = (float) ($row->post_avg ?? 0);
-                $prak = (float) ($row->praktek_avg ?? 0);
-                $rata = $row->rata_avg !== null
-                    ? (float) $row->rata_avg
-                    : round(($pre + $post + $prak) / 3, 2);
+            $pelatihans = collect($rows)
+                ->groupBy('pelatihan_id')
+                ->map(function ($items) {
+                    $first = $items->first();
 
-                return (object) [
-                    'id' => $row->id,
-                    'nama_pelatihan' => $row->nama_pelatihan,
-                    'warna' => $row->warna,
-                    'warna_inactive' => $row->warna_inactive,
-                    'pre_avg' => $pre,
-                    'post_avg' => $post,
-                    'praktek_avg' => $prak,
-                    'rata_avg' => $rata,
-                ];
-            });
+                    $kompetensis = $items->map(function ($row) {
+                        $pre = (float) ($row->pre_avg ?? 0);
+                        $post = (float) ($row->post_avg ?? 0);
+                        $prak = (float) ($row->praktek_avg ?? 0);
+                        $rata = ($post > 0 || $prak > 0)
+                            ? round(($post + $prak) / 2, 2)
+                            : 0;
+
+                        return [
+                            'nama' => (string) ($row->nama_kompetensi ?? 'Kompetensi'),
+                            'pre' => $pre,
+                            'post' => $post,
+                            'praktek' => $prak,
+                            'rata' => $rata,
+                        ];
+                    })->values()->all();
+
+                    return [
+                        'id' => (int) ($first->pelatihan_id ?? 0),
+                        'nama' => (string) ($first->nama_pelatihan ?? 'Pelatihan'),
+                        'warna' => $first->warna ?: '#1524AF',
+                        'warna_inactive' => $first->warna_inactive ?: '#081526',
+                        'kompetensis' => $kompetensis,
+                    ];
+                })
+                ->values();
         } catch (Throwable $e) {
             Log::error("Gagal memuat data Statistik untuk Chart: " . $e->getMessage());
         }
 
-        $labels = $pelatihans->map(fn($p) => (string) ($p->nama_pelatihan ?? 'Pelatihan'))->toArray();
-        $pre    = $pelatihans->map(fn($p) => (float) ($p->pre_avg ?? 0))->toArray();
-        $post   = $pelatihans->map(fn($p) => (float) ($p->post_avg ?? 0))->toArray();
-        $prak   = $pelatihans->map(fn($p) => (float) ($p->praktek_avg ?? 0))->toArray();
-        $rata   = $pelatihans->map(fn($p) => (float) ($p->rata_avg ?? 0))->toArray();
+        $labels = $pelatihans->map(fn ($p) => (string) ($p['nama'] ?? 'Pelatihan'))->toArray();
+        $pre = [];
+        $post = [];
+        $prak = [];
+        $rata = [];
 
         // 🔹 SATU-SATUNYA RETURN
         return view('pages.landing', [
@@ -216,11 +246,6 @@ class LandingController extends Controller
 
     public function home()
     {
-        // ambil batch terbaru dari statistik_pelatihan
-        $batch = DB::table('statistik_pelatihan')
-            ->orderByDesc('created_at')
-            ->value('batch');
-
         $pelatihans = collect();
         $labels = [];
         $pre = [];
@@ -228,31 +253,44 @@ class LandingController extends Controller
         $prak = [];
         $rata = [];
 
-        if ($batch) {
-            $rows = DB::table('statistik_pelatihan as s')
-                ->join('pelatihan as p', 'p.id', '=', 's.pelatihan_id')
-                ->where('s.batch', $batch)
-                ->orderBy('p.nama_pelatihan')
-                ->get([
-                    'p.id',
-                    'p.nama_pelatihan',
-                    'p.warna',
-                    'p.warna_inactive',
-                    's.pre_avg',
-                    's.post_avg',
-                    's.praktek_avg',
-                    's.rata_avg',
-                ]);
+        $rows = DB::table('pendaftaran_pelatihan as pp')
+            ->join('pelatihan as p', 'p.id', '=', 'pp.pelatihan_id')
+            ->whereNotNull('p.tanggal_selesai')
+            ->whereDate('p.tanggal_selesai', '<=', now())
+            ->groupBy(
+                'p.id',
+                'p.nama_pelatihan',
+                'p.warna',
+                'p.warna_inactive'
+            )
+            ->orderBy('p.nama_pelatihan')
+            ->get([
+                'p.id',
+                'p.nama_pelatihan',
+                'p.warna',
+                'p.warna_inactive',
+                DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_pre_test, 0)), 2), 0) as pre_avg'),
+                DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_post_test, 0)), 2), 0) as post_avg'),
+                DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_praktek, 0)), 2), 0) as praktek_avg'),
+            ]);
 
-            $pelatihans = $rows; // biar blade kamu @forelse($pelatihans as $pel) tetap jalan
-
+        if ($rows->isNotEmpty()) {
+            $pelatihans = $rows;
             $labels = $rows->pluck('nama_pelatihan')->values()->all();
-            $pre    = $rows->pluck('pre_avg')->map(fn($v) => (float) $v)->values()->all();
-            $post   = $rows->pluck('post_avg')->map(fn($v) => (float) $v)->values()->all();
-            $prak   = $rows->pluck('praktek_avg')->map(fn($v) => (float) $v)->values()->all();
-            $rata   = $rows->pluck('rata_avg')->map(fn($v) => (float) $v)->values()->all();
+            $pre = $rows->pluck('pre_avg')->map(fn($v) => (float) $v)->values()->all();
+            $post = $rows->pluck('post_avg')->map(fn($v) => (float) $v)->values()->all();
+            $prak = $rows->pluck('praktek_avg')->map(fn($v) => (float) $v)->values()->all();
+
+            foreach ($rows as $row) {
+                $postVal = (float) ($row->post_avg ?? 0);
+                $prakVal = (float) ($row->praktek_avg ?? 0);
+                $rata[] = ($postVal > 0 || $prakVal > 0)
+                    ? round(($postVal + $prakVal) / 2, 2)
+                    : 0;
+            }
         }
 
         return view('landing.home', compact('pelatihans','labels','pre','post','prak','rata'));
     }
 }
+

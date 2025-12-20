@@ -52,9 +52,9 @@ class MateriPelatihanTable extends BaseWidget
                         'teks'  => 'heroicon-o-pencil-square',
                     ]),
 
-                Tables\Columns\TextColumn::make('estimasi_menit')
+                Tables\Columns\TextColumn::make('estimasi_hari')
                     ->label('Estimasi')
-                    ->suffix(' menit')
+                    ->suffix(' Hari')
                     ->toggleable()
                     ->alignCenter(),
 
@@ -103,9 +103,9 @@ class MateriPelatihanTable extends BaseWidget
                                 ->default(1)
                                 ->required(),
 
-                            Forms\Components\TextInput::make('estimasi_menit')
+                            Forms\Components\TextInput::make('estimasi_hari')
                                 ->numeric()
-                                ->label('Estimasi (menit)')
+                                ->label('Estimasi (hari)')
                                 ->nullable(),
 
                             Forms\Components\Textarea::make('deskripsi')

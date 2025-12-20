@@ -20,14 +20,12 @@ use App\Http\Controllers\MateriController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\KontenProgramPelatihanController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AssessmentLoginController;     // token login flow
+use App\Http\Controllers\AssessmentLoginController;
 use App\Http\Controllers\AssessmentAuthController;      // optional assessment dashboard flow
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\TesRekapDownloadController;
 use App\Http\Controllers\AsramaOtomasiController;
 use App\Http\Controllers\StatistikPelatihanController;
-use App\Http\Controllers\TokenController;
 
 // --- MODELS & OTHERS ---
 use App\Models\Peserta;
@@ -266,17 +264,6 @@ Route::middleware(['web', 'assessment', 'training.session'])
 ====================================================================== */
 Route::middleware(['auth'])->group(function () {
 
-    // Admin dashboard token management
-    Route::get('/admin/dashboard', [AdminController::class, 'showTokenManagement'])
-        ->name('admin.dashboard');
-
-    // Token generate/download
-    Route::post('/admin/tokens/generate', [PendaftaranController::class, 'generateTokenMassal'])
-        ->name('admin.generate.tokens');
-
-    Route::get('/admin/tokens/download', [PendaftaranController::class, 'downloadTokenAssessment'])
-        ->name('admin.download.tokens');
-
     // Upload admin
     Route::post('/admin/uploads', [UploadController::class, 'store'])
         ->name('admin.uploads.store');
@@ -336,8 +323,6 @@ Route::get('/test-peserta', fn() => dd((new PesertaSheet(null))->collection()->t
 Route::get('/test-lampiran', fn() => dd((new LampiranSheet(null))->collection()->take(5)));
 Route::get('/export-peserta', fn() => Excel::download(new PesertaExport(), 'peserta.xlsx'))
     ->name('export.peserta');
-Route::get('/admin/download-tokens', [TokenController::class, 'download'])
-    ->name('admin.download.tokens');
 
 Route::get('/send', fn() => Mail::to('23082010166@student.upnjatim.ac.id')->send(new TestMail()));
 
