@@ -61,14 +61,21 @@
         </h3>
         <div class="space-y-4 font-[Montserrat] font-medium">
           {{-- Alamat --}}
-          <div class="flex gap-3 items-start">
-            <svg class="w-5 h-5 text-[#FFFFFF] shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-            </svg>
-            <p class="text-[13px] sm:text-[14px] text-[#FFFFFF] leading-relaxed">
-              Komplek Kampus Unesa Jl. Ketintang No.25, Ketintang, Kec. Gayungan, Surabaya, Jawa Timur 60231
-            </p>
-          </div>
+         <div class="flex gap-3 items-start">
+  <svg class="w-5 h-5 text-[#FFFFFF] shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+  </svg>
+
+  <a
+    href="https://maps.app.goo.gl/vxsFSkW7RCcw4sfh6?g_st=ipc"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-[13px] sm:text-[14px] text-[#FFFFFF] leading-relaxed
+           hover:text-[#F2C94C] transition underline-offset-4 hover:underline"
+  >
+    Komplek Kampus Unesa Jl. Ketintang No.25, Ketintang, Kec. Gayungan, Surabaya, Jawa Timur 60231
+  </a>
+</div>
 
           {{-- Telepon --}}
           <div class="flex items-center gap-3">

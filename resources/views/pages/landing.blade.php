@@ -539,15 +539,18 @@ $latestBeritas = Berita::query()
             {{ $title }}
           </h2>
 
-          {{-- Body: render HTML (dengan styling prose biar list rapi) --}}
-          <div class="prose max-w-none text-justify prose-p:my-3 prose-ol:my-3 prose-li:my-1
-                      [&_p]:!leading-tight [&_li]:!leading-tight
-                      prose-p:text-[#081526] prose-li:text-[#081526]
-                      prose-p:font-[Montserrat] prose-li:font-[Montserrat]
-                      prose-p:font-medium prose-li:font-medium
-                      prose-p:text-[14px] md:prose-p:text-[15px] lg:prose-p:text-[16px] ">
-            {!! $bodyHtml !!}
-          </div>
+         {{-- Body: render HTML (FIX list angka) --}}
+<div class="max-w-none text-justify
+    [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mt-3
+    [&_ul]:list-disc    [&_ul]:pl-6 [&_ul]:mt-3
+    [&_li]:mt-1
+    [&_p]:mt-3 [&_p]:leading-tight
+    text-[#081526] font-[Montserrat] font-medium
+    text-[14px] md:text-[15px] lg:text-[16px]">
+
+  {!! $bodyHtml !!}
+</div>
+
 
           {{-- Button --}}
           <a href="{{ $ceritaUrl }}"
