@@ -30,7 +30,7 @@ class ViewPelatihan extends ViewRecord
     {
         return [
             PelatihanResource::getUrl('index') => 'Manajemen Pelatihan',
-            '#' => \Str::limit($this->record->nama_pelatihan, 40),
+            '#' => \Illuminate\Support\Str::limit($this->record->nama_pelatihan, 40),
         ];
     }
 
@@ -158,6 +158,57 @@ class ViewPelatihan extends ViewRecord
 
                 \Filament\Notifications\Notification::make()
                     ->title('Instruktur berhasil ditambahkan')
+                    ->success()
+                    ->send();
+            });
+    }
+
+    /**
+     * ======================
+     * ADD COMPETENCY ACTION (NEW)
+     * ======================
+     */
+    public function addCompetencyAction(): \Filament\Actions\Action
+    {
+        return \Filament\Actions\Action::make('addCompetency')
+            ->label('Tambah Kompetensi')
+            ->icon('heroicon-o-plus-circle')
+            ->color('primary')
+            ->form([
+                \Filament\Forms\Components\Select::make('kompetensi_id')
+                    ->label('Kompetensi')
+                    ->options(\App\Models\Kompetensi::pluck('nama_kompetensi', 'id'))
+                    ->searchable()
+                    ->required()
+                    ->helperText('Pilih materi/kompetensi yang akan ditambahkan.'),
+
+                \Filament\Forms\Components\Select::make('instruktur_id')
+                    ->label('Instruktur / Mentor')
+                    ->options(\App\Models\Instruktur::pluck('nama', 'id'))
+                    ->searchable()
+                    ->multiple()
+                    ->required(),
+
+                \Filament\Forms\Components\TextInput::make('lokasi')
+                    ->label('Lokasi / Ruangan')
+                    ->default($this->record->lokasi ?? 'UPT-PTKK')
+                    ->required(),
+            ])
+            ->action(function (array $data) {
+                // 1. Create Competency Pivot (Allow Duplicates)
+                $kompetensiPelatihan = $this->record->kompetensiPelatihan()
+                    ->create([
+                        'kompetensi_id' => $data['kompetensi_id'],
+                        'lokasi' => $data['lokasi']
+                    ]);
+
+                // 2. Sync Instructors
+                if (!empty($data['instruktur_id'])) {
+                    $kompetensiPelatihan->instrukturs()->sync($data['instruktur_id']);
+                }
+
+                \Filament\Notifications\Notification::make()
+                    ->title('Kompetensi berhasil ditambahkan')
                     ->success()
                     ->send();
             });

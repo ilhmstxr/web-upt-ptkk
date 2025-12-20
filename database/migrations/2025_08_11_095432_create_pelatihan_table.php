@@ -48,6 +48,8 @@ return new class extends Migration
             $table->longText('syarat_ketentuan')->nullable();
             $table->longText('jadwal_text')->nullable();
             $table->longText('lokasi_text')->nullable();
+            $table->string('nama_cp')->nullable();
+            $table->string('no_cp')->nullable();
 
             $table->timestamps();
         });

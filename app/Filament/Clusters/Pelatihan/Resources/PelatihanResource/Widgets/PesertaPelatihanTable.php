@@ -12,6 +12,11 @@ use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\DB;
+use App\Models\LampiranPeserta;
+use App\Models\Instansi;
+use App\Models\User;
+use App\Models\Peserta;
 
 class PesertaPelatihanTable extends BaseWidget
 {
@@ -88,6 +93,86 @@ class PesertaPelatihanTable extends BaseWidget
             ->toArray();
     }
 
+
+
+    public static function getPesertaFormSchema(): array
+    {
+        return [
+            Forms\Components\Section::make('Informasi Pendaftar')
+                ->schema([
+                    Forms\Components\TextInput::make('nama')->label('Nama Peserta')->required(),
+                    Forms\Components\TextInput::make('nomor_registrasi')->label('Nomor Registrasi')->disabled(),
+                    Forms\Components\TextInput::make('nik')->label('NIK'),
+                    Forms\Components\TextInput::make('no_hp')->label('No. HP'),
+                    Forms\Components\TextInput::make('email')->label('Email'),
+                    Forms\Components\TextInput::make('tempat_lahir')->label('Tempat Lahir'),
+                    Forms\Components\DateTimePicker::make('tanggal_lahir')->label('Tanggal Lahir'),
+                    Forms\Components\TextInput::make('jenis_kelamin')->label('Jenis Kelamin'),
+                    Forms\Components\TextInput::make('agama')->label('Agama'),
+                    Forms\Components\Textarea::make('alamat')->label('Alamat')->columnSpanFull(),
+
+                    Forms\Components\TextInput::make('pelatihan_nama')->label('Pelatihan')->disabled(),
+                    Forms\Components\TextInput::make('kompetensi_nama')->label('Kompetensi')->disabled(),
+                    Forms\Components\TextInput::make('kelas')->label('Kelas'),
+                    Forms\Components\DateTimePicker::make('tanggal_pendaftaran')->label('Tanggal Pendaftaran')->disabled(),
+                ])
+                ->columns(2),
+
+            Forms\Components\Section::make('Detail Instansi')
+                ->schema([
+                    Forms\Components\TextInput::make('asal_instansi')->label('Asal Sekolah / Instansi'),
+                    Forms\Components\TextInput::make('alamat_instansi')->label('Alamat Instansi'),
+                    Forms\Components\TextInput::make('kota')->label('Kota / Kabupaten'),
+                    Forms\Components\TextInput::make('cabang_dinas_nama')->label('Cabang Dinas')->disabled(), // Disabled because it's just a display name
+                ])->columns(2),
+
+            Forms\Components\Section::make('Verifikasi Berkas & Lampiran')
+                ->schema([
+                    Forms\Components\Placeholder::make('lampiran_view')
+                        ->label('Lampiran')
+                        ->content(function ($record) {
+                            $lampiran = $record->peserta?->lampiran;
+                            if (! $lampiran) return 'Belum ada berkas lampiran.';
+
+                            $ktp = $lampiran->fc_ktp_url;
+                            $ijazah = $lampiran->fc_ijazah_url;
+                            $suratTugas = $lampiran->fc_surat_tugas_url;
+                            $suratSehat = $lampiran->fc_surat_sehat_url;
+                            $foto = $lampiran->pas_foto_url;
+
+                            $link = function ($url) {
+                                if (! $url) {
+                                    return '<span class="text-gray-500">Tidak ada</span>';
+                                }
+
+                                $isImage = preg_match('/\.(jpg|jpeg|png|webp)$/i', $url);
+                                $imgTag = $isImage
+                                    ? '<div class="mt-2"><img src="' . $url . '" alt="Preview" class="max-w-[200px] rounded-lg border border-gray-200 shadow-sm hover:scale-105 transition-transform duration-200"></div>'
+                                    : '';
+
+                                return '<div>
+                                    <a href="' . $url . '" target="_blank" class="text-primary-600 font-medium hover:underline inline-flex items-center gap-1">
+                                        Lihat File
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    </a>' . $imgTag . '
+                                </div>';
+                            };
+
+                            return new \Illuminate\Support\HtmlString('
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><strong>KTP:</strong> ' . $link($ktp) . '</div>
+                                    <div><strong>Ijazah:</strong> ' . $link($ijazah) . '</div>
+                                    <div><strong>Surat Tugas:</strong> ' . $link($suratTugas) . '</div>
+                                    <div><strong>Surat Sehat:</strong> ' . $link($suratSehat) . '</div>
+                                    <div><strong>Pas Foto:</strong> ' . $link($foto) . '</div>
+                                </div>
+                            ');
+                        })
+                        ->columnSpanFull(),
+                ]),
+        ];
+    }
+
     public function table(Table $table): Table
     {
         return $table
@@ -122,8 +207,7 @@ class PesertaPelatihanTable extends BaseWidget
                     ->label('Status')
                     ->badge()
                     ->color(fn(?string $state) => match (strtolower($state ?? '')) {
-                        'pending'    => 'warning',
-                        'verifikasi' => 'info',
+                        'verifikasi' => 'warning',
                         'diterima'   => 'success',
                         'ditolak'    => 'danger',
                         'cadangan'   => 'gray',
@@ -135,7 +219,6 @@ class PesertaPelatihanTable extends BaseWidget
                 Tables\Filters\SelectFilter::make('status_pendaftaran')
                     ->label('Status')
                     ->options([
-                        'pending'    => 'Pending',
                         'verifikasi' => 'Verifikasi',
                         'diterima'   => 'Diterima',
                         'ditolak'    => 'Ditolak',
@@ -184,66 +267,7 @@ class PesertaPelatihanTable extends BaseWidget
 
                         return $data;
                     })
-                    ->form([
-                        Forms\Components\Section::make('Informasi Pendaftar')
-                            ->schema([
-                                Forms\Components\TextInput::make('nama')->label('Nama Peserta'),
-                                Forms\Components\TextInput::make('nomor_registrasi')->label('Nomor Registrasi'),
-                                Forms\Components\TextInput::make('nik')->label('NIK'),
-                                Forms\Components\TextInput::make('no_hp')->label('No. HP'),
-                                Forms\Components\TextInput::make('email')->label('Email'),
-                                Forms\Components\TextInput::make('tempat_lahir')->label('Tempat Lahir'),
-                                Forms\Components\DateTimePicker::make('tanggal_lahir')->label('Tanggal Lahir'),
-                                Forms\Components\TextInput::make('jenis_kelamin')->label('Jenis Kelamin'),
-                                Forms\Components\TextInput::make('agama')->label('Agama'),
-                                Forms\Components\Textarea::make('alamat')->label('Alamat')->columnSpanFull(),
-
-                                Forms\Components\TextInput::make('pelatihan_nama')->label('Pelatihan'),
-                                Forms\Components\TextInput::make('kompetensi_nama')->label('Kompetensi'),
-                                Forms\Components\TextInput::make('kelas')->label('Kelas'),
-                                Forms\Components\DateTimePicker::make('tanggal_pendaftaran')->label('Tanggal Pendaftaran'),
-                            ])
-                            ->columns(2),
-
-                        Forms\Components\Section::make('Detail Instansi')
-                            ->schema([
-                                Forms\Components\TextInput::make('asal_instansi')->label('Asal Sekolah / Instansi'),
-                                Forms\Components\TextInput::make('alamat_instansi')->label('Alamat Instansi'),
-                                Forms\Components\TextInput::make('kota')->label('Kota / Kabupaten'),
-                                Forms\Components\TextInput::make('cabang_dinas_nama')->label('Cabang Dinas'),
-                            ])->columns(2),
-
-                        Forms\Components\Section::make('Verifikasi Berkas & Lampiran')
-                            ->schema([
-                                Forms\Components\Placeholder::make('lampiran_view')
-                                    ->label('Lampiran')
-                                    ->content(function ($record) {
-                                        $lampiran = $record->peserta?->lampiran;
-                                        if (! $lampiran) return 'Belum ada berkas lampiran.';
-
-                                        $ktp = $lampiran->fc_ktp_url;
-                                        $ijazah = $lampiran->fc_ijazah_url;
-                                        $suratTugas = $lampiran->fc_surat_tugas_url;
-                                        $suratSehat = $lampiran->fc_surat_sehat_url;
-                                        $foto = $lampiran->pas_foto_url;
-
-                                        $link = fn($url) => $url
-                                            ? '<a href="' . $url . '" target="_blank" class="text-primary-600 hover:underline">Lihat File</a>'
-                                            : '<span class="text-gray-500">Tidak ada</span>';
-
-                                        return new \Illuminate\Support\HtmlString('
-                                            <div class="grid grid-cols-2 gap-4">
-                                                <div><strong>KTP:</strong> ' . $link($ktp) . '</div>
-                                                <div><strong>Ijazah:</strong> ' . $link($ijazah) . '</div>
-                                                <div><strong>Surat Tugas:</strong> ' . $link($suratTugas) . '</div>
-                                                <div><strong>Surat Sehat:</strong> ' . $link($suratSehat) . '</div>
-                                                <div><strong>Pas Foto:</strong> ' . $link($foto) . '</div>
-                                            </div>
-                                        ');
-                                    })
-                                    ->columnSpanFull(),
-                            ]),
-                    ]),
+                    ->form(self::getPesertaFormSchema()),
 
                 Tables\Actions\Action::make('accept')
                     ->label('Terima')
@@ -260,13 +284,13 @@ class PesertaPelatihanTable extends BaseWidget
 
                         Forms\Components\TextInput::make('cp_nama')
                             ->label('Nama CP')
-                            ->default(self::DEFAULT_CP_NAMA)
+                            ->default(fn(PendaftaranPelatihan $record) => $record->pelatihan->nama_cp ?? self::DEFAULT_CP_NAMA)
                             ->required()
                             ->visible(fn(Forms\Get $get) => $get('kirim_email_konfirmasi')), // Hanya muncul jika kirim email
 
                         Forms\Components\TextInput::make('cp_phone')
                             ->label('No. Telp CP')
-                            ->default(self::DEFAULT_CP_PHONE)
+                            ->default(fn(PendaftaranPelatihan $record) => $record->pelatihan->no_cp ?? self::DEFAULT_CP_PHONE)
                             ->required()
                             ->visible(fn(Forms\Get $get) => $get('kirim_email_konfirmasi')),
                     ])
@@ -329,7 +353,7 @@ class PesertaPelatihanTable extends BaseWidget
                     })
                     ->visible(
                         fn(PendaftaranPelatihan $record) =>
-                        strtolower((string) $record->status_pendaftaran) === 'pending'
+                        strtolower((string) $record->status_pendaftaran) === 'verifikasi'
                     ),
 
                 Tables\Actions\Action::make('reject')
@@ -343,15 +367,89 @@ class PesertaPelatihanTable extends BaseWidget
                     )
                     ->visible(
                         fn(PendaftaranPelatihan $record) =>
-                        strtolower((string) $record->status_pendaftaran) === 'pending'
+                        strtolower((string) $record->status_pendaftaran) === 'verifikasi'
                     ),
 
-                Tables\Actions\EditAction::make()->slideOver(),
+                Tables\Actions\EditAction::make()
+                    ->slideOver()
+                    ->mutateRecordDataUsing(function (array $data, \App\Models\PendaftaranPelatihan $record): array {
+                        // Logic same as ViewAction for mapping flattening keys
+                        if ($record->peserta) {
+                            $data['nama'] = $record->peserta->nama;
+                            $data['nik'] = $record->peserta->nik;
+                            $data['no_hp'] = $record->peserta->no_hp;
+                            $data['tempat_lahir'] = $record->peserta->tempat_lahir;
+                            $data['tanggal_lahir'] = $record->peserta->tanggal_lahir;
+                            $data['jenis_kelamin'] = $record->peserta->jenis_kelamin;
+                            $data['agama'] = $record->peserta->agama;
+                            $data['alamat'] = $record->peserta->alamat;
+                            $data['email'] = $record->peserta->user->email ?? '-';
+
+                            if ($record->peserta->instansi) {
+                                $data['asal_instansi'] = $record->peserta->instansi->asal_instansi;
+                                $data['alamat_instansi'] = $record->peserta->instansi->alamat_instansi;
+                                $data['kota'] = $record->peserta->instansi->kota;
+                                $data['cabang_dinas_nama'] = $record->peserta->instansi->cabangDinas->nama ?? '-';
+                            }
+                        }
+
+                        $data['pelatihan_nama'] = $record->pelatihan->nama_pelatihan ?? '-';
+                        $data['kompetensi_nama'] = $record->kompetensiPelatihan->kompetensi->nama_kompetensi ?? '-';
+
+                        return $data;
+                    })
+                    ->form(self::getPesertaFormSchema())
+                    ->using(function (PendaftaranPelatihan $record, array $data): PendaftaranPelatihan {
+                        // Custom save logic to update relations
+                        DB::transaction(function () use ($record, $data) {
+                            $get = fn(string $key, $default = null) => $data[$key] ?? $default;
+
+                            // 1) Update Instansi
+                            if ($record->peserta && $record->peserta->instansi) {
+                                $record->peserta->instansi->update([
+                                    'asal_instansi'   => $get('asal_instansi', $record->peserta->instansi->asal_instansi),
+                                    'alamat_instansi' => $get('alamat_instansi', $record->peserta->instansi->alamat_instansi),
+                                    'kota'            => $get('kota', $record->peserta->instansi->kota),
+                                    // 'cabangDinas_id' not updated here as it's just a display field in this form
+                                ]);
+                            }
+
+                            // 2) Update User (Email/Name/Phone)
+                            if ($record->peserta && $record->peserta->user) {
+                                $record->peserta->user->update([
+                                    'email' => $get('email', $record->peserta->user->email),
+                                    'name'  => $get('nama', $record->peserta->user->name),
+                                    'phone' => $get('no_hp', $record->peserta->user->phone),
+                                ]);
+                            }
+
+                            // 3) Update Peserta
+                            if ($record->peserta) {
+                                $record->peserta->update([
+                                    'nama'          => $get('nama', $record->peserta->nama),
+                                    'nik'           => $get('nik', $record->peserta->nik),
+                                    'no_hp'         => $get('no_hp', $record->peserta->no_hp),
+                                    'tempat_lahir'  => $get('tempat_lahir', $record->peserta->tempat_lahir),
+                                    'tanggal_lahir' => $get('tanggal_lahir', $record->peserta->tanggal_lahir),
+                                    'jenis_kelamin' => $get('jenis_kelamin', $record->peserta->jenis_kelamin),
+                                    'agama'         => $get('agama', $record->peserta->agama),
+                                    'alamat'        => $get('alamat', $record->peserta->alamat),
+                                ]);
+                            }
+
+                            // 4) Update Pendaftaran
+                            $record->update([
+                                'kelas' => $get('kelas', $record->kelas),
+                            ]);
+                        });
+
+                        return $record;
+                    }),
 
                 Tables\Actions\DeleteAction::make()
                     ->visible(
                         fn(PendaftaranPelatihan $record) =>
-                        strtolower((string) $record->status_pendaftaran) !== 'pending'
+                        strtolower((string) $record->status_pendaftaran) !== 'verifikasi'
                     ),
             ]);
     }

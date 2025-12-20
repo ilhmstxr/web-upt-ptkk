@@ -77,6 +77,7 @@ final class PelatihanResource extends Resource
 
                                     Forms\Components\DatePicker::make('tanggal_mulai')
                                         ->required()
+                                        ->minDate(now()->startOfDay())
                                         ->live()
                                         ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
                                             self::updateStatus($get, $set);
@@ -84,10 +85,25 @@ final class PelatihanResource extends Resource
 
                                     Forms\Components\DatePicker::make('tanggal_selesai')
                                         ->required()
+                                        ->minDate(fn(Forms\Get $get) => $get('tanggal_mulai') ? \Carbon\Carbon::parse($get('tanggal_mulai')) : now()->startOfDay())
                                         ->live()
                                         ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
                                             self::updateStatus($get, $set);
                                         }),
+                                    Forms\Components\TextInput::make('lokasi')
+                                        ->label('Lokasi Pelatihan (Default)')
+                                        ->placeholder('Contoh: UPT-PTKK Surabaya')
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('nama_cp')
+                                        ->label('Nama CP (Contact Person)')
+                                        ->placeholder('Contoh: Sdri. Admin')
+                                        ->maxLength(100),
+
+                                    Forms\Components\TextInput::make('no_cp')
+                                        ->label('No. CP (Contact Person)')
+                                        ->placeholder('Contoh: 08123456789')
+                                        ->tel()
+                                        ->maxLength(20),
                                 ]),
                         ]),
                 ]),
@@ -135,7 +151,8 @@ final class PelatihanResource extends Resource
 
                                     Forms\Components\TextInput::make('lokasi')
                                         ->label('Lokasi / Ruangan')
-                                        ->default('UPT-PTKK'),
+                                        ->default(fn(Forms\Get $get) => $get('../../lokasi')) // Use parent location as default
+                                        ->required(),
                                 ])
                                 ->columns(2)
                                 ->defaultItems(1)

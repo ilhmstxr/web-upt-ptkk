@@ -455,18 +455,10 @@ class PendaftaranController extends Controller
     }
 
     // Placeholder CRUD (ga kepake sekarang)
-    public function show(string $id)
-    {
-    }
-    public function edit(string $id)
-    {
-    }
-    public function update(Request $request, string $id)
-    {
-    }
-    public function destroy(string $id)
-    {
-    }
+    public function show(string $id) {}
+    public function edit(string $id) {}
+    public function update(Request $request, string $id) {}
+    public function destroy(string $id) {}
 
     // =======================================================
     // # HELPERS
@@ -492,6 +484,27 @@ class PendaftaranController extends Controller
             $kompetensi = Kompetensi::findOrFail($kompetensiId);
             $kodeKompetensi = $kompetensi->kode ?? $this->akronim($kompetensi->nama_kompetensi);
 
+            // [NEW LOGIC] Ambil data Pelatihan untuk perhitungan urutan per tahun
+            $pelatihan = Pelatihan::findOrFail($pelatihanId);
+            $tahun = $pelatihan->tanggal_mulai ? $pelatihan->tanggal_mulai->format('Y') : date('Y');
+
+            // Hitung urutan pelatihan pada tahun tersebut
+            // Logic: Hitung berapa pelatihan di tahun yang sama yang tanggal mulainya <= pelatihan ini
+            $urutanPelatihan = Pelatihan::whereYear('tanggal_mulai', $tahun)
+                ->where(function ($query) use ($pelatihan) {
+                    $query->where('tanggal_mulai', '<', $pelatihan->tanggal_mulai)
+                        ->orWhere(function ($q) use ($pelatihan) {
+                            $q->where('tanggal_mulai', $pelatihan->tanggal_mulai)
+                                ->where('id', '<=', $pelatihan->id);
+                        });
+                })
+                ->count();
+
+            // Fallback jika 0 (harusnya minimal 1)
+            if ($urutanPelatihan == 0) {
+                $urutanPelatihan = 1;
+            }
+
             PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
                 ->where('kompetensi_id', $kompetensiId)
                 ->select('id')
@@ -503,7 +516,13 @@ class PendaftaranController extends Controller
                 ->count();
 
             $nextUrut = $jumlah + 1;
-            $nomor = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeKompetensi), $nextUrut);
+
+            // Format Lama: [urutan pelatihan]-[kode kompetensi]-[urutan pendaftaran]
+            // $nomor = sprintf('%d-%s-%03d', $pelatihanId, strtoupper($kodeKompetensi), $nextUrut);
+
+            // Format Baru: [urutan pendaftaran]-[kode kompetensi]-[urutan pelatihan per tahun]-[tahun pelatihan]
+            // Contoh: 001-TTBG-01-2025
+            $nomor = sprintf('%03d-%s-%02d-%s', $nextUrut, strtoupper($kodeKompetensi), $urutanPelatihan, $tahun);
 
             return ['nomor' => $nomor, 'urutan' => $nextUrut];
         }, 3);
