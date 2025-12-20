@@ -1337,7 +1337,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const data = {
     pelatihans: @json($pelatihans),
   };
-  const pelatihans = Array.isArray(data.pelatihans) ? data.pelatihans : [];
+  const pelatihansAll = Array.isArray(data.pelatihans) ? data.pelatihans : [];
+  const pelatihans = pelatihansAll.slice(0, 5);
   const dummyNotice = document.getElementById('dummyNotice');
 
   // ===== render list pelatihan
@@ -1626,3 +1627,4 @@ document.addEventListener('DOMContentLoaded', () => {
   @stack('scripts')
 </body>
 </html>
+

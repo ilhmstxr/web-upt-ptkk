@@ -136,7 +136,7 @@ class LandingController extends Controller
                     ->whereNotNull('tanggal_selesai')
                     ->whereDate('tanggal_selesai', '<=', now())
                     ->orderByDesc('tanggal_selesai')
-                    ->limit(4)
+                    ->limit(5)
                     ->pluck('id');
 
                 return DB::table('pendaftaran_pelatihan as pp')
@@ -293,3 +293,4 @@ class LandingController extends Controller
         return view('landing.home', compact('pelatihans','labels','pre','post','prak','rata'));
     }
 }
+
