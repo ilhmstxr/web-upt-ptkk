@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,16 +12,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Montserrat', sans-serif; }
-        .font-volkhov { font-family: 'Volkhov', serif; }
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(16px); }
-            100% { opacity: 1; transform: translateY(0); }
+        body {
+            font-family: 'Montserrat', sans-serif;
         }
-        .animate-up { animation: fadeInUp .8s ease-out both; }
-        .animate-up-2 { animation: fadeInUp .8s ease-out .12s both; }
-        .animate-up-3 { animation: fadeInUp .8s ease-out .24s both; }
-        .animate-up-4 { animation: fadeInUp .8s ease-out .36s both; }
+
+        .font-volkhov {
+            font-family: 'Volkhov', serif;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-up {
+            animation: fadeInUp .8s ease-out both;
+        }
+
+        .animate-up-2 {
+            animation: fadeInUp .8s ease-out .12s both;
+        }
+
+        .animate-up-3 {
+            animation: fadeInUp .8s ease-out .24s both;
+        }
+
+        .animate-up-4 {
+            animation: fadeInUp .8s ease-out .36s both;
+        }
     </style>
 </head>
 
@@ -29,15 +55,15 @@
 @php
     use App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\PesertaPelatihanTable;
 
-    $cpNama  = PesertaPelatihanTable::DEFAULT_CP_NAMA;
-    $cpPhone = PesertaPelatihanTable::DEFAULT_CP_PHONE;
+    $cpNama = $pendaftaran->pelatihan->nama_cp ?? PesertaPelatihanTable::DEFAULT_CP_NAMA;
+    $cpPhone = $pendaftaran->pelatihan->no_cp ?? PesertaPelatihanTable::DEFAULT_CP_PHONE;
 
     $cpDigits = preg_replace('/\D+/', '', $cpPhone);
     if (str_starts_with($cpDigits, '0')) {
-        $cpDigits = '62' . substr($cpDigits, 1);
+    $cpDigits = '62' . substr($cpDigits, 1);
     }
     $waUrl = $cpDigits ? 'https://wa.me/' . $cpDigits : '#';
-@endphp
+    @endphp
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="bg-white rounded-2xl border-2 border-[#1524AF] shadow-xl p-6 sm:p-8 md:p-10">
@@ -192,4 +218,5 @@
 </script>
 
 </body>
+
 </html>

@@ -90,6 +90,13 @@
         <div
             x-show="activeTab === 'kompetensi'"
             class="p-6 bg-gray-50/30 dark:bg-gray-900/30 min-h-[400px]">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white">
+                    Daftar Kompetensi Pelatihan
+                </h3>
+                {{ $this->addCompetencyAction }}
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($record->kompetensiPelatihan as $kompetensi)
                 <a

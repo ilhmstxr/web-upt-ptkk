@@ -134,11 +134,11 @@ class ViewKompetensiPelatihan extends Page
 
                 <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                     <span class="flex items-center gap-1">
-                        <x-heroicon-o-clock class="w-4 h-4" />
-                        {{ $kompetensi->jam_mulai ? \Carbon\Carbon::parse($kompetensi->jam_mulai)->format('H:i') : '-' }}
-                        -
-                        {{ $kompetensi->jam_selesai ? \Carbon\Carbon::parse($kompetensi->jam_selesai)->format('H:i') : '-' }}
-                        WIB
+                    <span class="flex items-center gap-1">
+                        <x-heroicon-o-calendar class="w-4 h-4" />
+                        {{ \Carbon\Carbon::parse($record->tanggal_mulai)->format('d M') }} 
+                        - 
+                        {{ \Carbon\Carbon::parse($record->tanggal_selesai)->format('d M Y') }}
                     </span>
 
                     <span class="text-gray-300 dark:text-gray-600">|</span>
@@ -155,7 +155,7 @@ class ViewKompetensiPelatihan extends Page
                     </span>
                 </div>
             </div>
-        BLADE, ['kompetensi' => $this->kompetensiPelatihan]));
+        BLADE, ['kompetensi' => $this->kompetensiPelatihan, 'record' => $this->record]));
     }
 
     public function getTesProperty()

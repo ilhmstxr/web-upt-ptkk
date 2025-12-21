@@ -33,6 +33,9 @@ class Pelatihan extends Model
         'syarat_ketentuan',
         'jadwal_text',
         'lokasi_text',
+        'lokasi', // [NEW] Kolom lokasi fisik pelatihan (kota/gedung)
+        'nama_cp',
+        'no_cp',
     ];
 
     protected $casts = [

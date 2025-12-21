@@ -17,7 +17,13 @@ class AsramaFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->unique()->randomElement([
+                'Mawar',
+                'Melati Bawah',
+                'Melati Atas',
+                'Tulip Bawah',
+                'Tulip Atas',
+            ]),
         ];
     }
 }

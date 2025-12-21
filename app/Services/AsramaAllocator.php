@@ -148,6 +148,7 @@ class AsramaAllocator
                     'kp_id' => $r->kp_id,
                     'kamar_id' => $r->kamar_id,
                     'asrama_id' => $r->asrama_id,
+                    'nomor_kamar' => (int) $r->nomor_kamar,
                     'total_beds' => $r->total_beds,
                     'available' => $r->available_beds,
                     'occupants_genders' => $existingOccupants, // ['Laki-laki', 'Perempuan']
@@ -179,12 +180,29 @@ class AsramaAllocator
             }
 
             $phase1Plan = $this->pickSeparatedAsramaPlan($asramaStats, $genderCounts);
+            $asramaOrder = [];
+            foreach ($roomsRaw as $r) {
+                if (!in_array($r->asrama_id, $asramaOrder, true)) {
+                    $asramaOrder[] = $r->asrama_id;
+                }
+            }
 
-            $assign = function ($p, $assignedRoom) use ($pelatihanId, &$result) {
+            $assign = function ($p, $assignedRoom) use ($pelatihanId, &$result, &$asramaStats) {
                 $gender = $p->peserta->jenis_kelamin;
 
                 $assignedRoom->available--;
                 $assignedRoom->occupants_genders[] = $gender;
+
+                if (isset($asramaStats[$assignedRoom->asrama_id])) {
+                    $asramaStats[$assignedRoom->asrama_id]['available'] = max(
+                        0,
+                        (int) $asramaStats[$assignedRoom->asrama_id]['available'] - 1
+                    );
+                    $asramaStats[$assignedRoom->asrama_id]['genders'] = array_values(array_unique(array_merge(
+                        $asramaStats[$assignedRoom->asrama_id]['genders'] ?? [],
+                        [$gender]
+                    )));
+                }
 
                 PenempatanAsrama::create([
                     'peserta_id'         => $p->peserta_id,
@@ -204,51 +222,134 @@ class AsramaAllocator
             // 4. Allocation Phase
             $remaining = [];
 
-            // PASS 1: Pisah gender beda asrama (majority -> asrama capacity terbesar)
+            // PASS 1: Pisah gender beda asrama dan habiskan satu asrama dulu per gender
             if ($phase1Plan) {
+                $groupedByGender = [
+                    'Laki-laki' => [],
+                    'Perempuan' => [],
+                ];
                 foreach ($toBeAllocated as $p) {
                     $gender = $p->peserta->jenis_kelamin;
+                    if (isset($groupedByGender[$gender])) {
+                        $groupedByGender[$gender][] = $p;
+                    }
+                }
+
+                foreach ($groupedByGender as $gender => $participants) {
+                    if (empty($participants)) {
+                        continue;
+                    }
                     $asramaId = $phase1Plan[$gender] ?? null;
-                    $assignedRoom = $this->findRoom($rooms, $gender, $asramaId, strictGender: true);
-                    if ($assignedRoom) {
-                        $assign($p, $assignedRoom);
-                    } else {
-                        $remaining[] = $p;
+                    $direction = $gender === 'Perempuan' ? 'desc' : 'asc';
+
+                    $totalParticipants = count($participants);
+                    foreach ($participants as $idx => $p) {
+                        $remainingForGender = $totalParticipants - $idx;
+                        $assignedRoom = $this->findRoomByOrder(
+                            $rooms,
+                            $gender,
+                            $asramaId,
+                            $direction,
+                            $remainingForGender,
+                            strictGender: true
+                        );
+                        if ($assignedRoom) {
+                            $assign($p, $assignedRoom);
+                        } else {
+                            $remaining[] = $p;
+                        }
                     }
                 }
             } else {
                 $remaining = $toBeAllocated;
             }
 
-            // PASS 2: Boleh campur asrama, tetap beda kamar (strict gender per kamar)
+            // PASS 2: Isi satu asrama sampai penuh baru pindah ke asrama lain (per gender, urutan tetap)
             $remaining2 = [];
+            $groupedByGender = [
+                'Laki-laki' => [],
+                'Perempuan' => [],
+            ];
             foreach ($remaining as $p) {
                 $gender = $p->peserta->jenis_kelamin;
-                $assignedRoom = $this->findRoom($rooms, $gender, null, strictGender: true);
-                if ($assignedRoom) {
-                    $assign($p, $assignedRoom);
-                } else {
-                    $remaining2[] = $p;
+                if (isset($groupedByGender[$gender])) {
+                    $groupedByGender[$gender][] = $p;
                 }
             }
 
-            // PASS 3: Hanya 1 kamar beda gender, khusus total_beds=8
+            foreach ($groupedByGender as $gender => $participants) {
+                if (empty($participants)) {
+                    continue;
+                }
+                $direction = $gender === 'Perempuan' ? 'desc' : 'asc';
+                $eligibleAsramaIds = $this->orderedEligibleAsramaIds($asramaStats, $gender, $asramaOrder);
+                $asramaIndex = 0;
+
+                $totalParticipants = count($participants);
+                foreach ($participants as $idx => $p) {
+                    $remainingForGender = $totalParticipants - $idx;
+                    $assignedRoom = null;
+                    while ($asramaIndex < count($eligibleAsramaIds)) {
+                        $asramaId = $eligibleAsramaIds[$asramaIndex];
+                        $assignedRoom = $this->findRoomByOrder(
+                            $rooms,
+                            $gender,
+                            $asramaId,
+                            $direction,
+                            $remainingForGender,
+                            strictGender: true
+                        );
+                        if ($assignedRoom) {
+                            break;
+                        }
+                        $asramaIndex++;
+                    }
+
+                    if ($assignedRoom) {
+                        $assign($p, $assignedRoom);
+                    } else {
+                        $remaining2[] = $p;
+                    }
+                }
+            }
+
+            // PASS 3: Jika benar-benar tidak ada bed single-gender tersisa,
+            //         hanya SATU asrama (kapasitas terbanyak) boleh campur gender.
             if (!empty($remaining2)) {
-                $mixedRoomId = $this->pickMixedRoomId($rooms);
-                if (!$mixedRoomId) {
+                $hasSingleGenderCapacity = false;
+                foreach ($remaining2 as $p) {
+                    $gender = $p->peserta->jenis_kelamin;
+                    $eligibleAsramaIds = array_keys($this->eligibleAsramaForGender($asramaStats, $gender));
+                    if (!empty($eligibleAsramaIds)) {
+                        $hasSingleGenderCapacity = true;
+                        break;
+                    }
+                }
+
+                if ($hasSingleGenderCapacity) {
                     $result['failed_full'] += count($remaining2);
                     return $result;
                 }
 
-                $preferredGender = $this->preferredGenderForMixed($remaining2, $rooms, $mixedRoomId);
-                usort($remaining2, function ($a, $b) use ($preferredGender) {
-                    $ga = $a->peserta->jenis_kelamin === $preferredGender ? 0 : 1;
-                    $gb = $b->peserta->jenis_kelamin === $preferredGender ? 0 : 1;
-                    return $ga <=> $gb;
-                });
+                $mixedAsramaId = $this->pickExistingMixedAsramaId($asramaStats)
+                    ?? $this->pickMixedAsramaId($asramaStats);
+                if (!$mixedAsramaId) {
+                    $result['failed_full'] += count($remaining2);
+                    return $result;
+                }
 
-                foreach ($remaining2 as $p) {
-                    $assignedRoom = $this->findMixedRoom($rooms, $mixedRoomId);
+                $totalRemaining = count($remaining2);
+                foreach ($remaining2 as $idx => $p) {
+                    $gender = $p->peserta->jenis_kelamin;
+                    $direction = $gender === 'Perempuan' ? 'desc' : 'asc';
+                    $assignedRoom = $this->findRoomByOrder(
+                        $rooms,
+                        $gender,
+                        $mixedAsramaId,
+                        $direction,
+                        $totalRemaining - $idx,
+                        strictGender: true
+                    );
                     if ($assignedRoom) {
                         $assign($p, $assignedRoom);
                     } else {
@@ -293,6 +394,89 @@ class AsramaAllocator
             }
         }
         return null;
+    }
+
+    private function findRoomByOrder(
+        array $rooms,
+        string $gender,
+        ?int $asramaId,
+        string $direction,
+        int $remainingForGender,
+        bool $strictGender
+    ): ?object
+    {
+        $list = array_values($rooms);
+        if ($asramaId) {
+            $list = array_values(array_filter($list, fn ($r) => $r->asrama_id === $asramaId));
+        }
+
+        usort($list, function ($a, $b) use ($direction) {
+            $cmp = $a->nomor_kamar <=> $b->nomor_kamar;
+            return $direction === 'desc' ? -$cmp : $cmp;
+        });
+
+        foreach ($list as $r) {
+            if ($r->available <= 0) continue;
+
+            $currentGenders = array_unique($r->occupants_genders);
+            $isEmpty = empty($currentGenders);
+            $currentOccupancy = count($r->occupants_genders);
+
+            if ((int) $r->total_beds > 5 && $currentOccupancy < 4) {
+                $neededToReachMin = 4 - $currentOccupancy;
+                if ($remainingForGender < $neededToReachMin) {
+                    continue;
+                }
+            }
+
+            if ($strictGender) {
+                if ($isEmpty) return $r;
+                if (count($currentGenders) === 1 && $currentGenders[0] === $gender) return $r;
+            } else {
+                return $r;
+            }
+        }
+
+        return null;
+    }
+
+    private function pickMixedAsramaId(array $asramaStats): ?int
+    {
+        if (empty($asramaStats)) {
+            return null;
+        }
+
+        $bestId = null;
+        $bestAvail = -1;
+        foreach ($asramaStats as $asramaId => $stats) {
+            $avail = (int) ($stats['available'] ?? 0);
+            if ($avail > $bestAvail) {
+                $bestAvail = $avail;
+                $bestId = $asramaId;
+            }
+        }
+
+        return $bestAvail > 0 ? $bestId : null;
+    }
+
+    private function pickExistingMixedAsramaId(array $asramaStats): ?int
+    {
+        $bestId = null;
+        $bestAvail = -1;
+
+        foreach ($asramaStats as $asramaId => $stats) {
+            $genders = $stats['genders'] ?? [];
+            if (count($genders) < 2) {
+                continue;
+            }
+            $avail = (int) ($stats['available'] ?? 0);
+            if ($avail > $bestAvail) {
+                $bestAvail = $avail;
+                $bestId = $asramaId;
+            }
+        }
+
+        return $bestId;
     }
 
     private function pickSeparatedAsramaPlan(array $asramaStats, array $genderCounts): ?array
@@ -341,6 +525,24 @@ class AsramaAllocator
         }
 
         arsort($eligible);
+        return $eligible;
+    }
+
+    private function orderedEligibleAsramaIds(array $asramaStats, string $gender, array $asramaOrder): array
+    {
+        $eligible = [];
+        foreach ($asramaOrder as $asramaId) {
+            $stats = $asramaStats[$asramaId] ?? null;
+            if (!$stats) {
+                continue;
+            }
+            $genders = $stats['genders'] ?? [];
+            $isOk = empty($genders) || (count($genders) === 1 && $genders[0] === $gender);
+            if ($isOk && ($stats['available'] ?? 0) > 0) {
+                $eligible[] = $asramaId;
+            }
+        }
+
         return $eligible;
     }
 

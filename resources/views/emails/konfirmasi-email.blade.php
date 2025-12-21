@@ -73,6 +73,10 @@
                 <td>: {{ $data['id_peserta'] }}</td>
             </tr>
             <tr>
+                <td class="label">Password</td>
+                <td>: {{ $data['password'] }}</td>
+            </tr> <!-- tanggal lahir yang  tidak ada stripnya -->
+            <tr>
                 <td class="label">Nama</td>
                 <td>: {{ $data['nama_peserta'] }}</td>
             </tr>
@@ -92,10 +96,6 @@
                 <td class="label">Kamar Asrama</td>
                 <td>: {{ $data['kamar_asrama'] }}</td>
             </tr>
-            <tr>
-                <td class="label">Password</td>
-                <td>: {{ $data['password'] }}</td>
-            </tr> <!-- tanggal lahir yang  tidak ada stripnya -->
         </table>
 
         <div class="header">WAKTU DAN TEMPAT PELAKSANAAN</div>
@@ -148,7 +148,11 @@
         </ul>
 
         <p><strong>Informasi Tambahan:</strong><br>
-            Informasi dan konfirmasi lebih lanjut dapat menghubungi {{ $data['cp_nama'] }} (CP. – {{ $data['cp_phone'] }}).</p>
+            @php
+            $cpPhone = $data['cp_phone'];
+            $formattedPhone = Illuminate\Support\Str::startsWith($cpPhone, '0') ? '+62' . substr($cpPhone, 1) : '+62' . $cpPhone;
+            @endphp
+            Informasi dan konfirmasi lebih lanjut dapat menghubungi {{ $data['cp_nama'] }} (CP. – <a href="https://wa.me/{{ $formattedPhone }}" target="_blank">wa.me/{{ $formattedPhone }}</a>).</p>
 
         <div class="footer">
             <p>Hormat Kami,<br>

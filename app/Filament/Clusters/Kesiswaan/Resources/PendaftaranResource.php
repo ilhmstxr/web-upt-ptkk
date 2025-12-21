@@ -423,7 +423,6 @@ class PendaftaranResource extends Resource
                             Forms\Components\Select::make('status_pendaftaran')
                                 ->label('Status Pendaftaran')
                                 ->options([
-                                    'pending'    => 'Pending',
                                     'verifikasi' => 'Verifikasi',
                                     'diterima'   => 'Diterima',
                                     'ditolak'    => 'Ditolak',
@@ -472,15 +471,13 @@ class PendaftaranResource extends Resource
                     ->icon('heroicon-o-shield-check')
                     ->badge()
                     ->formatStateUsing(fn($state) => match (strtolower((string) $state)) {
-                        'pending'    => 'Pending',
                         'verifikasi' => 'Verifikasi',
                         'diterima'   => 'Diterima',
                         'ditolak'    => 'Ditolak',
                         default      => (string) $state,
                     })
                     ->color(fn(?string $state): string => match (strtolower((string) $state)) {
-                        'pending'    => 'warning',
-                        'verifikasi' => 'info',
+                        'verifikasi' => 'warning',
                         'diterima'   => 'success',
                         'ditolak'    => 'danger',
                         default      => 'gray',
@@ -497,7 +494,6 @@ class PendaftaranResource extends Resource
                 Tables\Filters\SelectFilter::make('status_pendaftaran')
                     ->label('Filter Status')
                     ->options([
-                        'pending'    => 'Pending',
                         'verifikasi' => 'Verifikasi',
                         'diterima'   => 'Diterima',
                         'ditolak'    => 'Ditolak',
@@ -533,6 +529,16 @@ class PendaftaranResource extends Resource
                     ->form([
                         Forms\Components\Checkbox::make('dont_show_again')
                             ->label('Jangan tampilkan lagi (Sesi ini)'),
+
+                        Forms\Components\TextInput::make('cp_nama')
+                            ->label('Nama CP')
+                            ->default(fn(PendaftaranPelatihan $record) => $record->pelatihan->nama_cp ?? 'Sdri. Admin')
+                            ->required(),
+
+                        Forms\Components\TextInput::make('cp_phone')
+                            ->label('No. Telp CP')
+                            ->default(fn(PendaftaranPelatihan $record) => $record->pelatihan->no_cp ?? '082249999447')
+                            ->required(),
                     ])
                     ->action(function (PendaftaranPelatihan $record, array $data) {
                         if (($data['dont_show_again'] ?? false) === true) {
@@ -569,7 +575,9 @@ class PendaftaranResource extends Resource
                                     ? $record->pelatihan->tanggal_selesai->translatedFormat('d F Y')
                                     : '-',
                                 'lokasi'         => 'UPT PTKK Surabaya',
-                                'alamat_lengkap' => $record->pelatihan?->lokasi_text ?? 'Jl. Menur No. 123, Surabaya',
+                                'alamat_lengkap' => $record->pelatihan?->lokasi_text ?? 'Jl. Ketintang Tengah no 25 komplek UNESA SURABAYA,',
+                                'cp_nama'        => $data['cp_nama'] ?? 'Sdri. Admin',
+                                'cp_phone'       => $data['cp_phone'] ?? '082249999447',
                             ];
 
                             $email = $record->peserta?->user?->email ?? null;
@@ -591,7 +599,7 @@ class PendaftaranResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'verifikasi'),
 
                 Tables\Actions\Action::make('reject')
                     ->label('Tolak')
@@ -618,17 +626,17 @@ class PendaftaranResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) === 'verifikasi'),
 
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'verifikasi'),
 
                 Tables\Actions\DeleteAction::make()
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
-                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'pending'),
+                    ->visible(fn(PendaftaranPelatihan $record) => strtolower((string) $record->status_pendaftaran) !== 'verifikasi'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

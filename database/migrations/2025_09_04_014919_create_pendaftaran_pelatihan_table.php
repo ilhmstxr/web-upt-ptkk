@@ -42,8 +42,8 @@ return new class extends Migration
                 ->default('Belum Lulus');
 
             // ✅ pakai huruf kecil biar match controller & Filament
-            $table->enum('status_pendaftaran', ['pending', 'verifikasi', 'diterima', 'ditolak'])
-                ->default('pending');
+            $table->enum('status_pendaftaran', ['verifikasi', 'diterima', 'ditolak'])
+                ->default('verifikasi');
 
             // nomor registrasi hasil generateToken()
             $table->string('nomor_registrasi')->unique();
