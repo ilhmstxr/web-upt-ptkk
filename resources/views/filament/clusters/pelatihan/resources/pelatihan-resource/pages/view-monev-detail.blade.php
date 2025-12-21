@@ -67,11 +67,11 @@
 
                     <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <template x-for="q in group" :key="q.id">
-                            <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg ring-1 ring-gray-950/5 dark:ring-white/5 flex flex-col">
-                                <p class="text-sm font-medium text-gray-800 dark:text-gray-200 mb-4 min-h-[3rem]" x-text="q.teks"></p>
+                            <div class="bg-white dark:bg-gray-900 p-5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col">
+                                <p class="text-sm font-medium text-gray-800 dark:text-white mb-4 min-h-[3rem]" x-text="q.teks"></p>
 
                                 <div class="flex items-center gap-4 mt-auto">
-                                    <div class="relative w-24 h-24 flex-shrink-0">
+                                    <div class="relative w-28 h-28 flex-shrink-0">
                                         <canvas :id="'qChartMonev-' + q.id"></canvas>
                                     </div>
                                     <!-- Legend -->
@@ -84,15 +84,15 @@
                                                 ]">
                                             <div class="flex items-center justify-between text-xs">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="w-2.5 h-2.5 rounded-full" :style="'background-color: ' + chartColors[index]"></span>
-                                                    <span class="font-medium" :style="'color: ' + chartColors[index]" x-text="item.label"></span>
+                                                    <span class="w-2.5 h-2.5 rounded-sm" :style="'background-color: ' + chartColors[index]"></span>
+                                                    <span class="font-medium truncate max-w-[100px]" :style="'color: ' + chartColors[index]" x-text="item.label"></span>
                                                 </div>
                                                 <span class="font-bold text-gray-700 dark:text-gray-300" x-text="((q.counts[item.val] || 0) / (q.total_responden || 1) * 100).toFixed(1) + '%'"></span>
                                             </div>
                                         </template>
                                     </div>
                                 </div>
-                                <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600 text-center text-xs text-gray-400">
+                                <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 text-center text-xs text-gray-400">
                                     <span x-text="q.total_responden + ' Responden'"></span>
                                 </div>
                             </div>
@@ -101,7 +101,7 @@
                 </div>
             </template>
         </div>
-    @endif
+        @endif
         <!-- Script Alpine & Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
