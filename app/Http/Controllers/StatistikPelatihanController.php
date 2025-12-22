@@ -12,8 +12,8 @@ class StatistikPelatihanController extends Controller
     {
         $rows = DB::table('pendaftaran_pelatihan as pp')
             ->join('pelatihan as p', 'p.id', '=', 'pp.pelatihan_id')
-            ->leftJoin('kompetensi_pelatihan as kp', 'kp.id', '=', 'pp.kompetensi_pelatihan_id')
-            ->leftJoin('kompetensi as k', 'k.id', '=', DB::raw('COALESCE(pp.kompetensi_id, kp.kompetensi_id)'))
+            ->join('kompetensi_pelatihan as kp', 'kp.id', '=', 'pp.kompetensi_pelatihan_id')
+            ->join('kompetensi as k', 'k.id', '=', 'kp.kompetensi_id')
             ->whereNotNull('p.tanggal_selesai')
             ->whereDate('p.tanggal_selesai', '<=', now())
             ->groupBy(
@@ -21,7 +21,7 @@ class StatistikPelatihanController extends Controller
                 'p.nama_pelatihan',
                 'p.warna',
                 'p.warna_inactive',
-                'k.id',
+                'kp.id',
                 'k.nama_kompetensi'
             )
             ->orderBy('p.nama_pelatihan')
@@ -31,6 +31,8 @@ class StatistikPelatihanController extends Controller
                 'p.nama_pelatihan',
                 'p.warna',
                 'p.warna_inactive',
+                'kp.id as kompetensi_pelatihan_id',
+                'kp.lokasi as lokasi_kompetensi',
                 'k.nama_kompetensi',
                 DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_pre_test, 0)), 2), 0) as pre_avg'),
                 DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_post_test, 0)), 2), 0) as post_avg'),
@@ -42,13 +44,17 @@ class StatistikPelatihanController extends Controller
             ->map(function ($items) {
                 $first = $items->first();
 
-                $kompetensis = $items->map(function ($row) {
+                $kompetensis = $items->map(function ($row) use ($first) {
                     $pre = (float) ($row->pre_avg ?? 0);
                     $post = (float) ($row->post_avg ?? 0);
                     $prak = (float) ($row->praktek_avg ?? 0);
+                    $lokasi = (int) ($first->pelatihan_id ?? 0) === 2
+                        ? (string) ($row->lokasi_kompetensi ?? '')
+                        : '';
 
                     return [
                         'nama' => (string) ($row->nama_kompetensi ?? 'Kompetensi'),
+                        'lokasi' => $lokasi,
                         'pre' => $pre,
                         'post' => $post,
                         'praktek' => $prak,
