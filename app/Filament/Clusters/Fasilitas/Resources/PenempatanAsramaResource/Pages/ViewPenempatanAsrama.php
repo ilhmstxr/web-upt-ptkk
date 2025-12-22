@@ -124,6 +124,7 @@ class ViewPenempatanAsrama extends ViewRecord
             ->where('pelatihan_id', $pelatihanId)
             ->with([
                 'peserta.instansi',
+                'peserta.user',
                 'kompetensi',
                 'kompetensiPelatihan.kompetensi',
                 'penempatanAsrama.kamarPelatihan.kamar.asrama',
@@ -134,6 +135,7 @@ class ViewPenempatanAsrama extends ViewRecord
                 $kompetensi = $record->kompetensi?->nama_kompetensi
                     ?? $record->kompetensiPelatihan?->kompetensi?->nama_kompetensi;
                 $penempatan = $record->penempatanAsramaAktif();
+                $noHp = $record->peserta?->no_hp ?? $record->peserta?->user?->phone;
                 $kamar = $penempatan?->kamarPelatihan?->kamar;
                 $kpId = $penempatan?->kamar_pelatihan_id;
                 $bedNumber = '-';
@@ -162,6 +164,7 @@ class ViewPenempatanAsrama extends ViewRecord
                     'peserta_id' => $record->peserta_id,
                     'nomor_registrasi' => $record->nomor_registrasi,
                     'nama' => $record->peserta?->nama,
+                    'no_hp' => $noHp,
                     'instansi' => $record->peserta?->instansi?->asal_instansi,
                     'kompetensi' => $kompetensi,
                     'gender' => $record->peserta?->jenis_kelamin,
@@ -296,8 +299,11 @@ class ViewPenempatanAsrama extends ViewRecord
             ->where('pelatihan_id', $pelatihanId)
             ->with([
                 'peserta.instansi',
-                // ⬇️ INI KUNCI: JANGAN PAKAI penempatanAsrama.kamar
+                'peserta.user',
+                // INI KUNCI: JANGAN PAKAI penempatanAsrama.kamar
                 'penempatanAsrama.kamarPelatihan.kamar.asrama',
+                'kompetensi',
+                'kompetensiPelatihan.kompetensi',
             ])
             ->orderBy('id')
             ->get()
@@ -306,6 +312,9 @@ class ViewPenempatanAsrama extends ViewRecord
 
                 $peserta    = $pend->peserta;
                 $penempatan = $pend->penempatanAsramaAktif();
+                $kompetensi = $pend->kompetensi?->nama_kompetensi
+                    ?? $pend->kompetensiPelatihan?->kompetensi?->nama_kompetensi;
+                $noHp = $peserta?->no_hp ?? $peserta?->user?->phone;
 
                 $kamar      = $penempatan?->kamarPelatihan?->kamar;
                 $asrama     = $kamar?->asrama;
@@ -314,7 +323,8 @@ class ViewPenempatanAsrama extends ViewRecord
                     'no'            => $i + 1,
                     'kode_regis'    => $clean($pend->nomor_registrasi),
                     'nama'          => $clean($peserta?->nama),
-                    'nik'           => $clean($peserta?->nik),
+                    'kompetensi'    => $clean($kompetensi),
+                    'no_hp'         => $clean($noHp),
                     'jenis_kelamin' => $clean($peserta?->jenis_kelamin),
                     'instansi'      => $clean($peserta?->instansi?->asal_instansi),
                     'asrama'        => $clean($asrama?->name),
@@ -339,7 +349,8 @@ class ViewPenempatanAsrama extends ViewRecord
                 'No',
                 'Kode Registrasi',
                 'Nama Peserta',
-                'NIK',
+                'Kompetensi',
+                'Nomor Handphone',
                 'Jenis Kelamin',
                 'Instansi',
                 'Asrama',
@@ -351,7 +362,8 @@ class ViewPenempatanAsrama extends ViewRecord
                     $r['no'],
                     $r['kode_regis'],
                     $r['nama'],
-                    $r['nik'],
+                    $r['kompetensi'],
+                    $r['no_hp'],
                     $r['jenis_kelamin'],
                     $r['instansi'],
                     $r['asrama'],
