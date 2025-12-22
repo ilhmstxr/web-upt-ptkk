@@ -131,13 +131,16 @@ class LandingController extends Controller
 
         // 7) DATA STATISTIK (CHART) dari pendaftaran_pelatihan
         try {
-            $rows = Cache::remember('landing_statistik_v2', 1800, function () {
-                $latestPelatihanIds = DB::table('pelatihan')
-                    ->whereNotNull('tanggal_selesai')
-                    ->whereDate('tanggal_selesai', '<=', now())
-                    ->orderByDesc('tanggal_selesai')
-                    ->limit(5)
-                    ->pluck('id');
+            $rows = Cache::remember('landing_statistik_v3', 1800, function () {
+                $latestPelatihanIds = DB::table('pendaftaran_pelatihan as pp')
+                    ->join('pelatihan as p', 'p.id', '=', 'pp.pelatihan_id')
+                    ->whereNotNull('p.tanggal_selesai')
+                    ->whereDate('p.tanggal_selesai', '<=', now())
+                    ->select('pp.pelatihan_id', DB::raw('MAX(COALESCE(pp.tanggal_pendaftaran, pp.created_at)) as last_daftar'))
+                    ->groupBy('pp.pelatihan_id')
+                    ->orderByDesc('last_daftar')
+                    ->limit(4)
+                    ->pluck('pp.pelatihan_id');
 
                 return DB::table('pendaftaran_pelatihan as pp')
                     ->join('pelatihan as p', 'p.id', '=', 'pp.pelatihan_id')
