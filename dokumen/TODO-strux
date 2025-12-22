@@ -920,3 +920,13 @@ Dinas Pendidikan Provinsi Jawa Timur
 
 
 menambahkan kompetensi
+=================================================================
+DATA VALIDATION REPORT - PENDAFTARAN PELATIHAN
+=================================================================
+
+3. Identify and list all pendaftaran_pelatihan entries where tes_id is inconsistent or missing:
+   - NOTE: The pendaftaran_pelatihan table schema in the SQL file does not contain a 'tes_id' column. Validation skipped for tes_id.
+
+Detailed Issues List from backupData/pendaftaran-pelatihan-fix.sql:
+Found 1 issues:
+Row ID 323: kompetensi_pelatihan_id is NULL.
