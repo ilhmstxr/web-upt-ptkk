@@ -21,7 +21,7 @@ $items = [
         'fallback' => url('/program-pelatihan'),
         'path'     => 'program-pelatihan',
       ],
-      ['label' => 'Kompetensi Pelatihan',
+      ['label' => 'Bidang Kompetensi',
         'name'     => 'kompetensi',
         'fallback' => url('/kompetensi-pelatihan'), // URL aslinya
         'path'     => 'kompetensi-pelatihan',

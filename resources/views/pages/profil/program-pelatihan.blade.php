@@ -49,6 +49,10 @@
          1px  1px 0 #FFDE59,
          0    0   1px #FFDE59;
     }
+
+    .rich-content ol { list-style: decimal; margin-left: 1.25rem; padding-left: 1.25rem; }
+  .rich-content ul { list-style: disc;    margin-left: 1.25rem; padding-left: 1.25rem; }
+  .rich-content li { margin-top: .25rem; }
   </style>
 </head>
 
@@ -116,11 +120,12 @@
             </div>
           @endif
 
-          @if($item->deskripsi)
-            <p class="font-[Montserrat] text-[15px] text-[#081526] leading-relaxed text-justify">
-              {{ $item->deskripsi }}
-            </p>
-          @endif
+         @if($item->deskripsi)
+  <div class="rich-content font-[Montserrat] text-[15px] text-[#081526] leading-relaxed text-justify">
+    {!! $item->deskripsi !!}
+  </div>
+@endif
+
 
           @if(!empty($galeri3))
             <div class="grid grid-cols-1 gap-6 mt-6">
@@ -147,11 +152,11 @@
                 {{ $item->judul }}
               </h2>
 
-              @if($item->deskripsi)
-                <p class="font-[Montserrat] md:text-[15px] lg:text-[17px] text-[#081526] leading-relaxed text-justify">
-                  {{ $item->deskripsi }}
-                </p>
-              @endif
+            @if($item->deskripsi)
+  <div class="rich-content font-[Montserrat] md:text-[15px] lg:text-[17px] text-[#081526] leading-relaxed text-justify">
+    {!! $item->deskripsi !!}
+  </div>
+@endif
             </div>
 
             {{-- HERO IMAGE --}}

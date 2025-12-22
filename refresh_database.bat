@@ -8,8 +8,8 @@ if %errorlevel% neq 0 (
 )
 
 echo Importing SQL file...
-@REM call php artisan import:sql "backupData\insert-data-berkala.sql"
-call php artisan import:sql "backupData\web-upt-ptkk-server.sql"
+call php artisan import:sql "backupData\insert-data-berkala.sql"
+@REM call php artisan import:sql "backupData\web-upt-ptkk-server.sql"
 if %errorlevel% neq 0 (
     echo SQL Import failed.
     pause
