@@ -163,7 +163,7 @@ class CreatePendaftaran extends CreateRecord
                         'waktu_mulai'    => $waktuMulai,
                         'waktu_selesai'  => $waktuSelesai,
                         'lokasi'         => 'UPT PTKK Surabaya',
-                        'alamat_lengkap' => $pelatihan?->lokasi_text ?? 'Jl. Menur No. 123, Surabaya',
+                        'alamat_lengkap' => $pelatihan?->lokasi_text ?? 'Komplek Kampus Unesa Jl. Ketintang No.25, Ketintang, Kec. Gayungan, Surabaya, Jawa Timur 60231',
                     ];
 
                     if (! empty($user->email)) {

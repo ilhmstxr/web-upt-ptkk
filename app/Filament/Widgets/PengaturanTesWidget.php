@@ -4,18 +4,19 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Clusters\Evaluasi\Resources\TesResource;
+use App\Models\Pelatihan;
+use App\Models\Tes;
 use Filament\Widgets\Widget;
-use Filament\Contracts\HasRecord; // Penting untuk mendapatkan data pelatihan
 
 class PengaturanTesWidget extends Widget
 {
     protected static ?int $sort = 2;
 
-    // Gunakan trait ini untuk mengaktifkan $this->record
-    // use \Filament\Widgets\Concerns\InteractsWithRecord; 
-
     // Tentukan file view blade-nya
     protected static string $view = 'filament.widgets.pengaturan-tes-widget';
+
+    public ?Pelatihan $pelatihan = null;
 
     // Properti untuk menyimpan data yang akan dikirim ke view
     public $preTestData = [];
@@ -25,33 +26,114 @@ class PengaturanTesWidget extends Widget
     // Agar widget ini mengambil lebar penuh
     protected int | string | array $columnSpan = 'full';
 
-    public function mount(): void
+    public function mount(?Pelatihan $pelatihan = null): void
     {
-        // $this->record sekarang berisi data Pelatihan yang sedang dibuka
-        // GANTI INI DENGAN LOGIKA ANDA untuk mengambil data tes dari database
-        // =================================================================
+        $this->pelatihan = $pelatihan;
 
-        // Contoh data statis (sesuai screenshot)
-        $this->preTestData = [
-            'status' => 'BELUM',
-            'soal' => 0,
-            'url' => '#',
-            'label' => 'Atur Pertanyaan'
-        ];
+        $this->preTestData = $this->buildTesData('pre-test', 'Atur Pertanyaan', 'Kelola Soal');
+        $this->postTestData = $this->buildTesData('post-test', 'Atur Pertanyaan', 'Kelola Soal');
+        $this->surveiData = $this->buildSurveiData('Atur Pertanyaan', 'Kelola Pertanyaan');
+    }
 
-        $this->postTestData = [
-            'status' => 'DIBUKA',
-            'soal' => 50,
-            'url' => '#',
-            'label' => 'Kelola Soal'
-        ];
+    private function buildTesData(string $tipe, string $labelEmpty, string $labelExisting): array
+    {
+        $tes = $this->findTes($tipe);
 
-        $this->surveiData = [
-            'status' => 'DITUTUP',
-            'pertanyaan' => 12,
-            'url' => '#',
-            'label' => 'Lihat Hasil'
+        if (! $this->pelatihan) {
+            return [
+                'status' => 'BELUM',
+                'soal' => 0,
+                'url' => '#',
+                'label' => $labelEmpty,
+            ];
+        }
+
+        if (! $tes) {
+            return [
+                'status' => 'BELUM',
+                'soal' => 0,
+                'url' => TesResource::getUrl('create', [
+                    'pelatihan_id' => $this->pelatihan->id,
+                    'tipe' => $tipe,
+                ]),
+                'label' => $labelEmpty,
+            ];
+        }
+
+        return [
+            'status' => $this->resolveStatus($tes),
+            'soal' => (int) ($tes->pertanyaan_count ?? 0),
+            'url' => TesResource::getUrl('edit', ['record' => $tes->id]),
+            'label' => $labelExisting,
         ];
-        // =================================================================
+    }
+
+    private function buildSurveiData(string $labelEmpty, string $labelExisting): array
+    {
+        $tes = $this->findTes('survei');
+
+        if (! $this->pelatihan) {
+            return [
+                'status' => 'BELUM',
+                'pertanyaan' => 0,
+                'url' => '#',
+                'label' => $labelEmpty,
+            ];
+        }
+
+        if (! $tes) {
+            return [
+                'status' => 'BELUM',
+                'pertanyaan' => 0,
+                'url' => TesResource::getUrl('create', [
+                    'pelatihan_id' => $this->pelatihan->id,
+                    'tipe' => 'survei',
+                ]),
+                'label' => $labelEmpty,
+            ];
+        }
+
+        return [
+            'status' => $this->resolveStatus($tes),
+            'pertanyaan' => (int) ($tes->pertanyaan_count ?? 0),
+            'url' => TesResource::getUrl('edit', ['record' => $tes->id]),
+            'label' => $labelExisting,
+        ];
+    }
+
+    private function findTes(string $tipe): ?Tes
+    {
+        if (! $this->pelatihan) {
+            return null;
+        }
+
+        $query = Tes::query()
+            ->withCount('pertanyaan')
+            ->where('pelatihan_id', $this->pelatihan->id);
+
+        if ($tipe === 'survei') {
+            $query->whereIn('tipe', ['survei', 'survey']);
+        } else {
+            $query->where('tipe', $tipe);
+        }
+
+        return $query->orderByDesc('id')->first();
+    }
+
+    private function resolveStatus(Tes $tes): string
+    {
+        $now = now();
+        $start = $tes->tanggal_mulai;
+        $end = $tes->tanggal_selesai;
+
+        if ($start && $now->lt($start)) {
+            return 'BELUM';
+        }
+
+        if ($end && $now->gt($end)) {
+            return 'DITUTUP';
+        }
+
+        return 'DIBUKA';
     }
 }

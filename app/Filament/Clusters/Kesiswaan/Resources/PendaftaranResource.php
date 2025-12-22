@@ -639,7 +639,7 @@ class PendaftaranResource extends Resource
                                     ? $record->pelatihan->tanggal_selesai->translatedFormat('d F Y')
                                     : '-',
                                 'lokasi'         => 'UPT PTKK Surabaya',
-                                'alamat_lengkap' => $record->pelatihan?->lokasi_text ?? 'Jl. Ketintang Tengah no 25 komplek UNESA SURABAYA,',
+                                'alamat_lengkap' => $record->pelatihan?->lokasi_text ?? 'Komplek Kampus Unesa Jl. Ketintang No.25, Ketintang, Kec. Gayungan, Surabaya, Jawa Timur 60231',
                                 'cp_nama'        => $data['cp_nama'] ?? 'Sdri. Admin',
                                 'cp_phone'       => $data['cp_phone'] ?? '082249999447',
                             ];

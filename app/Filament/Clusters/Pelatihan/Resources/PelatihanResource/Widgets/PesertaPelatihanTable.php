@@ -343,7 +343,7 @@ class PesertaPelatihanTable extends BaseWidget
                                     'waktu_mulai'    => \Carbon\Carbon::parse($record->pelatihan->tanggal_mulai)->translatedFormat('d F Y'),
                                     'waktu_selesai'  => \Carbon\Carbon::parse($record->pelatihan->tanggal_selesai)->translatedFormat('d F Y'),
                                     'lokasi'         => $record->pelatihan->lokasi ?? 'UPT PTKK Surabaya',
-                                    'alamat'         => 'Jl. Menur No. 123, Surabaya',
+                                    'alamat'         => 'Komplek Kampus Unesa Jl. Ketintang No.25, Ketintang, Kec. Gayungan, Surabaya, Jawa Timur 60231',
                                     'cp_nama'        => $data['cp_nama'] ?? 'Sdri. Admin',
                                     'cp_phone'       => $data['cp_phone'] ?? '082249999447',
                                     'email_penerima' => $emailPeserta,

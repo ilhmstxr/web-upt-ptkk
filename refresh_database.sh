@@ -1,3 +1,5 @@
+cat << 'EOF' > refresh_database.sh
+
 @echo off
 echo Refreshing database...
 call php artisan migrate:fresh --seed

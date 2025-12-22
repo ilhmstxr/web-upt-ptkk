@@ -1315,9 +1315,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const isMobile = () => window.matchMedia('(max-width: 480px)').matches;
   const xLabels = ['Pre-Test', 'Post-Test', 'Praktek', 'Rata-Rata'];
   const palette = [
-    '#1524AF', '#FF6107', '#6B2C47', '#2F4BFF',
-    '#DBCC8F', '#0F766E', '#B45309', '#BE185D',
-    '#0369A1', '#4C1D95'
+    '#FF0080', '#00E5FF', '#FFE600', '#FF3B30',
+    '#00FF6A', '#FF7A00', '#B800FF', '#00B2FF',
+    '#FF2D55', '#C6FF00'
   ];
   const colorFor = (i) => {
     if (i < palette.length) return palette[i];
@@ -1338,7 +1338,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pelatihans: @json($pelatihans),
   };
   const pelatihansAll = Array.isArray(data.pelatihans) ? data.pelatihans : [];
-  const pelatihans = pelatihansAll.slice(0, 5);
+  const pelatihans = pelatihansAll.slice(0, 4);
   const dummyNotice = document.getElementById('dummyNotice');
 
   // ===== render list pelatihan
@@ -1360,9 +1360,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 style="background-color:${isFirst ? p.warna : p.warna_inactive};"></span>
 
           <span class="label flex-1 text-[13px] font-[Montserrat] font-medium leading-snug"
-                style="color:${isFirst ? p.warna : p.warna_inactive};
-                       display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
-                       overflow:hidden;">
+                style="color:${isFirst ? p.warna : p.warna_inactive};">
             ${p.nama}
           </span>
         </button>
