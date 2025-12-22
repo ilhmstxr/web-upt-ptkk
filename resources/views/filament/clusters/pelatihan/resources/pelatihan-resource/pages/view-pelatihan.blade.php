@@ -32,6 +32,18 @@
                     Data Peserta
                 </button>
 
+                {{-- TAB: DAFTAR NILAI (BARU) --}}
+                <button
+                    @click="activeTab = 'nilai'"
+                    :class="{
+                        'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400': activeTab === 'nilai',
+                        'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'nilai'
+                    }"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center">
+                    <x-heroicon-o-clipboard-document-list class="w-4 h-4 mr-2" />
+                    Daftar Nilai
+                </button>
+
                 {{-- TAB: INSTRUKTUR --}}
                 <button
                     @click="activeTab = 'admin'"
@@ -155,6 +167,20 @@
         </div>
 
         {{-- =========================================================
+            CONTENT 2.5: DAFTAR NILAI (BARU)
+        ========================================================= --}}
+        <div
+            x-show="activeTab === 'nilai'"
+            class="p-6 bg-white dark:bg-gray-800 min-h-[400px]">
+            <div class="mt-4">
+                @livewire(
+                \App\Filament\Clusters\Pelatihan\Resources\PelatihanResource\Widgets\NilaiPesertaPelatihanTable::class,
+                ['record' => $record]
+                )
+            </div>
+        </div>
+
+        {{-- =========================================================
             CONTENT 3: INSTRUKTUR (MULTI)
         ========================================================= --}}
         <div
@@ -258,15 +284,14 @@
                     <div class="flex items-end justify-center gap-8 h-32 mb-4 px-8">
                         <!-- Pretest Bar -->
                         <div class="w-full h-full flex flex-col justify-end items-center gap-2 group">
-                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300">{{ $evalData['avgPretest'] }}</span>
-                            <div class="w-full bg-sky-300 dark:bg-sky-500 rounded-t-lg transition-all group-hover:bg-sky-400" style="height: 
-                            {{ min(100, max(10, ($evalData['avgPretest']/100)*100)) }}%;"></div>
+                            <span class="text-sm font-bold" style="color: #3b82f6;">{{ $evalData['avgPretest'] }}</span>
+                            <div class="w-full rounded-t-lg transition-all" style="background-color: #3b82f6; height: {{ min(100, max(10, ($evalData['avgPretest']/100)*100)) }}%;"></div>
                             <span class="text-xs font-medium text-gray-500">Pretest</span>
                         </div>
                         <!-- Posttest Bar -->
                         <div class="w-full h-full flex flex-col justify-end items-center gap-2 group">
-                            <span class="text-sm font-bold text-blue-700 dark:text-blue-300">{{ $evalData['avgPosttest'] }}</span>
-                            <div class="w-full bg-blue-600 dark:bg-blue-500 rounded-t-lg transition-all group-hover:bg-blue-500 shadow-lg shadow-blue-600/20" style="height: {{ min(100, max(10, ($evalData['avgPosttest']/100)*100)) }}%;"></div>
+                            <span class="text-sm font-bold" style="color: #22c55e;">{{ $evalData['avgPosttest'] }}</span>
+                            <div class="w-full rounded-t-lg transition-all shadow-lg" style="background-color: #22c55e; box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.2); height: {{ min(100, max(10, ($evalData['avgPosttest']/100)*100)) }}%;"></div>
                             <span class="text-xs font-medium text-gray-500">Posttest</span>
                         </div>
                     </div>
@@ -277,7 +302,7 @@
 
                 <!-- CHART 2: Tingkat Kepuasan (CSAT) -->
                 <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 p-6 flex flex-col items-center justify-center text-center">
-                    <h4 class="text-base font-semibold text-gray-950 dark:text-white mb-4">Tingkat Kepuasan (CSAT)</h4>
+                    <h4 class="text-base font-semibold text-gray-950 dark:text-white mb-4">Hasil Monev</h4>
                     <div class="relative w-32 h-32 flex items-center justify-center">
                         <div class="w-full h-full rounded-full border-8 border-gray-100 dark:border-gray-800"></div>
                         <div class="absolute w-full h-full rounded-full border-8 border-success-500 border-t-transparent border-l-transparent transform -rotate-45" style="clip-path: circle(50%);"></div>
@@ -307,8 +332,7 @@
                                 <th class="px-6 py-3 font-medium">Nama Kompetensi</th>
                                 <th class="px-6 py-3 font-medium text-center">Avg Pretest</th>
                                 <th class="px-6 py-3 font-medium text-center">Avg Posttest</th>
-                                <th class="px-6 py-3 font-medium text-center">Nilai Praktek</th>
-                                <th class="px-6 py-3 font-medium text-center">Status</th>
+                                <th class="px-6 py-3 font-medium text-center">Avg Praktek</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -318,11 +342,6 @@
                                 <td class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ $comp['pretest'] }}</td>
                                 <td class="px-6 py-4 text-center font-bold text-blue-600 dark:text-blue-400">{{ $comp['posttest'] }}</td>
                                 <td class="px-6 py-4 text-center text-orange-500 font-bold">{{ $comp['praktek'] }}</td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $comp['status_color'] }}-100 text-{{ $comp['status_color'] }}-800 dark:bg-{{ $comp['status_color'] }}-900/30 dark:text-{{ $comp['status_color'] }}-400 border border-{{ $comp['status_color'] }}-200 dark:border-{{ $comp['status_color'] }}-800">
-                                        {{ $comp['status'] }}
-                                    </span>
-                                </td>
                             </tr>
                             @empty
                             <tr>
@@ -372,7 +391,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <template x-for="(q, qIndex) in questions" :key="q.id">
                                     <div class="bg-white dark:bg-gray-900 p-5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col">
-                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 min-h-[3rem] line-clamp-2" x-text="q.teks" :title="q.teks"></p>
+                                        <p class="text-sm font-medium text-gray-700 dark:text-white mb-4 min-h-[3rem] line-clamp-2" x-text="q.teks" :title="q.teks"></p>
 
                                         <div class="flex items-center gap-4 mt-auto">
                                             <!-- Chart (Left) -->

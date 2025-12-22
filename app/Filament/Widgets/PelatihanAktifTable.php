@@ -12,7 +12,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class PelatihanAktifTable extends BaseWidget
 {
-    protected static ?int $sort = 2; // Urutan widget
+    protected static ?int $sort = 4; // Urutan widget
 
     protected int | string | array $columnSpan = 'full';
 

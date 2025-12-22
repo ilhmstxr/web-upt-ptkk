@@ -140,33 +140,56 @@ class PesertaPelatihanTable extends BaseWidget
                             $suratSehat = $lampiran->fc_surat_sehat_url;
                             $foto = $lampiran->pas_foto_url;
 
-                            $link = function ($url) {
+                            // Helper function untuk render link/preview
+                            $renderFile = function ($label, $url) {
                                 if (! $url) {
-                                    return '<span class="text-gray-500">Tidak ada</span>';
+                                    return '<div><strong>' . $label . ':</strong> <span class="text-gray-400 italic">Tidak ada file</span></div>';
                                 }
 
                                 $isImage = preg_match('/\.(jpg|jpeg|png|webp)$/i', $url);
-                                $imgTag = $isImage
-                                    ? '<div class="mt-2"><img src="' . $url . '" alt="Preview" class="max-w-[200px] rounded-lg border border-gray-200 shadow-sm hover:scale-105 transition-transform duration-200"></div>'
-                                    : '';
+                                $isPdf = str_ends_with(strtolower($url), '.pdf');
 
-                                return '<div>
-                                    <a href="' . $url . '" target="_blank" class="text-primary-600 font-medium hover:underline inline-flex items-center gap-1">
-                                        Lihat File
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                    </a>' . $imgTag . '
-                                </div>';
+                                $content = '';
+
+                                if ($isImage) {
+                                    $content = '
+                                            <div class="mt-1">
+                                                <a href="' . $url . '" target="_blank">
+                                                    <img src="' . $url . '" alt="' . $label . '" class="w-full max-w-[200px] rounded-lg border border-gray-200 shadow-sm hover:scale-105 transition-transform duration-200">
+                                                </a>
+                                            </div>';
+                                } elseif ($isPdf) {
+                                    $content = '
+                                            <div class="mt-1">
+                                                <a href="' . $url . '" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group">
+                                                    <svg class="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                                    Lihat Dokumen PDF
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                                </a>
+                                            </div>';
+                                } else {
+                                    // Default fallback
+                                    $content = '
+                                            <div class="mt-1">
+                                                <a href="' . $url . '" target="_blank" class="text-primary-600 hover:underline flex items-center gap-1">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    Unduh File
+                                                </a>
+                                            </div>';
+                                }
+
+                                return '<div class="mb-2"><strong>' . $label . ':</strong>' . $content . '</div>';
                             };
 
                             return new \Illuminate\Support\HtmlString('
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div><strong>KTP:</strong> ' . $link($ktp) . '</div>
-                                    <div><strong>Ijazah:</strong> ' . $link($ijazah) . '</div>
-                                    <div><strong>Surat Tugas:</strong> ' . $link($suratTugas) . '</div>
-                                    <div><strong>Surat Sehat:</strong> ' . $link($suratSehat) . '</div>
-                                    <div><strong>Pas Foto:</strong> ' . $link($foto) . '</div>
-                                </div>
-                            ');
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50/50 dark:bg-gray-900/50 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                                        ' . $renderFile('KTP', $ktp) . '
+                                        ' . $renderFile('Ijazah', $ijazah) . '
+                                        ' . $renderFile('Surat Tugas', $suratTugas) . '
+                                        ' . $renderFile('Surat Sehat', $suratSehat) . '
+                                        ' . $renderFile('Pas Foto', $foto) . '
+                                    </div>
+                                ');
                         })
                         ->columnSpanFull(),
                 ]),

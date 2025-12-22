@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class DaftarPelatihanWidget extends Widget
 {
+    protected static ?int $sort = 1;
+
     // 1. Tentukan file view Blade yang akan digunakan
     protected static string $view = 'filament.widgets.daftar-pelatihan-widget';
 

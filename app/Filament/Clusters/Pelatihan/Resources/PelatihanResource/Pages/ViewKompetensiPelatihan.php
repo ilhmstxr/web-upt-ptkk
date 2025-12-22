@@ -124,8 +124,44 @@ class ViewKompetensiPelatihan extends Page
         return $this->record->nama_pelatihan;
     }
 
+    public function getStatusProperty(): string
+    {
+        $start = \Carbon\Carbon::parse($this->record->tanggal_mulai)->startOfDay();
+        $end = \Carbon\Carbon::parse($this->record->tanggal_selesai)->endOfDay();
+        $now = now();
+
+        if ($now < $start) {
+            return 'Belum Dimulai';
+        } elseif ($now > $end) {
+            return 'Selesai';
+        } else {
+            return 'Sedang Berlangsung';
+        }
+    }
+
     public function getSubheading(): string|Htmlable|null
     {
+        $statusLabel = $this->status;
+
+        $color = match ($statusLabel) {
+            'Belum Dimulai' => 'blue',
+            'Selesai' => 'gray',
+            'Sedang Berlangsung' => 'green',
+        };
+
+        // Inline styles to guarantee visibility (fixing missing classes)
+        $statusStyle = match ($color) {
+            'green' => 'color: #22c55e; background-color: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3);',
+            'blue' => 'color: #3b82f6; background-color: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3);',
+            'gray' => 'color: #9ca3af; background-color: rgba(107, 114, 128, 0.15); border: 1px solid rgba(107, 114, 128, 0.3);',
+        };
+
+        $dotColor = match ($color) {
+            'green' => '#22c55e',
+            'blue' => '#3b82f6',
+            'gray' => '#9ca3af',
+        };
+
         return new HtmlString(\Illuminate\Support\Facades\Blade::render(<<<'BLADE'
             <div class="flex flex-col gap-2 mt-2">
                 <h2 class="text-xl font-bold text-primary-600 dark:text-primary-400">
@@ -133,7 +169,6 @@ class ViewKompetensiPelatihan extends Page
                 </h2>
 
                 <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                    <span class="flex items-center gap-1">
                     <span class="flex items-center gap-1">
                         <x-heroicon-o-calendar class="w-4 h-4" />
                         {{ \Carbon\Carbon::parse($record->tanggal_mulai)->format('d M') }} 
@@ -150,12 +185,19 @@ class ViewKompetensiPelatihan extends Page
 
                     <span class="text-gray-300 dark:text-gray-600">|</span>
 
-                    <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2.5 py-0.5 rounded-full font-medium border border-green-200 dark:border-green-800">
-                        Sedang Berlangsung
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="{{ $statusStyle }}">
+                        <span class="w-1.5 h-1.5 rounded-full mr-1.5 animate-pulse" style="background-color: {{ $dotColor }};"></span>
+                        {{ $statusLabel }}
                     </span>
                 </div>
             </div>
-        BLADE, ['kompetensi' => $this->kompetensiPelatihan, 'record' => $this->record]));
+        BLADE, [
+            'kompetensi' => $this->kompetensiPelatihan,
+            'record' => $this->record,
+            'statusLabel' => $statusLabel,
+            'statusStyle' => $statusStyle,
+            'dotColor' => $dotColor
+        ]));
     }
 
     public function getTesProperty()
@@ -178,34 +220,41 @@ class ViewKompetensiPelatihan extends Page
         $pelatihanId = $this->record->id;
         $kompetensiId = $this->kompetensiPelatihan->id;
 
+        // Base Query: Peserta yang tidak batal
         $baseQuery = PendaftaranPelatihan::query()
             ->where('pelatihan_id', $pelatihanId)
             ->where('kompetensi_pelatihan_id', $kompetensiId)
-            ->where('status_pendaftaran', '!=', 'Batal');
+            ->where(function ($q) {
+                $q->whereNull('status_pendaftaran')
+                    ->orWhere('status_pendaftaran', '!=', 'Batal');
+            });
 
         // ======================
         // 1. PRETEST
         // ======================
-        $pretestQuery = (clone $baseQuery)
-            ->where('nilai_pre_test', '>', 0);
+        // Mengambil data real dari kolom nilai_pre_test di tabel PendaftaranPelatihan
+        $pretestData = (clone $baseQuery)->where('nilai_pre_test', '>', 0);
 
-        $pretestAvg   = (float) ($pretestQuery->avg('nilai_pre_test') ?? 0);
-        $pretestMax   = (float) ($pretestQuery->max('nilai_pre_test') ?? 0);
-        $pretestMin   = (float) ($pretestQuery->min('nilai_pre_test') ?? 0);
-        $pretestCount = (int) $pretestQuery->count();
+        $pretestAvg   = $pretestData->avg('nilai_pre_test') ?? 0;
+        $pretestMax   = $pretestData->max('nilai_pre_test') ?? 0;
+        $pretestMin   = $pretestData->min('nilai_pre_test') ?? 0;
+        $pretestCount = $pretestData->count();
 
         // ======================
         // 2. POSTTEST
         // ======================
-        $posttestQuery = (clone $baseQuery)
-            ->where('nilai_post_test', '>', 0);
+        // Mengambil data real dari kolom nilai_post_test
+        $posttestData = (clone $baseQuery)->where('nilai_post_test', '>', 0);
 
-        $posttestAvg   = (float) ($posttestQuery->avg('nilai_post_test') ?? 0);
-        $posttestCount = (int) $posttestQuery->count();
-        $lulus         = (clone $posttestQuery)->where('nilai_post_test', '>=', 75)->count();
-        $remedial      = (clone $posttestQuery)->where('nilai_post_test', '<', 75)->count();
+        $posttestAvg   = $posttestData->avg('nilai_post_test') ?? 0;
+        $posttestCount = $posttestData->count();
+        $lulus         = (clone $posttestData)->where('nilai_post_test', '>=', 75)->count();
+        $remedial      = (clone $posttestData)->where('nilai_post_test', '<', 75)->count();
 
-        // 3. MONEV (SURVEI) - Simple Avg Calculation
+        // ======================
+        // 3. MONEV (SURVEI)
+        // ======================
+        // Menggunakan tabel percobaan untuk menghitung responden unik
         $monevRespondents = \App\Models\Percobaan::query()
             ->join('tes as t', 't.id', '=', 'percobaan.tes_id')
             ->join('pendaftaran_pelatihan as pp', 'pp.peserta_id', '=', 'percobaan.peserta_id')
@@ -219,22 +268,22 @@ class ViewKompetensiPelatihan extends Page
 
         return [
             'pretest' => [
-                'avg'   => round($pretestAvg, 2),
-                'max'   => $pretestMax,
-                'min'   => $pretestMin,
+                'avg'   => round((float)$pretestAvg, 1),
+                'max'   => (int)$pretestMax,
+                'min'   => (int)$pretestMin,
                 'count' => $pretestCount,
             ],
             'posttest' => [
-                'avg'      => round($posttestAvg, 2),
+                'avg'      => round((float)$posttestAvg, 1),
                 'lulus'    => $lulus,
                 'remedial' => $remedial,
                 'count'    => $posttestCount,
             ],
             'monev' => [
-                'avg' => 0,
-                'responden' => $monevRespondents,
+                'avg'           => 0, // Placeholder
+                'responden'     => $monevRespondents,
                 'total_peserta' => $totalPeserta,
-                'percentage' => $totalPeserta > 0 ? ($monevRespondents / $totalPeserta) * 100 : 0,
+                'percentage'    => $totalPeserta > 0 ? round(($monevRespondents / $totalPeserta) * 100) : 0,
             ],
         ];
     }

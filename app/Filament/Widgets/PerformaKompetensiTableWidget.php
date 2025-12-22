@@ -12,7 +12,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 class PerformaKompetensiTableWidget extends BaseWidget
 {
     protected static ?string $heading = 'Analisis Detail Per Kompetensi Pelatihan';
-    protected static ?int $sort = 6;
+    protected static ?int $sort = 7;
 
     protected int | string | array $columnSpan = 'full';
 

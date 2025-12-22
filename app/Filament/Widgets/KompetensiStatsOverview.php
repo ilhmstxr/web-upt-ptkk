@@ -15,6 +15,22 @@ class KompetensiStatsOverview extends BaseWidget
      */
     public ?\App\Models\Kompetensi $kompetensi = null;
 
+    public static function canView(): bool
+    {
+        // Sembunyikan widget ini di dashboard utama (karena sudah ada di StatsOverview),
+        // tapi tetap tampilkan jika dipanggil di halaman detail (dimana $kompetensi di-set)
+        // Note: Filament widget di dashboard tidak memiliki context record, jadi kita cek route atau logic lain.
+        // Cara simpel: Default hidden, hanya show jika dipanggil secara spesifik/manual atau cek request.
+
+        // Namun, jika widget ini otomatis terdaftar di Dashboard, kita bisa return false
+        // jika request route-nya adalah dashboard.
+
+        return request()->routeIs('filament.admin.resources.pelatihan.view') || request()->routeIs('filament.clusters.pelatihan.resources.pelatihan-resource.view');
+        // Atau cara lebih aman: cek apakah properti kompetensi di-set (tidak bisa statis).
+        // Untuk dashboard global, kita return false saja jika ingin menghilangkannya total dari dashboard.
+        // return false; 
+    }
+
     /**
      * Mendapatkan statistik untuk widget Kompetensi.
      */
