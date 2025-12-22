@@ -1,0 +1,83 @@
+Starting Monev Legacy Import...
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S02]: Base table or view not found: 1146 Table 'upt-ptkk-dev-server.data-mentah-monev' doesn't exist (Connection: mysql, SQL: SELECT * FROM `data-mentah-monev`)
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:826
+    822▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    823▕                 );
+    824▕             }
+    825▕ 
+  ➜ 826▕             throw new QueryException(
+    827▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    828▕             );
+    829▕         }
+    830▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:406
+      PDOException::("SQLSTATE[42S02]: Base table or view not found: 1146 Table 'upt-ptkk-dev-server.data-mentah-monev' doesn't exist")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:406
+      PDO::prepare("SELECT * FROM `data-mentah-monev`")
+
+  3   vendor\laravel\framework\src\Illuminate\Database\Connection.php:813
+      Illuminate\Database\Connection::Illuminate\Database\{closure}("SELECT * FROM `data-mentah-monev`", [])
+
+  4   vendor\laravel\framework\src\Illuminate\Database\Connection.php:780
+      Illuminate\Database\Connection::runQueryCallback("SELECT * FROM `data-mentah-monev`", [], Object(Closure))
+
+  5   vendor\laravel\framework\src\Illuminate\Database\Connection.php:397
+      Illuminate\Database\Connection::run("SELECT * FROM `data-mentah-monev`", [], Object(Closure))
+
+  6   vendor\laravel\framework\src\Illuminate\Database\DatabaseManager.php:489
+      Illuminate\Database\Connection::select("SELECT * FROM `data-mentah-monev`")
+
+  7   vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:363
+      Illuminate\Database\DatabaseManager::__call("select")
+
+  8   App\Console\Commands\ImportMonevLegacy.php:41
+      Illuminate\Support\Facades\Facade::__callStatic("select")
+
+  9   vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
+      App\Console\Commands\ImportMonevLegacy::handle()
+
+  10  vendor\laravel\framework\src\Illuminate\Container\Util.php:43
+      Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+
+  11  vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
+      Illuminate\Container\Util::unwrapIfClosure(Object(Closure))
+
+  12  vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
+      Illuminate\Container\BoundMethod::callBoundMethod(Object(Illuminate\Foundation\Application), Object(Closure))
+
+  13  vendor\laravel\framework\src\Illuminate\Container\Container.php:807
+      Illuminate\Container\BoundMethod::call(Object(Illuminate\Foundation\Application), [])
+
+  14  vendor\laravel\framework\src\Illuminate\Console\Command.php:211
+      Illuminate\Container\Container::call()
+
+  15  vendor\symfony\console\Command\Command.php:335
+      Illuminate\Console\Command::execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+
+  16  vendor\laravel\framework\src\Illuminate\Console\Command.php:180
+      Symfony\Component\Console\Command\Command::run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+
+  17  vendor\symfony\console\Application.php:1103
+      Illuminate\Console\Command::run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+
+  18  vendor\symfony\console\Application.php:356
+      Symfony\Component\Console\Application::doRunCommand(Object(App\Console\Commands\ImportMonevLegacy), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+
+  19  vendor\symfony\console\Application.php:195
+      Symfony\Component\Console\Application::doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+
+  20  vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:197
+      Symfony\Component\Console\Application::run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+
+  21  vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1235
+      Illuminate\Foundation\Console\Kernel::handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+
+  22  artisan:16
+      Illuminate\Foundation\Application::handleCommand(Object(Symfony\Component\Console\Input\ArgvInput))
+
