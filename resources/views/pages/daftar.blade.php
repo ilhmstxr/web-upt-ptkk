@@ -53,6 +53,11 @@
       -webkit-text-stroke: 1.3px #FFDE59;
       paint-order: stroke fill;
     }
+
+.rich-content ol { list-style: decimal; margin-left: 1.25rem; padding-left: 1.25rem; }
+  .rich-content ul { list-style: disc;    margin-left: 1.25rem; padding-left: 1.25rem; }
+  .rich-content li { margin-top: .25rem; }
+
   </style>
 </head>
 
@@ -141,7 +146,7 @@
               @endphp
 
               @if (!empty($syarat))
-                {!! $syarat !!}
+              <div class="rich-content">{!! $syarat !!}</div>
               @else
                 {{-- Fallback lama kalau admin belum isi apa-apa --}}
                 <ul class="space-y-2 text-[14px] font-medium text-[#000000]">
@@ -226,7 +231,7 @@
               @endphp
 
               @if (!empty($jadwalText))
-                {!! $jadwalText !!}
+             <div class="rich-content">{!! $jadwalText !!}</div>
               @else
                 {{-- Fallback: pakai jadwal otomatis --}}
                 @php
@@ -322,7 +327,7 @@
               @endphp
 
               @if (!empty($lokasiText))
-                {!! $lokasiText !!}
+              <div class="rich-content">{!! $lokasiText !!}</div>
               @else
                 <ul class="space-y-3 text-[14px] font-medium text-[#000000]">
                   @forelse($pelatihan->kompetensiPelatihan as $bp)

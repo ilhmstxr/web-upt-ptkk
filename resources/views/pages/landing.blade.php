@@ -1040,16 +1040,16 @@ $latestBeritas = Berita::query()
     // Ambil dari DB:
     // 1 = Kelas Keterampilan & Teknik
     // 0 = MJC
-    $kompetensiKeterampilan = Kompetensi::where('kelas_keterampilan', 1)
-        ->orderBy('nama_kompetensi')
-        ->get();
+   $kompetensiKeterampilan = Kompetensi::where('kelas_keterampilan', 1)
+    ->orderBy('id', 'asc') // ✅ dibuat duluan dulu
+    ->get();
 
-    $kompetensiMjc = Kompetensi::where('kelas_keterampilan', 0)
-        ->orderBy('nama_kompetensi')
-        ->get();
+$kompetensiMjc = Kompetensi::where('kelas_keterampilan', 0)
+    ->orderBy('id', 'asc') // (opsional) MJC juga by id biar konsisten
+    ->get();
 
-    // Gabungkan: Keterampilan dulu, baru MJC
-    $kompetensiItems = $kompetensiKeterampilan->concat($kompetensiMjc);
+// ✅ Gabungkan: keterampilan dulu, baru MJC
+$kompetensiItems = $kompetensiKeterampilan->concat($kompetensiMjc);
 @endphp
 
 
