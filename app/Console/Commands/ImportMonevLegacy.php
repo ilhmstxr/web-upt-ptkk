@@ -82,15 +82,22 @@ class ImportMonevLegacy extends Command
                 $currentCategory = 'pelayanan';
                 $pkCount = 0;
 
-                // Loop columns 1 to 37
+                // Override PId for Tes 17 (Legacy Mismatch)
+                $currentPId = $pId;
+                if ($tId == 17) {
+                    $currentPId = 4;
+                }
+
+                // Collect Questions Logic
                 for ($i = 1; $i <= 37; $i++) {
                     $colName = "pertanyaan $i";
-                    // Handle potential property access issues if any
                     $val = $row->{$colName} ?? null;
-
                     if (!empty($val)) {
-                        $currentQId = $idPertanyaan++;
                         $teksPertanyaan = addslashes($val);
+                        $currentQId = $idPertanyaan++;
+
+                        // Map ID for Answer Lookup
+                        $mapPertanyaan["p{$currentPId}_t{$tId}_c{$i}"] = $currentQId;
 
                         // Default to skala_likert (User Request)
                         $tipeJawaban = 'skala_likert';
@@ -131,12 +138,8 @@ class ImportMonevLegacy extends Command
                             $tipeJawaban = 'teks_bebas';
                         }
 
-
                         // Add to Pertanyaan Batch
                         $batchPertanyaan[] = "($currentQId, $tId, $i, '$teksPertanyaan', '$assignedCategory', '$tipeJawaban', NOW(), NOW())";
-
-                        // Map Question
-                        $mapPertanyaan["p{$pId}_t{$tId}_c{$i}"] = $currentQId;
 
                         // Add Options to Batch
                         foreach ($validOptions as $opt) {
@@ -160,9 +163,22 @@ class ImportMonevLegacy extends Command
         $this->info("Processing User Answers...");
         $userAnswers = DB::select("SELECT * FROM `data-jawaban-user`");
 
+        $stats = [];
+
         foreach ($userAnswers as $row) {
             $pId = $row->pelatihan_id;
             $tId = $row->tes_id;
+
+            // Override PId for Tes 17 (Legacy Mismatch)
+            if ($tId == 17) {
+                $pId = 4;
+            }
+
+            // Init stats
+            $k = "p{$pId}_t{$tId}";
+            if (!isset($stats[$k])) $stats[$k] = 0;
+            $stats[$k]++;
+
             $pesertaId = $row->peserta_id;
 
             $currentPercobaanId = $idPercobaan++;
@@ -199,6 +215,8 @@ class ImportMonevLegacy extends Command
                 }
             }
         }
+
+        $this->info("Answer Stats (P_T): " . json_encode($stats));
 
         // 3. Write to File
         // ----------------
