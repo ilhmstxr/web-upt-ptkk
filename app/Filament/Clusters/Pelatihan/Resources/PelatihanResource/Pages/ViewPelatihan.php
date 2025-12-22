@@ -388,27 +388,15 @@ class ViewPelatihan extends ViewRecord
                 ->where('kompetensi_pelatihan_id', $kompetensiPelatihanId)
                 ->avg('nilai_post_test') ?? 0;
 
-            // Calculate Satisfaction per Competency using LIKERT Logic
-            $compPertanyaanIds = $this->collectPertanyaanIds($pelatihanId, $kompetensiPelatihanId);
-
-            // FALLBACK: If specific competency survey is empty, use generic
-            if ($compPertanyaanIds->isEmpty()) {
-                $compPertanyaanIds = $this->collectPertanyaanIds($pelatihanId, null);
-            }
-
-            $sat = 0;
-            if ($compPertanyaanIds->isNotEmpty()) {
-                [$cPivot, $cOpsiIdToSkala, $cOpsiTextToId] = $this->buildLikertMaps($compPertanyaanIds);
-                $cAnswers = $this->normalizedAnswers($pelatihanId, $compPertanyaanIds, $cPivot, $cOpsiIdToSkala, $cOpsiTextToId, $kompetensiPelatihanId);
-                $cAvgScale = $cAnswers->avg('skala') ?? 0;
-                $sat = ($cAvgScale / 4) * 100;
-            }
+            $praktek = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
+                ->where('kompetensi_pelatihan_id', $kompetensiPelatihanId)
+                ->avg('nilai_praktek') ?? 0;
 
             $competencyStats[] = [
                 'name' => $session->kompetensi->nama_kompetensi ?? 'Unknown',
                 'pretest' => number_format($pre, 1),
                 'posttest' => number_format($post, 1),
-                'kepuasan' => number_format($sat, 1),
+                'praktek' => number_format($praktek, 1),
                 'status' => $post >= 85 ? 'Sangat Baik' : ($post >= 75 ? 'Baik' : 'Cukup'),
                 'status_color' => $post >= 85 ? 'success' : ($post >= 75 ? 'info' : 'warning'),
             ];

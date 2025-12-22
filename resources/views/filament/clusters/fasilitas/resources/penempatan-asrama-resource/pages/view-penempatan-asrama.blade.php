@@ -821,6 +821,7 @@
           <tr>
             <th class="px-3 py-2 text-left border-b border-slate-200">Nomor Registrasi</th>
             <th class="px-3 py-2 text-left border-b border-slate-200">Nama</th>
+            <th class="px-3 py-2 text-left border-b border-slate-200">Nomor Handphone</th>
             <th class="px-3 py-2 text-left border-b border-slate-200">Asal Instansi</th>
             <th class="px-3 py-2 text-left border-b border-slate-200">Kompetensi</th>
             <th class="px-3 py-2 text-left border-b border-slate-200">Gender</th>
@@ -841,6 +842,7 @@
             >
               <td class="px-3 py-2 border-b border-slate-200" draggable="true">{{ $row['nomor_registrasi'] ?? '-' }}</td>
               <td class="px-3 py-2 border-b border-slate-200" draggable="true">{{ $row['nama'] ?? '-' }}</td>
+              <td class="px-3 py-2 border-b border-slate-200" draggable="true">{{ $row['no_hp'] ?? '-' }}</td>
               <td class="px-3 py-2 border-b border-slate-200" draggable="true">{{ $row['instansi'] ?? '-' }}</td>
               <td class="px-3 py-2 border-b border-slate-200" draggable="true">{{ $row['kompetensi'] ?? '-' }}</td>
               <td class="px-3 py-2 border-b border-slate-200" draggable="true">{{ $row['gender'] ? ucfirst($row['gender']) : '-' }}</td>
@@ -850,7 +852,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="8" class="px-3 py-3 text-center text-slate-500">Belum ada data peserta.</td>
+              <td colspan="9" class="px-3 py-3 text-center text-slate-500">Belum ada data peserta.</td>
             </tr>
           @endforelse
         </tbody>

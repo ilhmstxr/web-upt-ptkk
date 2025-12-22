@@ -45,11 +45,11 @@
                         </span>
                     </div>
 
-                    <div class="flex gap-4 items-center">
+                    <div class="flex gap-4 items-center pt-0.5">
                         <div class="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center border-4 border-blue-100 dark:border-blue-800">
                             <div class="flex flex-col items-center justify-center text-gray-700 dark:text-gray-200">
                                 <span class="text-2xl font-bold">
-                                    {{ $statistik['pretest']['avg'] ?? 0 }}
+                                    {{ $this->statistik['pretest']['avg'] ?? 0 }}
                                 </span>
                                 <span class="text-[9px] text-gray-400 font-medium uppercase">Rata-rata</span>
                             </div>
@@ -59,21 +59,21 @@
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-gray-500 dark:text-gray-400">Tertinggi</span>
                                 <span class="font-bold text-gray-800 dark:text-white">
-                                    {{ $statistik['pretest']['max'] ?? 0 }}
+                                    {{ $this->statistik['pretest']['max'] ?? 0 }}
                                 </span>
                             </div>
 
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-gray-500 dark:text-gray-400">Terendah</span>
                                 <span class="font-bold text-gray-800 dark:text-white">
-                                    {{ $statistik['pretest']['min'] ?? 0 }}
+                                    {{ $this->statistik['pretest']['min'] ?? 0 }}
                                 </span>
                             </div>
 
                             <div class="flex justify-between items-center text-xs border-t border-dashed border-gray-200 dark:border-gray-700 pt-1">
                                 <span class="text-gray-500 dark:text-gray-400">Partisipasi</span>
                                 <span class="font-bold text-gray-800 dark:text-white">
-                                    {{ $statistik['pretest']['count'] ?? 0 }} Org
+                                    {{ $this->statistik['pretest']['count'] ?? 0 }} Org
                                 </span>
                             </div>
                         </div>
@@ -91,11 +91,11 @@
                         </span>
                     </div>
 
-                    <div class="flex gap-4 items-center">
+                    <div class="flex gap-4 items-center pt-0.5">
                         <div class="w-16 h-16 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center border-4 border-green-100 dark:border-green-800">
                             <div class="flex flex-col items-center justify-center text-gray-700 dark:text-gray-200">
                                 <span class="text-2xl font-bold">
-                                    {{ $statistik['posttest']['avg'] ?? 0 }}
+                                    {{ $this->statistik['posttest']['avg'] ?? 0 }}
                                 </span>
                                 <span class="text-[9px] text-gray-400 font-medium uppercase">Rata-rata</span>
                             </div>
@@ -105,21 +105,21 @@
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-gray-500 dark:text-gray-400">Lulus (&gt;75)</span>
                                 <span class="font-bold text-green-600 dark:text-green-400">
-                                    {{ $statistik['posttest']['lulus'] ?? 0 }} Org
+                                    {{ $this->statistik['posttest']['lulus'] ?? 0 }} Org
                                 </span>
                             </div>
 
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-gray-500 dark:text-gray-400">Remedial</span>
                                 <span class="font-bold text-orange-600 dark:text-orange-400">
-                                    {{ $statistik['posttest']['remedial'] ?? 0 }} Org
+                                    {{ $this->statistik['posttest']['remedial'] ?? 0 }} Org
                                 </span>
                             </div>
 
                             <div class="flex justify-between items-center text-xs border-t border-dashed border-gray-200 dark:border-gray-700 pt-1">
                                 <span class="text-gray-500 dark:text-gray-400">Partisipasi</span>
                                 <span class="font-bold text-gray-800 dark:text-white">
-                                    {{ $statistik['posttest']['count'] ?? 0 }}/{{ $statistik['monev']['total_peserta'] ?? 0 }}
+                                    {{ $this->statistik['posttest']['count'] ?? 0 }}/{{ $this->statistik['monev']['total_peserta'] ?? 0 }}
                                 </span>
                             </div>
                         </div>
@@ -128,12 +128,12 @@
 
                 <!-- 3. MONEV STATS (SURVEI) - Restored Simple Card -->
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-3">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4 border-b border-gray-100 dark:border-gray-700 pb-3">
                         <div>
-                            <h3 class="font-bold text-gray-800 dark:text-white text-lg">Survei Monev</h3>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Analisis Kepuasan</p>
+                            <h3 class="font-bold text-gray-800 dark:text-white text-lg leading-tight ">Survei Monev</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug whitespace-normal">Analisis Kepuasan</p>
                         </div>
-                        <span class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide">Aktif</span>
+                        <span class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-[10px] uppercase px-2 py-1 rounded font-bold tracking-wide whitespace-nowrap">Aktif</span>
                     </div>
 
                     <div class="flex gap-4 items-center">

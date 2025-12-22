@@ -307,7 +307,7 @@
                                 <th class="px-6 py-3 font-medium">Nama Kompetensi</th>
                                 <th class="px-6 py-3 font-medium text-center">Avg Pretest</th>
                                 <th class="px-6 py-3 font-medium text-center">Avg Posttest</th>
-                                <th class="px-6 py-3 font-medium text-center">Kepuasan</th>
+                                <th class="px-6 py-3 font-medium text-center">Nilai Praktek</th>
                                 <th class="px-6 py-3 font-medium text-center">Status</th>
                             </tr>
                         </thead>
@@ -317,7 +317,7 @@
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $comp['name'] }}</td>
                                 <td class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ $comp['pretest'] }}</td>
                                 <td class="px-6 py-4 text-center font-bold text-blue-600 dark:text-blue-400">{{ $comp['posttest'] }}</td>
-                                <td class="px-6 py-4 text-center text-orange-500 font-bold">{{ $comp['kepuasan'] }}</td>
+                                <td class="px-6 py-4 text-center text-orange-500 font-bold">{{ $comp['praktek'] }}</td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $comp['status_color'] }}-100 text-{{ $comp['status_color'] }}-800 dark:bg-{{ $comp['status_color'] }}-900/30 dark:text-{{ $comp['status_color'] }}-400 border border-{{ $comp['status_color'] }}-200 dark:border-{{ $comp['status_color'] }}-800">
                                         {{ $comp['status'] }}
