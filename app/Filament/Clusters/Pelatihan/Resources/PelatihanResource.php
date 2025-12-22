@@ -77,7 +77,7 @@ final class PelatihanResource extends Resource
 
                                     Forms\Components\DatePicker::make('tanggal_mulai')
                                         ->required()
-                                        ->minDate(now()->startOfDay())
+                                        ->minDate(fn(string $operation) => $operation === 'create' ? now()->startOfDay() : null)
                                         ->live()
                                         ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
                                             self::updateStatus($get, $set);
