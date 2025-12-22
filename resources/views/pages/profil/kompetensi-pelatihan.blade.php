@@ -29,7 +29,7 @@
 
   {{-- HERO --}}
   <x-layouts.app.profile-hero
-    title="Kompetensi Pelatihan"
+    title="Bidang Kompetensi"
     :crumbs="[
       ['label' => 'Beranda', 'route' => 'landing'],
       ['label' => 'Profil'],
@@ -70,11 +70,11 @@
                style="background:linear-gradient(to top, rgba(21,36,175,.7) 12%, rgba(21,36,175,.35) 28%, rgba(0,0,0,0) 72%);"></div>
 
           <div class="absolute inset-0 flex flex-col justify-end p-5 space-y-2 text-white">
-            <h3 class="font-[Volkhov] font-bold text-[22px] text-[#FFDE59]"
+            <h3 class="font-[Volkhov] font-bold text-[20px] text-[#FFDE59]"
                 style="-webkit-text-stroke:.85px #1524AF;">
               {{ $judul }}
             </h3>
-            <p class="text-[12px] font-[Montserrat] leading-relaxed text-justify opacity-95">
+            <p class="text-[11px] font-[Montserrat] leading-tight text-justify opacity-95">
               {{ $desc }}
             </p>
           </div>
@@ -109,11 +109,11 @@
                  style="background:linear-gradient(to top, rgba(21,36,175,.7) 12%, rgba(21,36,175,.35) 28%, rgba(0,0,0,0) 72%);"></div>
 
             <div class="absolute inset-0 flex flex-col justify-end p-6 space-y-2 text-white">
-              <h3 class="font-[Volkhov] font-bold text-[24px] text-[#FFDE59]"
+              <h3 class="font-[Volkhov] font-bold text-[22px] text-[#FFDE59]"
                   style="-webkit-text-stroke:.85px #1524AF;">
                 {{ $judul }}
               </h3>
-              <p class="text-[14px] font-[Montserrat] leading-relaxed text-justify opacity-95 md:line-clamp-5">
+              <p class="text-[12px] font-[Montserrat] leading-tight text-justify opacity-95 md:line-clamp-5">
                 {{ $desc }}
               </p>
             </div>
@@ -145,11 +145,11 @@
                  style="background:linear-gradient(to top, rgba(21,36,175,.7) 12%, rgba(21,36,175,.35) 28%, rgba(0,0,0,0) 72%);"></div>
 
             <div class="absolute inset-0 flex flex-col justify-end p-6 space-y-2 text-white">
-              <h3 class="font-[Volkhov] font-bold text-[24px] text-[#FFDE59]"
+              <h3 class="font-[Volkhov] font-bold text-[22px] text-[#FFDE59]"
                   style="-webkit-text-stroke:.85px #1524AF;">
                 {{ $judul }}
               </h3>
-              <p class="text-[14px] font-[Montserrat] leading-relaxed text-justify opacity-95 md:line-clamp-5">
+              <p class="text-[12px] font-[Montserrat] leading-tight text-justify opacity-95 md:line-clamp-5">
                 {{ $desc }}
               </p>
             </div>
@@ -169,6 +169,6 @@
 
 @include('components.layouts.app.footer')
 
-
+@stack('scripts')
 </body>
 </html>

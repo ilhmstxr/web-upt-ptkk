@@ -323,5 +323,6 @@ function copyToClipboard(text) {
 </script>
 
 @include('components.layouts.app.footer')
+@stack('scripts')
 </body>
 </html>
