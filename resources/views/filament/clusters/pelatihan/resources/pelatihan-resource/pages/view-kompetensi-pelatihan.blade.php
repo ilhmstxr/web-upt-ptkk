@@ -41,6 +41,7 @@
         <div x-show="activeTab === 'hasil'" class="space-y-6">
             @php
             $isSelesai = $this->status === 'Selesai';
+            $statistik = $this->statistik;
             @endphp
 
             <!-- A. Statistik Utama (Cards) -->

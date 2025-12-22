@@ -28,30 +28,9 @@ class KamarRelationManager extends RelationManager
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('lantai')
-                    ->label('Lantai')
-                    ->numeric()
-                    ->required(),
-
                 Forms\Components\TextInput::make('total_beds')
                     ->label('Total Bed')
                     ->numeric()
-                    ->required(),
-
-                Forms\Components\TextInput::make('available_beds')
-                    ->label('Bed Tersedia')
-                    ->numeric()
-                    ->required()
-                    ->helperText('Update angka ini otomatis via observer/event saat penempatan/pengeluaran penghuni.'),
-
-                Forms\Components\Select::make('status')
-                    ->label('Status')
-                    ->options([
-                        'Tersedia'  => 'Tersedia',
-                        'Penuh'     => 'Penuh',
-                        'Rusak'     => 'Rusak',
-                        'Perbaikan' => 'Perbaikan',
-                    ])
                     ->required(),
             ]);
     }
@@ -71,11 +50,6 @@ class KamarRelationManager extends RelationManager
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('lantai')
-                    ->label('Lantai')
-                    ->numeric()
-                    ->sortable(),
-
                 // Penghuni Aktif (mengandalkan method penghuniAktif() di model Kamar)
                 Tables\Columns\TextColumn::make('penghuni_count')
                     ->label('Penghuni Aktif')
@@ -85,21 +59,6 @@ class KamarRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('total_beds')
                     ->label('Total Bed')
                     ->alignCenter(),
-
-                Tables\Columns\TextColumn::make('available_beds')
-                    ->label('Tersedia')
-                    ->alignCenter(),
-
-                Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
-                    ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'Tersedia'  => 'success',
-                        'Penuh'     => 'danger',
-                        'Rusak'     => 'danger',
-                        'Perbaikan' => 'warning',
-                        default     => 'gray',
-                    }),
             ])
             ->filters([
                 //

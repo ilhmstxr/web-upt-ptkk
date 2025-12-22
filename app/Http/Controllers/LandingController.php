@@ -144,8 +144,8 @@ class LandingController extends Controller
 
                 return DB::table('pendaftaran_pelatihan as pp')
                     ->join('pelatihan as p', 'p.id', '=', 'pp.pelatihan_id')
-                    ->leftJoin('kompetensi_pelatihan as kp', 'kp.id', '=', 'pp.kompetensi_pelatihan_id')
-                    ->leftJoin('kompetensi as k', 'k.id', '=', DB::raw('COALESCE(pp.kompetensi_id, kp.kompetensi_id)'))
+                    ->join('kompetensi_pelatihan as kp', 'kp.id', '=', 'pp.kompetensi_pelatihan_id')
+                    ->join('kompetensi as k', 'k.id', '=', 'kp.kompetensi_id')
                     ->whereIn('p.id', $latestPelatihanIds)
                     ->whereNotNull('p.tanggal_selesai')
                     ->whereDate('p.tanggal_selesai', '<=', now())
@@ -154,7 +154,7 @@ class LandingController extends Controller
                         'p.nama_pelatihan',
                         'p.warna',
                         'p.warna_inactive',
-                        'k.id',
+                        'kp.id',
                         'k.nama_kompetensi'
                     )
                     ->orderByDesc('p.tanggal_selesai')
@@ -164,6 +164,7 @@ class LandingController extends Controller
                         'p.nama_pelatihan',
                         'p.warna',
                         'p.warna_inactive',
+                        'kp.id as kompetensi_pelatihan_id',
                         'k.nama_kompetensi',
                         DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_pre_test, 0)), 2), 0) as pre_avg'),
                         DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_post_test, 0)), 2), 0) as post_avg'),

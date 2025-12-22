@@ -245,9 +245,20 @@ class ViewPelatihan extends ViewRecord
     {
         $pelatihanId = $this->record->id;
 
-        // 1. Calculate Pretest & Posttest (Existing Logic is fine for scores)
-        $avgPretest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_pre_test') ?? 0;
-        $avgPosttest = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)->avg('nilai_post_test') ?? 0;
+        // 1. Calculate Pretest & Posttest (filter nilai > 0, exclude ditolak)
+        $basePendaftaran = \App\Models\PendaftaranPelatihan::query()
+            ->where('pelatihan_id', $pelatihanId)
+            ->where(function ($q) {
+                $q->whereNull('status_pendaftaran')
+                    ->orWhere('status_pendaftaran', '!=', 'ditolak');
+            });
+
+        $avgPretest = (clone $basePendaftaran)
+            ->where('nilai_pre_test', '>', 0)
+            ->avg('nilai_pre_test') ?? 0;
+        $avgPosttest = (clone $basePendaftaran)
+            ->where('nilai_post_test', '>', 0)
+            ->avg('nilai_post_test') ?? 0;
 
         $improvement = 0;
         if ($avgPretest > 0) {
@@ -402,17 +413,24 @@ class ViewPelatihan extends ViewRecord
             $kompetensiPelatihanId = $session->id; // This is the ID in pivot table usually? Or kompetensi_pelatihan table id.
 
             // Pre/Post can stay from PendaftaranPelatihan
-            $pre = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('kompetensi_pelatihan_id', $kompetensiPelatihanId) // Use correct column
+            $baseKompetensi = \App\Models\PendaftaranPelatihan::query()
+                ->where('pelatihan_id', $pelatihanId)
+                ->where('kompetensi_pelatihan_id', $kompetensiPelatihanId)
+                ->where(function ($q) {
+                    $q->whereNull('status_pendaftaran')
+                        ->orWhere('status_pendaftaran', '!=', 'ditolak');
+                });
+
+            $pre = (clone $baseKompetensi)
+                ->where('nilai_pre_test', '>', 0)
                 ->avg('nilai_pre_test') ?? 0;
 
-            $post = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('kompetensi_pelatihan_id', $kompetensiPelatihanId)
+            $post = (clone $baseKompetensi)
+                ->where('nilai_post_test', '>', 0)
                 ->avg('nilai_post_test') ?? 0;
 
-            // Calculate Satisfaction per Competency using LIKERT Logic
-            $praktek = \App\Models\PendaftaranPelatihan::where('pelatihan_id', $pelatihanId)
-                ->where('kompetensi_pelatihan_id', $kompetensiPelatihanId)
+            $praktek = (clone $baseKompetensi)
+                ->where('nilai_praktek', '>', 0)
                 ->avg('nilai_praktek') ?? 0;
 
             $competencyStats[] = [

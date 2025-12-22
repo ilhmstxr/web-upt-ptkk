@@ -289,7 +289,7 @@
         <tr class="row-animate row-hover hover:bg-[#EEF7FF]" style="--row-delay:${idx * 60}ms">
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
                      text-[#081526] font-[Montserrat] font-medium">
-            ${k.nama ?? '-'}
+            ${k.nama ?? '-'}${(pel.id === 2 && k.lokasi) ? ' (' + k.lokasi + ')' : ''}
           </td>
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
                      text-[#081526] font-[Montserrat] font-medium text-center">
@@ -362,8 +362,9 @@
           labels,
           datasets: ks.map((k, i) => {
             const color = colorFor(i);
+            const lokasi = (pel.id === 2 && k.lokasi) ? ` (${k.lokasi})` : '';
             return {
-              label: k.nama || 'Kompetensi',
+              label: (k.nama || 'Kompetensi') + lokasi,
               data: [
                 toNum(k.pre),
                 toNum(k.post),

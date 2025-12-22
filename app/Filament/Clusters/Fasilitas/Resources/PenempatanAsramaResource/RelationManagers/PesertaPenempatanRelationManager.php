@@ -63,14 +63,6 @@ class PesertaPenempatanRelationManager extends RelationManager
                     })
                     ->wrap(),
 
-                Tables\Columns\TextColumn::make('lantai')
-                    ->label('Lantai')
-                    ->state(function (PendaftaranPelatihan $record) {
-                        $kamar = $record->penempatanAsramaAktif()?->kamarPelatihan?->kamar;
-                        return $kamar?->lantai ?? '-';
-                    })
-                    ->alignCenter(),
-
                 Tables\Columns\TextColumn::make('kamar')
                     ->label('Kamar')
                     ->state(function (PendaftaranPelatihan $record) {

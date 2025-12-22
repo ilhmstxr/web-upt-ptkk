@@ -96,6 +96,32 @@
                 border-radius: 12px;
             }
         }
+        /* =========================
+   FIX LIST (ANGKA & BULLET)
+   UNTUK KONTEN BERITA
+========================= */
+.prose ol {
+  list-style: decimal !important;
+  padding-left: 1.5rem !important;
+  margin-top: .5rem !important;
+  margin-bottom: .5rem !important;
+}
+
+.prose ul {
+  list-style: disc !important;
+  padding-left: 1.5rem !important;
+  margin-top: .5rem !important;
+  margin-bottom: .5rem !important;
+}
+
+.prose li {
+  margin-top: .25rem !important;
+}
+
+/* Nested list (jika ada) */
+.prose ul ul { list-style: circle !important; }
+.prose ol ol { list-style: lower-alpha !important; }
+
     </style>
 </head>
 
@@ -164,7 +190,7 @@
 
                 {{-- AREA TOMBOL SHARE --}}
                 {{-- FIX: Hapus class 'flex' di sini agar elemen menumpuk ke bawah (Block) --}}
-                <div class="mt-8"> 
+                <div class="mt-8">
 
                     {{-- 1. JUDUL: Otomatis di ATAS karena parent-nya bukan flex row --}}
                     <h3 class="font-['Volkhov'] font-bold text-[#0E2A7B] text-[20px] mb-4 judul-stroke">
@@ -218,7 +244,7 @@
 
             {{-- KANAN: Sidebar Berita Lainnya --}}
            <div class="md:w-1/4">
-                <div class="bg-[#FFFFFF] p-6 rounded-2xl shadow-[0px_4px_24px_rgba(0,0,0,0.08)] 
+                <div class="bg-[#FFFFFF] p-6 rounded-2xl shadow-[0px_4px_24px_rgba(0,0,0,0.08)]
                             border border-gray-100 md:sticky md:top-28">
                     <h2 class="font-[Volkhov] font-bold text-[20px] mb-5 judul-stroke">
                         Berita Lainnya
@@ -297,5 +323,6 @@ function copyToClipboard(text) {
 </script>
 
 @include('components.layouts.app.footer')
+@stack('scripts')
 </body>
 </html>
