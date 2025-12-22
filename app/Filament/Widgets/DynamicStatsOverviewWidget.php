@@ -8,6 +8,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class DynamicStatsOverviewWidget extends BaseWidget
 {
+    protected static ?int $sort = 3;
 
     public array $stats = [];
     protected function getStats(): array

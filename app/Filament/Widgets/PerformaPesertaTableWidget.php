@@ -10,11 +10,11 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class PerformaPesertaTableWidget extends BaseWidget
 {
-    
+
     // Judul Widget
     protected static ?string $heading = 'Top Nilai Terbaik Per Peserta';
-    protected static ?int $sort = 5;
-    
+    protected static ?int $sort = 6;
+
     // Set kolom agar widget tidak terlalu tinggi
     protected int | string | array $columnSpan = 'full';
 
@@ -43,7 +43,7 @@ class PerformaPesertaTableWidget extends BaseWidget
                 TextColumn::make('peserta.nama')
                     ->label('NAMA PESERTA')
                     ->searchable(),
-                
+
                 TextColumn::make('pelatihan.nama_pelatihan')
                     ->label('PELATIHAN')
                     ->limit(30),

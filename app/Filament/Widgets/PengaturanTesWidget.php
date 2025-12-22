@@ -9,6 +9,8 @@ use Filament\Contracts\HasRecord; // Penting untuk mendapatkan data pelatihan
 
 class PengaturanTesWidget extends Widget
 {
+    protected static ?int $sort = 2;
+
     // Gunakan trait ini untuk mengaktifkan $this->record
     // use \Filament\Widgets\Concerns\InteractsWithRecord; 
 
