@@ -78,6 +78,10 @@ class ImportMonevLegacy extends Command
                     WHERE tipe='jawaban' AND pelatihan_id=? AND tes_id=?
                 ", [$pId, $tId]);
 
+                // Reset Category State for each Questionnaire
+                $currentCategory = 'pelayanan';
+                $pkCount = 0;
+
                 // Loop columns 1 to 37
                 for ($i = 1; $i <= 37; $i++) {
                     $colName = "pertanyaan $i";
@@ -94,6 +98,23 @@ class ImportMonevLegacy extends Command
                         // Check for Pesan / Kesan
                         if (stripos($val, 'Pesan') !== false || stripos($val, 'Kesan') !== false) {
                             $tipeJawaban = 'teks_bebas';
+
+                            // Category Switch Logic
+                            // If it's the 1st PK, it ends 'pelayanan', next is 'fasilitas'
+                            // If it's the 2nd PK, it ends 'fasilitas', next is 'instruktur'
+
+                            // Assign current category to this PK question
+                            $assignedCategory = $currentCategory;
+
+                            $pkCount++;
+                            if ($pkCount == 1) {
+                                $currentCategory = 'fasilitas';
+                            } elseif ($pkCount >= 2) {
+                                $currentCategory = 'instruktur';
+                            }
+                        } else {
+                            // Normal question
+                            $assignedCategory = $currentCategory;
                         }
 
                         // Collect Options
@@ -110,8 +131,9 @@ class ImportMonevLegacy extends Command
                             $tipeJawaban = 'teks_bebas';
                         }
 
+
                         // Add to Pertanyaan Batch
-                        $batchPertanyaan[] = "($currentQId, $tId, $i, '$teksPertanyaan', '$tipeJawaban', NOW(), NOW())";
+                        $batchPertanyaan[] = "($currentQId, $tId, $i, '$teksPertanyaan', '$assignedCategory', '$tipeJawaban', NOW(), NOW())";
 
                         // Map Question
                         $mapPertanyaan["p{$pId}_t{$tId}_c{$i}"] = $currentQId;
@@ -189,7 +211,7 @@ class ImportMonevLegacy extends Command
             $content .= "-- BATCH: PERTANYAAN\n";
             $chunks = array_chunk($batchPertanyaan, 50);
             foreach ($chunks as $chunk) {
-                $content .= "INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, tipe_jawaban, created_at, updated_at) VALUES \n";
+                $content .= "INSERT INTO pertanyaan (id, tes_id, nomor, teks_pertanyaan, kategori, tipe_jawaban, created_at, updated_at) VALUES \n";
                 $content .= implode(",\n", $chunk) . ";\n\n";
             }
         }
