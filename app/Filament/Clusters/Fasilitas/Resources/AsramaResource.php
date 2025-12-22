@@ -41,7 +41,7 @@ class AsramaResource extends Resource
 
     /**
      * Ambil default kamar dari config berdasarkan nama asrama.
-     * Format repeater kamars: nomor_kamar, total_beds, is_active, available_beds
+     * Format repeater kamars: nomor_kamar, total_beds, is_active
      */
     protected static function defaultKamarsForAsramaName(?string $asramaName): array
     {
@@ -57,16 +57,13 @@ class AsramaResource extends Resource
             ->map(function ($room) use ($asramaName) {
                 $no  = (int) ($room['no'] ?? 0);
                 $bed = $room['bed'] ?? null;
-                $lantai = $room['lantai'] ?? static::inferLantaiFromAsramaName($asramaName);
 
                 $isActive = is_numeric($bed) && (int) $bed > 0;
                 $totalBeds = $isActive ? (int) $bed : 0;
 
                 return [
                     'nomor_kamar'    => $no,
-                    'lantai'         => $lantai,
                     'total_beds'     => $totalBeds,
-                    'available_beds' => $totalBeds,
                     'is_active'      => $isActive,
                 ];
             })
@@ -118,35 +115,23 @@ class AsramaResource extends Resource
                                 ->numeric()
                                 ->required(),
 
-                            Forms\Components\TextInput::make('lantai')
-                                ->label('Lantai')
-                                ->numeric()
-                                ->minValue(1),
-
                             Forms\Components\TextInput::make('total_beds')
                                 ->label('Total Bed')
                                 ->numeric()
                                 ->minValue(0)
                                 ->required()
                                 ->afterStateUpdated(function (Set $set, $state, Get $get) {
-                                    // kalau user ubah total_beds, available_beds ikut disetarakan
+                                    // kalau user ubah total_beds, is_active ikut disetarakan
                                     $beds = (int) $state;
-                                    $set('available_beds', $beds);
                                     $set('is_active', $beds > 0);
                                 }),
-
-                            Forms\Components\TextInput::make('available_beds')
-                                ->label('Bed Tersedia')
-                                ->numeric()
-                                ->minValue(0)
-                                ->required(),
 
                             Forms\Components\Toggle::make('is_active')
                                 ->label('Aktif')
                                 ->default(true),
 
                         ])
-                        ->columns(5)
+                        ->columns(3)
                         ->addActionLabel('Tambah Kamar')
                         ->reorderable()
                         ->collapsible(),
@@ -236,17 +221,5 @@ class AsramaResource extends Resource
             'create' => Pages\CreateAsrama::route('/create'),
             'edit'   => Pages\EditAsrama::route('/{record}/edit'),
         ];
-    }
-
-    protected static function inferLantaiFromAsramaName(string $asramaName): ?int
-    {
-        $name = strtolower($asramaName);
-        if (str_contains($name, 'atas')) {
-            return 2;
-        }
-        if (str_contains($name, 'bawah')) {
-            return 1;
-        }
-        return null;
     }
 }

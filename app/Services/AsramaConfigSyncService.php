@@ -29,18 +29,10 @@ class AsramaConfigSyncService
                     }
 
                     $bedRaw = $room['bed'] ?? null;
-                    $lantai = $room['lantai'] ?? $this->inferLantaiFromAsramaName($asramaName);
 
                     $isNumericBed = is_numeric($bedRaw);
                     $totalBeds = $isNumericBed ? (int) $bedRaw : 0;
                     $isActive = $totalBeds > 0;
-
-                    $status = 'Perbaikan';
-                    if ($isNumericBed) {
-                        $status = $totalBeds > 0 ? 'Tersedia' : 'Perbaikan';
-                    } elseif (is_string($bedRaw) && strtolower($bedRaw) === 'rusak') {
-                        $status = 'Rusak';
-                    }
 
                     DB::table('kamars')->updateOrInsert(
                         [
@@ -48,10 +40,7 @@ class AsramaConfigSyncService
                             'nomor_kamar' => $nomor,
                         ],
                         [
-                            'lantai'         => $lantai,
                             'total_beds'     => $totalBeds,
-                            'available_beds' => $totalBeds,
-                            'status'         => $status,
                             'is_active'      => $isActive,
                             'created_at'     => now(),
                             'updated_at'     => now(),
@@ -60,17 +49,5 @@ class AsramaConfigSyncService
                 }
             }
         });
-    }
-
-    private function inferLantaiFromAsramaName(string $asramaName): ?int
-    {
-        $name = strtolower($asramaName);
-        if (str_contains($name, 'atas')) {
-            return 2;
-        }
-        if (str_contains($name, 'bawah')) {
-            return 1;
-        }
-        return null;
     }
 }

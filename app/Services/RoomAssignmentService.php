@@ -29,7 +29,7 @@ class RoomAssignmentService
         $grouped = $pendaftaran->groupBy(fn($p) => $p->peserta->jenis_kelamin ?? 'Laki-laki');
 
         // ambil semua kamar yang tersedia (ordered)
-        $kamarList = Kamar::where('status', 'Tersedia')->orderBy('asrama_id')->orderBy('nomor_kamar')->get();
+        $kamarList = Kamar::where('is_active', true)->where('total_beds', '>', 0)->orderBy('asrama_id')->orderBy('nomor_kamar')->get();
 
         $assignments = [];
         DB::beginTransaction();
@@ -67,11 +67,11 @@ class RoomAssignmentService
                     if ($idx >= $listP->count()) break;
                 }
 
-                // jika masih sisa peserta (belum ditempatkan) -> coba pakai kamar yang status != 'Tersedia' (campur)
+                // jika masih sisa peserta (belum ditempatkan) -> coba pakai kamar aktif lainnya (campur)
                 if ($idx < $listP->count()) {
                     $remaining = $listP->slice($idx);
                     // ambil all kamar yang tidak rusak (termasuk Penuh) dan coba isi bed kosong
-                    $otherKamar = Kamar::where('status','!=','Rusak')->orderBy('asrama_id')->get();
+                    $otherKamar = Kamar::where('is_active', true)->where('total_beds', '>', 0)->orderBy('asrama_id')->get();
                     foreach ($otherKamar as $kamar) {
                         $occupied = $kamar->penempatans()->penghuniAktif()->count();
                         $capacity = max(0, $kamar->total_beds - $occupied);

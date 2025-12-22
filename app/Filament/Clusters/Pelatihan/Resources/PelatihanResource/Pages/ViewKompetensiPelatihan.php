@@ -62,7 +62,7 @@ class ViewKompetensiPelatihan extends Page
                     'pelatihan_id' => $this->record->id,
                     'kompetensi_pelatihan_id' => $this->kompetensiPelatihan->id,
                     'tanggal_pendaftaran' => now(),
-                    'status_pendaftaran' => 'Diterima',
+                    'status_pendaftaran' => 'diterima',
                     'nomor_registrasi' => 'REG-' . time() . '-' . $data['peserta_id'],
                 ]);
 
@@ -226,7 +226,7 @@ class ViewKompetensiPelatihan extends Page
             ->where('kompetensi_pelatihan_id', $kompetensiId)
             ->where(function ($q) {
                 $q->whereNull('status_pendaftaran')
-                    ->orWhere('status_pendaftaran', '!=', 'Batal');
+                    ->orWhere('status_pendaftaran', '!=', 'ditolak');
             });
 
         // ======================

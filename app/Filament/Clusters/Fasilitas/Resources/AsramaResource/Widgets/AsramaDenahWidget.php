@@ -15,21 +15,19 @@ class AsramaDenahWidget extends Widget
 
     public function getViewData(): array
     {
-        $kamarsByLantai = collect();
+        $kamars = collect();
 
         if ($this->record) {
             // asumsikan $this->record adalah instance Asrama
-            $kamarsByLantai = $this->record->kamars()
+            $kamars = $this->record->kamars()
                 ->withCount('penempatanAsrama') // ->penempatan_asrama_count
-                ->orderBy('lantai')
                 ->orderBy('nomor_kamar')
-                ->get()
-                ->groupBy('lantai');
+                ->get();
         }
 
         return [
-            'kamars_by_lantai' => $kamarsByLantai,
-            'asrama'           => $this->record,
+            'kamars' => $kamars,
+            'asrama' => $this->record,
         ];
     }
 }

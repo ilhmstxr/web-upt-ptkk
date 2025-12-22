@@ -16,16 +16,8 @@
                     </p>
                 </div>
             </div>
-
-            @forelse($kamars_by_lantai as $lantai => $kamars)
+            @if($kamars->isNotEmpty())
                 <div class="mt-3">
-                    {{-- LABEL LANTAI --}}
-                    <h3 class="inline-block text-base font-extrabold px-5 py-2 rounded-xl
-                               bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400
-                               text-white shadow-md mb-3">
-                        Lantai {{ $lantai }}
-                    </h3>
-
                     {{-- GRID KAMAR --}}
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         @foreach($kamars as $kamar)
@@ -34,19 +26,17 @@
                                 $capacity  = (int) ($kamar->total_beds ?? 0);
                                 $available = max($capacity - $occupied, 0);
 
-                                $status = $kamar->status ?? 'Perbaikan';
+                                $status = $capacity <= 0
+                                    ? 'Perbaikan'
+                                    : ($available <= 0 ? 'Penuh' : 'Tersedia');
 
-                                // ✅ Warna lebih jelas per status
-                                if ($status === 'Rusak') {
-                                    $color = 'bg-gradient-to-br from-red-600 to-rose-600 border-red-800 text-white';
-                                    $badge = 'bg-red-200 text-red-900';
-                                } elseif ($status === 'Perbaikan') {
+                                // Warna lebih jelas per status
+                                if ($status === 'Perbaikan') {
                                     $color = 'bg-gradient-to-br from-slate-500 to-slate-700 border-slate-800 text-white';
                                     $badge = 'bg-slate-200 text-slate-900';
-                                } elseif ($available <= 0 && $capacity > 0) {
+                                } elseif ($status === 'Penuh') {
                                     $color = 'bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-700 text-white';
                                     $badge = 'bg-yellow-200 text-yellow-900';
-                                    $status = 'Penuh';
                                 } else {
                                     $color = 'bg-gradient-to-br from-emerald-500 to-teal-500 border-emerald-700 text-white';
                                     $badge = 'bg-emerald-200 text-emerald-900';
@@ -68,29 +58,30 @@
                                         Penghuni: {{ $occupied }} / {{ $capacity }}
                                     </span>
 
-                                    @if($status === 'Rusak')
-                                        <span class="block text-[12px] text-white/95">
-                                            Kamar rusak, tidak bisa dipakai
-                                        </span>
-                                    @elseif($status === 'Perbaikan')
-                                        <span class="block text-[12px] text-white/95">
-                                            Belum diset bed, tidak dipakai allocator
-                                        </span>
-                                    @else
-                                        <span class="block text-[12px] text-white/95">
-                                            Sisa bed: {{ $available }}
-                                        </span>
+                                @if($status === 'Perbaikan')
+                                    <span class="block text-[12px] text-white/95">
+                                        Belum diset bed, tidak dipakai allocator
+                                    </span>
+                                @elseif($status === 'Penuh')
+                                    <span class="block text-[12px] text-white/95">
+                                        Kamar penuh, tidak ada sisa bed
+                                    </span>
+                                @else
+                                    <span class="block text-[12px] text-white/95">
+                                        Sisa bed: {{ $available }}
+                                    </span>
                                     @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
-            @empty
+            @else
                 <div class="p-4 rounded-2xl bg-gradient-to-r from-fuchsia-200 to-pink-200 text-fuchsia-900 font-semibold shadow">
                     Belum ada data kamar untuk asrama ini.
                 </div>
-            @endforelse
+            @endif
+
         @else
             <div class="p-4 rounded-2xl bg-gradient-to-r from-red-200 to-rose-200 text-red-900 font-semibold shadow">
                 Asrama tidak ditemukan.
