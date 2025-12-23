@@ -22,6 +22,7 @@ class StatistikPelatihanController extends Controller
                 'p.warna',
                 'p.warna_inactive',
                 'kp.id',
+                'kp.lokasi',
                 'k.nama_kompetensi'
             )
             ->orderBy('p.nama_pelatihan')
