@@ -188,8 +188,8 @@
 
     const xLabels = ['Pre-Test', 'Post-Test', 'Praktek', 'Rata-Rata'];
     const palette = [
-      '#0038aa', '#32d1ca', '#f1c232', '#c90076',
-      '#8fce00', '#ce7e00', '#6a329f', '#00B2FF',
+      '#0038aa', '#32d1ca', '#f1c232', 
+      '#8fce00', '#ce7e00', '#6a329f', 
       '#FF2D55', '#4ea26e'
     ];
     const colorFor = (i) => {
