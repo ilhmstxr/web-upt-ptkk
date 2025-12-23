@@ -181,7 +181,10 @@
     const round2 = (n) => Math.round(n * 100) / 100;
     const fmt = (n) => round2(n).toFixed(2).replace('.', ',');
     const avg = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0);
-    const calcRata = (k) => (toNum(k.post) + toNum(k.praktek)) / 2;
+    const getPre = (k) => toNum(k?.pre ?? k?.nilai_pre_test);
+    const getPost = (k) => toNum(k?.post ?? k?.nilai_post_test);
+    const getPraktek = (k) => toNum(k?.praktek ?? k?.nilai_praktek);
+    const calcRata = (k) => (getPost(k) + getPraktek(k)) / 2;
 
     const xLabels = ['Pre-Test', 'Post-Test', 'Praktek', 'Rata-Rata'];
     const palette = [
@@ -293,15 +296,15 @@
           </td>
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
                      text-[#081526] font-[Montserrat] font-medium text-center">
-            ${fmt(toNum(k.pre))}
+            ${fmt(getPre(k))}
           </td>
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
                      text-[#081526] font-[Montserrat] font-medium text-center">
-            ${fmt(toNum(k.post))}
+            ${fmt(getPost(k))}
           </td>
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
                      text-[#081526] font-[Montserrat] font-medium text-center">
-            ${fmt(toNum(k.praktek))}
+            ${fmt(getPraktek(k))}
           </td>
           <td class="px-4 py-3 border border-[#D6DFEF] bg-[#FFFFFF]
                      text-[#081526] font-[Montserrat] font-medium text-center">
@@ -314,9 +317,9 @@
     function renderSummary() {
       const pel = getActive();
       const ks = pel.kompetensis || [];
-      const preAvg = avg(ks.map(k => toNum(k.pre)));
-      const postAvg = avg(ks.map(k => toNum(k.post)));
-      const praktekAvg = avg(ks.map(k => toNum(k.praktek)));
+      const preAvg = avg(ks.map(getPre));
+      const postAvg = avg(ks.map(getPost));
+      const praktekAvg = avg(ks.map(getPraktek));
       const rataAvg = avg(ks.map(calcRata));
 
       if (elCardPre) elCardPre.textContent = fmt(preAvg);
@@ -366,9 +369,9 @@
             return {
               label: (k.nama || 'Kompetensi') + lokasi,
               data: [
-                toNum(k.pre),
-                toNum(k.post),
-                toNum(k.praktek),
+                getPre(k),
+                getPost(k),
+                getPraktek(k),
                 calcRata(k),
               ],
               tension: 0.35,
@@ -385,7 +388,7 @@
           plugins: {
             legend: {
               position: 'top',
-              align: 'end',
+              align: 'center',
               labels: {
                 usePointStyle: true,
                 boxWidth: 8,
