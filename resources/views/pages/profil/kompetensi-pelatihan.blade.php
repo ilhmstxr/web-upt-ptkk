@@ -124,6 +124,6 @@
     </div>
 
     @include('components.layouts.app.footer')
-
+        @stack('scripts')
 </body>
 </html>

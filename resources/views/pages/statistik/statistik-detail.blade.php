@@ -168,7 +168,7 @@
 
   {{-- FOOTER --}}
   @include('components.layouts.app.footer')
-
+@stack('scripts')
   <script>
   (function () {
     const toNum = (v) => {
