@@ -17,6 +17,7 @@ class MateriPelatihanResource extends Resource
     protected static ?string $cluster = Evaluasi::class;
 
     protected static ?string $navigationIcon  = 'heroicon-o-book-open';
+    protected static bool $shouldRegisterNavigation = false;
     protected static ?string $navigationLabel = 'Materi Pelatihan';
     protected static ?string $modelLabel      = 'Materi';
     protected static ?int $navigationSort     = 20;

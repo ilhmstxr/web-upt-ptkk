@@ -11,11 +11,16 @@ class ListBeritas extends ListRecords
 {
     protected static string $resource = BeritaResource::class;
 
+    public function getHeader(): ?\Illuminate\Contracts\View\View
+    {
+        return view('filament.clusters.konten-website.components.resource-tabs', [
+            'activeTab' => 'berita'
+        ]);
+    }
+
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        return [];
     }
 
     /**

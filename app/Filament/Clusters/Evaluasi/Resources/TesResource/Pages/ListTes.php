@@ -10,10 +10,15 @@ class ListTes extends ListRecords
 {
     protected static string $resource = TesResource::class;
 
+    public function getHeader(): ?\Illuminate\Contracts\View\View
+    {
+        return view('filament.clusters.evaluasi.components.resource-tabs', [
+            'activeTab' => 'tes'
+        ]);
+    }
+
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        return [];
     }
 }

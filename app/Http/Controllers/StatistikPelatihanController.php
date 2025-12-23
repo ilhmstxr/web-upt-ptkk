@@ -33,7 +33,7 @@ class StatistikPelatihanController extends Controller
                 'p.warna',
                 'p.warna_inactive',
                 'kp.id as kompetensi_pelatihan_id',
-                'kp.lokasi as lokasi_kompetensi',
+                'kp.lokasi as lokasi',
                 'k.nama_kompetensi',
                 DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_pre_test, 0)), 2), 0) as pre_avg'),
                 DB::raw('COALESCE(ROUND(AVG(NULLIF(pp.nilai_post_test, 0)), 2), 0) as post_avg'),

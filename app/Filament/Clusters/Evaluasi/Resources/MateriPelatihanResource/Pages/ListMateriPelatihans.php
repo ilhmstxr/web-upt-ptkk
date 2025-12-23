@@ -10,10 +10,15 @@ class ListMateriPelatihans extends ListRecords
 {
     protected static string $resource = MateriPelatihanResource::class;
 
+    public function getHeader(): ?\Illuminate\Contracts\View\View
+    {
+        return view('filament.clusters.evaluasi.components.resource-tabs', [
+            'activeTab' => 'materi'
+        ]);
+    }
+
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make(), // ✅ tombol create muncul lagi
-        ];
+        return [];
     }
 }

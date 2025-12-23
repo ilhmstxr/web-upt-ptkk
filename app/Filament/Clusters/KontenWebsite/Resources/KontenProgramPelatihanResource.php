@@ -16,6 +16,7 @@ class KontenProgramPelatihanResource extends Resource
     protected static ?string $model = KontenProgramPelatihan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-photo';
+    protected static bool $shouldRegisterNavigation = false;
     protected static ?string $navigationLabel = 'Program Pelatihan';
     protected static ?string $modelLabel = 'Program Pelatihan';
     protected static ?string $pluralModelLabel = 'Program Pelatihan';

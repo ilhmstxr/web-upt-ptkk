@@ -8,9 +8,13 @@ use Filament\Support\Enums\MaxWidth;
 
 class Kesiswaan extends Cluster
 {
-    // ✅ icon & urutan sidebar
-    protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?int $navigationSort = 5;
+
+    public static function getNavigationUrl(): string
+    {
+        return \App\Filament\Clusters\Kesiswaan\Resources\InstansiResource::getUrl('index');
+    }
 
     // jadi tampil sebagai 1 menu parent lalu children di dalamnya
     protected static ?string $navigationLabel = 'Kesiswaan';

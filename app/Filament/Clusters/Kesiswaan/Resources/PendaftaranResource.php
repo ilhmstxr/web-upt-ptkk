@@ -28,6 +28,7 @@ class PendaftaranResource extends Resource
     protected static ?string $cluster = Kesiswaan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static bool $shouldRegisterNavigation = false;
     protected static ?string $navigationLabel = 'Peserta';
     protected static ?string $modelLabel = 'Peserta';
     protected static ?string $pluralModelLabel = 'Peserta';

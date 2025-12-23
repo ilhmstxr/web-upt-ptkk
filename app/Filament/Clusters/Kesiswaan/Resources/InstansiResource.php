@@ -17,6 +17,8 @@ class InstansiResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $cluster = Kesiswaan::class;
 
     protected static ?string $navigationLabel = 'Data Instansi';
@@ -85,7 +87,7 @@ class InstansiResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->slideOver(),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -106,6 +108,8 @@ class InstansiResource extends Resource
     {
         return [
             'index' => Pages\ListInstansis::route('/'),
+            'create' => Pages\CreateInstansi::route('/create'),
+            'edit' => Pages\EditInstansi::route('/{record}/edit'),
         ];
     }
 }

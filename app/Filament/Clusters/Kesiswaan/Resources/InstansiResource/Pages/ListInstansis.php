@@ -14,10 +14,15 @@ class ListInstansis extends ListRecords
 {
     protected static string $resource = InstansiResource::class;
 
+    public function getHeader(): ?\Illuminate\Contracts\View\View
+    {
+        return view('filament.clusters.kesiswaan.components.resource-tabs', [
+            'activeTab' => 'instansi'
+        ]);
+    }
+
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make()->slideOver(),
-        ];
+        return [];
     }
 }

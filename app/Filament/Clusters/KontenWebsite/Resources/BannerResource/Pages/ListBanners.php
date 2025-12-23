@@ -10,10 +10,15 @@ class ListBanners extends ListRecords
 {
     protected static string $resource = BannerResource::class;
 
+    public function getHeader(): ?\Illuminate\Contracts\View\View
+    {
+        return view('filament.clusters.konten-website.components.resource-tabs', [
+            'activeTab' => 'banner'
+        ]);
+    }
+
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        return [];
     }
 }

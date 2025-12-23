@@ -19,6 +19,7 @@ class TesResource extends Resource
     protected static ?string $model = Tes::class;
     protected static ?string $cluster = Evaluasi::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static bool $shouldRegisterNavigation = false;
 
     /**
      * Default opsi Likert (untuk tipe_jawaban = skala_likert)

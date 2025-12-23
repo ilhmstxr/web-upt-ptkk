@@ -21,6 +21,7 @@ class CeritaKamiResource extends Resource
     protected static ?string $pluralLabel = 'Cerita Kami';
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
     protected static ?int $navigationSort = 10;
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {
