@@ -10,10 +10,15 @@ class ListSorotanPelatihans extends ListRecords
 {
     protected static string $resource = SorotanPelatihanResource::class;
 
+    public function getHeader(): ?\Illuminate\Contracts\View\View
+    {
+        return view('filament.clusters.konten-website.components.resource-tabs', [
+            'activeTab' => 'sorotan'
+        ]);
+    }
+
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        return [];
     }
 }

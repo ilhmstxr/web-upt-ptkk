@@ -21,6 +21,7 @@ class BeritaResource extends Resource
     protected static ?string $cluster = KontenWebsite::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static bool $shouldRegisterNavigation = false;
     protected static ?string $modelLabel = 'Berita & Artikel';
     protected static ?string $navigationLabel = 'Berita';
     protected static ?string $pluralModelLabel = 'Daftar Berita';

@@ -6,8 +6,11 @@ use Filament\Clusters\Cluster;
 
 class Evaluasi extends Cluster
 {
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static ?int $navigationSort = 4;
 
-    protected static ?int $navigationSort = 3;
-
+    public static function getNavigationUrl(): string
+    {
+        return \App\Filament\Clusters\Evaluasi\Resources\TesResource::getUrl('index');
+    }
 }

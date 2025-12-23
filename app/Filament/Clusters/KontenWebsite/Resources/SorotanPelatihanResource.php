@@ -18,6 +18,8 @@ class SorotanPelatihanResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-camera';
     protected static ?string $cluster = KontenWebsite::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $navigationLabel = "Sorotan Pelatihan (4-8 Foto)";
     protected static ?string $modelLabel = 'Sorotan Pelatihan (4-8 Foto)';
     protected static ?string $pluralModelLabel = 'Sorotan Pelatihan (4-8 Foto)';

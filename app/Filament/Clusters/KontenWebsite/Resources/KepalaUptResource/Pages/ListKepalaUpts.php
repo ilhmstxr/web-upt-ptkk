@@ -10,10 +10,15 @@ class ListKepalaUpts extends ListRecords
 {
     protected static string $resource = KepalaUptResource::class;
 
+    public function getHeader(): ?\Illuminate\Contracts\View\View
+    {
+        return view('filament.clusters.konten-website.components.resource-tabs', [
+            'activeTab' => 'kepala_upt'
+        ]);
+    }
+
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        return [];
     }
 }

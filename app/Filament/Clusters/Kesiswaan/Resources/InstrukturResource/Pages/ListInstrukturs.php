@@ -10,10 +10,15 @@ class ListInstrukturs extends ListRecords
 {
     protected static string $resource = InstrukturResource::class;
 
+    public function getHeader(): ?\Illuminate\Contracts\View\View
+    {
+        return view('filament.clusters.kesiswaan.components.resource-tabs', [
+            'activeTab' => 'instruktur'
+        ]);
+    }
+
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        return [];
     }
 }

@@ -18,6 +18,7 @@ class PenempatanAsramaResource extends Resource
     protected static ?string $cluster = Fasilitas::class;
 
     protected static ?string $navigationIcon   = 'heroicon-o-home-modern';
+    protected static bool $shouldRegisterNavigation = false;
     protected static ?string $navigationLabel  = 'Penempatan Asrama';
     protected static ?string $modelLabel       = 'Pelatihan';
     protected static ?string $pluralModelLabel = 'Pelatihan';

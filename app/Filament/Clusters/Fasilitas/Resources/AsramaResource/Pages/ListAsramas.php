@@ -18,25 +18,11 @@ class ListAsramas extends ListRecords
         app(AsramaConfigSyncService::class)->syncFromConfig();
     }
 
-    // ✅ Heading muncul di atas list
-    public function getHeading(): string
+    public function getHeader(): ?\Illuminate\Contracts\View\View
     {
-        return 'Fasilitas Asrama';
-    }
-
-    // ✅ Deskripsi/subheading muncul walau tabel kosong
-    public function getSubheading(): ?string
-    {
-        return 'Ringkasan kapasitas, jumlah kamar, total bed, serta kondisi kamar tiap asrama. '
-            . 'Deskripsi dihitung otomatis dari config kamar.php dan data kamar di database.';
-    }
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make()
-                ->label('Tambah Asrama'),
-        ];
+        return view('filament.clusters.fasilitas.components.resource-tabs', [
+            'activeTab' => 'asramas'
+        ]);
     }
 }
 

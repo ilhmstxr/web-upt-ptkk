@@ -20,6 +20,8 @@ class KepalaUptResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $cluster = KontenWebsite::class;
 
     protected static ?string $navigationLabel = "Kepala UPT";

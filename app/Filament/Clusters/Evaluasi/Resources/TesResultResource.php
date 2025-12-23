@@ -19,6 +19,7 @@ class TesResultResource extends Resource
     protected static ?string $cluster = Evaluasi::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static bool $shouldRegisterNavigation = false;
     protected static ?string $navigationLabel = 'Statistik';
 
     public static function canCreate(): bool

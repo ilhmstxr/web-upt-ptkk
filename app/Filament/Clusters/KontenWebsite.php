@@ -14,5 +14,10 @@ class KontenWebsite extends Cluster
     // ✅ DITAMBAHKAN: Mengaktifkan registrasi Cluster di navigasi
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 3;
+
+    public static function getNavigationUrl(): string
+    {
+        return \App\Filament\Clusters\KontenWebsite\Resources\KepalaUptResource::getUrl('index');
+    }
 }
