@@ -188,9 +188,9 @@
 
     const xLabels = ['Pre-Test', 'Post-Test', 'Praktek', 'Rata-Rata'];
     const palette = [
-      '#FF0080', '#00E5FF', '#FFE600', '#FF3B30',
-      '#00FF6A', '#FF7A00', '#B800FF', '#00B2FF',
-      '#FF2D55', '#C6FF00'
+      '#0038aa', '#32d1ca', '#f1c232', '#c90076',
+      '#8fce00', '#ce7e00', '#6a329f', '#00B2FF',
+      '#FF2D55', '#4ea26e'
     ];
     const colorFor = (i) => {
       if (i < palette.length) return palette[i];
